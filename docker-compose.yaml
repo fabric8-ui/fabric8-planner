@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+
+  core:
+    image: almightycore/almighty-core:demo
+    command: -dbhost db
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+    networks:
+      - default
+  ui:
+    #image: almightyui/almighty-ui:demo
+    build: .
+    ports:
+      # TODO: Currently it only works if the UI port
+      # is opened on the host as well.
+      - "8088:8088"
+    depends_on:
+      - core
+    networks:
+      - default
+  db:
+    image: postgres:9.5
+    ports:
+      - "5432"
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+    networks:
+      - default
