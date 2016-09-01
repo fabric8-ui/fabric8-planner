@@ -22,9 +22,9 @@ export class WorkItemService {
       .catch(this.handleError);
   }
 
-  getWorkItem(id: number): Promise<WorkItem> {
+  getWorkItem(id: string): Promise<WorkItem> {
     return this.getWorkItems()
-      .then(workItems => workItems.find(workItem => workItem.id == id));
+      .then(workItems => workItems.find(workItem => workItem.id === id));
   }
 
   delete(workItem: WorkItem): Promise<void> {
