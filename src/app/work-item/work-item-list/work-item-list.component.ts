@@ -24,7 +24,8 @@ export class WorkItemListComponent implements OnInit {
   getWorkItems(): void {
     this.workItemService
       .getWorkItems()
-      .then(workItems => this.workItems = workItems);
+      //.then(workItems => this.workItems = workItems);
+      .then(workItems => this.workItems = workItems.reverse());
   }
 
   addWorkItem(): void {
@@ -59,4 +60,3 @@ export class WorkItemListComponent implements OnInit {
     this.router.navigate(['/detail', this.selectedWorkItem.id]);
   }
 }
-
