@@ -38,11 +38,14 @@ export class WorkItemListComponent implements OnInit {
   }
 
   deleteWorkItem(workItem: WorkItem): void {
-    this.workItemService
+   	 this.workItemService
       .delete(workItem)
       .then(() => {
-        this.workItems = this.workItems.filter(h => h !== workItem);
-        if (this.selectedWorkItem === workItem) { this.selectedWorkItem = null; }
+        this.workItems = this.workItems
+								.filter(h => h !== workItem);
+        if (this.selectedWorkItem === workItem) { 
+			this.selectedWorkItem = null; 
+		}
       });
   }
 
