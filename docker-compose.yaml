@@ -5,15 +5,25 @@ services:
   core:
     image: almightycore/almighty-core:demo
     command: -dbhost db
+    entrypoint:
+      - /usr/local/bin/wait-for-it.sh
+      - db:5432
+      - --
+      - /usr/local/alm/bin/alm
     ports:
-      - "8081:8080"
+      - "8080:8080"
     depends_on:
       - db
     networks:
       - default
   ui:
-    #image: almightyui/almighty-ui:demo
     build: .
+    entrypoint:
+      - /usr/local/bin/wait-for-it.sh
+      - core:8080
+      - --
+      - npm
+      - start
     ports:
       # TODO: Currently it only works if the UI port
       # is opened on the host as well.
@@ -23,10 +33,10 @@ services:
     networks:
       - default
   db:
-    image: postgres:9.5
+    image: centos/postgresql-95-centos7
     ports:
       - "5432"
     environment:
-      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRESQL_ADMIN_PASSWORD: mysecretpassword
     networks:
       - default

@@ -12,4 +12,4 @@ COPY . /usr/src/app
 ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 RUN chmod +x /usr/local/bin/wait-for-it.sh
 
-ENTRYPOINT [ "/usr/local/bin/wait-for-it.sh", "core:8080", "--", "npm", "start" ]
+ENTRYPOINT [ "npm", "start" ]
