@@ -33,7 +33,7 @@ WORKDIR ${APP_DIR}
 COPY package.json ${APP_DIR}/
 RUN npm cache clean
 RUN rm -rf node_modules
-RUN npm install || npm ls -g --depth=0
+RUN npm install
 COPY . ${APP_DIR}
 
 RUN chmod +x /usr/local/bin/wait-for-it.sh
