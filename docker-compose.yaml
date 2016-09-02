@@ -5,11 +5,6 @@ services:
   core:
     image: almightycore/almighty-core:demo
     command: -dbhost db
-    entrypoint:
-      - /usr/local/bin/wait-for-it.sh
-      - db:5432
-      - --
-      - /usr/local/alm/bin/alm
     ports:
       - "8080:8080"
     depends_on:
