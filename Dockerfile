@@ -1,4 +1,4 @@
-FROM nginx
+FROM nginx:stable
 MAINTAINER "Konrad Kleine <kkleine@redhat.com>"
 ENV LANG=en_US.utf8
 
