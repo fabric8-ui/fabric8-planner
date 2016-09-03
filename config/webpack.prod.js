@@ -32,7 +32,8 @@ module.exports = webpackMerge(commonConfig, {
     new webpack.NoErrorsPlugin(),
     // FIXME: https://github.com/webpack/webpack/issues/2644
     // new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.UglifyJsPlugin(),
+    // FIXME: webpack's --optimize-minimize option is not working
+    //new webpack.optimize.UglifyJsPlugin(),
     new ExtractTextPlugin('[name].[hash].css'),
     new webpack.DefinePlugin({
       'process.env': {
