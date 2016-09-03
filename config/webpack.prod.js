@@ -16,7 +16,7 @@ const METADATA = webpackMerge(commonConfig.metadata, {
 });
 
 module.exports = webpackMerge(commonConfig, {
-  devtool: 'source-map',
+  devtool: 'eval',
 
   output: {
     path: helpers.root('dist'),
