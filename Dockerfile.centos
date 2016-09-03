@@ -36,6 +36,3 @@ RUN rm -rf node_modules
 RUN npm install
 COPY . ${APP_DIR}
 
-RUN chmod +x /usr/local/bin/wait-for-it.sh
-
-ENTRYPOINT [ "npm", "start" ]
