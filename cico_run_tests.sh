@@ -20,4 +20,4 @@ docker exec almighty-ui-builder npm install
 ## some tests...?
 
 docker exec almighty-ui-builder npm run build:prod
-docker exec almighty-ui-builder cp -r /home/app/almighty/dist /dist
+docker exec almighty-ui-builder cp -r /home/almighty/dist /dist
