@@ -17,7 +17,7 @@ RUN set -ex \
     gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
   done
 
-ENV NPM_CONFIG_LOGLEVEL info
+#ENV NPM_CONFIG_LOGLEVEL info
 ENV NODE_VERSION 6.5.0
 
 RUN yum install -y wget bzip2 git  \
@@ -42,7 +42,6 @@ RUN chown -R ${ALMIGHTY_USER_NAME}:${ALMIGHTY_USER_NAME} $HOME/*
 
 USER ${ALMIGHTY_USER_NAME}
 WORKDIR $HOME/
-RUN npm install && npm run build:prod
 
 VOLUME /dist
 
