@@ -4,7 +4,7 @@
 /usr/sbin/setenforce 0
 
 # Get all the deps in
-yum -y install docker make git node 
+yum -y install docker make git
 sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --log-driver=journald --insecure-registry registry.ci.centos.org:5000"' /etc/sysconfig/docker
 service docker start
 
