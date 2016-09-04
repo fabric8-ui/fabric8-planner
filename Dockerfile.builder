@@ -1,33 +1,18 @@
-FROM centos:7
-MAINTAINER "Konrad Kleine <kkleine@redhat.com>"
-ENV LANG=en_US.utf8
+FROM node:6
 
-# Bower wants /home/almighty for what ever reason
-ENV APP_DIR=/home/almighty/source
+RUN useradd --user-group --create-home --shell /bin/false app
 
-# Install node and wait-for-it.sh script
-RUN yum install -y wget bzip2 git\
-    && wget --quiet -O /tmp/node.tar.xz https://nodejs.org/download/release/v6.3.1/node-v6.3.1-linux-x64.tar.xz \
-    && mkdir /usr/local/node \
-    && tar -xJf /tmp/node.tar.xz -C /usr/local/node \
-    && rm /tmp/node.tar.xz \
-    && yum remove -y wget \
-    && yum clean all
+ENV HOME=/home/app
 
-# Create a non-root user and a group with the same name: "almighty"
-ENV ALMIGHTY_USER_NAME=almighty
-RUN useradd -s /bin/bash ${ALMIGHTY_USER_NAME}
+COPY . $HOME/almighty/
+RUN chown -R app:app $HOME/*
 
-ENV PATH=${PATH}:/usr/local/node/node-v6.3.1-linux-x64/bin
+USER app
+WORKDIR $HOME/almighty
+RUN npm install && npm run build:prod
 
-RUN npm install -g bower
+USER root
 
-# From here onwards, any RUN, CMD, or ENTRYPOINT will be run under the following user
-USER ${ALMIGHTY_USER_NAME}
-
-# Setup the app directory
-RUN mkdir -p ${APP_DIR}
-
-WORKDIR ${APP_DIR}
+VOLUME /dist
 
 ENTRYPOINT ["/bin/bash"]
