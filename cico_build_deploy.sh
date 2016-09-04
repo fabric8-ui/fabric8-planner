@@ -18,7 +18,7 @@ docker exec almighty-ui-builder npm install
 ## some tests...?
 
 docker exec almighty-ui-builder npm run build:prod
-docker exec almighty-ui-builder cp -r /home/almighty/dist /dist
+docker exec -u root almighty-ui-builder cp -r /home/almighty/dist /dist
 
 ## All ok, deploy
 if [ $? -eq 0 ]; then
