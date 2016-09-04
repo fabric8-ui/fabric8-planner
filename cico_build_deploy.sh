@@ -10,11 +10,12 @@ service docker start
 
 # Build builder image
 docker build -t almighty-ui-builder -f Dockerfile.builder .
-docker run --detach=true --name=almighty-ui-builder -e "API_URL=http://demo.api.almighty.io/api/" -t -v $(pwd):/home/almighty/source:Z almighty-ui-builder
+docker run --detach=true --name=almighty-ui-builder -e "API_URL=http://demo.api.almighty.io/api/" -t -v $(pwd):/dist:Z almighty-ui-builder
 
 # Build almigty-ui
-docker exec almighty-ui-builder npm install
-docker exec almighty-ui-builder npm run build:prod
+#docker exec almighty-ui-builder npm install
+#docker exec almighty-ui-builder npm run build:prod
+docker exec almighty-ui-builder cp -r /home/app/almighty/dist /dist
 
 ## some tests...?
 
