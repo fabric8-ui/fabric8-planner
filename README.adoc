@@ -20,6 +20,8 @@ If you wish to run the app with the in-memory dataset, you need to uncomment the
 
 == Production build
 
+NOTE: In the CentOS 7, you need to install development tools: `yum group install "Development Tools"`
+
 To generate production build, set the API URL and run `npm` command as give below:
 
 ----
