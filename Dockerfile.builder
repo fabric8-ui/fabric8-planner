@@ -4,7 +4,6 @@ ENV LANG=en_US.utf8
 
 # Install node and wait-for-it.sh script
 RUN yum install -y wget bzip2\
-    && yum group install -y "Development Tools" \
     && wget --quiet -O /tmp/node.tar.xz https://nodejs.org/download/release/v6.3.1/node-v6.3.1-linux-x64.tar.xz \
     && mkdir /usr/local/node \
     && tar -xJf /tmp/node.tar.xz -C /usr/local/node \
@@ -20,6 +19,6 @@ ENV PATH=${PATH}:/usr/local/node/node-v6.3.1-linux-x64/bin
 
 WORKDIR ${APP_DIR}
 
-RUN npm install bower
+RUN npm install -g bower
 
 ENTRYPOINT ["/bin/bash"]
