@@ -18,14 +18,15 @@ RUN yum install -y wget bzip2 git\
 ENV ALMIGHTY_USER_NAME=almighty
 RUN useradd -s /bin/bash ${ALMIGHTY_USER_NAME}
 
-# Setup the app directory
-RUN mkdir -p ${APP_DIR}
 ENV PATH=${PATH}:/usr/local/node/node-v6.3.1-linux-x64/bin
 
 RUN npm install -g bower
 
 # From here onwards, any RUN, CMD, or ENTRYPOINT will be run under the following user
 USER ${ALMIGHTY_USER_NAME}
+
+# Setup the app directory
+RUN mkdir -p ${APP_DIR}
 
 WORKDIR ${APP_DIR}
 
