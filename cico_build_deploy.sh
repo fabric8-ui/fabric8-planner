@@ -14,10 +14,11 @@ docker run --detach=true --name=almighty-ui-builder -e "API_URL=http://demo.api.
 
 # Build almigty-ui
 docker exec almighty-ui-builder npm install
-docker exec almighty-ui-builder npm run build:prod
-docker exec almighty-ui-builder cp -r /home/app/almighty/dist /dist
 
 ## some tests...?
+
+docker exec almighty-ui-builder npm run build:prod
+docker exec almighty-ui-builder cp -r /home/app/almighty/dist /dist
 
 ## All ok, deploy
 if [ $? -eq 0 ]; then
