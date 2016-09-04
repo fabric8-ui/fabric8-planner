@@ -31,16 +31,19 @@ RUN yum install -y wget bzip2 git  \
   && yum remove -y wget \
   && yum clean all
 
-ENV HOME=/home/app
+ENV ALMIGHTY_USER_NAME=almighty
 
-RUN useradd --user-group --create-home --shell /bin/false app
+RUN useradd --user-group --create-home --shell /bin/false ${ALMIGHTY_USER_NAME}
 
-COPY . $HOME/almighty/
-RUN chown -R app:app $HOME/*
+ENV HOME=/home/${ALMIGHTY_USER_NAME}
 
-USER app
-WORKDIR $HOME/almighty
+COPY . $HOME
+RUN chown -R ${ALMIGHTY_USER_NAME}:${ALMIGHTY_USER_NAME} $HOME/*
+
+USER ${ALMIGHTY_USER_NAME}
+WORKDIR $HOME/
 RUN npm install && npm run build:prod
 
 VOLUME /dist
+
 ENTRYPOINT ["/bin/bash"]
