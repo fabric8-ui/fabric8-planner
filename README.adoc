@@ -7,11 +7,21 @@ If this is the first time you are starting the UI you need to run
 $ npm install
 ----
 
-Start the app by executing the following. 
+Start the app in dev mode, expected to only run adhoc on the developer workstation, by executing the following. 
 
 ----
 $ npm start
 ----
+
+In order to deploy the app on a service, you need to :
+
+----
+$ npm run build:prod
+----
+
+and ship the content from ./dist/ behind a webserver
+
+
 
 If you wish to run the app with the in-memory dataset, you need to uncomment the lines as follows:
 
