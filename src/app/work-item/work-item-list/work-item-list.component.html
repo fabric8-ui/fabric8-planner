@@ -4,6 +4,8 @@
     <div><div class="list-group-item supress-hover" (click)="addWorkItem()">
       <work-item-quick-add (close)="close($event)"></work-item-quick-add>
     </div></div>
+
+	<div class="work-item-container">
     <div *ngFor="let workItem of workItems">
 			<div class="list-group-item" (click)="onSelect(workItem)"
 					 [class.selected]="workItem === selectedWorkItem">
@@ -33,7 +35,7 @@
 											'fa-user': workItem.type=='system.userstory',
 											'fa-globe': workItem.type=='system.feature',
 											'fa-bookmark': workItem.type=='system.experience' }">
-						></span>
+						</span>
 							{{workItem.id}}
       		</div>
 	      <div class="list-view-pf-body">
@@ -53,6 +55,7 @@
 				<!--<hr />-->
       		<!--</div>-->
 		</div>
+	</div>
 	</div>
 </div>
 <div class="error" *ngIf="error">{{error}}</div>

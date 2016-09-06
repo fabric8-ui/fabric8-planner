@@ -1,5 +1,5 @@
 .screen-min-ht{
-  min-height: 85%;
+  height: 80%;
 }
 .type span{
   font-size: 12px;
@@ -12,4 +12,21 @@
 .error {color:red;}
 .supress-hover:hover{
   background-color: transparent;
+}
+
+.list-group {
+	height: calc(100% - 50px);
+	display: flex;
+	flex-flow: column nowrap;
+	overflow: hidden;
+}
+
+.work-item-container {
+	flex: 1;
+	overflow: hidden;
+}
+
+.work-item-container:hover {
+	overflow-x: hidden;
+	overflow-y: auto;
 }
