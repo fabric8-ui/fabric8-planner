@@ -28,5 +28,5 @@
 
 .work-item-container:hover {
 	overflow-x: hidden;
-	overflow-y: scroll;
+	overflow-y: auto;
 }
