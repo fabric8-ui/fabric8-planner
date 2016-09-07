@@ -1,59 +1,21 @@
 <app-header></app-header>
+
 <div class="container-fluid screen-min-ht">
 	<div class="list-group list-view-pf list-view-pf-view">
-    <div><div class="list-group-item supress-hover" (click)="addWorkItem()">
-      <work-item-quick-add (close)="close($event)"></work-item-quick-add>
-    </div></div>
-    <div *ngFor="let workItem of workItems">
-			<div class="list-group-item" (click)="onSelect(workItem)"
-					 [class.selected]="workItem === selectedWorkItem">
-				<div class="list-view-pf-actions">
-					<button class="btn btn-default" (click)="gotoDetail(workItem)">View Details</button>
-					<button class="btn btn-default delete-button" (click)="deleteWorkItem(workItem); $event.stopPropagation()">Delete</button>
-					<div class="dropdown pull-right dropdown-kebab-pf">
-						<button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebabRight" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-							<span class="fa fa-ellipsis-v"></span>
-						</button>
-						<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight">
-							<li><a href="#">Delete</a></li>
-							<li><a href="#">Move to backlog</a></li>
-							<li><a href="#">Change Status</a></li>
-						</ul>
-					</div>
-				</div>
-				<div class="list-view-pf-main-info">
-					<div class="list-view-pf-left">
-						<status-drawer [workItem]="workItem"></status-drawer>						
-					</div>
-					<div class="list-view-pf-left type">
-						<!--<span class='fa' [ngClass]="{'fa-bookmark': workItem.workItemType=='story', 'fa-bug':workItem.workItemType=='bug'}"></span>-->
-						<span
-								class='fa'
-								[ngClass]="{'fa-wrench': workItem.type=='system.bug',
-											'fa-user': workItem.type=='system.userstory',
-											'fa-globe': workItem.type=='system.feature',
-											'fa-bookmark': workItem.type=='system.experience' }">
-						></span>
-							{{workItem.id}}
-      		</div>
-	      <div class="list-view-pf-body">
-	        <div class="list-view-pf-description">
-	          <div class="list-group-item-heading">
-	             {{workItem.fields['system.title']}}
-	          </div>
-						<div class="list-group-item-text">
-            	{{workItem.fields['system.description'] ? workItem.fields['system.description'] : "No description available for this work item."}}
-          	</div>
-	        </div>
-	      </div>
+    <div>
+		<div class="list-group-item supress-hover" (click)="addWorkItem()">
+      		<work-item-quick-add (close)="close($event)"></work-item-quick-add>
     	</div>
-			</div>
-			<!--<div *ngIf="workItem.isExpanded" class="work-item-details" >-->
-      			<!--{{workItem.name | uppercase}} - {{workItem.description}}-->
-				<!--<hr />-->
-      		<!--</div>-->
-		</div>
+	</div>
+    <div>
+		<work-item-list-entry *ngFor="let workItem of workItems" 
+					[workItem]="workItem" 
+					(selectEvent)="onSelect($event)" 
+					(detailEvent)="onDetail($event)" 
+					(deleteEvent)="onDelete($event)">
+		</work-item-list-entry>
 	</div>
 </div>
 <div class="error" *ngIf="error">{{error}}</div>
+
 <app-footer></app-footer>

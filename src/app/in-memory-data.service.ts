@@ -2,20 +2,12 @@ import { InMemoryDbService } from 'angular2-in-memory-web-api';
 export class InMemoryDataService implements InMemoryDbService {
   createDb() {
     let workItems = [
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},"id": "21", "name": 'Bullet Chart', description: 'Bullet Chart - Conceptual Design',"workItemType":"1","version":0 , status:'To Do', statusCode:0, type: 'story'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 22, name: 'New Account', description: 'Create a New Account',"workItemType":"1","version":0 , status:'In Progress',statusCode:1, type: 'story'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 23, name: 'Login page', description: 'Login page should recognize when caps lock is on and throw a warning message',"workItemType":"1","version":0 , status:'Done',statusCode:2, type: 'bug'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 24, name: 'Splitter', description: 'Splitter - Expand/Collapse snap control',"workItemType":"1","version":0 ,status:'To Do',statusCode:0, type: 'story'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 25, name: 'Integrate', description: 'Integrate PatternFly UI elements',"workItemType":"1","version":0 ,status:'In Progress',statusCode:1, type: 'story'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 26, name: 'Log Viewer', description: 'Log Viewer - Conceptual Design',"workItemType":"1","version":0 ,status:'To Do',statusCode:0, type: 'story'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 13, name: 'Bootstrap', description: 'PatternFly and Bootstrap 4',"workItemType":"1","version":0 ,status:'Done',statusCode:2, type: 'story'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 14, name: 'Travis', description: 'Investigate Travis CI Integration',"workItemType":"1","version":0 ,status:'Done',statusCode:2, type: 'story'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 15, name: 'Links', description: 'Broken Links',"workItemType":"1","version":0 ,status:'Done',statusCode:2, type: 'bug'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 16, name: 'Best Practice', description: 'Code Organization and Best Practice',"workItemType":"1","version":0 ,status:'To Do',statusCode:0, type: 'story'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 17, name: 'Max Width', description: 'Max Width Container',"workItemType":"1","version":0 ,status:'Done',statusCode:2, type: 'bug'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 18, name: 'Font', description: 'Improve Font Weight Management Across Less File',"workItemType":"1","version":0 ,status:'In Progress',statusCode:1, type: 'story'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 19, name: 'Color', description: 'Improve Color Management',"workItemType":"1","version":0 ,status:'In Progress',statusCode:1, type: 'bug'},
-      {"fields":{"system.owner":"tmaeder","system.state":"open"},id: 20, name: 'Empty State', description: 'Empty State - Additional Layout Example',"workItemType":"1","version":0 ,status:'To Do',statusCode:0, type: 'bug'}
+
+      {"fields":{"system.assignee":"someUser1","system.creator":"someOtherUser1","system.description":"Some Description 1","system.state":"new","system.title":"Some Title 1"},"id":"1","type":"system.userstory","version":1},
+      {"fields":{"system.assignee":"someUser2","system.creator":"someOtherUser2","system.description":"Some Description 2","system.state":"open","system.title":"Some Title 2"},"id":"2","type":"system.bug","version":1},
+      {"fields":{"system.assignee":"someUser3","system.creator":"someOtherUser3","system.description":"Some Description 3","system.state":"closed","system.title":"Some Title 3"},"id":"3","type":"system.userstory","version":1},
+      {"fields":{"system.assignee":"someUser4","system.creator":"someOtherUser4","system.description":"Some Description 4","system.state":"resolved","system.title":"Some Title 4"},"id":"4","type":"system.bug","version":1},
+      {"fields":{"system.assignee":"someUser5","system.creator":"someOtherUser5","system.description":"Some Description 5","system.state":"rejected","system.title":"Some Title 5"},"id":"5","type":"system.userstory","version":1}
     ];
 
     let loginStatus = {

@@ -10,7 +10,7 @@ export class WorkItemService {
   private headers = new Headers({'Content-Type': 'application/json'});
   // private workItemUrl = 'app/workItems';  // URL to web api
   private workItemUrl = process.env.API_URL+'workitems';  // URL to web api
-  // private workItemUrl = 'http://demo.almighty.io/api/workitems';  // URL to web api
+  // private workItemUrl = 'http://demo.api.almighty.io/api/workitems';  // URL to web api
 
   constructor(private http: Http) { }
 

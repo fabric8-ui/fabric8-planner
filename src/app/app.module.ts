@@ -23,6 +23,7 @@ import { HeaderComponent} from './header/header.component';
 import { LoginComponent} from './login/login.component';
 import { WorkItemDetailComponent } from './work-item/work-item-detail/work-item-detail.component';
 import { WorkItemListComponent } from './work-item/work-item-list/work-item-list.component';
+import { WorkItemListEntryComponent } from './work-item/work-item-list/work-item-list-entry.component';
 import { WorkItemQuickAddComponent } from './work-item/work-item-quick-add/work-item-quick-add.component';
 import { WorkItemSearchComponent } from './work-item/work-item-search/work-item-search.component';
 import { WorkItemService } from './work-item/work-item.service';
@@ -45,6 +46,7 @@ import { StatusDrawerComponent } from './shared-component/status-drawer.componen
     WorkItemDetailComponent,
     WorkItemQuickAddComponent,
     WorkItemListComponent,
+    WorkItemListEntryComponent,
     WorkItemSearchComponent,
 	StatusDrawerComponent
   ],

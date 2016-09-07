@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { Logger } from '../../shared/logger.service';
 import { WorkItem } from '../work-item';
 import { WorkItemService } from '../work-item.service';
+import { WorkItemListEntryComponent } from './work-item-list-entry.component';
 
 @Component({
   selector: 'work-item-list',
@@ -11,8 +12,9 @@ import { WorkItemService } from '../work-item.service';
   styleUrls: ['/work-item-list.component.css'],
 })
 export class WorkItemListComponent implements OnInit {
+
   workItems: WorkItem[];
-  selectedWorkItem: WorkItem;
+  selectedWorkItemEntryComponent: WorkItemListEntryComponent;
   addingWorkItem = false;
 
   constructor(
@@ -21,7 +23,13 @@ export class WorkItemListComponent implements OnInit {
     private logger: Logger) {
   }
 
-  getWorkItems(): void {
+  ngOnInit(): void {
+    this.reloadWorkItems();
+  }
+
+  // model handlers
+
+  reloadWorkItems(): void {
     this.workItemService
       .getWorkItems()
       .then(workItems => this.workItems = workItems.reverse());
@@ -29,33 +37,34 @@ export class WorkItemListComponent implements OnInit {
 
   addWorkItem(): void {
     this.addingWorkItem = true;
-    this.selectedWorkItem = null;
+    this.selectedWorkItemEntryComponent = null;
   }
 
   close(savedWorkItem: WorkItem) {
     this.addingWorkItem = false;
-    if (savedWorkItem) { this.getWorkItems(); }
+    if (savedWorkItem) { this.reloadWorkItems(); }
   }
 
-  deleteWorkItem(workItem: WorkItem): void {
-    this.workItemService
-      .delete(workItem)
-      .then(() => {
-        this.workItems = this.workItems.filter(h => h !== workItem);
-        if (this.selectedWorkItem === workItem) { this.selectedWorkItem = null; }
-      });
+  // event handlers
+
+  onSelect(entryComponent: WorkItemListEntryComponent): void {
+    let workItem: WorkItem = entryComponent.getWorkItem();
+    // de-select prior selected element (if any)
+    if (this.selectedWorkItemEntryComponent && this.selectedWorkItemEntryComponent!=entryComponent)
+      this.selectedWorkItemEntryComponent.deselect();
+    // select new component
+    entryComponent.select();
+    this.selectedWorkItemEntryComponent = entryComponent;
   }
 
-  ngOnInit(): void {
-    this.getWorkItems();
+  onDetail(entryComponent: WorkItemListEntryComponent): void {
+    let workItem: WorkItem = entryComponent.getWorkItem();
+    // clicking on detail always also selects an entry
+    this.onSelect(entryComponent);
+    this.router.navigate(['/detail', workItem.id]);
   }
 
-  onSelect(workItem: WorkItem): void {
-    this.selectedWorkItem = workItem;
-  }
-
-  gotoDetail(workItem: WorkItem): void {
-    this.selectedWorkItem = workItem;
-    this.router.navigate(['/detail', this.selectedWorkItem.id]);
+  onDelete(entryComponent: WorkItemListEntryComponent): void {
+    this.reloadWorkItems();
   }
 }
