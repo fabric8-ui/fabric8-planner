@@ -1,12 +1,13 @@
 <app-header></app-header>
-<div class="container-fluid screen-min-ht">
-	<div class="list-group list-view-pf list-view-pf-view">
-    <div><div class="list-group-item supress-hover" (click)="addWorkItem()">
-      <work-item-quick-add (close)="close($event)"></work-item-quick-add>
-    </div></div>
-    <div *ngFor="let workItem of workItems">
-			<div class="list-group-item" (click)="onSelect(workItem)"
-					 [class.selected]="workItem === selectedWorkItem">
+	<div class="container-fluid screen-min-ht">
+		<div class="list-group list-view-pf list-view-pf-view">
+			<div>
+				<div class="list-group-item supress-hover" (click)="addWorkItem()">
+					<work-item-quick-add (close)="close($event)"></work-item-quick-add>
+				</div>
+			</div>
+			<div *ngFor="let workItem of workItems" class="list-group-item" (click)="onSelect(workItem)"
+						[class.selected]="workItem === selectedWorkItem">
 				<div class="list-view-pf-actions">
 					<button class="btn btn-default" (click)="gotoDetail(workItem)">View Details</button>
 					<button class="btn btn-default delete-button" (click)="deleteWorkItem(workItem); $event.stopPropagation()">Delete</button>
@@ -35,24 +36,23 @@
 											'fa-bookmark': workItem.type=='system.experience' }">
 						></span>
 							{{workItem.id}}
-      		</div>
-	      <div class="list-view-pf-body">
-	        <div class="list-view-pf-description">
-	          <div class="list-group-item-heading">
-	             {{workItem.fields['system.title']}}
-	          </div>
-						<div class="list-group-item-text">
-            	{{workItem.fields['system.description'] ? workItem.fields['system.description'] : "No description available for this work item."}}
-          	</div>
-	        </div>
-	      </div>
-    	</div>
+			</div>
+			<div class="list-view-pf-body">
+				<div class="list-view-pf-description">
+				<div class="list-group-item-heading">
+					{{workItem.fields['system.title']}}
+				</div>
+							<div class="list-group-item-text">
+					{{workItem.fields['system.description'] ? workItem.fields['system.description'] : "No description available for this work item."}}
+				</div>
+				</div>
+			</div>
+			</div>
 			</div>
 			<!--<div *ngIf="workItem.isExpanded" class="work-item-details" >-->
       			<!--{{workItem.name | uppercase}} - {{workItem.description}}-->
 				<!--<hr />-->
       		<!--</div>-->
-		</div>
 	</div>
 </div>
 <div class="error" *ngIf="error">{{error}}</div>
