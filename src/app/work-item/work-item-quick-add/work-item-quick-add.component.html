@@ -13,7 +13,13 @@
         <input [(ngModel)]="workItem.fields['system.description']" class="form-control" placeholder="Description" />
       </div>
     </div>
-    <div class="list-group-item-text margin10">
+   <!-- <div class="list-group-item-text margin10">
+      <div class="form-group">
+        <a class='pficon-add-circle-o' [ngClass]="{'icon-btn': validName,'icon-btn-disabled':!validName}" (click)="save()"></a>&nbsp;&nbsp;
+        <a class='pficon-error-circle-o icon-btn' (click)="goBack()"></a>
+      </div>
+    </div>-->
+    <div class="list-group-item-heading margin10">
       <div class="form-group">
         <a class='pficon-add-circle-o' [ngClass]="{'icon-btn': validName,'icon-btn-disabled':!validName}" (click)="save()"></a>&nbsp;&nbsp;
         <a class='pficon-error-circle-o icon-btn' (click)="goBack()"></a>
@@ -21,3 +27,24 @@
     </div>
   </div>
 </div>
+  <!--<div class="col-md-3 col-sm-3 col-xs-12">
+    <div class="list-group-item-heading">
+      <i>Quick Add a WorkItem</i>
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-3 col-xs-12">
+    <div class="form-group">
+        <input [(ngModel)]="workItem.fields['system.title']" (keypress)="eventHandler($event)" (ngModelChange)="checkTitle()" class="form-control" placeholder="Title (mandatory field)" required />
+      </div>
+  </div>
+  <div class="col-md-3 col-sm-3 col-xs-12">
+    <div class="form-group">
+      <input [(ngModel)]="workItem.fields['system.description']" class="form-control" placeholder="Description" />
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-3 col-xs-12">
+    <div class="form-group">
+      <a class='pficon-add-circle-o' [ngClass]="{'icon-btn': validName,'icon-btn-disabled':!validName}" (click)="save()"></a>&nbsp;&nbsp;
+      <a class='pficon-error-circle-o icon-btn' (click)="goBack()"></a>
+    </div>
+  </div>-->
