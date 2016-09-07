@@ -1,7 +1,7 @@
 import { InMemoryDbService } from 'angular2-in-memory-web-api';
 export class InMemoryDataService implements InMemoryDbService {
   createDb() {
-    let workItems = [
+    let workitems = [
 
       {"fields":{"system.assignee":"someUser1","system.creator":"someOtherUser1","system.description":"Some Description 1","system.state":"new","system.title":"Some Title 1"},"id":"1","type":"system.userstory","version":1},
       {"fields":{"system.assignee":"someUser2","system.creator":"someOtherUser2","system.description":"Some Description 2","system.state":"open","system.title":"Some Title 2"},"id":"2","type":"system.bug","version":1},
@@ -15,6 +15,6 @@ export class InMemoryDataService implements InMemoryDbService {
       "responseText": "Good Job"
     };
 
-    return {loginStatus, workItems};
+    return {loginStatus, workitems};
   }
 }
