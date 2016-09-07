@@ -1,4 +1,4 @@
-var webpackConfig = require('./webpack.test');
+var webpackConfig = require('./webpack.test.js');
 
 module.exports = function (config) {
   var _config = {
@@ -29,7 +29,7 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: false,
-    browsers: ['PhantomJS'],
+    browsers: ['Chrome'],    
     singleRun: true
   };
 

@@ -47,6 +47,7 @@ export class WorkItemListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('log in WI List component')
     this.getWorkItems();
   }
 
