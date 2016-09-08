@@ -17,7 +17,6 @@ import { AlmTrim } from './pipes/alm-trim';
 import { AppComponent }  from './app.component';
 
 import { AuthenticationService } from './auth/authentication.service';
-
 import { UserService } from './user/user.service';
 import { BoardComponent} from './board/board.component';
 import { DropdownComponent } from './shared-component/dropdown/dropdown.component';
