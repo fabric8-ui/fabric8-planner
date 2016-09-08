@@ -7,16 +7,9 @@ import { FormsModule }   from '@angular/forms';
 import { HttpModule }    from '@angular/http';
 
 // Imports for loading & configuring the in-memory web api
-<<<<<<< HEAD
 // if not used will be removed for production by treeshaking
 import { InMemoryWebApiModule } from 'angular2-in-memory-web-api';
 import { InMemoryDataService } from './in-memory-data.service';
-=======
-// Uncomment the below to support running the in-memory dataset.
- import { InMemoryWebApiModule } from 'angular2-in-memory-web-api';
- import { InMemoryDataService } from './in-memory-data.service';
->>>>>>> 0fb92c2... converting all css to sass
-
 import { AppComponent }  from './app.component';
 import { routing } from './app.routing';
 import { Logger } from './shared/logger.service';
@@ -44,17 +37,7 @@ if (process.env.ENV=='inmemory')
   moduleImports.push(InMemoryWebApiModule.forRoot(InMemoryDataService));
 
 @NgModule({
-<<<<<<< HEAD
   imports: moduleImports,
-=======
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpModule,
-     InMemoryWebApiModule.forRoot(InMemoryDataService),
-    routing
-  ],
->>>>>>> 0fb92c2... converting all css to sass
   declarations: [
     AppComponent,
     BoardComponent,
