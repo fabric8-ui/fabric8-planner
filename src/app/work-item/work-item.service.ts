@@ -4,6 +4,7 @@ import { Logger } from '../shared/logger.service';
 
 import 'rxjs/add/operator/toPromise';
 
+import { AuthenticationService } from '../auth/authentication.service';
 import { WorkItem } from './work-item';
 
 @Injectable()
@@ -12,14 +13,16 @@ export class WorkItemService {
   private workItemUrl = process.env.API_URL+'workitems';  // URL to web api
 
   constructor(private http: Http,
-              private logger: Logger) { 
+              private logger: Logger,
+              private auth:AuthenticationService) {    
+    this.headers.append('Authorization', 'Bearer '+ this.auth.getToken());
     logger.log("WorkItemService running in " + process.env.ENV + " mode.");
     logger.log("WorkItemService using url " + this.workItemUrl);
   }
 
   getWorkItems(): Promise<WorkItem[]> {
     return this.http
-      .get(this.workItemUrl)
+      .get(this.workItemUrl, {headers: this.headers})
       .toPromise()
       .then(response => process.env.ENV!='inmemory'?response.json() as WorkItem[]:response.json().data as WorkItem[])
       .catch(this.handleError);
