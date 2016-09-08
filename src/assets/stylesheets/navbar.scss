@@ -3,6 +3,19 @@
 // --------------------------------------------------
 @import "variables";
 @import "mixins";
+.navbar {
+  position: relative;
+  min-height: $navbar-height; // Ensure a navbar always shows (e.g., without a .navbar-brand in collapsed mode)
+  margin-bottom: $navbar-margin-bottom;
+  border: 1px solid transparent;
+
+  // Prevent floats from breaking the navbar
+  @include clearfix;
+
+  @media (min-width: $grid-float-breakpoint) {
+    border-radius: $navbar-border-radius;
+  }
+}
 .navbar-pf {
   background: $navbar-pf-bg-color;
   border: 0;
@@ -17,6 +30,13 @@
     margin: 0 0 0 20px;
     img {
       display: block;
+    }
+  }
+  .navbar-header {
+    @include clearfix;
+
+    @media (min-width: $grid-float-breakpoint) {
+      float: left;
     }
   }
   .navbar-collapse {
@@ -42,13 +62,9 @@
         padding-bottom: 0; // Override default setting
         overflow: visible !important;
       }
-
       &.in {
         overflow-y: visible;
       }
-
-      // Undo the collapse side padding for navbars with containers to ensure
-      // alignment of right-aligned contents.
       .navbar-fixed-top &,
       .navbar-static-top &,
       .navbar-fixed-bottom & {
