@@ -26,6 +26,7 @@ import { WorkItemQuickAddComponent } from './work-item/work-item-quick-add/work-
 import { WorkItemSearchComponent } from './work-item/work-item-search/work-item-search.component';
 import { WorkItemService } from './work-item/work-item.service';
 import { Requests } from './../utils/requests';
+import { Keys } from './../utils/keys';
 import { StatusDrawerComponent } from './shared-component/status-drawer.component';
 
 // conditionally import the inmemory resource module
@@ -56,7 +57,8 @@ if (process.env.ENV=='inmemory')
     Logger,
     LoginService,
     WorkItemService,
-	Requests
+	Requests,
+	Keys,
   ],
   bootstrap: [ AppComponent ]
 })

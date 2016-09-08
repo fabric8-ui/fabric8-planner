@@ -1,12 +1,15 @@
 import { Injectable } from "@angular/core";
 import { Headers, Http } from "@angular/http";
+import { Keys } from "./keys";
 
 @Injectable()
 export class Requests {
 
 	private headers = new Headers({'Content-Type': 'application/json'});
 	
-	constructor(private http: Http) { }
+	constructor(private http: Http, private keys: Keys) { 
+		console.log(this.keys.getApiKey());
+	}
 
 	get(url: string, data: Object = {}): Promise<any> {
 		let ret:string[] = [];
