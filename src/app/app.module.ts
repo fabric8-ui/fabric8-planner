@@ -14,6 +14,14 @@ import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { AlmTrim } from './pipes/alm-trim';
 
 // Shared
+import { AppComponent }  from './app.component';
+
+import { AuthenticationService } from './auth/authentication.service';
+import { UserService } from './user/user.service';
+import { BoardComponent} from './board/board.component';
+import { DropdownComponent } from './shared-component/dropdown/dropdown.component';
+import { FooterComponent} from './footer/footer.component';
+import { HeaderComponent} from './header/header.component';
 import { Logger } from './shared/logger.service';
 
 // Shared components
@@ -76,7 +84,9 @@ if (process.env.ENV == 'inmemory') {
   ],
   providers: [
     Logger,
+    AuthenticationService,
     LoginService,
+    UserService,
     WorkItemService
   ],
   bootstrap: [ AppComponent ]
