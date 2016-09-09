@@ -14,6 +14,7 @@ const DefinePlugin = require('webpack/lib/DefinePlugin');
  * Webpack Constants
  */
 const ENV = process.env.ENV = process.env.NODE_ENV = 'test';
+const API_URL = process.env.API_URL || (ENV==='inmemory'?'app/':'http://localhost:8080/api/');
 
 /**
  * Webpack configuration
@@ -182,6 +183,7 @@ module.exports = {
       'HMR': false,
       'process.env': {
         'ENV': JSON.stringify(ENV),
+        'API_URL': JSON.stringify(API_URL),
         'NODE_ENV': JSON.stringify(ENV),
         'HMR': false,
       }
