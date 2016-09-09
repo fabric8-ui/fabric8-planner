@@ -1,17 +1,17 @@
-<nav class="navbar navbar-default navbar-pf" role="navigation">
-	<div class="navbar-header">
-		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
+<nav id="headerWrapper" class="navbar navbar-default navbar-pf" role="navigation">
+	<div id="headerNav" class="navbar-header">
+		<button type="button" id="headerNavToggleBtn" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
 			<span class="sr-only">Toggle navigation</span>
 			<span class="icon-bar"></span>
-      		<span class="icon-bar"></span>
-      		<span class="icon-bar"></span>
-    	</button>
-    	<img src="../../assets/img/brand.png" alt="Almighty" />
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+    </button>
+  	<img id="header_ALMLogo" src="../../assets/img/brand.png" alt="Almighty" />
   </div>
   <div class="collapse navbar-collapse navbar-collapse-1">
-	  <ul class="nav navbar-nav navbar-utility">
-      	<li class="dropdown">
-        	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	  <ul id="headerRightDropdown" class="nav navbar-nav navbar-utility">
+      	<li id="headerDropdownToggle" class="dropdown">
+        	<a href="#"  class="dropdown-toggle" data-toggle="dropdown">
           		<span class="pficon pficon-user"></span>
           		John <b class="caret"></b>
         	</a>
@@ -19,13 +19,13 @@
     </ul>
   </div>
 </nav>
-<nav class="navbar navbar-default navbar-pf" role="navigation">
+<nav id="headerMenuWrapper" class="navbar navbar-default navbar-pf" role="navigation">
 	<div class="collapse navbar-collapse navbar-collapse-1">
-    <ul class="nav navbar-nav navbar-primary">
-      <li>
+    <ul id="headerMenuList" class="nav navbar-nav navbar-primary">
+      <li id="headerMenu_workItemList">
         <a [routerLink]="['/work-item-list']" routerLinkActive="active">Work Item List</a>
       </li>
-      <li>
+      <li id="headerMenu_Board">
         <a [routerLink]="['/board']" routerLinkActive="active">Board</a>
       </li>
     </ul>
