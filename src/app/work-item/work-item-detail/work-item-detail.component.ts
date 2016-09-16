@@ -8,7 +8,7 @@ import { WorkItemService } from '../work-item.service';
 @Component({
   selector: 'work-item-detail',
   templateUrl: '/work-item-detail.component.html',
-  styleUrls: ['/work-item-detail.component.css']
+  styleUrls: ['/work-item-detail.component.scss']
 })
 export class WorkItemDetailComponent implements OnInit {
   // @Input()
@@ -18,7 +18,7 @@ export class WorkItemDetailComponent implements OnInit {
   // navigated = false; // true if navigated here
 
   // TODO: These should be read from the WorkitemTypeService
-  workItemTypes = ['system.experience', 'system.feature', 'system.userstory', 'system.bug'];
+  workItemTypes = ['system.experience', 'system.feature', 'system.userstory', 'system.bug', 'system.fundamental', 'system.valueproposition'];
   // TODO: These should be read from the WorkitemType of the given Workitem
   workItemStates = ['new', 'in progress', 'resolved', 'closed'];
 
