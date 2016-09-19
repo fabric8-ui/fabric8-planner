@@ -71,7 +71,7 @@ describe("Work Item Service - ", () => {
 
 		apiService.getWorkItems()
 		.then(data => {
-			expect(JSON.stringify(data)).toEqual(JSON.stringify(response));
+			expect(data).toEqual(response);
 		});
 	}));
 
@@ -87,8 +87,39 @@ describe("Work Item Service - ", () => {
 
 		apiService.create(response[0])
 		.then(data => {
-			expect(JSON.stringify(data)).toEqual(JSON.stringify(response));
-		})
-	}))	
+			expect(data).toEqual(response);
+		});
+	}));
+
+	it("Delete work item", async(() => {
+		mockService.connections.subscribe((connection: any) => {
+			connection.mockRespond(new Response(
+				new ResponseOptions({
+					status: 200
+				})
+			))
+		});
+
+		apiService.delete(response[0])
+		.then(data => {
+			expect(data).toBeNull();
+		});
+	}));
+
+	it("Update work item", async(() => {
+		mockService.connections.subscribe((connection: any) => {
+			connection.mockRespond(new Response(
+				new ResponseOptions({
+					body: JSON.stringify(response),
+					status: 200
+				})
+			))
+		});
+
+		apiService.delete(response[0])
+		.then(data => {
+			expect(data).toEqual(data);
+		});
+	}));
 
 });
