@@ -37,7 +37,7 @@ module.exports = function (config) {
       noInfo: true
     },
 
-    reporters: ['kjhtml','progress', 'mocha', 'coverage'],
+    reporters: ['kjhtml','progress', 'coverage'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
