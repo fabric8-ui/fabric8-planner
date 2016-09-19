@@ -1,21 +1,22 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { ActivatedRoute, Params } from "@angular/router";
 
-import { Logger } from '../../shared/logger.service';
-import { WorkItem } from '../work-item';
-import { WorkItemService } from '../work-item.service';
+import { Logger } from "../../shared/logger.service";
+import { WorkItem } from "../work-item";
+import { WorkItemService } from "../work-item.service";
 
 @Component({
-  selector: 'work-item-quick-add',
-  templateUrl: '/work-item-quick-add.component.html',
-  styleUrls: ['/work-item-quick-add.component.scss']
+  selector: "work-item-quick-add",
+  templateUrl: "./work-item-quick-add.component.html",
+  styleUrls: ["./work-item-quick-add.component.scss"]
 })
 export class WorkItemQuickAddComponent implements OnInit {
-  @Input() workItem: WorkItem;
+  //@Input() workItem: WorkItem;
   @Output() close = new EventEmitter();
   error: any;
   navigated = false; // true if navigated here
   validName = false;
+  workItem:  WorkItem;
 
   constructor(
     private workItemService: WorkItemService,
@@ -24,20 +25,11 @@ export class WorkItemQuickAddComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.forEach((params: Params) => {
-      if (params['id'] !== undefined) {
-        let id = params['id'];
-        this.navigated = true;
-        this.workItemService.getWorkItem(id)
-          .then(workItem => this.workItem = workItem);
-      } else {
-        this.validName = false;
-        this.navigated = false;
-        this.workItem = new WorkItem();
-        this.workItem.fields = {"system.assignee": null, "system.state": 'new', "system.creator": "me", "system.title": null, "system.description": null};
-        this.workItem.type = 'system.userstory';
-      }
-    });
+    this.validName = false;
+    this.navigated = false;
+    this.workItem = new WorkItem();
+    this.workItem.fields = {"system.assignee": null, "system.state": "new", "system.creator": "me", "system.title": null, "system.description": null};
+    this.workItem.type = "system.userstory";
   }
 
   save(): void {
@@ -55,12 +47,12 @@ export class WorkItemQuickAddComponent implements OnInit {
 
   goBack(savedWorkItem: WorkItem = null): void {
     this.close.emit(savedWorkItem);
-    if (this.navigated) { window.history.back(); }
+    //if (this.navigated) { window.history.back(); }
     this.ngOnInit();
   }
 
   checkTitle(){
-    if(this.workItem.fields['system.title']){
+    if(this.workItem.fields["system.title"]){
       this.validName = true;
     }else{
       this.validName = false;

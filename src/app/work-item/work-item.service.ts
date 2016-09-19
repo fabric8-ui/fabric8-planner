@@ -1,18 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import { Headers, Http } from "@angular/http";
-import { Logger } from '../shared/logger.service';
+import { Logger } from "../shared/logger.service";
 
-import 'rxjs/add/operator/toPromise';
+import "rxjs/add/operator/toPromise";
 
-import { WorkItem } from './work-item';
+import { WorkItem } from "./work-item";
 
 @Injectable()
 export class WorkItemService {
-  private headers = new Headers({'Content-Type': 'application/json'});
-  private workItemUrl = process.env.API_URL+'workitems';  // URL to web api
+  private headers = new Headers({"Content-Type": "application/json"});
+  private workItemUrl = process.env.API_URL + "workitems";  // URL to web api
 
   constructor(private http: Http,
-              private logger: Logger) { 
+              private logger: Logger) {
     logger.log("WorkItemService running in " + process.env.ENV + " mode.");
     logger.log("WorkItemService using url " + this.workItemUrl);
   }
@@ -21,7 +21,7 @@ export class WorkItemService {
     return this.http
       .get(this.workItemUrl)
       .toPromise()
-      .then(response => process.env.ENV!='inmemory'?response.json() as WorkItem[]:response.json().data as WorkItem[])
+      .then(response => process.env.ENV !== "inmemory" ? response.json() as WorkItem[] : response.json().data as WorkItem[])
       .catch(this.handleError);
   }
 
@@ -58,7 +58,7 @@ export class WorkItemService {
   }
 
   private handleError(error: any): Promise<any> {
-    console.error('An error occurred', error);
+    console.error("An error occurred", error);
     return Promise.reject(error.message || error);
   }
 
