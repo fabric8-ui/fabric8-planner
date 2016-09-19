@@ -6,10 +6,6 @@ module.exports = function (config) {
 
     frameworks: ['jasmine'],
 
-	exclude: [
-		'typings/globals'
-	],
-
     files: [
       {pattern: './config/karma-test-shim.js', watched: false}
     ],
@@ -42,13 +38,25 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: false,
-    browsers: ['Chrome'],
-	customLaunchers: {
-		ChromeTravisCi: {
-			base: 'Chrome',
-			flags: ['--no-sandbox']
-		}
-	},
+    browsers: ['PhantomJS', 'PhantomJS_custom'],
+    customLaunchers: {
+      'PhantomJS_custom': {
+        base: 'PhantomJS',
+        options: {
+          windowName: 'alm-window',
+          settings: {
+            webSecurityEnabled: false
+          },
+        },
+        flags: ['--load-images=true'],
+        debug: true
+      }
+    },
+    phantomjsLauncher: {
+      // Have phantomjs exit if a ResourceError is encountered 
+      // (useful if karma exits without killing phantom)
+      exitOnResourceError: true
+    },
     singleRun: true
   };
 
