@@ -9,6 +9,7 @@ const helpers = require('./helpers');
  */
 const ProvidePlugin = require('webpack/lib/ProvidePlugin');
 const DefinePlugin = require('webpack/lib/DefinePlugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 /**
  * Webpack Constants
@@ -98,16 +99,10 @@ module.exports = {
        */
       {
         test: /\.ts$/,
-        loader: 'awesome-typescript-loader',
-        query: {
-          compilerOptions: {
-
-            // Remove TypeScript helpers to be injected
-            // below by DefinePlugin
-            removeComments: true
-
-          }
-        },
+        loaders: [
+            'awesome-typescript-loader',
+            'angular2-template-loader'
+        ],
         exclude: [/\.e2e\.ts$/]
       },
 
@@ -124,7 +119,18 @@ module.exports = {
        *
        * See: https://github.com/webpack/raw-loader
        */
-      { test: /\.css$/, loaders: ['to-string-loader', 'css-loader'], exclude: [helpers.root('src/index.html')] },
+      //{ test: /\.scss$/, loaders: ['to-string-loader', 'css-loader'], exclude: [helpers.root('src/index.html')] },
+
+      {
+        test: /\.scss$/,
+        exclude: helpers.root('src', 'app'),
+        loader: ExtractTextPlugin.extract('style', 'css?sourceMap!postcss!resolve-url!sass?sourceMap')
+      },
+      { 
+        test: /\.scss$/,
+        include: helpers.root('src', 'app'),
+        loaders: ['exports-loader?module.exports.toString()', 'css', 'postcss', 'sass']
+      },
 
       /**
        * Raw loader support for *.html

@@ -20,7 +20,6 @@ import { WorkItemService } from "./../work-item.service";
 
 
 describe("Add work item component - ", () => {
-    
     let comp: WorkItemQuickAddComponent;
     let fixture: ComponentFixture<WorkItemQuickAddComponent>;
     let el: DebugElement;
@@ -54,19 +53,19 @@ describe("Add work item component - ", () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ 
-                WorkItemQuickAddComponent 
+            declarations: [
+                WorkItemQuickAddComponent
             ],
             providers: [
                 Logger,
                 {
-                    provide: WorkItemService, 
-                    useValue: fakeService 
+                    provide: WorkItemService,
+                    useValue: fakeService
                 }
             ]
         })
         .compileComponents()
-        .then(()=>{
+        .then(() => {
             console.log("All Okay");
         })
         .catch((err) => {
