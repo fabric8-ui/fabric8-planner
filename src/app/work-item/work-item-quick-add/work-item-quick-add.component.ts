@@ -11,7 +11,7 @@ import { WorkItemService } from "../work-item.service";
 })
 export class WorkItemQuickAddComponent implements OnInit {
   @Output() close = new EventEmitter();
-  error: any;
+  error: any = null;
   workItem: WorkItem;
 
   constructor(
@@ -42,7 +42,7 @@ export class WorkItemQuickAddComponent implements OnInit {
           this.logger.log(`created and returned this workitem: ${workItem}`);
           this.goBack(workItem);
         })
-      .catch(error => this.error = error); // TODO: Display error message
+        .catch(error => this.error = error ); // TODO: Display error message
     }
   }
 

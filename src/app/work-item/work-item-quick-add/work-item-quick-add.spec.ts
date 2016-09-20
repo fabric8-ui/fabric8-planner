@@ -2,6 +2,8 @@ import {
     inject,
     async,
     TestBed,
+    fakeAsync,
+    tick,
     ComponentFixture
 } from "@angular/core/testing";
 
@@ -43,9 +45,10 @@ describe("Add work item component - ", () => {
         ] as WorkItem[];
 
         fakeService = {
-            create: function() {
-                return new Promise((resolve, reject) =>     {
-                    resolve(fakeWorkItem);
+            create: function(workItem: WorkItem) {
+                return new Promise((resolve, reject) => {
+                    resolve(workItem);
+                    // reject("Title is empty");
                 });
             }
         };
@@ -63,18 +66,30 @@ describe("Add work item component - ", () => {
                     useValue: fakeService
                 }
             ]
-        }).compileComponents();
+        })
+        .compileComponents()
+        .then(() => {
+            fixture = TestBed.createComponent(WorkItemQuickAddComponent);
+            comp = fixture.componentInstance;
+        });
     }));
 
-    it("Only white space in the input should keep the add button disabled", () => {
-        fixture = TestBed.createComponent(WorkItemQuickAddComponent);
-        comp = fixture.componentInstance;
+    it("Title input with only white spaces should keep the add button disabled", () => {
         el = fixture.debugElement.query(By.css(".pficon-add-circle-o"));
-
-        fixture.detectChanges(); // trigger data binding
+        fixture.detectChanges();
         comp.workItem.fields["system.title"] = "  ";
-        fixture.detectChanges(); // trigger data binding      
-
+        fixture.detectChanges();
         expect(el.classes["icon-btn-disabled"]).toBeTruthy();
     });
+
+    it("Save with empty title should raise an error", fakeAsync(() => {
+        el = fixture.debugElement.query(By.css(".pficon-add-circle-o"));
+        fixture.detectChanges();
+        comp.workItem.fields["system.title"] = "  ";
+        fixture.detectChanges();
+        comp.save();
+        tick();
+        fixture.detectChanges();
+        expect(comp.error).not.toBeNull();
+    }));
 });
