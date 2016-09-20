@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { ActivatedRoute, Params } from "@angular/router";
 
 import { Logger } from "../../shared/logger.service";
 import { WorkItem } from "../work-item";
@@ -11,29 +10,23 @@ import { WorkItemService } from "../work-item.service";
   styleUrls: ["./work-item-quick-add.component.scss"]
 })
 export class WorkItemQuickAddComponent implements OnInit {
-  //@Input() workItem: WorkItem;
   @Output() close = new EventEmitter();
   error: any;
-  navigated = false; // true if navigated here
-  validName = false;
   workItem:  WorkItem;
 
   constructor(
     private workItemService: WorkItemService,
-    private route: ActivatedRoute,
     private logger: Logger) {
   }
 
   ngOnInit(): void {
-    this.validName = false;
-    this.navigated = false;
     this.workItem = new WorkItem();
     this.workItem.fields = {"system.assignee": null, "system.state": "new", "system.creator": "me", "system.title": null, "system.description": null};
     this.workItem.type = "system.userstory";
   }
 
   save(): void {
-    if(this.validName){
+    if (this.workItem.fields["system.title"]) {
     this.workItemService
       .create(this.workItem)
       .then(workItem => {
@@ -47,21 +40,6 @@ export class WorkItemQuickAddComponent implements OnInit {
 
   goBack(savedWorkItem: WorkItem = null): void {
     this.close.emit(savedWorkItem);
-    //if (this.navigated) { window.history.back(); }
     this.ngOnInit();
-  }
-
-  checkTitle(){
-    if(this.workItem.fields["system.title"]){
-      this.validName = true;
-    }else{
-      this.validName = false;
-    }
-  }
-
-  eventHandler(event:any){
-    if(event.keyCode===13){
-      this.save();
-    }
   }
 }
