@@ -63,20 +63,18 @@ describe("Add work item component - ", () => {
                     useValue: fakeService
                 }
             ]
-        })
-        .compileComponents()
-        .then(() => {
-            console.log("All Okay");
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+        }).compileComponents();
     }));
 
-    it("Test add button disable", () => {
+    it("Only white space in the input should keep the add button disabled", () => {
         fixture = TestBed.createComponent(WorkItemQuickAddComponent);
         comp = fixture.componentInstance;
+        el = fixture.debugElement.query(By.css(".pficon-add-circle-o"));
+
         fixture.detectChanges(); // trigger data binding
-        expect(true).toBe(true);
+        comp.workItem.fields["system.title"] = "  ";
+        fixture.detectChanges(); // trigger data binding      
+
+        expect(el.classes["icon-btn-disabled"]).toBeTruthy();
     });
 });
