@@ -5,17 +5,31 @@
     </div>
     <div class="list-group-item-text margin10">
       <div class="form-group">
-        <input [(ngModel)]="workItem.fields['system.title']" (keypress)="eventHandler($event)" (ngModelChange)="checkTitle()" class="form-control" placeholder="Title (mandatory field)" required />
+        <input #workItemTitle
+          value="{{workItem.fields['system.title']}}"
+          (keyup)="workItem.fields['system.title']=workItemTitle.value"
+          (keyup.enter)="save()"
+          class="form-control" 
+          placeholder="Title (mandatory field)" required />
       </div>
     </div>
     <div class="list-group-item-text margin10">
       <div class="form-group">
-        <input [(ngModel)]="workItem.fields['system.description']" class="form-control" placeholder="Description" />
+        <input #workItemDesc
+          value="{{workItem.fields['system.description']}}"
+          (keyup)="workItem.fields['system.description']=workItemDesc.value" 
+          (keyup.enter)="save()"      
+          class="form-control"
+          placeholder="Description" />
       </div>
     </div>
     <div class="list-group-item-text margin10">
       <div class="form-group">
-        <a class='pficon-add-circle-o' [ngClass]="{'icon-btn': validName,'icon-btn-disabled':!validName}" (click)="save()"></a>&nbsp;&nbsp;
+        <a class='pficon-add-circle-o' 
+           [ngClass]="workItem.fields['system.title'] ? 'icon-btn' : 'icon-btn-disabled'" 
+           (click)="save()">
+        </a>
+        &nbsp;&nbsp;
         <a class='pficon-error-circle-o icon-btn' (click)="goBack()"></a>
       </div>
     </div>
