@@ -119,8 +119,7 @@ module.exports = {
        *
        * See: https://github.com/webpack/raw-loader
        */
-      //{ test: /\.scss$/, loaders: ['to-string-loader', 'css-loader'], exclude: [helpers.root('src/index.html')] },
-
+      
       {
         test: /\.scss$/,
         exclude: helpers.root('src', 'app'),
