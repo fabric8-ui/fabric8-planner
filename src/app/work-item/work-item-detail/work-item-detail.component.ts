@@ -7,16 +7,11 @@ import { WorkItemService } from '../work-item.service';
 
 @Component({
   selector: 'work-item-detail',
-  templateUrl: '/work-item-detail.component.html',
-  styleUrls: ['/work-item-detail.component.scss']
+  templateUrl: './work-item-detail.component.html',
+  styleUrls: ['./work-item-detail.component.scss']
 })
 export class WorkItemDetailComponent implements OnInit {
-  // @Input()
   workItem: WorkItem;
-  // @Output() close = new EventEmitter();
-  // error: any;
-  // navigated = false; // true if navigated here
-
   // TODO: These should be read from the WorkitemTypeService
   workItemTypes = ['system.experience', 'system.feature', 'system.userstory', 'system.bug', 'system.fundamental', 'system.valueproposition'];
   // TODO: These should be read from the WorkitemType of the given Workitem
@@ -32,9 +27,8 @@ export class WorkItemDetailComponent implements OnInit {
     this.route.params.forEach((params: Params) => {
       if (params['id'] !== undefined) {
         let id = params['id'];
-        // this.navigated = true;
         this.workItemService.getWorkItem(id)
-          .then(workItem => this.workItem = workItem);
+        .then(workItem => this.workItem = workItem);
       } else {
         // this.navigated = false;
         this.workItem = new WorkItem();

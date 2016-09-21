@@ -49,7 +49,7 @@ if (process.env.ENV=='inmemory')
     WorkItemQuickAddComponent,
     WorkItemListComponent,
     WorkItemSearchComponent,
-	StatusDrawerComponent
+	  StatusDrawerComponent
   ],
   providers: [
     Logger,
