@@ -15,6 +15,8 @@ import {
     By
 } from "@angular/platform-browser";
 
+import { FormsModule }   from '@angular/forms';
+
 import { WorkItem } from "./../work-item";
 import { WorkItemQuickAddComponent } from "./work-item-quick-add.component";
 import { Logger } from "./../../shared/logger.service";
@@ -56,6 +58,7 @@ describe("Add work item component - ", () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
+            imports: [FormsModule],
             declarations: [
                 WorkItemQuickAddComponent
             ],
@@ -74,12 +77,21 @@ describe("Add work item component - ", () => {
         });
     }));
 
-    it("Title input with only white spaces should keep the add button disabled", () => {
+    it("Title string with only whitespaces should not enable the Add button", () => {
         el = fixture.debugElement.query(By.css(".pficon-add-circle-o"));
         fixture.detectChanges();
         comp.workItem.fields["system.title"] = "  ";
         fixture.detectChanges();
         expect(el.classes["icon-btn-disabled"]).toBeTruthy();
+    });
+
+    it("Add button should remain disabled for a title with empty string", () => {
+        el = fixture.debugElement.query(By.css(".pficon-add-circle-o"));
+        fixture.detectChanges();
+        comp.workItem.fields["system.title"] = "";
+        fixture.detectChanges();
+        expect(el.classes["icon-btn-disabled"]).toBeTruthy();
+
     });
 
     it("Save with empty title should raise an error", fakeAsync(() => {

@@ -5,28 +5,26 @@
     </div>
     <div class="list-group-item-text margin10">
       <div class="form-group">
-        <input #workItemTitle
-          value="{{workItem.fields['system.title']}}"
-          (keyup)="workItem.fields['system.title']=workItemTitle.value"
+        <input type="text"
+          [(ngModel)]="workItem.fields['system.title']"
           (keyup.enter)="save()"
-          class="form-control" 
+          class="form-control"
           placeholder="Title (mandatory field)" required />
       </div>
     </div>
     <div class="list-group-item-text margin10">
       <div class="form-group">
-        <input #workItemDesc
-          value="{{workItem.fields['system.description']}}"
-          (keyup)="workItem.fields['system.description']=workItemDesc.value" 
-          (keyup.enter)="save()"      
+        <input
+          [(ngModel)]="workItem.fields['system.description']"          
+          (keyup.enter)="save()"
           class="form-control"
           placeholder="Description" />
       </div>
     </div>
     <div class="list-group-item-text margin10">
       <div class="form-group">
-        <a class='pficon-add-circle-o' 
-           [ngClass]="workItem.fields['system.title'] ? 'icon-btn' : 'icon-btn-disabled'" 
+        <a class='pficon-add-circle-o'
+           [ngClass]="workItem.fields['system.title'] ? 'icon-btn' : 'icon-btn-disabled'"
            (click)="save()">
         </a>
         &nbsp;&nbsp;

@@ -78,11 +78,11 @@ describe("Add work item component - ", () => {
     }));
 
     it("Page should have a title", () => {
-        fixture = TestBed.createComponent(WorkItemDetailComponent);
+        /*fixture = TestBed.createComponent(WorkItemDetailComponent);
         comp = fixture.componentInstance;
         el = fixture.debugElement.query(By.css("h1"));
 
         //fixture.detectChanges(); // trigger data binding
-        //el = fixture.debugElement.query(By.css('h1'));
+        //el = fixture.debugElement.query(By.css('h1'));*/
     });
 });
