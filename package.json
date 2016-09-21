@@ -38,7 +38,13 @@
     "validate": "npm-run-all --parallel validate-webpack:* test --serial check-coverage",
     "validate-webpack:dev": "webpack-validator webpack.config.js --env.dev",
     "validate-webpack:prod": "webpack-validator webpack.config.js --env.prod",
-    "watch:test": "npm test -- --auto-watch --no-single-run"
+    "watch:test": "npm test -- --auto-watch --no-single-run",
+    
+    
+    "webdriver-start": "./node_modules/protractor/bin/webdriver-manager update && ./node_modules/protractor/bin/webdriver-manager start",
+    "testserver-start": "webpack-dev-server --inline --progress --host 0.0.0.0 --port 8088",
+    "protractor": "sleep 15 && ./node_modules/protractor/bin/protractor protractor.config.js",
+    "functests": "npm-run-all -p webdriver-start testserver-start protractor"
   },
   "dependencies": {
     "@angular/common": "2.0.0-rc.6",
@@ -56,6 +62,7 @@
     "bootstrap": "^3.3.6",
     "core-js": "^2.4.1",
     "patternfly": "3.8.1",
+    "phantomjs": "^2.1.7",
     "reflect-metadata": "^0.1.4",
     "rxjs": "5.0.0-beta.12",
     "zone.js": "^0.6.23"
@@ -89,8 +96,10 @@
     "npm-run-all": "2.2.0",
     "null-loader": "^0.1.1",
     "opt-cli": "1.4.2",
+    "phantomjs-prebuilt": "^2.1.7",
     "postcss-loader": "^0.9.1",
     "precss": "^1.4.0",
+    "protractor": "^4.0.8",
     "raw-loader": "^0.5.1",
     "resolve-url-loader": "^1.6.0",
     "rimraf": "2.5.2",
