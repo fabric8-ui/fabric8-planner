@@ -59,7 +59,6 @@
     "bootstrap": "^3.3.6",
     "core-js": "^2.4.1",
     "patternfly": "3.8.1",
-    "phantomjs": "^2.1.7",
     "reflect-metadata": "^0.1.4",
     "rxjs": "5.0.0-beta.11",
     "zone.js": "^0.6.17"
