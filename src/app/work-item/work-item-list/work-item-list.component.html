@@ -1,25 +1,25 @@
 <app-header></app-header>
 <div class="container-fluid screen-min-ht">
 	<div class="list-group list-view-pf list-view-pf-view">
-		 <div id="quickAddWorkItemWrapper">
+		 <div id="workItemList_quickAdd">
 			 <div class="list-group-item supress-hover" (click)="addWorkItem()">
 				<work-item-quick-add (close)="close($event)"></work-item-quick-add>
 			</div>
 		</div>
-		<div *ngFor="let workItem of workItems" id="workItemListOuterWrap">
-			<div class="list-group-item" id="workItemListContainer" (click)="onSelect(workItem)"
+		<div *ngFor="let workItem of workItems" id="workItemList_OuterWrap">
+			<div class="list-group-item" id="workItemList_Container" (click)="onSelect(workItem)"
 					 [class.selected]="workItem === selectedWorkItem">
 				<div class="list-view-pf-actions">
-					<button class="btn btn-default" id="workItemList_ViewItemDetail" (click)="gotoDetail(workItem)">View Details</button>
-					<button class="btn btn-default delete-button" id="workItemList_deleteListItem" (click)="deleteWorkItem(workItem); $event.stopPropagation()">Delete</button>
+					<button class="btn btn-default" id="workItemList_ViewItemDetailBtn" (click)="gotoDetail(workItem)">View Details</button>
+					<button class="btn btn-default delete-button" id="workItemList_deleteListItemBtn" (click)="deleteWorkItem(workItem); $event.stopPropagation()">Delete</button>
 					<div class="dropdown pull-right dropdown-kebab-pf">
-						<button class="btn btn-link dropdown-toggle" type="button" id="workItemList_dropdownKebabRight" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+						<button class="btn btn-link dropdown-toggle" type="button" id="workItemList_dropdownKebabRightBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 							<span class="fa fa-ellipsis-v"></span>
 						</button>
 						<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight">
-							<li id="workItemList_Delete"><a href="#">Delete</a></li>
-							<li id="workItemList_Backlog"><a href="#">Move to backlog</a></li>
-							<li id="workItemList_ChangeStatus"><a href="#">Change Status</a></li>
+							<li><a href="#" id="workItemList_Delete">Delete</a></li>
+							<li><a href="#" id="workItemList_Backlog">Move to backlog</a></li>
+							<li><a href="#" id="workItemList_ChangeStatus">Change Status</a></li>
 						</ul>
 					</div>
 				</div>
@@ -58,5 +58,5 @@
 		</div>
 	</div>
 </div>
-<div id="workItemListError" class="error" *ngIf="error">{{error}}</div>
+<div id="workItemList_Error" class="error" *ngIf="error">{{error}}</div>
 <app-footer></app-footer>

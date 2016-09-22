@@ -1,6 +1,6 @@
-<nav id="headerWrapper" class="navbar navbar-default navbar-pf" role="navigation">
-	<div id="headerNav" class="navbar-header">
-		<button type="button" id="headerNavToggleBtn" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
+<nav id="header_wrapper" class="navbar navbar-default navbar-pf" role="navigation">
+	<div id="header_nav" class="navbar-header">
+		<button type="button" id="header_navToggleBtn" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
 			<span class="sr-only">Toggle navigation</span>
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
@@ -9,9 +9,9 @@
   	<img id="header_ALMLogo" src="../../assets/img/brand.png" alt="Almighty" />
   </div>
   <div class="collapse navbar-collapse navbar-collapse-1">
-	  <ul id="headerRightDropdown" class="nav navbar-nav navbar-utility">
-      	<li id="headerDropdownToggle" class="dropdown">
-        	<a href="#"  class="dropdown-toggle" data-toggle="dropdown">
+	  <ul id="header_rightDropdown" class="nav navbar-nav navbar-utility">
+      	<li class="dropdown">
+        	<a href="#" id="header_dropdownToggle" class="dropdown-toggle" data-toggle="dropdown">
           		<span class="pficon pficon-user"></span>
           		John <b class="caret"></b>
         	</a>
@@ -19,14 +19,14 @@
     </ul>
   </div>
 </nav>
-<nav id="headerMenuWrapper" class="navbar navbar-default navbar-pf" role="navigation">
+<nav id="header_menuWrapper" class="navbar navbar-default navbar-pf" role="navigation">
 	<div class="collapse navbar-collapse navbar-collapse-1">
-    <ul id="headerMenuList" class="nav navbar-nav navbar-primary">
-      <li id="headerMenu_workItemList">
-        <a [routerLink]="['/work-item-list']" routerLinkActive="active">Work Item List</a>
+    <ul id="header_menuList" class="nav navbar-nav navbar-primary">
+      <li>
+        <a [routerLink]="['/work-item-list']" id="header_menuWorkItemList" routerLinkActive="active">Work Item List</a>
       </li>
-      <li id="headerMenu_Board">
-        <a [routerLink]="['/board']" routerLinkActive="active">Board</a>
+      <li>
+        <a [routerLink]="['/board']" id="header_menuBoard" routerLinkActive="active">Board</a>
       </li>
     </ul>
   </div>
