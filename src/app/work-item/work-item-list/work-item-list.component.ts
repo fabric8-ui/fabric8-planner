@@ -37,6 +37,15 @@ export class WorkItemListComponent implements OnInit {
     if (savedWorkItem) { this.getWorkItems(); }
   }
 
+  onStateUpdate(updatedWorkItem: WorkItem) {
+    this.workItemService
+      .update(updatedWorkItem)
+      .then((updatedWorkItem) => {
+        let index = this.workItems.findIndex(item => item.id === updatedWorkItem.id);
+        this.workItems[index] = updatedWorkItem;
+      });
+  }
+
   deleteWorkItem(workItem: WorkItem): void {
     this.workItemService
       .delete(workItem)
