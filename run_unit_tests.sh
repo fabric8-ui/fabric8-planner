@@ -5,9 +5,7 @@ echo Using logfile $LOGFILE
 
 # Running npm test
 echo Running unit tests...
-npm test >> $LOGFILE
-
-UNIT_TEST_RESULT=$?
+npm test | tee $LOGFILE ; UNIT_TEST_RESULT=${PIPESTATUS[0]}
 
 if [ $UNIT_TEST_RESULT -eq 0 ]; then
   echo 'Unit tests OK'
