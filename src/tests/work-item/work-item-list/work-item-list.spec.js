@@ -13,8 +13,8 @@ describe('Work item list', function () {
   });
 
   it('should have the right mock data in the first entry.', function() {
-    expect(page.workItemDescription(page.firstWorkItem)).toBe('No description available for this work item.');
-    expect(page.workItemTitle(page.firstWorkItem)).toBe('');
+    expect(page.workItemDescription(page.firstWorkItem)).toBe('Some Description 14');
+    expect(page.workItemTitle(page.firstWorkItem)).toBe('Some Title 14');
   });
 
   it('should create a new workitem.', function () {
