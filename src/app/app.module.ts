@@ -14,7 +14,10 @@ import { AppComponent }  from './app.component';
 import { routing } from './app.routing';
 import { Logger } from './shared/logger.service';
 
+
+import { AuthenticationService } from './auth/authentication.service';
 import { LoginService } from './login/login.service';
+import { UserService } from './user/user.service';
 import { BoardComponent} from './board/board.component';
 import { FooterComponent} from './footer/footer.component';
 import { HeaderComponent} from './header/header.component';
@@ -48,11 +51,13 @@ if (process.env.ENV=='inmemory')
     WorkItemQuickAddComponent,
     WorkItemListComponent,
     WorkItemSearchComponent,
-	StatusDrawerComponent
+	  StatusDrawerComponent
   ],
   providers: [
     Logger,
+    AuthenticationService,
     LoginService,
+    UserService,
     WorkItemService
   ],
   bootstrap: [ AppComponent ]

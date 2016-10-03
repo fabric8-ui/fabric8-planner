@@ -23,21 +23,7 @@ export class LoginComponent {
   }
 
   gitSignin() {
-    this.loginService.gitHubSignIn().then(loginStatus => this.checkStatus(loginStatus));
+    this.loginService.gitHubSignIn();
   }
 
-  checkStatus(loginStatus:any){
-    if(loginStatus.token)
-    {
-      this.router.navigate(['work-item-list'],{});
-    }else{
-      this.statusCode = loginStatus.status;
-      this.feedbackMessage = loginStatus.responseText;
-      this.showError = true;
-    }
-  }
-
-  closeAlert(){
-    this.showError = false;
-  }
 }
