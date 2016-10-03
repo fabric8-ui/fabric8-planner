@@ -7,8 +7,8 @@ import { AuthenticationService } from './auth/authentication.service';
   styleUrls: ['/app.component.scss']
   })
 export class AppComponent {
-
+  
   constructor(auth:AuthenticationService){
+    auth.isLoggedIn();
   }
-
 }
