@@ -36,7 +36,7 @@
     "prebuild": "npm run clean-and-copy",
     "prebuild:prod": "npm run clean-and-copy",
     "protractor": "sleep 15 && ./node_modules/protractor/bin/protractor protractor.config.js",
-    "setup": "npm install && npm run validate",
+    "setup": "npm install && npm run validate && typings install",
     "start": "webpack-dev-server --inline --progress --host 0.0.0.0 --port 8088",
     "test": "karma start",
     "testserver-start": "webpack-dev-server --inline --progress --host 0.0.0.0 --port 8088",
