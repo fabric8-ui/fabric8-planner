@@ -8,12 +8,7 @@
     "experimentalDecorators": true,
     "removeComments": false,
     "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "types": [
-      "core-js",
-      "node",
-      "jasmine"
-    ]
+    "suppressImplicitAnyIndexErrors": true
   },
   "angularCompilerOptions": {
     "genDir": "./ngfactory"
