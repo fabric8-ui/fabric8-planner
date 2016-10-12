@@ -22,19 +22,19 @@ export class AuthenticationService {
       localStorage.setItem('auth_token', this.authToken);
       return true;
     }
-    this.router.navigate(['login']);
+    //this.router.navigate(['login']);
     return false;
   }
 
   logout() {
     this.authToken = "";
     localStorage.removeItem('auth_token');
-    this.router.navigate(['login']);
+    //this.router.navigate(['login']);
   }
 
   getToken() {
     if(this.authToken) return this.authToken;
-    else this.router.navigate(['login']);
+    //else this.router.navigate(['login']);
   }
 
   getUrlParams(): Object {
