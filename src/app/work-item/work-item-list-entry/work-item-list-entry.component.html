@@ -11,10 +11,11 @@
     	<pf-dropdown
       	(change)="onChangeState($event)" 
         [options]="stateDropdownOptions"
+        [disabled]="!loggedIn"
         [selected]="workItem.selectedState">
       </pf-dropdown>				
     </div>
-		<div class="list-view-pf-left type workItemList_workItemType">
+    <div class="list-view-pf-left type workItemList_workItemType">
 			<span class='fa' [ngClass]="{'fa-wrench': workItem.type=='system.bug',
       	'fa-user': workItem.type=='system.userstory',
         'fa-globe': workItem.type=='system.feature',
