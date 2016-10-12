@@ -1,8 +1,8 @@
 <alm-app-header></alm-app-header>
 <div class="container-fluid screen-min-ht containerPaddT">
 	<div id="workItemList_quickAdd" class="width100 fl">
-		<div class="width100 fl supress-hover" (click)="addWorkItem()">
-			<alm-work-item-quick-add (close)="close($event)"></alm-work-item-quick-add>
+		<div *ngIf="loggedIn" class="width100 fl supress-hover" (click)="addWorkItem()">
+			<work-item-quick-add (close)="close($event)"></work-item-quick-add>
 		</div>
 		<div class="list-group list-view-pf width100 fl">
 			<alm-work-item-list-entry *ngFor="let workItem of workItems; let counter = index"
