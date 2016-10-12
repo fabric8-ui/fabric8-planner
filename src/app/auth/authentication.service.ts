@@ -30,6 +30,7 @@ export class AuthenticationService {
     this.authToken = "";
     localStorage.removeItem('auth_token');
     //this.router.navigate(['login']);
+    location.href = location.protocol+'//'+location.host+location.pathname+location.hash;
   }
 
   getToken() {

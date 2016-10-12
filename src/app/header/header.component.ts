@@ -15,6 +15,7 @@ import { AuthenticationService } from '../auth/authentication.service';
 export class HeaderComponent implements OnInit {
   title = 'Almighty';
   loggedInUser: User;
+  loggedIn: Boolean = false;
 
   constructor(
     private router: Router,
@@ -24,17 +25,24 @@ export class HeaderComponent implements OnInit {
   }
 
   getLoggedUser(): void {
-    this.userService
-      .getUser()
-      .then(user => this.loggedInUser = user);
+    if(this.auth.isLoggedIn()) {
+      this.userService
+        .getUser()
+        .then(user => this.loggedInUser = user);
+    }
   }
 
   logout(){
     this.auth.logout();
   }
 
+  login() {
+    this.router.navigate(['login']);
+  }
+
   ngOnInit(): void {
     this.getLoggedUser();
+    this.loggedIn = this.auth.isLoggedIn();
   }
 
 }

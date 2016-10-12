@@ -15,10 +15,10 @@ export class UserService {
   constructor(private http: Http,
               private logger: Logger,
               private auth:AuthenticationService) {
-    this.headers.append('Authorization', 'Bearer '+ this.auth.getToken());
   }
 
   getUser(): Promise<User> {
+    this.headers.append('Authorization', 'Bearer '+ this.auth.getToken());
     return this.http
       .get(this.userUrl, {headers: this.headers})
       .toPromise()
