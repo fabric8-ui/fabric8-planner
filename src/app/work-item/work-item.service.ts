@@ -16,10 +16,10 @@ export class WorkItemService {
 
   constructor(private http: Http,
               private logger: Logger,
-              private auth:AuthenticationService) {    
-    this.headers.append('Authorization', 'Bearer '+ this.auth.getToken());
-    logger.log("WorkItemService running in " + process.env.ENV + " mode.");
-    logger.log("WorkItemService using url " + this.workItemUrl);
+              private auth: AuthenticationService) {    
+    this.headers.append('Authorization', 'Bearer ' + this.auth.getToken());
+    logger.log('WorkItemService running in ' + process.env.ENV + ' mode.');
+    logger.log('WorkItemService using url ' + this.workItemUrl);
   }
 
   getWorkItems(): Promise<WorkItem[]> {

@@ -69,8 +69,8 @@ describe('Detailed view and edit a selected work item - ', () => {
     } as WorkItem;
 
     fakeUser = {
-      "fullName":"Sudipta Sen",
-      "imageURL":"https://avatars.githubusercontent.com/u/2410474?v=3"
+      'fullName': 'Sudipta Sen',
+      'imageURL': 'https://avatars.githubusercontent.com/u/2410474?v=3'
     } as User;
 
     fakeAuthService = {
