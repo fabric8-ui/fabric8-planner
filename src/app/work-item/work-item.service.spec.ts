@@ -32,6 +32,9 @@ describe('Work Item Service - ', () => {
       getToken: function () {
         return '';
       },
+      isLoggedIn: function() {
+        return true;
+      }
     };
     TestBed.configureTestingModule({
       providers: [

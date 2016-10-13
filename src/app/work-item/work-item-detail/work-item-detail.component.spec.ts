@@ -77,6 +77,9 @@ describe('Detailed view and edit a selected work item - ', () => {
       getToken: function () {
         return '';
       },
+      isLoggedIn: function() {
+        return true;
+      }
     };
 
     fakeWorkItemService = {
