@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Router } from "@angular/router";
+import { Router } from '@angular/router';
 import { Logger } from '../shared/logger.service';
 
 @Injectable()
 export class AuthenticationService {
-  private authToken: string = "";
+  private authToken: string = '';
 
   constructor(private router: Router, private logger: Logger) {
     
@@ -27,22 +27,22 @@ export class AuthenticationService {
   }
 
   logout() {
-    this.authToken = "";
+    this.authToken = '';
     localStorage.removeItem('auth_token');
     //this.router.navigate(['login']);
-    location.href = location.protocol+'//'+location.host+location.pathname+location.hash;
+    location.href = location.protocol + '//' + location.host + location.pathname + location.hash;
   }
 
   getToken() {
-    if(this.authToken) return this.authToken;
+    if (this.authToken) return this.authToken;
     //else this.router.navigate(['login']);
   }
 
   getUrlParams(): Object {
     var query = window.location.search.substr(1);
     var result = {};
-    query.split("&").forEach(function(part) {
-      var item = part.split("=");
+    query.split('&').forEach(function(part) {
+      var item = part.split('=');
       result[item[0]] = decodeURIComponent(item[1]);
     });
     return result;
