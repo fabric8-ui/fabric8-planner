@@ -8,13 +8,15 @@ import { AuthenticationService } from '../auth/authentication.service';
 
 @Component({
   selector: 'alm-app-header',
-  templateUrl: './header.component.html'
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss']
 })
 
 export class HeaderComponent implements OnInit {
   title = 'Almighty';
   loggedInUser: User;
   loggedIn: Boolean = false;
+  imgLoaded: Boolean = false;    
 
   constructor(
     private router: Router,
@@ -24,7 +26,7 @@ export class HeaderComponent implements OnInit {
   }
 
   getLoggedUser(): void {
-    if(this.auth.isLoggedIn()) {
+    if (this.auth.isLoggedIn()) {
       this.userService
         .getUser()
         .then(user => this.loggedInUser = user);
@@ -39,9 +41,13 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['login']);
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void {        
     this.getLoggedUser();
     this.loggedIn = this.auth.isLoggedIn();
+  }
+
+  onImgLoad(){    
+    this.imgLoaded = true;
   }
 
 }
