@@ -12,6 +12,7 @@ import { Dialog } from '../../shared-component/dialog/dialog';
 import { DialogComponent } from '../../shared-component/dialog/dialog.component';
 
 import { WorkItem } from '../work-item';
+import { WorkItemType } from '../work-item-type';
 import { WorkItemService } from '../work-item.service';
 
 @Component({
@@ -23,8 +24,7 @@ import { WorkItemService } from '../work-item.service';
 export class WorkItemDetailComponent implements OnInit {  
   workItem: WorkItem;
 
-  // TODO: These should be read from the WorkitemTypeService
-  workItemTypes = ['system.experience', 'system.feature', 'system.userstory', 'system.bug', 'system.fundamental', 'system.valueproposition'];
+  workItemTypes: WorkItemType[];
   // TODO: These should be read from the WorkitemType of the given Workitem
   workItemStates = ['new', 'in progress', 'resolved', 'closed'];
 
@@ -57,6 +57,8 @@ export class WorkItemDetailComponent implements OnInit {
         let id = params['id'];
         this.workItemService.getWorkItem(id)
           .then(workItem => this.workItem = workItem);
+        this.workItemService.getWorkItemTypes()
+          .then(workItemTypes => this.workItemTypes = workItemTypes);
       } else {
         this.workItem = new WorkItem();
         this.workItem.fields = {'system.assignee': null, 'system.state': 'new', 'system.creator': 'me', 'system.title': null, 'system.description': null};
@@ -99,6 +101,3 @@ export class WorkItemDetailComponent implements OnInit {
     });
   }
 }
-
-
-

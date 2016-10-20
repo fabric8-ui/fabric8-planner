@@ -7,11 +7,13 @@ import { AuthenticationService } from './../auth/authentication.service';
 import { DropdownOption } from './../shared-component/dropdown/dropdown-option';
 import { Logger } from './../shared/logger.service';
 import { WorkItem } from './work-item';
+import { WorkItemType } from './work-item-type';
 
 @Injectable()
 export class WorkItemService {
   private headers = new Headers({'Content-Type': 'application/json'});
   private workItemUrl = process.env.API_URL + 'workitems';  // URL to web api
+  private workItemTypeUrl = process.env.API_URL + 'workitemtypes';
   private availableStates: DropdownOption[] = [];
 
   constructor(private http: Http,
@@ -29,6 +31,14 @@ export class WorkItemService {
       .get(this.workItemUrl, {headers: this.headers})
       .toPromise()
       .then(response => process.env.ENV != 'inmemory' ? response.json() as WorkItem[] : response.json().data as WorkItem[])
+      .catch(this.handleError);
+  }
+
+  getWorkItemTypes(): Promise<WorkItemType[]> {    
+    return this.http
+      .get(this.workItemTypeUrl)
+      .toPromise()
+      .then(response => process.env.ENV != 'inmemory' ? response.json() as WorkItem[] : response.json().data as WorkItemType[])
       .catch(this.handleError);
   }
 
