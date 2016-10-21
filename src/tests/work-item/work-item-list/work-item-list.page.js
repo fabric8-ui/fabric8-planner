@@ -13,7 +13,7 @@
  */
 
 var WorkItemListPage = function () {
-
+    browser.get("http://localhost:8088/");
 };
 
 WorkItemListPage.prototype  = Object.create({}, {
