@@ -59,7 +59,10 @@ WorkItemListPage.prototype  = Object.create({}, {
     get: function ()
     { return element(by.css(".workItemQuickAdd_storyInput input")); }
   },
-
+  typeQuickAddWorkItemTitle:  {
+    value: function (keys)
+    { return this.workItemQuickAddTitle.sendKeys(keys); }
+  },
   clickQuickAddWorkItemTitleButton:  {
     value: function (keys)
     { return element(by.css('.pficon-add-circle-o.dib.font18')).click(); }
