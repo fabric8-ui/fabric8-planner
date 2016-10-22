@@ -19,10 +19,6 @@
     {
       "name": "Sudipta Sen",
       "email": "sudsen@redhat.com"
-    },
-    {
-      "name": "Haribabu Viswanathan",
-      "email": "hviswana@redhat.com"
     }
   ],
   "license": "Apache-2.0",
