@@ -1,5 +1,5 @@
 import { ModuleWithProviders }  from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, PreloadAllModules, Routes } from '@angular/router';
 
 import { LoginComponent } from './login/login.component';
 
@@ -38,4 +38,4 @@ const appRoutes: Routes = [
 
 ];
 
-export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes, { useHash: true });
+export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes, { useHash: true, preloadingStrategy: PreloadAllModules });
