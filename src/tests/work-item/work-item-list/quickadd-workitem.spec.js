@@ -60,16 +60,16 @@ describe('Work item list', function () {
   function setBrowserMode(browserModeStr) {
     switch (browserModeStr) {
 	  case 'phone':
-      browser.get("http://localhost:8088/");
+      browser.get("http://localhost:8088/?token=justarandomtokenfortest");
 	    browser.driver.manage().window().setSize(375, 667);
       break;
 
 	  case 'tablet':
-        browser.get("http://localhost:8088/");
+        browser.get("http://localhost:8088/?token=justarandomtokenfortest");
         browser.driver.manage().window().setSize(768, 1024);
       break;
     case 'desktop':
-        browser.get("http://localhost:8088/");
+        browser.get("http://localhost:8088/?token=justarandomtokenfortest");
         browser.driver.manage().window().setSize(1920, 1080);
 
     }
