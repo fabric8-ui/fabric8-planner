@@ -17,8 +17,8 @@ describe('Work item list', function () {
   var page, items, startCount, browserMode;
 
   beforeEach(function () {
-    setBrowserMode('phone');
     page = new WorkItemListPage();
+    setBrowserMode('phone');
     page.allWorkItems.count().then(function(originalCount) { startCount = originalCount; });
     
     workItemMockData = {
@@ -96,7 +96,7 @@ describe('Work item list', function () {
       case 'desktop':
         browser.driver.manage().window().setSize(1920, 1080);
     } 
-  };
+  }
   
   /* 
   * Write screenshot to file 

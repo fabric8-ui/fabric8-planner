@@ -17,13 +17,12 @@ describe('Work item list', function () {
   var page, items, startCount, browserMode;
 
   beforeEach(function () {
-    setBrowserMode('phone');
     page = new WorkItemListPage();
+    setBrowserMode('phone');
     page.allWorkItems.count().then(function(originalCount) { startCount = originalCount; });
   });
 
   it('Creating a new quick add work item and delete - phone.', function () {
-    setBrowserMode('phone');
     page.clickQuickAddWorkItemTitleButton();
     page.typeQuickAddWorkItemTitleText('Quick Add and Delete');
     page.clickWorkItemQuickAddButton().then(function() {
@@ -39,18 +38,17 @@ describe('Work item list', function () {
   });
 
   it('Creating a new quick add work item and Cancel delete - phone.', function () {
-    setBrowserMode('phone');
-    page.clickQuickAddWorkItemTitleButton();
-    page.typeQuickAddWorkItemTitleText('Quick Add and Cancel Delete');
-    page.clickWorkItemQuickAddButton().then(function() {
-    expect(page.workItemTitle(page.firstWorkItem)).toBe('Quick Add and Cancel Delete');
-    expect(page.workItemTitle(page.workItemByNumber(0))).toBe('Quick Add and Cancel Delete');
-    page.clickWorkItemKebabButton(page.firstWorkItem);     
-    page.clickWorkItemKebabDeleteButton(page.firstWorkItem);
-    page.clickWorkItemPopUpDeleteCancelConfirmButton().then(function() {
-    expect(page.workItemTitle(page.firstWorkItem)).toBe('Quick Add and Cancel Delete');
-    expect(page.workItemTitle(page.workItemByNumber(0))).toBe('Quick Add and Cancel Delete');
-    });
+      page.clickQuickAddWorkItemTitleButton();
+      page.typeQuickAddWorkItemTitleText('Quick Add and Cancel Delete');
+      page.clickWorkItemQuickAddButton().then(function() {
+      expect(page.workItemTitle(page.firstWorkItem)).toBe('Quick Add and Cancel Delete');
+      expect(page.workItemTitle(page.workItemByNumber(0))).toBe('Quick Add and Cancel Delete');
+      page.clickWorkItemKebabButton(page.firstWorkItem);     
+      page.clickWorkItemKebabDeleteButton(page.firstWorkItem);
+      page.clickWorkItemPopUpDeleteCancelConfirmButton().then(function() {
+        expect(page.workItemTitle(page.firstWorkItem)).toBe('Quick Add and Cancel Delete');
+        expect(page.workItemTitle(page.workItemByNumber(0))).toBe('Quick Add and Cancel Delete');
+      });
     });
   });
 
@@ -60,20 +58,14 @@ describe('Work item list', function () {
   function setBrowserMode(browserModeStr) {
     switch (browserModeStr) {
 	  case 'phone':
-      browser.get("http://localhost:8088/?token=justarandomtokenfortest");
 	    browser.driver.manage().window().setSize(375, 667);
       break;
-
 	  case 'tablet':
-        browser.get("http://localhost:8088/?token=justarandomtokenfortest");
-        browser.driver.manage().window().setSize(768, 1024);
+      browser.driver.manage().window().setSize(768, 1024);
       break;
     case 'desktop':
-        browser.get("http://localhost:8088/?token=justarandomtokenfortest");
-        browser.driver.manage().window().setSize(1920, 1080);
-
+      browser.driver.manage().window().setSize(1920, 1080);
     }
-
-  };
+  }
 
 });
