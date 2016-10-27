@@ -102,7 +102,7 @@
     "npm-run-all": "2.2.0",
     "null-loader": "^0.1.1",
     "opt-cli": "1.4.2",
-    "phantomjs-prebuilt": "^2.1.7",
+    "phantomjs": "^2.1.7",
     "postcss-loader": "^0.9.1",
     "precss": "^1.4.0",
     "protractor": "^4.0.8",
