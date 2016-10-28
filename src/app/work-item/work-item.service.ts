@@ -15,6 +15,7 @@ export class WorkItemService {
   private workItemUrl = process.env.API_URL + 'workitems';  // URL to web api
   private workItemTypeUrl = process.env.API_URL + 'workitemtypes';
   private availableStates: DropdownOption[] = [];
+  public workItemTypes: WorkItemType[];
 
   constructor(private http: Http,
               private logger: Logger,
@@ -24,6 +25,9 @@ export class WorkItemService {
     }
     logger.log('WorkItemService running in ' + process.env.ENV + ' mode.');
     logger.log('WorkItemService using url ' + this.workItemUrl);
+    this.getWorkItemTypes()
+      .then(workItemTypes => this.workItemTypes = workItemTypes);
+
   }
 
   getWorkItems(): Promise<WorkItem[]> {
