@@ -24,7 +24,7 @@ import { WorkItemService } from '../work-item.service';
 export class WorkItemDetailComponent implements OnInit {  
   workItem: WorkItem;
 
-  workItemTypes: WorkItemType[] = this.workItemService.workItemTypes;
+  workItemTypes: WorkItemType[];
   // TODO: These should be read from the WorkitemType of the given Workitem
   workItemStates = ['new', 'in progress', 'resolved', 'closed'];
 
@@ -52,6 +52,7 @@ export class WorkItemDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.listenToEvents();
+    this.getWorkItemTypes();
     this.route.params.forEach((params: Params) => {
       if (params['id'] !== undefined) {
         let id = params['id'];
@@ -64,6 +65,12 @@ export class WorkItemDetailComponent implements OnInit {
       }
     });
     this.loggedIn = this.auth.isLoggedIn();
+  }
+
+  getWorkItemTypes(): void {
+    this.workItemService.getWorkItemTypes().then((types) => {
+      return this.workItemTypes = types;
+    });
   }
 
   save(): void {

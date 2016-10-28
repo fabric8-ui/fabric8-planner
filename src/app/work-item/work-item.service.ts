@@ -15,7 +15,7 @@ export class WorkItemService {
   private workItemUrl = process.env.API_URL + 'workitems';  // URL to web api
   private workItemTypeUrl = process.env.API_URL + 'workitemtypes';
   private availableStates: DropdownOption[] = [];
-  public workItemTypes: WorkItemType[];
+  public workItemTypes: WorkItemType[] = [];
 
   constructor(private http: Http,
               private logger: Logger,
@@ -25,9 +25,6 @@ export class WorkItemService {
     }
     logger.log('WorkItemService running in ' + process.env.ENV + ' mode.');
     logger.log('WorkItemService using url ' + this.workItemUrl);
-    this.getWorkItemTypes()
-      .then(workItemTypes => this.workItemTypes = workItemTypes);
-
   }
 
   getWorkItems(): Promise<WorkItem[]> {
@@ -39,11 +36,20 @@ export class WorkItemService {
   }
 
   getWorkItemTypes(): Promise<WorkItemType[]> {    
-    return this.http
+    if (this.workItemTypes.length) {
+      return new Promise((resolve, reject) => {
+        resolve(this.workItemTypes);
+      });
+    } else {
+      return this.http
       .get(this.workItemTypeUrl)
       .toPromise()
-      .then(response => process.env.ENV != 'inmemory' ? response.json() as WorkItem[] : response.json().data as WorkItemType[])
+      .then((response) => {
+        this.workItemTypes = process.env.ENV != 'inmemory' ? response.json() as WorkItemType[] : response.json().data as WorkItemType[];
+        return this.workItemTypes;
+      })
       .catch(this.handleError);
+    }
   }
 
   getWorkItem(id: string): Promise<WorkItem> {
