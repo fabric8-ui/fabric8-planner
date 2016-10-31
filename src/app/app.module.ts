@@ -41,41 +41,50 @@ import { WorkItemService }            from './work-item/work-item.service';
 import { WorkItemModule }             from './work-item/work-item.module';
 
 // conditionally import the inmemory resource module
-var moduleImports: Array<any[] | any | ModuleWithProviders>;
+var moduleImports: Array<any[] | any | ModuleWithProviders> = [
+  AppRoutingModule,
+  BrowserModule,
+  DropdownModule,
+  FormsModule,
+  HttpModule,
+  WorkItemModule
+];
 
 // The inmemory environment variable is checked and if present then the in-memory dataset is added.
 if (process.env.ENV == 'inmemory') {
   moduleImports = [
+    AppRoutingModule,
     BrowserModule,
     DropdownModule,
     FormsModule,
-    WorkItemModule,
     HttpModule,
     InMemoryWebApiModule.forRoot(InMemoryDataService),
-    AppRoutingModule
+    WorkItemModule
   ];
 } else {
   moduleImports = [
+    AppRoutingModule,
     BrowserModule,
     DropdownModule,
     FormsModule,
-    WorkItemModule,
     HttpModule,
-    AppRoutingModule
+    WorkItemModule
   ];
 }
 
 @NgModule({
-  imports: moduleImports,
-  // imports: [
-  //   AppRoutingModule,
-  //   BrowserModule,
-  //   FormsModule,
-  //   HttpModule,
-  //   // InMemoryWebApiModule.forRoot(InMemoryDataService)
-  //   // The inmemory environment variable is checked and if present then the in-memory dataset is added.
-  //   // process.env.ENV == 'inmemory' ? InMemoryWebApiModule.forRoot(InMemoryDataService) : null
-  // ],
+  // imports: moduleImports,
+  imports: [
+    AppRoutingModule,
+    BrowserModule,
+    DropdownModule,
+    FormsModule,
+    HttpModule,
+    WorkItemModule
+    // InMemoryWebApiModule.forRoot(InMemoryDataService)
+    // The inmemory environment variable is checked and if present then the in-memory dataset is added.
+    // process.env.ENV == 'inmemory' ? InMemoryWebApiModule.forRoot(InMemoryDataService) : null
+  ],
   declarations: [    
     AppComponent,
     BoardComponent,

@@ -11,12 +11,9 @@
     "suppressImplicitAnyIndexErrors": true,
     "types": [
       "core-js",
-      "node",
-      "jasmine"
+      "jasmine",
+      "node"
     ]
-  },
-  "angularCompilerOptions": {
-    "genDir": "./ngfactory"
   }
 }
 

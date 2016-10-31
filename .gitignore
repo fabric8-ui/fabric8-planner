@@ -5,6 +5,7 @@
 /app/*.js
 /app/*.js.map
 /tmp
+/aot
 
 # dependencies
 /node_modules
