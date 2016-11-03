@@ -18,3 +18,5 @@ import 'rxjs';
 // You can import js, ts, css, sass, ...
 import 'patternfly/dist/css/patternfly.min.css';
 import 'patternfly/dist/css/patternfly-additions.min.css';
+
+import 'ng2-dropdown';
