@@ -55,7 +55,7 @@
       i{
         position: absolute;
         font-size:$font18;
-        top:50%;
+        top:100%;
         @include transform(translateY(-50%));
       }
     }
@@ -65,13 +65,13 @@
     }
     .workItemQuickAdd_AddBlk{
       position: absolute;
-      top: 50%;
+      top: 55%;
       @include transform(translateY(-50%));
       right: 0.833em;
-      width: 3em;
       .workItemQuickAdd_Add{
         text-align: right; 
         font-size: $font16;
+        margin-right:3px;
       }
     }
   }
