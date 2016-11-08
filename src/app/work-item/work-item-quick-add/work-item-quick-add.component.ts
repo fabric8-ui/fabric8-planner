@@ -25,6 +25,7 @@ export class WorkItemQuickAddComponent implements OnInit {
   initialDescHeightDiff: number = 0;
   descHeight: any = 'inherit';
   descResize: any = 'none';
+  submitted = false;
   
   constructor(
     private workItemService: WorkItemService,
