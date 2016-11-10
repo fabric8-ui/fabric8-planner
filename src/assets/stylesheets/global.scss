@@ -1,0 +1,6 @@
+$img-path: "/assets/vendor/patternfly/images";
+$icon-font-path: "/assets/vendor/patternfly/fonts/patternfly";
+$fa-font-path: $icon-font-path + "/";
+$font-path: $icon-font-path + "/";
+@import "../vendor/patternfly/stylesheets/patternfly";
+@import "custom";

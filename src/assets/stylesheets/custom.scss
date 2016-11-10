@@ -1,5 +1,6 @@
-@import "variables";
-@import "color-variables";
+@import "../vendor/stylesheets/patternfly/variables";
+@import "../vendor/stylesheets/patternfly/color-variables";
+
 //custom variables
 $width100: 100%;
 $margin20: 20px;
@@ -14,6 +15,14 @@ $pad0: 0;
 $textLeft: left;
 $textRight: right;
 $textCenter: center;
+
+
+// *** LEGAGY PATTERNFLY VARIABLES *** //
+$screen-sm:                                                         768px !default;
+$screen-sm-min:                                                     $screen-sm !default;
+// Navbar collapse
+$grid-float-breakpoint:                                             $screen-sm-min !default;
+$grid-float-breakpoint-max:                                         ($grid-float-breakpoint - 1) !default;
 
 //fonts
 $font10: 10px;
