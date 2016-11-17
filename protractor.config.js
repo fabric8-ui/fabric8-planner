@@ -8,9 +8,9 @@ exports.config = {
     },
 
     capabilities: {
-         'browserName': 'phantomjs',
-         'phantomjs.binary.path': require('phantomjs-prebuilt').path,
-         'phantomjs.cli.args': ['--webdriver-loglevel=ERROR', '--local-storage-path=/tmp/phantom_' + Math.random()]
+          'browserName': 'phantomjs',
+          'phantomjs.binary.path': require('phantomjs-prebuilt').path,
+          'phantomjs.cli.args': ['--webdriver-loglevel=ERROR', '--local-storage-path=/tmp/phantom_' + Math.random()]
 
     }
 };
