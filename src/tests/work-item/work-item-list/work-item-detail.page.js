@@ -15,6 +15,8 @@
 var WorkItemDetailPage = function (idValue) {
 };
 
+var testSupport = require('./testSupport');
+
 var until = protractor.ExpectedConditions;
 var waitTime = 30000;
 
@@ -294,17 +296,5 @@ value: function ()
 */
 
 });
-
-/*
- * Custom wait function - determine if ANY text appears in a field's value
- */
-function waitForText(elementFinder) {
-  return function () {
-    return elementFinder.getAttribute("value").then(function(text) {
-//      console.log("text = " + text);
-      return text !== "";  // could also be replaced with "return !!text;"
-    });
-  };
-};
 
 module.exports = WorkItemDetailPage;
