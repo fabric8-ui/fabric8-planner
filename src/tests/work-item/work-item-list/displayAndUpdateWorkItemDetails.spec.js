@@ -85,7 +85,6 @@ var waitTime = 30000;
         //detailPage.clickWorkItemTitleEditIcon();
         detailPage.setWorkItemDetailTitle (workItemUpdatedTitle, false);
         detailPage.clickWorkItemTitleSaveIcon();
-
 //        detailPage.clickWorkItemDescriptionEditIcon();
         detailPage.clickWorkItemDetailDescription()
         detailPage.setWorkItemDetailDescription (workItemUpdatedDescription, false);
@@ -126,7 +125,6 @@ var waitTime = 30000;
         //detailPage.clickWorkItemTitleEditIcon();
         detailPage.setWorkItemDetailTitle (workItemUpdatedTitle, false);
         detailPage.clickWorkItemTitleCancelIcon();
-
         detailPage.clickWorkItemDetailDescription()
         //detailPage.clickWorkItemDescriptionEditIcon();
         detailPage.setWorkItemDetailDescription (workItemUpdatedTitle, false);
@@ -144,15 +142,17 @@ var waitTime = 30000;
 
 /* Verify that edits made to a workitem in the detail page, if cancelled, are discarded */
  it('should cancel edits to the workitem through its detail page - phone.', function() {
-
     /* Create a new workitem */
     var workItemTitle = "The test workitem title";
     var workItemUpdatedTitle = "The test workitem title - UPDATED";
+
+    var workItemDescription = "The test workitem description";
+    var workItemUpdatedDescription = "The test workitem description - UPDATED";
     page.clickWorkItemQuickAdd();
     page.typeQuickAddWorkItemTitle(workItemTitle);
+
     page.clickQuickAddSave().then(function() {
       expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
-
       /* Fill in/update the new work item's title and details field */
       expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
       page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
@@ -162,14 +162,134 @@ var waitTime = 30000;
         //detailPage.clickWorkItemTitleEditIcon();
         detailPage.setWorkItemDetailTitle (workItemUpdatedTitle, false);
         detailPage.clickWorkItemTitleCancelIcon();
-
         detailPage.clickWorkItemDetailCloseButton();
         browser.wait(until.presenceOf(page.workItemByTitle(workItemTitle)), waitTime, 'Failed to find workItemList');
         expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
+
       });
 
     });
 
+  });
+
+
+  /*Edit with blank title - Mobile Should show validation message*/
+    it('Edit with blank title - Mobile Should show validation message. -phone', function() {
+
+      /* Create a new workitem */
+      var workItemTitle = "The test workitem title";
+      var workItemUpdatedTitle = "               ";
+      var workItemDescription = "";
+      var workItemUpdatedDescription = " - UPDATED";
+      page.clickWorkItemQuickAdd();
+      page.typeQuickAddWorkItemTitle(workItemTitle);
+      page.clickQuickAddSave().then(function() {
+        expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
+
+        /* Fill in/update the new work item's title with blank and details field */
+        expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
+        page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
+          var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+
+          detailPage.clickWorkItemTitleDiv();
+          detailPage.setWorkItemDetailTitle (workItemUpdatedTitle, false);
+          detailPage.clickWorkItemTitleSaveIcon();
+          expect(detailPage.titleValidation().isPresent()).toBeTruthy();
+          expect(detailPage.titleAlert()).toBeTruthy();
+          expect(detailPage.titleAlertValidation()).toBeTruthy();
+        });
+
+      });
+
+    });
+
+    /*Edit with blank title - Desktop Should show validation message*/
+      it('Edit with blank title - Mobile Should show validation message. -Desktop', function() {
+        testSupport.setBrowserMode('desktop');
+        /* Create a new workitem */
+        var workItemTitle = "The test workitem title";
+        var workItemUpdatedTitle = "               ";
+        var workItemDescription = "";
+        var workItemUpdatedDescription = " - UPDATED";
+        page.clickWorkItemQuickAdd();
+        page.typeQuickAddWorkItemTitle(workItemTitle);
+        page.clickQuickAddSave().then(function() {
+          expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
+
+          /* Fill in/update the new work item's title with blank and details field */
+          expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
+          page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
+            var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+
+            detailPage.clickWorkItemTitleDiv();
+            detailPage.setWorkItemDetailTitle (workItemUpdatedTitle, false);
+            detailPage.clickWorkItemTitleSaveIcon();
+            expect(detailPage.titleValidation().isPresent()).toBeTruthy();
+            expect(detailPage.titleAlert()).toBeTruthy();
+            expect(detailPage.titleAlertValidation()).toBeTruthy();
+
+          });
+
+        });
+
+      });
+  /*Edit title and description by hitting Enter key Mobile - phone.*/
+  it('Edit title and description by hitting Enter key Mobile - phone.', function() {
+    testSupport.setBrowserMode('phone');
+    /* Create a new workitem */
+    var workItemTitle = "The test workitem title";
+    var workItemUpdatedTitle = "something";
+    var workItemDescription = "Some description";
+    var workItemUpdatedDescription = " - UPDATED";
+    page.clickWorkItemQuickAdd();
+    page.typeQuickAddWorkItemTitle(workItemTitle);
+    page.clickQuickAddSave().then(function() {
+      expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
+
+      /* Fill in/update the new work item's title with blank and details field */
+      expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
+      page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
+        var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+
+        detailPage.clickWorkItemTitleDiv();
+        detailPage.setWorkItemDetailTitle(workItemUpdatedTitle, false);
+        detailPage.workItemDetailTitle.sendKeys(protractor.Key.ENTER);
+        detailPage.clickWorkItemDetailCloseButton();
+        browser.wait(until.presenceOf(page.firstWorkItem), waitTime, 'Failed to find workItemList');
+        expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemUpdatedTitle);
+      });
+
+    });
+  });
+  /*Edit title and description by hitting Enter key Mobile - desktop.*/
+      it('Edit title and description by hitting Enter key  - desktop.', function() {
+        testSupport.setBrowserMode('desktop');
+        /* Create a new workitem */
+        var workItemTitle = "The test workitem title";
+        var workItemUpdatedTitle = "something";
+        var workItemDescription = "";
+        var workItemUpdatedDescription = " - UPDATED";
+        page.clickWorkItemQuickAdd();
+        page.typeQuickAddWorkItemTitle(workItemTitle);
+        page.clickQuickAddSave().then(function() {
+          expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
+
+          /* Fill in/update the new work item's title with blank and details field */
+          expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
+          page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
+            var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+
+            detailPage.clickWorkItemTitleDiv();
+            detailPage.setWorkItemDetailTitle(workItemUpdatedTitle, false);
+            detailPage.workItemDetailTitle.sendKeys(protractor.Key.ENTER);
+
+
+            detailPage.clickWorkItemDetailCloseButton();
+            browser.wait(until.presenceOf(page.firstWorkItem), waitTime, 'Failed to find workItemList');
+            expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemUpdatedTitle);
+          });
+
+        });
   });
   /* Verify how many work item type exists in drop down - phone*/
    it('Verify how many work item type exists in drop down - phone', function() {
@@ -264,6 +384,41 @@ it('Verify how many work item type exists in drop down - desktop', function() {
       });
 
     });
+
+
+
+  /*Edit with blank description - desktop Should show "No description available for this work item.".*/
+      it('Edit title and description by hitting Enter key - desktop.', function() {
+        testSupport.setBrowserMode('desktop');
+        /* Create a new workitem */
+        var workItemTitle = "The test workitem title";
+        var workItemUpdatedTitle = "something";
+        var workItemDescription = "   ";
+        var workItemUpdatedDescription ="             ";
+        var nodescription="No description available for this work item.";
+        page.clickWorkItemQuickAdd();
+        page.typeQuickAddWorkItemTitle(workItemTitle);
+        page.typeQuickAddWorkItemDesc(workItemDescription);
+        page.clickQuickAddSave().then(function() {
+          expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
+
+          /* Fill in/update the new work item's title with blank and details field */
+          expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
+          page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
+            var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+
+            detailPage.clickWorkItemTitleDiv();
+            detailPage.setWorkItemDetailTitle(workItemUpdatedTitle, false);
+            detailPage.workItemDetailTitle.sendKeys(protractor.Key.ENTER);
+            detailPage.clickWorkItemDetailCloseButton();
+            browser.wait(until.presenceOf(page.firstWorkItem), waitTime, 'Failed to find workItemList');
+            expect(page.workItemDescription(page.firstWorkItem)).toBe(nodescription);
+          });
+
+        });
+  });
+
+/* Verify that a workitem's description cannot be edited in the detail page until the edit icon is clicked */
 
 
 
