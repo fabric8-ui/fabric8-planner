@@ -16,6 +16,7 @@ export class WorkItemService {
   private workItemTypeUrl = process.env.API_URL + 'workitemtypes';
   private availableStates: DropdownOption[] = [];
   public workItemTypes: WorkItemType[] = [];
+  private workItems: WorkItem[];
   
   constructor(private http: Http,
               private logger: Logger,
@@ -29,9 +30,13 @@ export class WorkItemService {
 
   getWorkItems(): Promise<WorkItem[]> {
     return this.http
-      .get(this.workItemUrl, {headers: this.headers})
+      .get(this.workItemUrl + '.2', {headers: this.headers})
       .toPromise()
-      .then(response => process.env.ENV != 'inmemory' ? response.json() as WorkItem[] : response.json().data as WorkItem[])
+      //.then(response => process.env.ENV != 'inmemory' ? response.json() as WorkItem[] : response.json().data as WorkItem[])
+      .then(response => {
+        this.workItems = response.json().data as WorkItem[];
+        return this.workItems;
+      })
       .catch(this.handleError);
   }
 
@@ -58,6 +63,19 @@ export class WorkItemService {
       .toPromise()
       .then((response) => process.env.ENV != 'inmemory' ? response.json() as WorkItem : response.json().data as WorkItem) 
       .catch(this.handleError);
+  }
+
+  moveItem(wi: WorkItem, dir: String) {
+    //We need to call an ordering API which will store 
+    //the new location for the selected work item
+    let index = this.workItems.findIndex(x => x.id == wi.id);    
+    let wiSplice = this.workItems.splice(index, 1);    
+    if (dir == 'top'){
+      this.workItems.splice(0, 0, wi);
+    }else{
+      this.workItems.splice(this.workItems.length, 0, wi);
+    }    
+    return this.workItems;
   }
 
   delete(workItem: WorkItem): Promise<void> {

@@ -17,6 +17,7 @@ import { CommonModule }       from '@angular/common';
 import { DropdownModule }     from 'ng2-dropdown';
 
 import { AlmTrim } from './../../../pipes/alm-trim';
+import { AlmSearchHighlight } from './../../../pipes/alm-search-highlight.pipe';
 import { Broadcaster } from './../../../shared/broadcaster.service';
 import { Logger } from './../../../shared/logger.service';
 
@@ -26,7 +27,7 @@ import { Dialog } from './../../../shared-component/dialog/dialog';
 import { AlmIconModule }      from './../../../shared-component/icon/almicon.module';
 import { AlmEditableModule }      from './../../../shared-component/editable/almeditable.module';
 import { AuthenticationService } from './../../../auth/authentication.service';
-import { User } from './../../../user/user';
+import { User, NewUser } from './../../../user/user';
 import { UserService } from './../../../user/user.service';
 import { WorkItem } from './../../work-item';
 import { WorkItemType } from './../../work-item-type';
@@ -42,6 +43,7 @@ describe('Detailed view and edit a selected work item - ', () => {
   let logger: Logger;
   let fakeWorkItem: WorkItem;
   let fakeUser: User;
+  let fakeUserList: NewUser[];
   let fakeWorkItemService: any;
   let fakeAuthService: any;
   let fakeUserService: any;
@@ -53,7 +55,7 @@ describe('Detailed view and edit a selected work item - ', () => {
 
     fakeWorkItem = {
       'fields': {
-        'system.assignee': 'me',
+        'system.assignee': '498c69a9-bb6f-464b-b89c-a1976ed46301',
         'system.creator': 'me',
         'system.description': 'description',
         'system.state': 'new',
@@ -73,9 +75,31 @@ describe('Detailed view and edit a selected work item - ', () => {
     ];
 
     fakeUser = {
-      'fullName': 'Sudipta Sen',
-      'imageURL': 'https://avatars.githubusercontent.com/u/2410474?v=3'
+      'fullName': 'Draco Malfoy',
+      'imageURL': 'http://www.hercampus.com/sites/default/files/2016/01/05/tom-felton-as-draco-malfoy-from-harry-potter.jpg'
     } as User;
+
+    fakeUserList = [
+        {
+          attributes: {
+            fullName: 'Harry Potter',
+            imageURL: 'http://nerdist.com/wp-content/uploads/2016/02/20160210_nerdistnews_harrypottercursedchild_1x1.jpg'
+          },
+          id: '779efdcc-ac87-4720-925e-949ff21dbf5d'
+        }, {
+          attributes: {
+            fullName: 'Walter Mitty',
+            imageURL: 'http://bestwatchbrandshq.com/wp-content/uploads/2015/01/Ben-Stiller-Watch-In-The-Secret-Life-Of-Walter-Mitty-Movie-9.jpg'
+          },
+          id: '39d44ed6-1246-48d6-9190-51ffab67c42e'
+        }, {
+          attributes: {
+            fullName: 'Draco Malfoy',
+            imageURL: 'http://www.hercampus.com/sites/default/files/2016/01/05/tom-felton-as-draco-malfoy-from-harry-potter.jpg'
+          },
+          id: '498c69a9-bb6f-464b-b89c-a1976ed46301'
+        }
+      ] as NewUser[];
 
     fakeWorkItemTypes = [
       { name: 'system.userstory' },
@@ -130,11 +154,15 @@ describe('Detailed view and edit a selected work item - ', () => {
     };
 
     fakeUserService = {
-      getUser: function () 
-      {
-        return new Promise((resolve, reject) => 
-        {
+      getUser: function () {
+        return new Promise((resolve, reject) => {
           resolve(fakeUser);
+        });
+      },
+
+      getAllUsers: function () {
+        return new Promise((resolve, reject) => {
+          resolve(fakeUserList);
         });
       }
     };
@@ -158,7 +186,8 @@ describe('Detailed view and edit a selected work item - ', () => {
 
       declarations: [
         WorkItemDetailComponent,
-        AlmTrim
+        AlmTrim,
+        AlmSearchHighlight
       ],
       providers: [
         Broadcaster,
@@ -181,6 +210,7 @@ describe('Detailed view and edit a selected work item - ', () => {
       .then(() => {
         fixture = TestBed.createComponent(WorkItemDetailComponent);
         comp = fixture.componentInstance;
+        comp.users = fakeUserList;
       });
   }));
 
@@ -191,7 +221,6 @@ describe('Detailed view and edit a selected work item - ', () => {
       comp.loggedIn = fakeAuthService.isLoggedIn();
       fixture.detectChanges();
       el = fixture.debugElement.query(By.css('#wi-detail-id'));      
-      console.log(el.nativeElement.textContent);
       expect(el.nativeElement.textContent).toContain(fakeWorkItem.id);
   });
 
@@ -295,7 +324,7 @@ describe('Detailed view and edit a selected work item - ', () => {
     comp.workItem = fakeWorkItem;
     comp.loggedIn = fakeAuthService.isLoggedIn();           
     fixture.detectChanges();    
-    comp.toggleHeader();
+    comp.openHeader();
     fixture.detectChanges();
     el = fixture.debugElement.query(By.css('#wi-detail-title'));
     expect(el.nativeElement.innerText).toContain(fakeWorkItem.fields['system.title']);
@@ -307,7 +336,7 @@ describe('Detailed view and edit a selected work item - ', () => {
     comp.workItem = fakeWorkItem;
     comp.loggedIn = fakeAuthService.isLoggedIn();           
     fixture.detectChanges();    
-    comp.toggleHeader();
+    comp.openHeader();
     fixture.detectChanges();    
     el = fixture.debugElement.query(By.css('#wi-detail-title'));
     comp.workItem.fields['system.title'] = 'User entered valid work item title';      
@@ -322,7 +351,7 @@ describe('Detailed view and edit a selected work item - ', () => {
     comp.workItem = fakeWorkItem;
     comp.loggedIn = fakeAuthService.isLoggedIn();           
     fixture.detectChanges();    
-    comp.toggleHeader();
+    comp.openHeader();
     fixture.detectChanges();
     el = fixture.debugElement.query(By.css('#workItemTitle_btn_save'));
     comp.workItem.fields['system.title'] = 'Valid work item title';
@@ -337,7 +366,7 @@ describe('Detailed view and edit a selected work item - ', () => {
       comp.workItem = fakeWorkItem;
       comp.loggedIn = fakeAuthService.isLoggedIn();           
       fixture.detectChanges();    
-      comp.toggleHeader();
+      comp.openHeader();
       fixture.detectChanges();
       comp.titleText = '';
       comp.isValid(comp.titleText);
@@ -353,7 +382,7 @@ describe('Detailed view and edit a selected work item - ', () => {
     comp.workItem = fakeWorkItem;
     comp.loggedIn = fakeAuthService.isLoggedIn();           
     fixture.detectChanges();    
-    comp.toggleDescription();
+    comp.openDescription();
     fixture.detectChanges();    
     el = fixture.debugElement.query(By.css('#wi-detail-desc'));
     comp.workItem.fields['system.description'] = 'User entered work item description';      
@@ -388,7 +417,7 @@ describe('Detailed view and edit a selected work item - ', () => {
 
   it('Work item state can be edited when logged in', () => {
     fakeAuthService.login();
-    fixture.detectChanges();         
+    fixture.detectChanges();      
     comp.workItem = fakeWorkItem;
     comp.loggedIn = fakeAuthService.isLoggedIn();           
     fixture.detectChanges(); 
@@ -397,5 +426,42 @@ describe('Detailed view and edit a selected work item - ', () => {
     fixture.detectChanges();
     expect(comp.workItem.fields['system.state']).toContain(el.nativeElement.value);
   }); 
+
+  it('should not open the user list if not logged in', () => {
+    comp.activeSearchAssignee();
+    fixture.detectChanges();
+    expect(comp.searchAssignee).toBeFalsy();
+  });
+
+  it('should open the user list if logged in', () => {
+    fakeAuthService.login();
+    fixture.detectChanges();
+    comp.loggedIn = fakeAuthService.isLoggedIn();
+    fixture.detectChanges();
+    comp.activeSearchAssignee();
+    fixture.detectChanges();
+    expect(comp.searchAssignee).toBeTruthy();
+  });
+
+  it('should return correct user info from getAssignedUserDetails', () => {
+    let foundUser: any = comp.getAssignedUserDetails('39d44ed6-1246-48d6-9190-51ffab67c42e');
+    expect(foundUser.fullName).toBe('Walter Mitty');
+  });
+
+  it('should return null from getAssignedUserDetails in case not found', () => {
+    let foundUser: any = comp.getAssignedUserDetails('39d44ed6-1246-48d6-9190-51ffab6312-0391-012');
+    expect(foundUser).toBeNull();
+  });
+
+  it('Page should display correct assignee', () => {
+      fakeAuthService.login();
+      fixture.detectChanges();
+      comp.workItem = fakeWorkItem;
+      comp.loggedIn = fakeAuthService.isLoggedIn();
+      comp.assignedUser = comp.getAssignedUserDetails(comp.workItem.fields['system.assignee']);
+      fixture.detectChanges();
+      el = fixture.debugElement.query(By.css('#WI_details_assigned_user'));      
+      expect(el.nativeElement.textContent).toContain('Draco Malfoy');
+  });
 
 });
