@@ -51,6 +51,7 @@ module.exports = webpackMerge(commonConfig, {
   devServer: {
     historyApiFallback: true,
     stats: 'minimal',
-    inline: true
+    inline: true, 
+    contentBase: 'src'
   }
 });

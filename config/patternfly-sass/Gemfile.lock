@@ -1,0 +1,29 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    autoprefixer-rails (6.5.3)
+      execjs
+    bootstrap-sass (3.3.7)
+      autoprefixer-rails (>= 5.2.1)
+      sass (>= 3.3.4)
+    execjs (2.7.0)
+    font-awesome-sass (4.6.2)
+      sass (>= 3.2)
+    gem-path (0.6.1)
+    patternfly-sass (3.13.0)
+      bootstrap-sass (~> 3.3.7)
+      font-awesome-sass (~> 4.6.2)
+      sass (~> 3.4.15)
+    rake (10.5.0)
+    sass (3.4.22)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  gem-path (~> 0.6.1)
+  patternfly-sass (~> 3.13.0)
+  rake (~> 10.4)
+
+BUNDLED WITH
+   1.13.6
