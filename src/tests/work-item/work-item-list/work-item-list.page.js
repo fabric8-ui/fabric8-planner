@@ -3,7 +3,7 @@
  * See: http://martinfowler.com/bliki/PageObject.html,
  * https://www.thoughtworks.com/insights/blog/using-page-objects-overcome-protractors-shortcomings
  * @author ldimaggi@redhat.com
- * TODO - Complete the page object model pending completion of UI at: http://demo.almighty.io/
+ * TODO - Complete the page object model pending completion of UI at: http://localhost:8088/
  */
 
 'use strict';
@@ -103,6 +103,19 @@ WorkItemListPage.prototype  = Object.create({}, {
       value: function ()
       { return element(By.id('header_rightDropdown')).all(By.tagName('a')).get(0).click(); }
     },
+/*For mobile */
+clickCaret:  {
+    value: function ()
+    { return element(By.css('.caret')).click(); }
+  },
+clickLoginButtonMobile:  {
+  value: function ()
+  { return element(By.css('.dropdown-menu.dropdown-menu-right')).all(By.tagName('a')).get(0).click(); }
+},
+clickLogoutButtonMobile:  {
+  value: function ()
+  { return element(By.css('.dropdown-menu.dropdown-menu-right')).all(By.tagName('a')).get(1).click(); }
+},
   signInGithub: {
     value: function (gitusername,gitpassword)
     {
