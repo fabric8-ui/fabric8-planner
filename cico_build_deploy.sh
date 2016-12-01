@@ -9,8 +9,8 @@ if [ -e "jenkins-env" ]; then
   cat jenkins-env \
     | grep -E "(JENKINS_URL|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId)=" \
     | sed 's/^/export /g' \
-    > ~/.jenkins-env
-  source ~/.jenkins-env
+    > /tmp/jenkins-env
+  source /tmp/jenkins-env
 fi
 
 # We need to disable selinux for now, XXX
@@ -22,6 +22,7 @@ sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --log-driver=journald --insecur
 service docker start
 
 # Build builder image
+cp /tmp/jenkins-env .
 docker build -t almighty-ui-builder -f Dockerfile.builder .
 mkdir -p dist && docker run --detach=true --name=almighty-ui-builder -e "API_URL=http://demo.api.almighty.io/api/" -t -v $(pwd)/dist:/dist:Z almighty-ui-builder
 
