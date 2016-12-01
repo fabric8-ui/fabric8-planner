@@ -65,6 +65,7 @@
     "@angular/upgrade": "2.1.1",
     "angular-in-memory-web-api": "0.1.13",
     "bootstrap": "^3.3.7",
+    "codecov": "^1.0.1",
     "core-js": "^2.4.1",
     "dragula": "^3.7.2",
     "ng2-bootstrap": "^1.1.16",
