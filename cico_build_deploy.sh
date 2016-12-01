@@ -43,7 +43,7 @@ docker exec almighty-ui-builder ./run_functional_tests.sh
 
 if [ $? -eq 0 ]; then
   echo 'CICO: functional tests OK'
-  docker exec almighty-ui-builder ./upload_to_covecov.sh
+  docker exec almighty-ui-builder ./upload_to_codecov.sh
 
   docker exec almighty-ui-builder npm run build:prod
   docker exec -u root almighty-ui-builder cp -r /home/almighty/dist /
