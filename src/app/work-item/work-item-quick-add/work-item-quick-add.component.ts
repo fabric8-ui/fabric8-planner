@@ -15,7 +15,7 @@ export class WorkItemQuickAddComponent implements OnInit {
   @Output() close = new EventEmitter();
   @ViewChild('quickAddTitle') qaTitle: any;
   @ViewChild('quickAddDesc') qaDesc: any;
-
+  
   error: any = false;
   workItem: WorkItem;
   validTitle: Boolean;
@@ -105,8 +105,10 @@ export class WorkItemQuickAddComponent implements OnInit {
       this.workItem.fields['system.title'] = '';
       this.validTitle = false;
       this.descHeight = this.initialDescHeight ? this.initialDescHeight : 'inherit';
+    } else {
+      setTimeout(() => this.qaTitle.nativeElement.focus());
     }
-  }
+}
 
   preventDef(event: any) {
     event.preventDefault();
