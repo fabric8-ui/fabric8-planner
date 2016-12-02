@@ -1,6 +1,7 @@
 import { NgModule }           from '@angular/core';
 import { CommonModule }       from '@angular/common';
 import { DropdownModule } from 'ng2-dropdown';
+import { InfiniteScrollModule } from 'angular2-infinite-scroll';
 
 import { AlmIconModule }      from './../../shared-component/icon/almicon.module';
 import { DialogModule }   from './../../shared-component/dialog/dialog.module';
@@ -21,6 +22,8 @@ import { WorkItemListRoutingModule } from './work-item-list-routing.module';
     WorkItemDetailModule,
     WorkItemListRoutingModule,
     WorkItemQuickAddModule,
+    InfiniteScrollModule,
+    DialogModule
   ],
   declarations: [
      WorkItemListComponent,

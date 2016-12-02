@@ -65,6 +65,17 @@ export class WorkItemListComponent implements OnInit {
       });      
   }
 
+  loadMore(): void {
+    var self = this;
+    this.workItemService
+    .getMoreWorkItems()
+    .then((wItems) => {
+      if(wItems.length > 0) {
+        this.workItems = this.workItems.concat(wItems);
+      }
+    });
+  }
+
   addWorkItem(): void {
     this.addingWorkItem = true;
     this.selectedWorkItemEntryComponent = null;

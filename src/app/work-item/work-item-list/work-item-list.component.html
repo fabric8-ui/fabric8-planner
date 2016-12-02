@@ -1,5 +1,6 @@
 <div class="container-fluid containerPadd detail-list-container" [class.containerPadd-nologin] = "!loggedIn" >		
-	<div class="width100 fl detail-list-wrap list-group list-view-pf">
+	<div class="width100 fl detail-list-wrap list-group list-view-pf" 
+        infinite-scroll [infiniteScrollDistance]="3" [infiniteScrollThrottle]="500" (scrolled)="loadMore()">
 
 			<alm-work-item-list-entry *ngFor="let workItem of workItems; let counter = index"
 				id="{{'workItemList_OuterWrap_'+counter}}"

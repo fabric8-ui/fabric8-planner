@@ -18,6 +18,9 @@ export class WorkItemService {
   public workItemTypes: WorkItemType[] = [];
   private workItems: WorkItem[];
   
+  private isFetching: Boolean = false;
+  private links: Object = {};
+  
   constructor(private http: Http,
               private logger: Logger,
               private auth: AuthenticationService) {
@@ -30,14 +33,27 @@ export class WorkItemService {
 
   getWorkItems(): Promise<WorkItem[]> {
     return this.http
-      .get(this.workItemUrl + '.2', {headers: this.headers})
+      .get(this.workItemUrl + '.2?page[offset]=0&page[limit]=20', {headers: this.headers})
       .toPromise()
       //.then(response => process.env.ENV != 'inmemory' ? response.json() as WorkItem[] : response.json().data as WorkItem[])
       .then(response => {
+        this.isFetching = false;
+        this.links = response.json().links;
         this.workItems = response.json().data as WorkItem[];
         return this.workItems;
       })
       .catch(this.handleError);
+  }
+
+  getMoreWorkItems():  Promise<WorkItem[]> {
+    if(!this.isFetching && Object.keys(this.links).length > 0 && this.links['next']){
+      this.workItemUrl = this.links['next'];
+      return this.getWorkItems();
+    } else {
+      return new Promise((resolve, reject) => {
+        resolve([]);
+      });
+    }
   }
 
   getWorkItemTypes(): Promise<any[]> { 
