@@ -26,6 +26,7 @@ export class WorkItemService {
     }
     logger.log('WorkItemService running in ' + process.env.ENV + ' mode.');
     logger.log('WorkItemService using url ' + this.workItemUrl);
+    logger.log('WorkItemService using url ' + this.workItemTypeUrl);
   }
 
   getWorkItems(): Promise<WorkItem[]> {
@@ -40,21 +41,17 @@ export class WorkItemService {
       .catch(this.handleError);
   }
 
-  getWorkItemTypes(): Promise<any[]> { 
-    if (this.workItemTypes.length) {
-      return new Promise((resolve, reject) => {
-        resolve(this.workItemTypes);
-      });
-    } else {
-      return this.http
-      .get(this.workItemTypeUrl)
+ getWorkItemTypes(): Promise<WorkItemType[]> {
+    this.logger.log('WorkItemService using url ' + this.workItemTypeUrl);
+    return this.http
+      .get(this.workItemTypeUrl + '.2', {headers: this.headers})
       .toPromise()
-      .then((response) => {
-        this.workItemTypes = process.env.ENV != 'inmemory' ? response.json() as WorkItemType[] : response.json().data as WorkItemType[];
+      //.then(response => process.env.ENV != 'inmemory' ? response.json() as WorkItem[] : response.json().data as WorkItem[])
+      .then(response => {
+        this.workItemTypes = response.json().data as WorkItemType[];
         return this.workItemTypes;
       })
       .catch(this.handleError);
-    }
   }
 
   getWorkItem(id: string): Promise<WorkItem> {
