@@ -17,6 +17,7 @@ import { DropdownOption } from '../shared-component/dropdown/dropdown-option';
 
 import { AuthenticationService } from './../auth/authentication.service';
 import { WorkItem } from './work-item';
+import { WorkItemType } from './work-item-type';
 import { WorkItemService } from './work-item.service';
 
 
@@ -79,6 +80,60 @@ describe('Work Item Service - ', () => {
   ] as WorkItem[];
   let response = {data: resp};
 
+  let resp2: WorkItemType[] = [
+    {
+        'fields': {
+            'system.assignee': {
+                'required': false,
+                'type': {
+                    'kind': 'user'
+                }
+            },
+            'system.creator': {
+                'required': true,
+                'type': {
+                    'kind': 'user'
+                }
+            },
+            'system.description': {
+                'required': false,
+                'type': {
+                    'kind': 'string'
+                }
+            },
+            'system.remote_item_id': {
+                'required': false,
+                'type': {
+                    'kind': 'string'
+                }
+            },
+            'system.state': {
+                'required': true,
+                'type': {
+                    'baseType': 'string',
+                    'kind': 'enum',
+                    'values': [
+                        'new',
+                        'open',
+                        'in progress',
+                        'resolved',
+                        'closed'
+                    ]
+                }
+            },
+            'system.title': {
+                'required': true,
+                'type': {
+                    'kind': 'string'
+                }
+            }
+        },
+        'name': 'system.userstory',
+        'version': 0
+    }
+  ] as WorkItemType[];
+  let response2 = {data: resp2};
+
   it('Get work items', async(() => {
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
@@ -94,6 +149,23 @@ describe('Work Item Service - ', () => {
         expect(data).toEqual(resp);
       });
   }));
+
+  it('Get work item types', async(() => {
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockRespond(new Response(
+        new ResponseOptions({
+          body: JSON.stringify(response2),
+          status: 200
+        })
+      ));
+    });
+
+    apiService.getWorkItemTypes()
+      .then(data => {
+        expect(data).toEqual(resp2);
+      });
+  }));
+
 
   it('Add new work Item', async(() => {
     mockService.connections.subscribe((connection: any) => {
