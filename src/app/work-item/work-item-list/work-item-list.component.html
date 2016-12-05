@@ -1,11 +1,11 @@
-<div class="container-fluid containerPadd detail-list-container" [class.containerPadd-nologin] = "!loggedIn" >		
+<div class="container-fluid detail-list-container" [class.containerPadd-nologin] = "!loggedIn" >
 	<div class="width100 fl detail-list-wrap list-group list-view-pf">
 
 			<alm-work-item-list-entry *ngFor="let workItem of workItems; let counter = index"
 				id="{{'workItemList_OuterWrap_'+counter}}"
 				class="work-item-list-entry"
         [workItem]="workItem"
-        (selectEvent)="onSelect($event)" 
+        (selectEvent)="onSelect($event)"
         (detailEvent)="onDetail($event)"
         (deleteEvent)="onDelete($event)"
         (moveTopEvent)="onMoveToTop($event)"
