@@ -1,9 +1,9 @@
 import { NgModule }           from '@angular/core';
 import { CommonModule }       from '@angular/common';
-import { DropdownModule } from 'ng2-dropdown';
 
 import { AlmIconModule }      from './../../shared-component/icon/almicon.module';
 import { DialogModule }   from './../../shared-component/dialog/dialog.module';
+import { DropdownModule } from './../../shared-component/ng2-dropdown/index';
 
 import { WorkItemListComponent } from './work-item-list.component';
 import { WorkItemDetailModule } from './work-item-detail/work-item-detail.module';

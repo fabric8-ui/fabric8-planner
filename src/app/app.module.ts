@@ -3,7 +3,7 @@ import './rxjs-extensions';
 import { ModuleWithProviders, NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule }    from '@angular/http';
-import { DropdownModule } from 'ng2-dropdown';
+import { DropdownModule } from './shared-component/ng2-dropdown/index';
 import { TabsModule } from 'ng2-bootstrap/components/tabs';
 
 // Imports for loading & configuring the in-memory web api

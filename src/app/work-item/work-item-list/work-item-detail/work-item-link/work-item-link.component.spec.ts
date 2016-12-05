@@ -14,7 +14,7 @@ import { FormsModule }         from '@angular/forms';
 import { By }                  from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CommonModule }       from '@angular/common';
-import { DropdownModule }     from 'ng2-dropdown';
+import { DropdownModule }     from './../../../../shared-component/ng2-dropdown/index';
 import { Ng2CompleterModule } from 'ng2-completer';
 
 import { Logger } from './../../../../shared/logger.service';

@@ -118,6 +118,7 @@ export class WorkItemListEntryComponent implements OnInit {
   }
 
   onDetail(event: MouseEvent): void {
+    this.onSelect(event);
     event.stopPropagation();
     this.detailEvent.emit(this);
     this.router.navigate(['/work-item-list/detail/' + this.workItem.id]);
