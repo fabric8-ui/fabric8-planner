@@ -7,6 +7,10 @@
     background-color: transparent;
   }
 }
+.detail-list-wrap{
+  width: $width100;
+  float: left;
+}
 .containerPadd-nologin{ padding-bottom: 0; }
 
 @media (max-width: ($grid-float-breakpoint - 1)){
