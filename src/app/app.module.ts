@@ -1,6 +1,6 @@
 import './rxjs-extensions';
 
-import { ModuleWithProviders, NgModule }      from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule }    from '@angular/http';
 import { DropdownModule } from 'ng2-dropdown';
@@ -24,7 +24,7 @@ import { AppComponent }  from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 // Board
-import { BoardModule} from './board/board.module';
+import { BoardModule } from './board/board.module';
 
 // Footer
 import { FooterComponent } from './footer/footer.component';
@@ -53,7 +53,7 @@ import { TestModule } from './test/test.module';
 import { ObsidianModule } from './obsidian/obsidian.module';
 
 // conditionally import the inmemory resource module
-var moduleImports: Array<any[] | any | ModuleWithProviders> = [
+let moduleImports: Array<any[] | any | ModuleWithProviders> = [
     BrowserModule,
     BoardModule,
     ChatModule,
