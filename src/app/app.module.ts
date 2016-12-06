@@ -50,76 +50,37 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { PipelineModule } from './pipeline/pipeline.module';
 import { SettingsModule } from './settings/settings.module';
 import { TestModule } from './test/test.module';
+import { ObsidianModule } from './obsidian/obsidian.module';
 
 // conditionally import the inmemory resource module
-var moduleImports: Array<any[] | any | ModuleWithProviders>;
+var moduleImports: Array<any[] | any | ModuleWithProviders> = [
+    BrowserModule,
+    BoardModule,
+    ChatModule,
+    CodeModule,
+    DropdownModule,
+    FormsModule,
+    HomeModule,
+    HypothesisModule,
+    HttpModule,
+    NotificationsModule,
+    PipelineModule,
+    SettingsModule,
+    TabsModule,
+    TestModule,
+    ObsidianModule,
+    WorkItemListModule,
+    AppRoutingModule
+  ];
 
 // The inmemory environment variable is checked and if present then the in-memory dataset is added.
 if (process.env.ENV == 'inmemory') {
-  moduleImports = [
-    BrowserModule,
-    BoardModule,
-    ChatModule,
-    CodeModule,
-    DropdownModule,
-    FormsModule,
-    HomeModule,
-    HypothesisModule,
-    HttpModule,
-    NotificationsModule,
-    PipelineModule,
-    SettingsModule,
-    TabsModule,
-    TestModule,
-    WorkItemListModule,
-    InMemoryWebApiModule.forRoot(InMemoryDataService),
-    AppRoutingModule
-  ];
-} else {
-  moduleImports = [
-    BrowserModule,
-    BoardModule,
-    ChatModule,
-    CodeModule,
-    DropdownModule,
-    FormsModule,
-    HomeModule,
-    HypothesisModule,
-    HttpModule,
-    NotificationsModule,
-    PipelineModule,
-    SettingsModule,
-    TabsModule,
-    TestModule,
-    WorkItemListModule,
-    AppRoutingModule
-  ];
+  moduleImports.push(InMemoryWebApiModule.forRoot(InMemoryDataService));
 }
 
 @NgModule({
   imports: moduleImports,
-  // imports: [
-  //   AppRoutingModule,
-  //   BrowserModule,
-  //   BoardModule,
-  //   ChatModule,
-  //   CodeModule,
-  //   DropdownModule,
-  //   FormsModule,
-  //   HomeModule,
-  //   HypothesisModule,
-  //   HttpModule,
-  //   NotificationsModule,
-  //   PipelineModule,
-  //   SettingsModule,
-  //   TabsModule,
-  //   TestModule,
-  //   WorkItemListModule,
-  //   // InMemoryWebApiModule.forRoot(InMemoryDataService)
-  //   // The inmemory environment variable is checked and if present then the in-memory dataset is added.
-  //   // process.env.ENV == 'inmemory' ? InMemoryWebApiModule.forRoot(InMemoryDataService) : null
-  // ],
-  declarations: [    
+  declarations: [
     AppComponent,
     FooterComponent,
     HeaderComponent,
