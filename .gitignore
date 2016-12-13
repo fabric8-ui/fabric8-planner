@@ -25,7 +25,6 @@
 /libpeerconnection.log
 npm-debug.log
 testem.log
-/typings
 functional_tests.log
 unit_tests.log
 
