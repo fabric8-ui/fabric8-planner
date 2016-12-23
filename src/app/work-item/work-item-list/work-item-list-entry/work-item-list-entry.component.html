@@ -4,9 +4,9 @@
 		[dialog]='dialog'	
 	></alm-dialog>
 </div>
-<div class="list-group-item" (click)="onSelect($event)" [class.selected]="isSelected()">
+<div class="list-group-item" (click)="onDetail($event)" (click)="onSelect($event)" [class.selected]="isSelected()">
 	<!-- info area -->
-	<div class="list-view-pf-main-info" (click)="onDetail($event)">
+	<div class="list-view-pf-main-info">
 		<div class="list-view-pf-left type workItemList_workItemType">
 			<span almIcon [iconType]="workItem.attributes['system.state']" class="color-grey pull-left"></span>
       		<span almIcon [iconType]="workItem.relationships?.baseType?.data?.id" class="color-grey pull-left"></span>
