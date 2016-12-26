@@ -12,6 +12,7 @@
                 <div>
                     <img id="{{'comment_avatar_' + counter}}"
                       class="user-assign-avatar pull-left" 
+                      title="{{comment.relationalData.creator?.attributes?.fullName}}"
                       *ngIf="comment.relationalData.creator?.attributes?.imageURL" 
                       [src]="comment.relationalData.creator?.attributes?.imageURL | almAvatarSize:30"
                     />
