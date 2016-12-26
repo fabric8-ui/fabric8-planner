@@ -1,6 +1,4 @@
-@import "../../assets/stylesheets/navbar";
-@import "../../assets/stylesheets/navs";
-@import "../../assets/stylesheets/icons";
+//@import "../../assets/stylesheets/navbar";
 @import "../../assets/stylesheets/custom";
 @import "../../assets/stylesheets/color-variables";
 .header-navbar{
@@ -9,6 +7,10 @@
     float: left;
     z-index: 9;
     font-size: rem(12);
+    .hdr-navbar-toggle{
+        float: left;
+        padding-right: 0;
+    }
     .header-nav-brand{
         padding: em(4.5);
         .pficon-enterprise{
@@ -36,7 +38,7 @@
         font-size:em(20);
     }
 }
-@media (max-width: $grid-float-breakpoint){
+@media (max-width: $grid-float-breakpoint - 1){ //768px
 .navbar-fixed-top {
         position: fixed;
         top: auto;
@@ -47,16 +49,31 @@
     body {
         margin: 0;
     }
-    .nav-mob-scroll{
-        overflow-x: scroll !important;
-        .nav-list-mob-scroll{
-            width: 170%;
+    .navbar-pf{
+        .nav{
+            padding: 0 em(10);
         }
+        .navbar-utility{
+            li {
+                border-top: none;
+                a{
+                    padding: em(10);
+                    float: left;
+                }
+            }
+        }
+        .navbar-primary.persistent-secondary 
+            {
+                height: em(200);
+                overflow-y: scroll;
+                li {
+                    float: none;
+                }
+            }
     }
 }
 .navbar-pf {
-    .navbar-primary.persistent-secondary
-    >li.active {
+    .navbar-primary.persistent-secondary > li.active {
         margin-bottom: 0 ; 
     }
 }
@@ -65,3 +82,22 @@
   text-decoration: none;
 }
 
+@media (max-width: $screen-md-min){ //992px
+    .navbar-pf {
+        .navbar-primary.persistent-secondary{
+            li{
+                a{
+                    padding-left: em(8);
+                    padding-right: em(8);
+                }
+            }
+        }
+    }
+}
+@media (max-width: 320px){
+.navbar-pf{
+    .navbar-toggle{
+            padding-left: em(15);
+        }
+    }
+}
