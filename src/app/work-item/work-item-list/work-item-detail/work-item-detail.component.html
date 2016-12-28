@@ -101,7 +101,8 @@
             *ngIf="workItem.relationalData?.assignees?.length"
             (click)="activeSearchAssignee()"
             class="pull-left user-assign-avatar"
-            title="{{workItem.relationalData.assignees[0]?.attributes.fullName}}"
+            tooltipPlacement="bottom"
+            tooltip="{{workItem.relationalData.assignees[0]?.attributes.fullName}}"
             src="{{workItem.relationalData.assignees[0]?.attributes.imageURL + '&s=20'}}" 
             onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'" />          
           
@@ -163,7 +164,8 @@
           </span>
           <img *ngIf="workItem.relationalData?.creator"            
             class="pull-left user-avatar"
-            title="{{workItem.relationalData.creator.attributes.fullName}}"
+            tooltipPlacement="bottom"
+            tooltip="{{workItem.relationalData.creator.attributes.fullName}}"
             src="{{workItem.relationalData.creator.attributes.imageURL + '&s=20'}}"
             id="WI_details_reporter_img" />          
           <div class="pull-left marginR10">                          
