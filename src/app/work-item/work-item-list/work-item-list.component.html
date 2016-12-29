@@ -1,5 +1,23 @@
-<div class="detail-list-container" [class.containerPadd-nologin] = "!loggedIn" >
+<div *ngIf="loggedIn && showTypesOptions" class="types-modal">  
+  <h5 class="col-md-12 col-sm-12 col-xs-12">
+    <span class="pull-left">Click to select a type </span>
+    <span class="pficon-close detail-close pull-right" (click)="closePanel()"></span>
+  </h5>
+  <ul class="wiTypeList col-md-12 col-sm-12 col-xs-12 grid">
+    <li *ngFor="let type of workItemTypes" (click)="onChangeType(type.name)"> 
+      <div class="wiTypeListBlk">     
+        <i almIcon [iconType]="type.name" class="xl-font"></i>
+        <p>{{type.name.substring(7, type.length)}}</p>  
+      </div>            
+    </li>
+  </ul>
   
+</div>
+
+<div *ngIf="loggedIn" class="add-detailed-wi" tooltipPlacement="bottom" tooltip="Add A Work Item" (click)="showTypes()">
+  <span class="fa fa-plus icon"></span>
+</div>
+<div class="detail-list-container" [class.containerPadd-nologin] = "!loggedIn" >  
   <div class="list-action">
     <h4 class="list-type">Backlog</h4>
     <div class="dropdown filter-dropdown" dropdown>
@@ -8,7 +26,10 @@
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="wi_filter_dropdown">
-        <li *ngFor="let filter of filters;" role="presentation" (click)="activeFilter(filter.id)">
+        <li *ngIf="!filters.length">          
+          <span>No filters available</span>
+        </li>        
+        <li *ngFor="let filter of filters;" role="presentation" (click)="activeFilter(filter.id)">          
           <a role="menuitem" tabindex="-1">{{filter.name}}</a>
         </li>
       </ul>

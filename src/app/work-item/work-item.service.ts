@@ -2,7 +2,6 @@ import { Link } from '../models/link';
 import { Injectable, Component } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import { cloneDeep } from 'lodash';
-
 import 'rxjs/add/operator/toPromise';
 
 import { AuthenticationService } from '../auth/authentication.service';
@@ -168,13 +167,11 @@ export class WorkItemService {
         .then((response) => {
           let wItem: WorkItem = response.json().data as WorkItem;
           this.resolveUsersForWorkItem(wItem);
-          this.workItems.splice(this.workItems.length, 0, wItem);
-          this.buildWorkItemIdIndexMap();
-          if (process.env.ENV != 'inmemory') {
-            this.resolveComments(this.workItems[this.workItemIdIndexMap[wItem.id]]);
-            this.resolveLinks(this.workItems[this.workItemIdIndexMap[wItem.id]]);
+          if (!(wItem.id in this.workItemIdIndexMap)) {
+            this.workItems.splice(this.workItems.length, 0, wItem);
+            this.buildWorkItemIdIndexMap();
           }
-          return this.workItems[this.workItemIdIndexMap[wItem.id]];
+          return this.getWorkItemById(wItem.id);
         })
         .catch (this.handleError);
     }
@@ -718,10 +715,18 @@ export class WorkItemService {
       .then(response => { this.removeLinkFromWorkItem(link, currentWiId) })
       .catch(this.handleError);
   }
+  
+  searchLinkWorkItem(term: string): Promise<WorkItem[]> {
+     let searchUrl = process.env.API_URL + 'search?q=' + term;
+     return this.http
+        .get(searchUrl)
+        .toPromise()
+        .then((response) => response.json().data as WorkItem[])
+        .catch(this.handleError);
+  }
 
   private handleError(error: any): Promise<any> {
     console.error('An error occurred', error);
     return Promise.reject(error.message || error);
   }
-
 }

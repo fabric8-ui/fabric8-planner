@@ -44,10 +44,10 @@
                             id="wi-link-type"
                             type="button" 
                             class="btn dropdown-toggle col-md-12 col-sm-12 col-xs-12 btn-default">
-                            <span *ngIf="!selectedLinkType && (linkTypes | almValidLinkTypes:workItem).length" class='dropdown-text'>
+                            <span *ngIf="!selectedLinkType && (workItem.relationships.baseType.data.id | almValidLinkTypes:linkTypes).length" class='dropdown-text'>
                                 Select a link type
                             </span>
-                            <span *ngIf="!(linkTypes | almValidLinkTypes:workItem).length" class='dropdown-text'>
+                            <span *ngIf="!(workItem.relationships.baseType.data.id | almValidLinkTypes:linkTypes).length" class='dropdown-text'>
                                 No link type available
                             </span>
                             <span *ngIf="selectedLinkType" class='dropdown-text'>
@@ -55,9 +55,9 @@
                             </span>
                             <span *ngIf="loggedIn" class="caret pull-right marginT5"></span>
                             </button>
-                            <ul *ngIf="(linkTypes | almValidLinkTypes:workItem).length" 
+                            <ul *ngIf="(workItem.relationships.baseType.data.id | almValidLinkTypes:linkTypes).length" 
                                 class="dropdown-menu dropdown-ul link-dropdown" role="menu">
-                                <li *ngFor="let linkType of linkTypes | almValidLinkTypes:workItem">
+                                <li *ngFor="let linkType of workItem.relationships.baseType.data.id | almValidLinkTypes:linkTypes">
                                     <a (click)="onSelectRelation(linkType)">{{linkType.name}}</a>
                                 </li>
                             </ul>
@@ -66,15 +66,26 @@
                     </div>
                     <div class="col-md-12 col-sm-12 col-xs-12">
                         <div class="col-md-9 col-sm-9 col-xs-9">
-                            <ng2-completer (selected)="onSelectItem($event)" 
-                              [dataService]="searchWorkItem" 
-                              [minSearchLength]="2" 
-                              [placeholder]="'search for work items'"
-                              [textSearching]="'Please wait...'">
-                            </ng2-completer> 
+                            <input id="workitem-link-search" #searchBox
+                              class="workitem-link-search-box" 
+                              placeholder="Search for work items" 
+                              (keyup)="linkSearchWorkItem(searchBox.value, $event)" 
+                              [value]="selectedValue"
+                              [disabled]="!selectedLinkType"/>
+                            <div class="search-result-container">
+                                <ul class="search-result list-unstyled" #searchResultList>
+                                    <li *ngFor="let workItem of searchWorkItems" 
+                                        class="pointer" 
+                                        (click)="selectSearchResult(workItem.id, workItem.attributes['system.title'])"
+                                        [attr.data-wiid]="workItem.id"
+                                        [attr.data-wititle]="workItem.attributes['system.title']">
+                                        <span #searchresult><span class="weight-800">{{workItem.id}} - </span>{{workItem.attributes['system.title']}}</span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                         <div class="col-md-3 col-sm-3 col-xs-3">
-                            <button [disabled]="!selectedLinkType ? true : false" 
+                            <button [disabled]="!selectedLinkType || !selectedWorkItemId ? true : false" 
                               type="button" 
                               value="Link" 
                               class="col-md-12 col-sm-12 col-xs-12 btn btn-primary" 
@@ -88,8 +99,8 @@
             <div class="link-list-wrap" *ngIf="workItem.relationalData.linkDicts">
                 <h4 class="link-list-header">Links</h4>
                 <div *ngFor='let linkDict of workItem.relationalData.linkDicts'>
-                    <h5><strong>{{linkDict.linkName}}</strong></h5>
-                    <ul>
+                    <h5 class="col-md-12 col-sm-12 col-xs-12 no-padding">{{linkDict.linkName}}</h5>
+                    <ul class="col-md-12 col-sm-12 col-xs-12 no-padding">
                         <li *ngFor='let link of linkDict.links' 
                             (click)="onDetail(link, workItem)"
                             class="link-list">

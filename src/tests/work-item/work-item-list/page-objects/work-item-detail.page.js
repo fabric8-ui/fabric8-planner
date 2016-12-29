@@ -43,6 +43,7 @@ class WorkItemDetailPage {
     return this.workItemDetailType.sendKeys(newTypeString);
   }
 
+  /* This UI element is only displayed when the user accesses the detail page of an existing work item */
   get clickWorkItemDetailTitle () {
     return element(by.id("wi-detail-title-click"));
   }
@@ -365,7 +366,51 @@ class WorkItemDetailPage {
   clickworkItemDetailCancelButton () {
     return this.workItemDetailCancelButton.click();
   }
-
+/**UI elements for comments testSupport  */
+  clickCommentsDiv (){
+    return element(by.id("wi-comment-add-comment")).click();
+  }
+  commentDiv  (){
+    return element(by.id("wi-comment-add-comment"));
+  }
+  writeComment  (comment){
+    return element(by.id("wi-comment-add-comment")).sendKeys(comment);
+  }
+  commentsAvatar (index){
+    return element(by.id("comment_avatar_"+index));
+  }
+  getNumberofComments (){
+    return element(by.css('comments-wrap')).count();
+  }
+  getCommentTime  (index){
+    return element(by.id('comment_time_'+index)).getText();
+  }
+  getCommentBody  (index){
+    return element(by.id('comment_body_'+index)).getText();
+  }
+/**UI elements for created time WI */
+  getCreatedtime  (){
+    return element(by.id('created_at')).getText();
+  }
+  /**UI elements for creator*/
+  getCreatorLabel (){
+    return element(by.id('creator_label')).getText();
+  }
+  getCreatorDefaultIcon (){
+    return element(by.id('user_creator_icon'));
+  }
+  clickCreatorDefaultIcon (){
+    return element(by.id('user_creator_icon')).click();
+  }
+  getCreatorAvatar  (){
+    return element(by.id('WI_details_reporter_img'));
+  }
+  clickCreatorAvatar  (){
+    return element(by.id('WI_details_reporter_img')).click();
+  }
+  getCreatorUsername  (){
+    return element(by.id('WI_details_reporter_user')).getText();
+  }
 }
 
 module.exports = WorkItemDetailPage;
