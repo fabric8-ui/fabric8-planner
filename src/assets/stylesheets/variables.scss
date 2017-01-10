@@ -28,6 +28,7 @@ $dropdown-link-focus-color:                                         $color-pf-wh
 $flyout-transition-pf:                                              all .2s cubic-bezier(.35,0,.25,1) !default;
 $font-family-monospace:                                             Menlo, Monaco, Consolas, monospace !default;
 $font-path:                                                         if($patternfly-sass-asset-helper, "patternfly", "/node_modules/patternfly/dist/fonts") !default;
+$fa-version:                                                        "4.7.0" !default;
 $fa-font-path:                                                      if($patternfly-sass-asset-helper, "patternfly", "/node_modules/patternfly/dist/fonts") !default;
 $fa-font-size-base:                                                 14px;
 $fa-line-height-base:                                               1;
@@ -631,3 +632,4 @@ $state-warning-border:                                              darken(adjus
 $state-danger-text:                                                 #a94442 !default;
 $state-danger-bg:                                                   #f2dede !default;
 $state-danger-border:                                               darken(adjust-hue($state-danger-bg, -10), 5%) !default;
+

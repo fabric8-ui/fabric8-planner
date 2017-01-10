@@ -1,21 +1,18 @@
 $patternfly-sass-asset-helper: false !default;
 //
 // Icons
-// --------------------------------------------------
-// Custom icons and selections from IcoMoon - Free (http://icomoon.io/#icons)
 @import "variables";
 @import "fa-icons";
 @font-face {
   font-family: "#{$icon-font-name-pf}";
-  src:url(if($patternfly-sass-asset-helper, twbs-font-path("../#{$font-path}/#{$icon-font-name-pf}.eot"), "#{$font-path}/#{$icon-font-name-pf}.eot"));
-  src:url(if($patternfly-sass-asset-helper, twbs-font-path("../#{$font-path}/#{$icon-font-name-pf}.eot?#iefix"), "#{$font-path}/#{$icon-font-name-pf}.eot?#iefix")) format("embedded-opentype"),
-    url(if($patternfly-sass-asset-helper, twbs-font-path("../#{$font-path}/#{$icon-font-name-pf}.ttf"), "#{$font-path}/#{$icon-font-name-pf}.ttf")) format("truetype"),
-    url(if($patternfly-sass-asset-helper, twbs-font-path("../#{$font-path}/#{$icon-font-name-pf}.woff"), "#{$font-path}/#{$icon-font-name-pf}.woff")) format("woff"),
-    url(if($patternfly-sass-asset-helper, twbs-font-path("../#{$font-path}/#{$icon-font-name-pf}.svg##{$icon-font-name-pf}"), "#{$font-path}/#{$icon-font-name-pf}.svg##{$icon-font-name-pf}")) format("svg");
+  src: url(if($patternfly-sass-asset-helper, fa-font-path('../#{$font-path}/#{$icon-font-name-pf}.eot?v=#{$fa-version}'), '#{$font-path}/#{$icon-font-name-pf}.eot?v=#{$fa-version}'));
+  src: url(if($patternfly-sass-asset-helper, fa-font-path('../#{$font-path}/#{$icon-font-name-pf}.eot?v=#{$fa-version}#iefix'), '#{$font-path}/#{$icon-font-name-pf}.eot?v=#{$fa-version}#iefix')) format('embedded-opentype'),
+    url(if($patternfly-sass-asset-helper, fa-font-path('../#{$font-path}/#{$icon-font-name-pf}.woff?v=#{$fa-version}'), '#{$font-path}/#{$icon-font-name-pf}.woff?v=#{$fa-version}')) format('woff'),
+    url(if($patternfly-sass-asset-helper, fa-font-path('../#{$font-path}/#{$icon-font-name-pf}.ttf?v=#{$fa-version}'), '#{$font-path}/#{$icon-font-name-pf}.ttf?v=#{$fa-version}')) format('truetype'),
+    url(if($patternfly-sass-asset-helper, fa-font-path('../#{$font-path}/#{$icon-font-name-pf}.svg?v=#{$fa-version}#fontawesomeregular'), '#{$font-path}/#{$icon-font-name-pf}.svg?v=#{$fa-version}#fontawesomeregular')) format('svg');
   font-weight: normal;
   font-style: normal;
 }
-
 [class^="#{$icon-prefix}-"],
 [class*=" #{$icon-prefix}-"] {
   display: inline-block;
