@@ -41,7 +41,6 @@
         .lane-header{
           text-align: $textCenter;
           width: $width100;
-          float: left;
           padding-bottom: em(5);
           .issueCount{
             background: $color-pf-white;
@@ -53,14 +52,12 @@
         }
         .board-card{
           width: $width100;
-          float: left;
           @include Border(1px, solid , $color-pf-black-400);
           background: $color-pf-white;
           padding: em(15);
-          margin:em(5) 0;
+          margin: em(10) 0;
           > aside {
             width: $width100;
-            float: left;
             .wi-type-icon{
               padding: em(7) em(6);
               font-size: em(10);
