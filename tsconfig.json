@@ -19,13 +19,7 @@
   },
   "angularCompilerOptions": {
     "genDir": "./ngfactory"
-  },
-  "exclude": [
-        "node_modules",
-        "**/*.d.ts",
-        "src-library/*",
-        "**/*.spec.ts"
-    ]
+  }
 }
 
 
