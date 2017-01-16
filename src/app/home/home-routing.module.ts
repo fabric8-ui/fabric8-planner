@@ -6,12 +6,7 @@ import { HomeComponent } from './home.component';
 const routes: Routes = [
   {
     path: 'home',
-    component: HomeComponent,
-    children: [
-      {
-        path: ''
-      }
-    ]
+    component: HomeComponent
   },
 
 ];

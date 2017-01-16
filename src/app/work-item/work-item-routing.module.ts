@@ -16,9 +16,6 @@ const routes: Routes = [
     },
     children: [
       {
-        path: ''
-      },
-      {
         path: 'list',
         component: WorkItemListComponent,
         resolve: {
@@ -26,9 +23,6 @@ const routes: Routes = [
           authuser: AuthUserResolve
         },
         children: [
-          {
-            path: ''
-          },
           {
             path: 'detail/:id',
             component: WorkItemDetailComponent,
@@ -48,9 +42,6 @@ const routes: Routes = [
           authuser: AuthUserResolve
         },
         children: [
-          {
-            path: ''
-          },
           {
             path: 'detail/:id',
             component: WorkItemDetailComponent,
