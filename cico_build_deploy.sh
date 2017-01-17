@@ -45,7 +45,7 @@ docker exec almighty-ui-builder npm run build:prod
 docker exec -u root almighty-ui-builder cp -r /home/almighty/dist /
 
 ## All ok, deploy
-docker build -t almighty-ui-deploy -f Dockerfile.deploy . && \
-docker tag almighty-ui-deploy registry.ci.centos.org:5000/almighty/almighty-ui:latest && \
+docker build -t almighty-ui-deploy -f Dockerfile.deploy .
+docker tag almighty-ui-deploy registry.ci.centos.org:5000/almighty/almighty-ui:latest
 docker push registry.ci.centos.org:5000/almighty/almighty-ui:latest
 
