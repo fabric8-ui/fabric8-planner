@@ -1,6 +1,11 @@
 <nav id="header_wrapper" class="navbar navbar-default navbar-pf header-navbar" role="navigation">
 	<div id="header_nav" class="navbar-header">
-
+    <button type="button" class="navbar-toggle hdr-navbar-toggle" (click)="isCollapsed = !isCollapsed">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
     <div class="navbar-brand header-nav-brand">
       <a class="fl no-link">
         <span class="pficon pficon-enterprise pull-left"></span>
@@ -9,7 +14,8 @@
       </a>
     </div>
   </div>
-  <div class="navbar-collapse navbar-collapse-1 nav-mob-scroll">
+  <div class="navbar-collapse navbar-collapse-1" 
+    (collapsed)="collapsed($event)" (expanded)="expanded($event)" [collapse]="isCollapsed">
 	  <ul id="header_rightDropdown" class="nav navbar-nav navbar-utility">
         <li>
           <a [routerLink]="['/settings']" id="header_menuSettings" routerLinkActive="active"><span class="pficon pficon-settings"></span></a>
@@ -50,7 +56,7 @@
       </tab>
     </tabset>
 -->
-    <ul id="header_menuList" class="nav navbar-nav navbar-primary nav-list-mob-scroll persistent-secondary">
+    <ul id="header_menuList" class="nav navbar-nav navbar-primary persistent-secondary">
       <li routerLinkActive="active">
         <a [routerLink]="['/dashboard']" id="header_menuHome">Home</a>
         <ul class="nav navbar-nav navbar-persistent">

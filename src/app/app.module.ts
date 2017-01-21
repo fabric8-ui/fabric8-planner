@@ -10,7 +10,7 @@ import { HttpModule }    from '@angular/http';
 import { DropdownModule } from 'ng2-dropdown';
 import { TabsModule } from 'ng2-bootstrap/components/tabs';
 import { ModalModule } from 'ng2-modal';
-import { TooltipModule } from 'ng2-bootstrap/components/tooltip';
+import { TooltipModule, CollapseModule } from 'ng2-bootstrap';
 
 // Shared
 import { AuthenticationService } from './auth/authentication.service';
@@ -88,6 +88,7 @@ if (process.env.ENV == 'inmemory') {
     BrowserModule,
     ChatModule,
     CodeModule,
+    CollapseModule,
     DashboardModule,
     DropdownModule,
     FormsModule,

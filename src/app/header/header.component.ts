@@ -18,7 +18,7 @@ export class HeaderComponent implements OnInit {
   loggedInUser: User;
   loggedIn: Boolean = false;
   imgLoaded: Boolean = false;
-
+  isCollapsed: Boolean = true;
 /*
   public tabs: Array<any> = [
     {title: 'Home', content: 'Home content 1', active: true},
@@ -84,5 +84,13 @@ export class HeaderComponent implements OnInit {
       .subscribe(message => {
         this.resetData();
     });
+  }
+ 
+  public collapsed(event: any): void {
+    console.log(event);
+  }
+ 
+  public expanded(event: any): void {
+    console.log(event);
   }
 }
