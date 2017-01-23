@@ -82,6 +82,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
 
   panelState: string = 'out';
 
+  userListModified: Boolean = false
+
   constructor(
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
@@ -287,6 +289,10 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
         .update(this.workItem)
         .then((workItem) => {
           this.workItem.attributes['version'] = workItem.attributes['version'];
+          if (this.userListModified){
+            this.userListModified = false;
+            this.broadcaster.broadcast('user-list-updated');
+          }
           this.activeOnList();
       });
     } else {
@@ -406,6 +412,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
       }]
     };
     this.workItemService.resolveUsersForWorkItem(this.workItem);
+    this.userListModified = true;
     this.save();
     this.searchAssignee = false;
   }
@@ -414,8 +421,9 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
     this.workItem.relationships.assignees = {
       data: []
     };
-    this.save();
     this.workItemService.resolveUsersForWorkItem(this.workItem);
+    this.userListModified = true;
+    this.save();
     this.searchAssignee = false;
   }
 

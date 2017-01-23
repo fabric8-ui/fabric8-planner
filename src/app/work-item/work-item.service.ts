@@ -72,7 +72,7 @@ export class WorkItemService {
    * Resolve the users for work item as in get the details of assignee and creator
    * and store them with the data in the array
    */
-  getWorkItems(pageSize: number = 20, filters: any[] = []): Promise<WorkItem[]> {
+  getWorkItems(pageSize: number = 20, filters: any[] = [], assigneesChanged: Boolean = false): Promise<WorkItem[]> {
     this.nextLink = null;
     let url = this.workItemUrl + '?page[limit]=' + pageSize;
     filters.forEach((item) => {
@@ -83,7 +83,7 @@ export class WorkItemService {
 
     // Reseting stored data
     // if filter value is changed
-    if (JSON.stringify(this.prevFilters) != JSON.stringify(filters)) {
+    if ((JSON.stringify(this.prevFilters) != JSON.stringify(filters)) || assigneesChanged) {
       this.workItems = [];
       this.workItemIdIndexMap = {};
     }
@@ -587,6 +587,7 @@ export class WorkItemService {
           this.workItems[updateIndex].relationships.baseType = updatedWorkItem.relationships.baseType;
           // Resolve users for the updated item
           this.resolveUsersForWorkItem(this.workItems[updateIndex]);
+          console.log('Updated');
         } else {
           // This part is for mock service in unit test
           // this.workItems stays in case of unit test
