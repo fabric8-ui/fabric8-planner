@@ -50,6 +50,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit {
   filters: any[] = [];
   allUsers: User[] = [] as User[];
   authUser: any = null;
+  assigneesChanged: Boolean = false;
 
   constructor(
     private auth: AuthenticationService,
@@ -83,7 +84,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit {
 
   loadWorkItems(): void {
     this.workItemService
-      .getWorkItems(this.pageSize, this.filters)
+      .getWorkItems(this.pageSize, this.filters, this.assigneesChanged)
       .then((wItems) => {
         this.workItems = wItems;
       });
@@ -181,6 +182,12 @@ export class WorkItemListComponent implements OnInit, AfterViewInit {
           default:
             break;
         }
+    });
+    //if a user has been assigned/unassigned on work item detail's page, update the list
+    this.broadcaster.on<string>('user-list-updated')
+      .subscribe(() => {
+        this.assigneesChanged = true;
+        this.loadWorkItems();
     });
   }
 
