@@ -63,6 +63,15 @@ span{
   }
 }
 
+.form-group {
+  margin: 15px auto;
+
+  .dropdown {
+    display: inline-block;
+    margin: auto 1em;
+  }
+}
+
 .selected {
   background-color: $color-pf-blue-100;
   &:hover {
