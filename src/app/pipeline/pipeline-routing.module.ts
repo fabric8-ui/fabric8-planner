@@ -6,12 +6,7 @@ import { PipelineComponent } from './pipeline.component';
 const routes: Routes = [
   {
     path: 'pipeline',
-    component: PipelineComponent,
-    children: [
-      {
-        path: ''
-      }
-    ]
+    component: PipelineComponent
   },
 
 ];

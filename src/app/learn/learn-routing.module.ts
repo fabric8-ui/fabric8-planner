@@ -6,12 +6,7 @@ import { LearnComponent } from './learn.component';
 const routes: Routes = [
   {
     path: 'learn',
-    component: LearnComponent,
-    children: [
-      {
-        path: ''
-      }
-    ]
+    component: LearnComponent
   },
 
 ];

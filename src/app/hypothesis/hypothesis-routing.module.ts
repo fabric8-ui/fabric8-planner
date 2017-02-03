@@ -6,12 +6,7 @@ import { HypothesisComponent } from './hypothesis.component';
 const routes: Routes = [
   {
     path: 'hypothesis',
-    component: HypothesisComponent,
-    children: [
-      {
-        path: ''
-      }
-    ]
+    component: HypothesisComponent
   },
 
 ];

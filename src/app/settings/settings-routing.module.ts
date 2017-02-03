@@ -6,12 +6,7 @@ import { SettingsComponent } from './settings.component';
 const routes: Routes = [
   {
     path: 'settings',
-    component: SettingsComponent,
-    children: [
-      {
-        path: ''
-      }
-    ]
+    component: SettingsComponent
   },
 
 ];
