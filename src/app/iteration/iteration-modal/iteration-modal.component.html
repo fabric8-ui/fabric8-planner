@@ -67,3 +67,13 @@
     </div>
   </modal-footer>
 </modal>
+
+<!-- Toast notification for start iteration. -->
+<div *ngIf="isToastNotificationVisible" class="toast-pf alert alert-success alert-dismissable iteration-toast-notification">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true" (click)="closeToastNotification()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <span class="pficon pficon-ok"></span>
+  <span class="toast-iteration-name truncate">{{iterationName}}</span> has started.
+</div>
+<!-- Toast notification end -->

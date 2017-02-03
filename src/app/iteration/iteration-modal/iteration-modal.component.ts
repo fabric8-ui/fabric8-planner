@@ -26,6 +26,8 @@ export class FabPlannerIterationModalComponent implements OnInit, OnChanges {
   private endDate: any;
   private spaceError: Boolean = false;
   private spaceName: string;
+  private isToastNotificationVisible: Boolean = false;
+  private iterationName: string;
 
   private myDatePickerOptions: IMyOptions = {
     dateFormat: 'dd mmm yyyy',
@@ -168,6 +170,10 @@ export class FabPlannerIterationModalComponent implements OnInit, OnChanges {
             this.iterationService.updateIteration(this.iteration)
             .then((iteration) => {
               this.onSubmit.emit(iteration);
+              if(this.modalType == 'start') {
+                this.iterationName = this.iteration.attributes.name;
+                this.isToastNotificationVisible = true;
+              }
               this.resetValues();
               this.createUpdateIterationDialog.close();
             })
@@ -186,6 +192,10 @@ export class FabPlannerIterationModalComponent implements OnInit, OnChanges {
       } else {
         this.validationError = true;
       }
+    }
+
+    closeToastNotification() {
+      this.isToastNotificationVisible = false;
     }
 
     removeError() {

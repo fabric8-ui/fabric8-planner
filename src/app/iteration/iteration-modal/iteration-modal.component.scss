@@ -33,3 +33,18 @@
 .space-error {
   visibility: visible;
 }
+
+//Toast notification style
+.iteration-toast-notification {
+  position: fixed;
+  top: em(36);
+  right: em(50);
+  z-index: 10;
+  min-width: em(330);
+}
+.toast-iteration-name {
+  max-width: em(80);
+  display: inline-block;
+  vertical-align: top;
+  font-weight: 700;
+}
