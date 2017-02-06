@@ -266,7 +266,10 @@ export class WorkItemService {
       return;
     }
     workItem.relationships.assignees.data.forEach((assignee) => {
-      workItem.relationalData.assignees.push(this.getUserById(assignee.id));
+      var u = this.getUserById(assignee.id);
+      if (u != null) {
+        workItem.relationalData.assignees.push(u);
+      }
     });
   }
 
@@ -291,7 +294,12 @@ export class WorkItemService {
       workItem.relationalData.creator = null;
       return;
     }
-    workItem.relationalData.creator = this.getUserById(workItem.relationships.creator.data.id);
+    var u = this.getUserById(workItem.relationships.creator.data.id);
+    if (u == null) {
+      workItem.relationalData.creator = null;
+      return;
+    }
+    workItem.relationalData.creator = u;
   }
 
   /**
