@@ -48,8 +48,7 @@
 				<li><a class="workItemList_MoveTop" (click)="onMoveToTop($event)">Move to Top</a></li>
 				<li><a class="workItemList_MoveBottom" (click)="onMoveToBottom($event)">Move to Bottom</a></li>
 				<li role="presentation" class="divider"></li>
-				<li><a class="workItemList_Iteration" (click)="iterationAssociationModal.open()">Associate with Iteration...</a></li>
-				<li><a class="workItemList_Iteration" (click)="isAssociated = true; iterationAssociationModal.open()">Reassociate with Iteration...</a></li>
+				<li><a class="workItemList_Iteration" (click)="associateIterationModal.openAssociateIterationModal()">Associate with Iteration...</a></li>
 				<li role="presentation" class="divider"></li>
 				<li><a [routerLink]="['/work-item/list/detail/' + workItem.id]" class="workItemList_Open">Open</a></li>
 				<li><a class="workItemList_Delete" (click)="confirmDelete($event)">Delete</a></li>
@@ -59,50 +58,6 @@
 	</div>
 </div>
 
-<modal #iterationAssociationModal title="Associate with Iteration">
-    <modal-content>
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <div *ngIf="isAssociated">
-                <strong>#ThisWorkItem</strong>
-                is currently associated with
-                <strong>#IterationName</strong>
-            </div>
-            <div class="form-group" [class.has-error]="validationError">
-                <div *ngIf="isAssociated" class="search-pf-input-group">
-                    <label>Reassociate <strong>#ThisWorkItem</strong> with</label>
-                    <div class="dropdown" dropdown>
-                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" dropdown-open>
-                            #IterationName <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 0</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 1</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 2</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 3</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div *ngIf="!isAssociated" class="search-pf-input-group">
-                    <label>Associate <strong>#ThisWorkItem</strong> with</label>
-                    <div class="dropdown" dropdown>
-                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" dropdown-open>
-                            Select... <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 0</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 1</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 2</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 3</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="text-right">
-                <button class="btn" type="submit" id="cancel-iteration-button" value="0" (click)="iterationAssociationModal.close()">Cancel</button>
-                <button *ngIf="!isAssociated" class="btn btn-primary" type="submit" id="associate-iteration-button" value="0" (click)="onChangeIteration()">Associate</button>
-                <button *ngIf="isAssociated" class="btn btn-primary" type="submit" id="reassociate-iteration-button" value="0" (click)="onChangeIteration()">Reassociate</button>
-            </div>
-        </div>
-    </modal-content>
-</modal>
-
+<fab-planner-associate-iteration-modal
+  #associateIterationModal>
+</fab-planner-associate-iteration-modal>
