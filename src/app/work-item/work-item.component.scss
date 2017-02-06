@@ -50,9 +50,12 @@
       .form-group:first-child{
         padding-left: 0;
       }
-      .move-dropdown {
-        a {
-          cursor: pointer;
+      .move-wi-no-border{
+        border: none;
+        .move-dropdown {
+          a {
+            cursor: pointer;
+          }
         }
       }
 
