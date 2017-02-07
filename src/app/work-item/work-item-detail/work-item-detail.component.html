@@ -33,36 +33,36 @@
           <div class="col-md-8 col-sm-7 col-xs-12 wi-detail-title-blk">
             <div *ngIf="!headerEditable" (click)='openHeader()'
               id="title-click-div">
-                <h2 *ngIf="!loggedIn" id="wi-detail-title-ne" class="detail-title truncate">{{ workItem.attributes['system.title'] }}</h2>
-                <h2 *ngIf="loggedIn" id="wi-detail-title-click" class="detail-title truncate">{{ workItem.attributes['system.title'] }}</h2>
-                <span *ngIf="loggedIn && workItem.id"
-                  class="pficon-edit marginL10 fl detail-title-edit-ico"
-                  id="workItemTitle_btn_edit"></span>
+              <h2 *ngIf="!loggedIn" id="wi-detail-title-ne" class="detail-title truncate">{{ workItem.attributes['system.title'] }}</h2>
+              <h2 *ngIf="loggedIn" id="wi-detail-title-click" class="detail-title truncate">{{ workItem.attributes['system.title'] }}</h2>
+              <span *ngIf="loggedIn && workItem.id"
+                class="pficon-edit marginL10 fl detail-title-edit-ico"
+                id="workItemTitle_btn_edit"></span>
             </div>
             <div *ngIf="(loggedIn && headerEditable)" id="wi-title-div">
-                <div almEditable
+                <h2 almEditable
                     (onUpdate)="checkTitle($event)"
                     (keyup.enter)="onUpdateTitle()"
                     (keydown.enter)="preventDef($event)"
                     id="wi-detail-title"
-                    class="detail-title-edit"
+                    class="detail-title-edit form-control"
                     [innerText]="workItem.attributes['system.title'] | almTrim"
                     #title >
-                </div>
+                </h2>
                 <aside class="col-md-12 col-sm-12 col-xs-12">
+                  <!--Cancel icon-->
+                  <button id="workItemTitle_btn_cancel"
+                      class="pull-right btn btn-default detail-action-btn"
+                      (click)="closeHeader()">
+                    <span class="fa fa-close"></span>
+                  </button>
                   <!--Save icon-->
-                  <div id="workItemTitle_btn_save"
-                      class="pull-right btn-small detail-action-btn"
+                  <button id="workItemTitle_btn_save"
+                      class="pull-right btn btn-default detail-action-btn"
                       [ngClass]="{disabled : validTitle == false}"
                       (click)="validTitle && onUpdateTitle()" >
                       <span class="fa fa-check"></span>
-                  </div>
-                  <!--Cancel icon-->
-                  <div id="workItemTitle_btn_cancel"
-                      class="pull-right btn-small detail-action-btn"
-                      (click)="closeHeader()">
-                    <span class="fa fa-close"></span>
-                  </div>
+                  </button>
                 </aside>
                 <!--Error message for title-->
                 <p [hidden]="validTitle"
@@ -179,34 +179,35 @@
                 </span>
             </div>
         </div>
-
         <!--Iteration-->
         <div class="col-md-12 col-sm-12 col-xs-12 detail-iteration-wrap">
           <span class="pull-left iteration-label">Iteration</span>
           <div class="pull-left detail-iteration-name">
-
-            <span *ngIf="!hasIteration && !searchIteration" (click)="lookupIterations()" class="clickable">None</span>
-
-            <span *ngIf="!hasIteration && searchIteration" class="dropdown" id="WI_details_iteration" dropdown>
-              <button class="btn btn-default dropdown-toggle" type="button" id="WI_details_iteration_dropdown" data-toggle="dropdown" dropdown-open>
-                None <span class="caret"></span>
+            <span *ngIf="!searchIteration" (click)="lookupIterations()" class="clickable">
+              {{ workItem.relationalData?.iteration?.attributes.name || "None" }}
+            </span>
+            <span *ngIf="searchIteration" class="dropdown"
+              id="WI_details_iteration" dropdown>
+              <button class="btn btn-default dropdown-toggle" type="button" #dropdownButton
+                id="WI_details_iteration_dropdown" data-toggle="dropdown" dropdown-open>
+                {{ workItem.relationalData?.iteration?.attributes.name || "None" }} <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" role="menu" aria-labelledby="WI_details_iteration_dropdown">
-                <li role="presentation"><a role="menuitem" tabindex="-1">None</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1">Iteration 1</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1">Iteration 2</a></li>
+                <li *ngFor="let iteration of iterations;" role="presentation">
+                  <a role="menuitem" tabindex="-1" (click)="selectIteration(iteration)">
+                    {{ iteration.attributes.name }}
+                  </a>
+                </li>
               </ul>
-              <button class="btn btn-lg btn-default" type="button">
+              <button class="btn btn-lg btn-default" type="button" (click)=assignIteration()>
                 <span class="fa fa-check"></span>
               </button>
-              <button class="btn btn-lg btn-default" type="button">
+              <button class="btn btn-lg btn-default" type="button" (click)=closeRestFields()>
                 <span class="pficon pficon-close"></span>
               </button>
             </span>
-
           </div>
         </div>
-
         <!--Description-->
         <div class="separator col-md-12 col-sm-12 col-xs-12 detail-description-wrap">
           <div class="col-md-12 col-sm-12 col-xs-12 detail-description" *ngIf="loggedIn">

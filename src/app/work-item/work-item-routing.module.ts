@@ -3,7 +3,7 @@ import { WorkItemDetailComponent } from './work-item-detail/work-item-detail.com
 import { WorkItemListComponent } from './work-item-list/work-item-list.component';
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { UsersResolve, AuthUserResolve } from './users.resolver';
+import { UsersResolve, AuthUserResolve, IterationsResolve } from './common.resolver';
 import { WorkItemComponent } from './work-item.component';
 
 const routes: Routes = [
@@ -11,8 +11,10 @@ const routes: Routes = [
     path: 'work-item',
     component: WorkItemComponent,
     resolve: {
+      allIterations: IterationsResolve,
       allusers: UsersResolve,
       authuser: AuthUserResolve
+
     },
     children: [
       {
@@ -22,6 +24,7 @@ const routes: Routes = [
         path: 'list',
         component: WorkItemListComponent,
         resolve: {
+          allIterations: IterationsResolve,
           allusers: UsersResolve,
           authuser: AuthUserResolve
         },
@@ -33,6 +36,7 @@ const routes: Routes = [
             path: 'detail/:id',
             component: WorkItemDetailComponent,
             resolve: {
+              allIterations: IterationsResolve,
               allusers: UsersResolve,
               authuser: AuthUserResolve
             },
@@ -44,6 +48,7 @@ const routes: Routes = [
         path: 'board',
         component: WorkItemBoardComponent,
         resolve: {
+          allIterations: IterationsResolve,
           allusers: UsersResolve,
           authuser: AuthUserResolve
         },
@@ -55,6 +60,7 @@ const routes: Routes = [
             path: 'detail/:id',
             component: WorkItemDetailComponent,
             resolve: {
+              allIterations: IterationsResolve,
               allusers: UsersResolve,
               authuser: AuthUserResolve
             },
