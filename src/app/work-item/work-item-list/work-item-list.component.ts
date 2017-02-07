@@ -21,6 +21,8 @@ import { WorkItem } from '../../models/work-item';
 import { WorkItemType }               from '../work-item-type';
 import { WorkItemListEntryComponent } from './work-item-list-entry/work-item-list-entry.component';
 import { WorkItemService }            from '../work-item.service';
+import { IterationModel } from '../../models/iteration.model';
+import { IterationService } from '../../iteration/iteration.service';
 import { UserService } from '../../user/user.service';
 import { User } from '../../models/user';
 
@@ -51,6 +53,8 @@ export class WorkItemListComponent implements OnInit, AfterViewInit {
   allUsers: User[] = [] as User[];
   authUser: any = null;
 
+  iterations: IterationModel[] = [];
+
   constructor(
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
@@ -59,11 +63,13 @@ export class WorkItemListComponent implements OnInit, AfterViewInit {
     private workItemService: WorkItemService,
     private logger: Logger,
     private userService: UserService,
+    private iterationService: IterationService,
     private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
+    this.iterations = this.iterationService.iterations;
     // console.log('ALL USER DATA', this.route.snapshot.data['allusers']);
     // console.log('AUTH USER DATA', this.route.snapshot.data['authuser']);
   }
