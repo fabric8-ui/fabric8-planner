@@ -42,9 +42,11 @@
   z-index: 10;
   min-width: em(330);
 }
-.toast-iteration-name {
-  max-width: em(80);
-  display: inline-block;
-  vertical-align: top;
-  font-weight: 700;
+.toast-wrapper {
+  display: flex;
+  .toast-iteration-name {
+    max-width: em(80);
+    margin-right: em(5);
+    line-height: 1.9;
+  }
 }
