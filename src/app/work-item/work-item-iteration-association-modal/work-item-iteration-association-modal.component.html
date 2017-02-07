@@ -14,10 +14,11 @@
                   #IterationName <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" role="menu">
-                <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 0</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 1</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 2</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 3</a></li>
+                <li *ngFor="let iteration of iterations;" role="presentation">
+                  <a role="menuitem" tabindex="-1">
+                    {{ iteration.attributes.name }}
+                  </a>
+                </li>
               </ul>
           </div>
         </div>
@@ -28,10 +29,11 @@
                   Select... <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" role="menu">
-                <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 0</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 1</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 2</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1">Itenration 3</a></li>
+                <li *ngFor="let iteration of iterations;" role="presentation">
+                  <a role="menuitem" tabindex="-1">
+                    {{ iteration.attributes.name }}
+                  </a>
+                </li>
               </ul>
           </div>
         </div>
