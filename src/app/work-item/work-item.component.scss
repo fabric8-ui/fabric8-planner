@@ -67,6 +67,11 @@
         }
       }
     }
+    .toolbar-pf-results{
+      .label > i , p > a{
+        cursor: pointer;
+      }
+    }
   }
 
   .main-container {
