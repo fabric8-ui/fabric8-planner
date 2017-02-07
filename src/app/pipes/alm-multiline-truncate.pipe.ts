@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 /*
  * Usage:
- *   {{ aParagraph | almMultilineTruncate:wordCount }}
+ *   {{ aParagraph | almMultilineTruncate:charCount }}
  *
  * Example:
  *  paragraph = "Lorem Ipsum is simply dummy text of the printing and
@@ -11,7 +11,7 @@ import { Pipe, PipeTransform } from '@angular/core';
  *               printer took a galley of type and scrambled it to make a
  *               type specimen book. "
  *
- * {{ paragraph | almMultilineTruncate:20 }}
+ * {{ paragraph | almMultilineTruncate:150 }}
  *
  * Output:
  * "Lorem Ipsum is simply dummy text of the printing and typesetting
@@ -20,14 +20,13 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({ name: 'almMultilineTruncate' })
 export class AlmMultilineTruncate implements PipeTransform {
-  transform(val: string, wordCount: number): any {
+  transform(val: string, charCount: number): any {
     if (!val) {
       return '';
     }
-    let words = val.split(' ');
-    if (words.length > wordCount){
-      words[wordCount - 1] = words[wordCount - 1] + '...';
-      return words.slice(0, wordCount).join(' ');
+    let substring = val.slice(0, charCount);
+    if (val.length > charCount){
+      return substring + '...';
     }
 
     return val;
