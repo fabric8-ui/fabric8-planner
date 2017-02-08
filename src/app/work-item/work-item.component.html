@@ -35,7 +35,7 @@
             <div class="input-group">
               <div class="input-group-btn" dropdown>
                 <button class="btn btn-default dropdown-toggle" type="button" id="wi_filter_dropdown" data-toggle="dropdown" dropdown-open>
-                  Filter
+                  User
                   <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="wi_filter_dropdown">
@@ -43,7 +43,7 @@
                     <span>No filters available</span>
                   </li>
                   <li *ngFor="let filter of filters;" role="presentation" (click)="activeFilter(filter.id)">
-                    <a role="menuitem" tabindex="-1">Filter</a> <!-- Manually put filter as not sure about this list -->
+                    <a role="menuitem" tabindex="-1">User</a> <!-- Manually put User as not sure about this list -->
                   </li>
                 </ul>
               </div>
