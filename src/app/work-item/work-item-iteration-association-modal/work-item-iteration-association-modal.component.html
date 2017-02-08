@@ -2,13 +2,13 @@
   <modal-content>
     <div class="col-md-12 col-sm-12 col-xs-12">
       <div *ngIf="isAssociated">
-        <strong>#ThisWorkItem</strong>
+        <strong>{{ workItem.attributes['system.title'] }}</strong>
         is currently associated with
         <strong>#IterationName</strong>
       </div>
       <div class="form-group" [class.has-error]="validationError">
         <div *ngIf="isAssociated" class="search-pf-input-group">
-          <label>Reassociate <strong>#ThisWorkItem</strong> with</label>
+          <label>Reassociate <strong>{{ workItem.attributes['system.title'] }}</strong> with</label>
           <div class="dropdown dib" dropdown>
               <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" dropdown-open>
                   #IterationName <span class="caret"></span>
@@ -23,7 +23,7 @@
           </div>
         </div>
         <div *ngIf="!isAssociated" class="search-pf-input-group">
-          <label>Associate <strong>#ThisWorkItem</strong> with</label>
+          <label>Associate <strong>{{ workItem.attributes['system.title'] }}</strong> with</label>
           <div class="dropdown dib" dropdown>
               <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" dropdown-open>
                   Select... <span class="caret"></span>

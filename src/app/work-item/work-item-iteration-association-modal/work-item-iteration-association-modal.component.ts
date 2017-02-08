@@ -17,9 +17,10 @@ import { IterationService }  from '../../iteration/iteration.service';
 })
 export class FabPlannerAssociateIterationModalComponent implements OnInit, OnChanges {
 
+  @Input() workItem: WorkItem;
   @ViewChild('iterationAssociationModal') iterationAssociationModal: any;
 
-  iterations: IterationModel[] = [];
+  iterations: IterationModel[];
 
   constructor(
     private auth: AuthenticationService,
