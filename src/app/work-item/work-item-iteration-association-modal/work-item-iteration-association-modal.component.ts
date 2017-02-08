@@ -18,9 +18,11 @@ import { IterationService }  from '../../iteration/iteration.service';
 export class FabPlannerAssociateIterationModalComponent implements OnInit, OnChanges {
 
   @Input() workItem: WorkItem;
+  @ViewChild('dropdownButton') dropdownButton: any;
   @ViewChild('iterationAssociationModal') iterationAssociationModal: any;
 
   iterations: IterationModel[];
+  selectedIteration: IterationModel;
 
   constructor(
     private auth: AuthenticationService,
@@ -36,6 +38,30 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
 
   ngOnChanges() {
 
+  }
+
+  onChangeIteration(iteration: IterationModel): void {
+    this.selectedIteration = iteration;
+    this.dropdownButton.nativeElement.innerHTML = this.selectedIteration.attributes.name + ' <span class="caret"></span>'
+  }
+
+  assignIteration(event: MouseEvent): void {
+    this.workItem.relationships.iteration = {
+      data: {
+        id: this.selectedIteration.id,
+        type: 'iteration'
+      }
+    };
+    this.save();
+    this.iterationAssociationModal.close();
+  }
+
+  save(): void {
+    this.workItemService
+      .update(this.workItem)
+      .then((workItem) => {
+        this.selectedIteration = null;
+      });
   }
 
   open() {
