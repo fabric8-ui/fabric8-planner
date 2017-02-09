@@ -43,7 +43,7 @@
                     <span>No filters available</span>
                   </li>
                   <li *ngFor="let filter of filters;" role="presentation">
-                    <a role="menuitem" tabindex="-1">User</a> <!-- Manually put User as not sure about this list -->
+                    <a role="menuitem" tabindex="-1" class="pointer">User</a> <!-- Manually put User as not sure about this list -->
                   </li>
                 </ul>
               </div>
@@ -57,7 +57,7 @@
                     <span>No filters available</span>
                   </li>
                   <li *ngFor="let filter of filters;" role="presentation" (click)="activeFilter(filter.id)">
-                    <a role="menuitem" tabindex="-1">{{filter.name}}</a>
+                    <a role="menuitem" tabindex="-1" class="pointer">{{filter.name}}</a>
                   </li>
                 </ul>
               </div>
