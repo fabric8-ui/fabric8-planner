@@ -41,8 +41,19 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
   }
 
   onChangeIteration(iteration: IterationModel): void {
+    // Cache changed iteration
     this.selectedIteration = iteration;
-    this.dropdownButton.nativeElement.innerHTML = this.selectedIteration.attributes.name + ' <span class="caret"></span>'
+
+    // Update dropdown button content
+    this.dropdownButton.nativeElement.innerHTML = this.selectedIteration.attributes.name + ' <span class="caret"></span>';
+
+    // Enable/disable confirmation button if iteration was changed
+    let commit = document.querySelector("#associate-iteration-button");
+    if (this.workItem.relationalData.iteration.id === this.selectedIteration.id) {
+      commit.setAttribute("disabled", "true");
+    } else {
+      commit.removeAttribute("disabled");
+    }
   }
 
   assignIteration(event: MouseEvent): void {
