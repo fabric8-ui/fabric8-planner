@@ -87,6 +87,18 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.clusterIterations();
   }
 
+  getWorkItemsByIteration(iteration: IterationModel) {
+    let filters: any = [];
+    filters.push({
+        id:  iteration.id,
+        name: iteration.attributes.name,
+        paramKey: 'filter[iteration]',
+        active: true,
+        value: iteration.id
+      });
+    this.broadcaster.broadcast('item_filter', filters);
+  }
+
   listenToEvents() {
     this.broadcaster.on<string>('logout')
       .subscribe(message => {

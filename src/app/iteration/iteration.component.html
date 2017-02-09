@@ -26,7 +26,8 @@
           <div class="iteration-name-container">
             <strong class="iteration-name truncate"
               tooltip="{{iteration.attributes.name}}"
-              tooltipPlacement="top">
+              tooltipPlacement="top"
+              (click)='getWorkItemsByIteration(iteration)'>
               {{iteration.attributes.name}}
             </strong>
           </div>
@@ -103,7 +104,8 @@
         <div class="iteration-name-container">
           <strong class="iteration-name truncate"
             tooltip="{{iteration.attributes.name}}"
-            tooltipPlacement="top">
+            tooltipPlacement="top"
+            (click)='getWorkItemsByIteration(iteration)'>
             {{iteration.attributes.name}}
           </strong>
         </div>
@@ -151,7 +153,8 @@
         <div class="iteration-name-container">
           <strong class="iteration-name truncate"
             tooltip="{{iteration.attributes.name}}"
-            tooltipPlacement="top">
+            tooltipPlacement="top"
+            (click)='getWorkItemsByIteration(iteration)'>
             {{iteration.attributes.name}}
           </strong>
         </div>
