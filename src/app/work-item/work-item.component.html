@@ -42,7 +42,7 @@
                   <li *ngIf="!filters.length">
                     <span>No filters available</span>
                   </li>
-                  <li *ngFor="let filter of filters;" role="presentation" (click)="activeFilter(filter.id)">
+                  <li *ngFor="let filter of filters;" role="presentation">
                     <a role="menuitem" tabindex="-1">User</a> <!-- Manually put User as not sure about this list -->
                   </li>
                 </ul>
