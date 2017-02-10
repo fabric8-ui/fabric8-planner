@@ -31,7 +31,7 @@
       .card-pf-info{
         min-height: 4.5em;
         font-size: em(14);
-        @include multiline-truncate( $line-height: 1.5em, $line-count: 3, $bg-color: $color-pf-white) ;
+        @include multiline-truncate($line-height: 1.5em, $line-count: 3, $bg-color: $color-pf-white) ;
       }
     }
   }
