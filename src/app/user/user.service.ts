@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import { MockHttp } from './../shared/mock-http';
 import Globals = require('./../shared/globals');
 
@@ -15,7 +16,7 @@ import { User } from '../models/user';
 export class UserService {
   private headers = new Headers({'Content-Type': 'application/json'});
   private userUrl = process.env.API_URL + 'user';  // URL to web api
-  private identitiesUrl = process.env.API_URL + 'identities';  // URL to web api
+  private usersUrl = process.env.API_URL + 'users';  // URL to web api
   userData: User = {} as User;
   allUserData: User[] = [];
 
@@ -30,7 +31,7 @@ export class UserService {
     } else {
       logger.log('UserService running in production mode.');
     }
-    logger.log('UserService using user url ' + this.userUrl + ' identity url ' + this.identitiesUrl);
+    logger.log('UserService using user url ' + this.userUrl + ' users url ' + this.usersUrl);
 
     this.broadcaster.on<string>('logout')
         .subscribe(message => {
@@ -58,13 +59,10 @@ export class UserService {
           .toPromise()
           .then(response => {
             let userData = response.json().data as User;
-            // The reference of this.userData is 
+            // The reference of this.userData is
             // being used in Header
             // So updating the value like that
-            this.userData.attributes = {
-              fullName: userData.attributes.fullName,
-              imageURL: userData.attributes.imageURL
-            };
+            this.userData.attributes = cloneDeep(userData.attributes);
             this.userData.id = userData.id;
             return this.userData;
           })
@@ -79,10 +77,10 @@ export class UserService {
       });
     } else {
       return this.http
-          .get(this.identitiesUrl, {headers: this.headers})
+          .get(this.usersUrl, {headers: this.headers})
           .toPromise()
           .then(response => {
-            this.allUserData = response.json().data as User[]; 
+            this.allUserData = response.json().data as User[];
             return this.allUserData;
           })
           .catch(this.handleError);
