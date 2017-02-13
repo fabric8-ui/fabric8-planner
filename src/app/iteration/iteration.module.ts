@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { CollapseModule } from 'ng2-bootstrap';
 import { DropdownModule } from 'ng2-dropdown';
 
+import { AlmMultilineTruncate } from './../pipes/alm-multiline-truncate.pipe';
 import { FabPlannerIterationModalComponent } from './iteration-modal/iteration-modal.component';
 import { MyDatePickerModule } from 'mydatepicker';
 import { IterationComponent } from './iteration.component';
@@ -23,6 +24,7 @@ import { TooltipModule } from 'ng2-bootstrap/components/tooltip';
     TooltipModule
   ],
   declarations: [
+    AlmMultilineTruncate,
     FabPlannerIterationModalComponent,
     IterationComponent
   ],
