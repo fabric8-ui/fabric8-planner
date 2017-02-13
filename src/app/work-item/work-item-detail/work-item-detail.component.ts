@@ -265,6 +265,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
       this.closeRestFields();
       this.descEditable = true;
       this.descViewType = 'markdown';
+      setTimeout(() => this.description.nativeElement.focus());
     }
   }
 
