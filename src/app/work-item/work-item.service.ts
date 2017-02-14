@@ -1026,7 +1026,13 @@ export class WorkItemService {
       .post(this.renderUrl, JSON.stringify(params), { headers: this.headers })
       .toPromise()
       .then(response => response.json().data.attributes.renderedContent)
-      .catch(this.handleError);
+      .catch ((e) => {
+        if (e.status === 401) {
+          this.auth.logout(true);
+        } else {
+          this.handleError(e);
+        }
+      });
   }
 
   private handleError(error: any): Promise<any> {
