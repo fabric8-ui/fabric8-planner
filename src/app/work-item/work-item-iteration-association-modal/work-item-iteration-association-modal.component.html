@@ -39,7 +39,7 @@
       <!-- Action buttons to commit/abort -->
       <div class="text-right">
         <button class="btn" type="submit" id="cancel-iteration-button" (click)="iterationAssociationModal.close()">Cancel</button>
-        <button class="btn btn-primary" type="submit" id="associate-iteration-button" disabled (click)="assignIteration()">
+        <button class="btn btn-primary" type="submit" id="associate-iteration-button" disabled #commitAssociation (click)="assignIteration()">
           {{ !!(workItem.relationalData.iteration) ? "Reassociate" : "Associate" }}
         </button>
       </div>

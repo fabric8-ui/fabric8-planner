@@ -19,6 +19,7 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
 
   @Input() workItem: WorkItem;
   @ViewChild('dropdownButton') dropdownButton: any;
+  @ViewChild('commitAssociation') commitAssociation: any;
   @ViewChild('iterationAssociationModal') iterationAssociationModal: any;
 
   iterations: IterationModel[];
@@ -48,11 +49,11 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
     this.dropdownButton.nativeElement.innerHTML = this.selectedIteration.attributes.name + ' <span class="caret"></span>';
 
     // Enable/disable confirmation button if iteration was changed
-    let commit = document.querySelector("#associate-iteration-button");
-    if (this.workItem.relationalData.iteration.id === this.selectedIteration.id) {
-      commit.setAttribute("disabled", "true");
+    if (!!this.workItem.relationalData.iteration &&
+        this.workItem.relationalData.iteration.id === this.selectedIteration.id) {
+      this.commitAssociation.nativeElement.setAttribute("disabled", "true");
     } else {
-      commit.removeAttribute("disabled");
+      this.commitAssociation.nativeElement.removeAttribute("disabled");
     }
   }
 
