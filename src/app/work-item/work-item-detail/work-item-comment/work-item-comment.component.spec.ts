@@ -10,7 +10,7 @@ import {
 
 import { Location } from '@angular/common';
 import { SpyLocation } from '@angular/common/testing';
-import { DebugElement, Component } from '@angular/core';
+import { DebugElement } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
