@@ -101,7 +101,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnChanges {
     if (this.modalType == 'update') {
       this.submitBtnTxt = 'Update';
       this.modalTitle = 'Update Iteration';
-      if(iteration.attributes.state === 'start') {
+      if (iteration.attributes.state === 'start') {
         let startDatePickerComponentCopy = Object.assign({}, this.startDatePickerOptions);
         startDatePickerComponentCopy.componentDisabled = true;
         this.startDatePickerOptions = startDatePickerComponentCopy;
@@ -193,9 +193,9 @@ export class FabPlannerIterationModalComponent implements OnInit, OnChanges {
             this.iterationService.updateIteration(this.iteration)
             .then((iteration) => {
               this.onSubmit.emit(iteration);
-              if(this.modalType == 'start') {
+              if (this.modalType == 'start') {
                 let toastIterationName = this.iteration.attributes.name;
-                if(toastIterationName.length > 15) {
+                if (toastIterationName.length > 15) {
                   toastIterationName = toastIterationName.slice(0, 15) + '...';
                 }
                 let notificationData = {

@@ -56,7 +56,7 @@ import { ObsidianModule } from './obsidian/obsidian.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { LearnModule } from './learn/learn.module';
 
-import { ToastNotification } from './toast-notification/toast-notification.component';
+import { ToastNotificationComponent } from './toast-notification/toast-notification.component';
 
 // conditionally import the inmemory resource module
 var serviceImports: Array<any[] | any | ModuleWithProviders>;
@@ -115,7 +115,7 @@ if (process.env.ENV == 'inmemory') {
     FooterComponent,
     HeaderComponent,
     LoginComponent,
-    ToastNotification,
+    ToastNotificationComponent,
     WorkItemSearchComponent
   ],
   providers: serviceImports,

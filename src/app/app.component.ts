@@ -41,7 +41,7 @@ export class AppComponent implements OnInit {
           iconClass: this.notificationTypeIcon[notificationData.notificationType]
         });
         let interval = setInterval(() => {
-          if(this.notifications.length) {
+          if (this.notifications.length) {
             this.notifications.splice(-1, 1);
           }
           else {

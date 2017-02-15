@@ -5,7 +5,7 @@ import { Component, OnInit, Input } from '@angular/core';
   templateUrl: './toast-notification.component.html',
   styleUrls: ['./toast-notification.component.scss']
 })
-export class ToastNotification {
+export class ToastNotificationComponent {
 
   @Input() notifications: any;
 
