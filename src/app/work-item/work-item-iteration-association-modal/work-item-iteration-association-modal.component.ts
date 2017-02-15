@@ -65,7 +65,9 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
       }
     };
     this.save();
+    this.selectedIteration = null;
     this.iterationAssociationModal.close();
+    this.commitAssociation.nativeElement.setAttribute("disabled", "true");
   }
 
   save(): void {
