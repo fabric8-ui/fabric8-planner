@@ -40,6 +40,14 @@ export class AppComponent implements OnInit {
           alertClass: this.notificationType[notificationData.notificationType],
           iconClass: this.notificationTypeIcon[notificationData.notificationType]
         });
+        let interval = setInterval(() => {
+          if(this.notifications.length) {
+            this.notifications.splice(-1, 1);
+          }
+          else {
+            clearInterval(interval);
+          }
+        }, 10000);
     });
   }
 }
