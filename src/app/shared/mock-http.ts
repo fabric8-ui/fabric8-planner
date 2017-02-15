@@ -70,6 +70,10 @@ export class MockHttp extends Http {
         result['extraPath'] = result.path.replace(/^\/workitems\//, '');
         result['path'] = '/workitems';
       }
+      if (result.path.indexOf('/workitemlinks/') == 0) {
+        result['extraPath'] = result.path.replace(/^\/workitemlinks\//, '');
+        result['path'] = '/workitemlinks';
+      }
       this.logger.log('Parsed request path: ' + JSON.stringify(result));
       return result;
     }
@@ -184,6 +188,8 @@ export class MockHttp extends Http {
           return this.createResponse(url.toString(), 500, 'not supported yet.', { } );
         case '/spaces':
           return this.createResponse(url.toString(), 500, 'not supported yet.', { } );
+        case '/search':
+          return this.createResponse(url.toString(), 200, 'ok', { data: this.mockDataService.getWorkItems() });
       }
     };
 
@@ -202,7 +208,10 @@ export class MockHttp extends Http {
           body = JSON.parse(body);
         return this.createResponse(url.toString(), 200, 'ok', this.mockDataService.createWorkItemOrEntity(path.extraPath, body));
       } else if (path.path === '/workitemlinks') {
-        return this.createResponse(url.toString(), 200, 'ok', { data: this.mockDataService.createWorkItemLink(JSON.parse(body).data) });
+        return this.createResponse(url.toString(), 200, 'ok', {
+          data: this.mockDataService.createWorkItemLink(JSON.parse(body).data),
+          included: this.mockDataService.createWorkItemLinkIncludes(JSON.parse(body).data)
+        });
       } else
         return this.createResponse(url.toString(), 500, 'POST to unknown resource: ' + path.path, {});
     };

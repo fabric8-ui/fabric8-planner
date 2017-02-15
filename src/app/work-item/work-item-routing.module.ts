@@ -17,9 +17,7 @@ const routes: Routes = [
 
     },
     children: [
-      {
-        path: ''
-      },
+      { path: '' }, // FIXME: this empty child is required to make it work for the "old" runtime but breaks library integration!
       {
         path: 'list',
         component: WorkItemListComponent,
@@ -29,9 +27,7 @@ const routes: Routes = [
           authuser: AuthUserResolve
         },
         children: [
-          {
-            path: ''
-          },
+          { path: '' }, // FIXME: this empty child is required to make it work for the "old" runtime but breaks library integration!
           {
             path: 'detail/:id',
             component: WorkItemDetailComponent,
@@ -39,11 +35,10 @@ const routes: Routes = [
               allIterations: IterationsResolve,
               allusers: UsersResolve,
               authuser: AuthUserResolve
-            },
+            }
           }
         ]
       },
-
       {
         path: 'board',
         component: WorkItemBoardComponent,
@@ -53,9 +48,7 @@ const routes: Routes = [
           authuser: AuthUserResolve
         },
         children: [
-          {
-            path: ''
-          },
+          { path: '' }, // FIXME: this empty child is required to make it work for the "old" runtime but breaks library integration!
           {
             path: 'detail/:id',
             component: WorkItemDetailComponent,
@@ -63,12 +56,11 @@ const routes: Routes = [
               allIterations: IterationsResolve,
               allusers: UsersResolve,
               authuser: AuthUserResolve
-            },
+            }
           }
         ]
       }
     ]
-
   }
 ];
 
