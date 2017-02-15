@@ -10,7 +10,7 @@ import {
 
 import { Location } from '@angular/common';
 import { SpyLocation } from '@angular/common/testing';
-import { DebugElement } from '@angular/core';
+import { DebugElement, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -48,6 +48,8 @@ import { WorkItemLinkComponent } from './../work-item-link/work-item-link.compon
 import { WorkItemCommentComponent } from './../work-item-comment/work-item-comment.component';
 import { WorkItemDetailComponent } from './../work-item-detail.component';
 import { WorkItemLinkTypeFilterByTypeName, WorkItemLinkFilterByTypeName } from './../work-item-detail-pipes/work-item-link-filters.pipe';
+
+import { CollapseModule } from 'ng2-bootstrap/components/collapse';
 
 describe('Comment section for the work item detailed view - ', () => {
   let comp: WorkItemDetailComponent;
@@ -364,6 +366,7 @@ describe('Comment section for the work item detailed view - ', () => {
         RouterTestingModule.withRoutes([
           { path: 'work-item/list/detail/1', component: WorkItemDetailComponent }
         ]),
+        CollapseModule,
         CommonModule,
         TooltipModule,
         DropdownModule,
