@@ -6,10 +6,10 @@
     <span class="quick-add-label">Create Work Item</span>
   </div>
   <div class="col-md-12 col-sm-12 col-xs-12 addWorkItemBlk " *ngIf="showQuickAdd">
-    <div class="workItemQuickAdd_IconType">
+    <div class="workItemQuickAdd_IconType btn btn-default">
       <i class="fa fa-bookmark pull-left "></i>
     </div>
-    <div class=" workItemQuickAdd_story">
+    <div class="workItemQuickAdd_story">
       <div class="col-md-6 col-sm-6 col-xs-12 workItemQuickAdd_storyInput">
         <input #quickAddTitle type="text" id="exampleInput" class="form-control col-md-12 col-sm-12 col-xs-12"  [(ngModel)]="workItem.attributes['system.title']"
               (keyup.enter)="save($event)"
@@ -27,9 +27,9 @@
       </div>
     </div>
     <div class="workItemQuickAdd_AddBlk">
-      <span class="pull-left workItemQuickAdd_Add"
+      <span class="pull-left workItemQuickAdd_Add btn btn-default"
         (click)="save($event)" [ngClass]="{'icon-btn': validTitle,'icon-btn-disabled':!validTitle}"><i class="fa fa-check"></i></span>
-      <span (click)="toggleQuickAdd()" class="pull-right closeQuickAdd"><i class="pficon-close"></i></span>
+      <span (click)="toggleQuickAdd()" class="pull-right closeQuickAdd btn btn-default"><i class="pficon-close"></i></span>
     </div>
   </div>
 </div>

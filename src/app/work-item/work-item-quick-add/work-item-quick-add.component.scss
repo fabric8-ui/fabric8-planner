@@ -20,7 +20,6 @@
       padding-left: em(5);
     }
     .workItemQuickAdd_saveBtn{
-      vertical-align: top;
       display: inline-block;
       margin:0;
       &:hover{
@@ -29,7 +28,11 @@
 
     }
     i {
+      color: $navbar-pf-border-color;
       display: inline-block;
+      &:hover {
+        color: $navbar-pf-border-color;
+      }
     }
   }
   .addWorkItemBlk {
@@ -41,33 +44,33 @@
       float: left;
       position: relative;
       i{
-        position: absolute;
-        font-size:em(18);
-        top:50%;
-        @include transform(translateY(-50%));
+        //position: absolute;
+        font-size:em(14);
+        //top:50%;
+        //@include transform(translateY(-50%));
       }
     }
     .workItemQuickAdd_story{
       padding-left:em(24);
-      padding-right: em(36);
+      padding-right: em(48);
     }
     .workItemQuickAdd_AddBlk{
       position: absolute;
       top: 50%;
       @include transform(translateY(-50%));
       right: em(9);
-      width: em(36);
       .workItemQuickAdd_Add{
         text-align: right;
         font-size: em(14);
-        border: 1px solid $color-pf-black-300;
+        min-width: 30px;
+        height: 27px;
         padding: 5px;
         i{
           font-size: em(14);
         }
       }
       .closeQuickAdd{
-        border: 1px solid $color-pf-black-300;
+        min-width: 30px;
         margin-left: 5px;
         padding: 5px;
         i{
