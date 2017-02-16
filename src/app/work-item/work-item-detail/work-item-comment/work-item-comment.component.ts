@@ -19,6 +19,7 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
     comment: Comment;
     users: User[];
     isCollapsedComments: Boolean = false;
+    currentUser: User;
 
     constructor(
         private workItemService: WorkItemService,
@@ -30,6 +31,7 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
 
     ngOnInit() {
         this.UserService.getAllUsers().then((users) => this.users = users);
+        this.currentUser = this.UserService.getSavedLoggedInUser();
         this.createCommentObject();
     }
 
