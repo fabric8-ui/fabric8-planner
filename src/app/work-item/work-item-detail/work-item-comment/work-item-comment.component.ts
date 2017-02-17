@@ -66,6 +66,22 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
             });
     }
 
+    updateComment(event: any = null, comment: Comment): void {
+        this.preventDef(event);
+        this.comment.id = comment.id;
+        this.comment.attributes.body = event.target.textContent;
+
+        this.workItemService
+            .updateComment(this.comment)
+            .then(response => {
+                event.target.blur();
+                this.createCommentObject();
+            })
+            .catch ((error) => {
+                console.log(error);
+            });
+    }
+
     resetCommentDraft(event: any = null): void {
         let commentbox  = event.target,
             placeholder = event.target.dataset.placeholder;
