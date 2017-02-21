@@ -14,7 +14,7 @@ module.exports = {
   },
 
   resolve: {
-    extensions: ['', '.webpack.js', '.wep.js', '.js', '.ts']
+    extensions: ['.webpack.js', '.wep.js', '.js', '.ts']
   },
 
   stats: {
@@ -23,44 +23,107 @@ module.exports = {
   },
 
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.ts$/,
-        loaders: ['ts', 'angular2-template-loader'],
+        loaders: [
+          'ts-loader',
+          'angular2-template-loader'
+        ],
         exclude: [/\.(spec|e2e)\.ts$/]
       },
       {
         test: /\.html$/,
-        loader: 'html'
+        loader: 'html-loader'
       },
       {
         test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
-        loader: 'file?name=assets/[name].[hash].[ext]'
+        loader: 'file-loader?name=assets/[name].[hash].[ext]'
+      },
+      // {
+      //   test: /\.(css|scss)$/,
+      //   loaders: ['to-string-loader', 'css-loader', 'sass-loader'],
+      //   include: helpers.root('src', 'app'),
+      // },
+      // { test: /\.css$/,
+      //   exclude: [helpers.root('src', 'app')],
+      //   use: ExtractTextPlugin.extract({
+      //     fallback: 'style-loader',
+      //     use: [
+      //       { loader: 'css-loader', query: { modules: true, sourceMaps: true } },
+      //       { loader: 'postcss-loader'  }
+      //     ]
+      //   })
+      // },
+      // {
+      //   test: /\.css$/,
+      //   include: [helpers.root('src', 'app')],
+      //   use: [
+      //     { loader: 'raw-loader' },
+      //     { loader: 'postcss-loader' }
+      //   ]
+      // },
+
+
+      {
+        test: /(\.css|\.scss)$/,
+        exclude: [helpers.root('src', 'app')],
+        use: ExtractTextPlugin
+          .extract({
+            // fallback: 'style-loader',
+            use: [
+              // { loader: 'to-string-loader'},
+              { loader: 'css-loader',
+                options: {
+                  modules: true,
+                  sourceMaps: true,
+                  importLoaders: true,
+                  // localIdentName: "[name]__[local]___[hash:base64:5]"
+                }
+              },
+              { loader: 'postcss-loader',
+                options: {
+                  plugins: function () {
+                    return [
+                      require("autoprefixer")
+                    ];
+                  }
+                }
+              },
+              { loader: 'sass-loader',
+                options: {
+                  sourceMaps: true
+                }
+              }
+            ]
+          })
       },
       {
-        test: /\.css$/,
-        exclude: helpers.root('src', 'app'),
-        loader: ExtractTextPlugin.extract('style', 'css?sourceMap!postcss')
-      },
-      {
-        test: /\.css$/,
-        include: helpers.root('src', 'app'),
-        loader: 'raw!postcss'
-      },
-      {
-        test: /\.scss$/,
-        exclude: helpers.root('src', 'app'),
-        loader: ExtractTextPlugin.extract('style', 'css?sourceMap!postcss!resolve-url!sass?sourceMap')
-      },
-      { 
-        test: /\.scss$/,
-        include: helpers.root('src', 'app'),
-        loaders: ['exports-loader?module.exports.toString()', 'css', 'postcss', 'sass']
+        test: /(\.css|\.scss)$/,
+        include: [helpers.root('src', 'app')],
+        use: [
+          { loader: 'raw-loader' },
+          { loader: 'postcss-loader' },
+          { loader: 'sass-loader', options: { sourceMaps: true } }
+        ]
       }
+      // {
+      //   test: /\.css$/,
+      //   include: helpers.root('src', 'app'),
+      //   loader: 'raw-loader!postcss-loader'
+      // },
+      // {
+      //   test: /\.scss$/,
+      //   include: helpers.root('src', 'app'),
+      //   loaders: ['raw-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+      // }
     ]
   },
 
   plugins: [
+    // require('postcss-import')(),
+    // require('autoprefixer')(),
+
     new webpack.optimize.CommonsChunkPlugin({
       name: ['app', 'vendor', 'polyfills']
     }),
@@ -83,7 +146,7 @@ module.exports = {
     })
   ],
 
-  postcss: function () {
-      return [precss, autoprefixer({ browsers: ['last 2 versions'] })];
-  }
+  // postcss: function () {
+  //     return [precss, autoprefixer({ browsers: ['last 2 versions'] })];
+  // }
 };
