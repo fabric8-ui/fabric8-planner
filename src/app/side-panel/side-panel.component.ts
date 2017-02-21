@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router }            from '@angular/router';
-import { Broadcaster } from './../shared/broadcaster.service';
+import { Broadcaster }       from './../shared/broadcaster.service';
 
 
 @Component({
@@ -19,7 +19,7 @@ export class SidepanelComponent implements OnInit {
   ngOnInit() {
   }
 
-   getWorkItemsByIteration(iteration: any) {
+  getWorkItemsByIteration(iteration: any) {
     let filters: any = [];
     filters.push({
       paramKey: 'filter[iteration]',
@@ -27,5 +27,4 @@ export class SidepanelComponent implements OnInit {
     });
     this.broadcaster.broadcast('unique_filter', filters);
   }
-
 }

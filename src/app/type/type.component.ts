@@ -5,7 +5,6 @@ import { Params, ActivatedRoute } from '@angular/router';
 import { SpaceService, Space } from './../shared/mock-spaces.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { AuthenticationService } from './../auth/authentication.service';
 import { Broadcaster } from './../shared/broadcaster.service';
 
 @Component({
@@ -20,15 +19,12 @@ export class TypeComponent implements OnInit, OnDestroy {
   private spaceSubscription: Subscription = null;
 
   constructor(
-    private auth: AuthenticationService,
     private broadcaster: Broadcaster,
     private spaceService: SpaceService,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.listenToEvents();
-    this.loggedIn = this.auth.isLoggedIn();
     this.spaceSubscription = this.spaceService.getCurrentSpaceBus().subscribe(space => console.log('[IterationComponent] New Space selected: ' + space.name));
   }
 
@@ -47,12 +43,4 @@ export class TypeComponent implements OnInit, OnDestroy {
     });
     this.broadcaster.broadcast('unique_filter', filters);
   }
-
-  listenToEvents() {
-    this.broadcaster.on<string>('logout')
-      .subscribe(message => {
-        this.loggedIn = false;
-        this.authUser = null;
-    });
-  }
- }
+}
