@@ -42,8 +42,10 @@ export class IterationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
-    this.getAndfilterIterations();
-    this.spaceSubscription = this.spaceService.getCurrentSpaceBus().subscribe(space => console.log('[IterationComponent] New Space selected: ' + space.name));
+    this.spaceSubscription = this.spaceService.getCurrentSpaceBus().subscribe(space => { 
+      console.log('[IterationComponent] New Space selected: ' + space.name); 
+      this.getAndfilterIterations();
+    });
   }
 
   ngOnDestroy() {
@@ -52,22 +54,13 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   getAndfilterIterations() {
-    // Fetching space data
-    // This is temporary
-    this.spaceService.getCurrentSpace()
-      .then((data) => {
-        this.iterationService.getIterations(data.iterationsUrl)
-        .then((iterations) => {
+      this.iterationService.getIterations()
+      .then((iterations) => {
           this.allIterations = iterations;
           this.clusterIterations();
-        })
-        .catch ((e) => {
-          console.log('Some error has occured', e);
-        });
       })
-      .catch ((err: any) => {
-        console.log('Space not found');
-        console.log(err);
+      .catch ((e) => {
+        console.log('Some error has occured', e);
       });
   }
 
