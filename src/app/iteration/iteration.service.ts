@@ -1,12 +1,16 @@
-import { cloneDeep } from 'lodash';
-import { Http, Headers } from '@angular/http';
-import { AuthenticationService } from './../auth/authentication.service';
-import { IterationModel } from './../models/iteration.model';
-import { Injectable } from '@angular/core';
-
-import { Logger } from './../shared/logger.service';
-import { MockHttp } from './../shared/mock-http';
 import Globals = require('./../shared/globals');
+
+import { Injectable } from '@angular/core';
+import { Http, Headers } from '@angular/http';
+
+import { cloneDeep } from 'lodash';
+import {
+  AuthenticationService,
+  Logger
+} from 'ngx-login-client';
+
+import { IterationModel } from '../models/iteration.model';
+import { MockHttp } from '../shared/mock-http';
 
 @Injectable()
 export class IterationService {
