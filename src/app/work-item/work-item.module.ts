@@ -22,6 +22,8 @@ import { WorkItemListEntryComponent } from './work-item-list/work-item-list-entr
 import { WorkItemListComponent } from './work-item-list/work-item-list.component';
 import { WorkItemQuickAddModule } from './work-item-quick-add/work-item-quick-add.module';
 import { WorkItemRoutingModule } from './work-item-routing.module';
+import { TreeModule } from 'angular2-tree-component';
+import { TreeListModule, } from './../shared-component/treelist/treelist.module';
 
 @NgModule({
   imports: [
@@ -37,7 +39,9 @@ import { WorkItemRoutingModule } from './work-item-routing.module';
     TooltipModule,
     WorkItemDetailModule,
     WorkItemRoutingModule,
-    WorkItemQuickAddModule
+    WorkItemQuickAddModule,
+    TreeModule,
+    TreeListModule
   ],
   declarations: [
     AlmArrayFilter,
