@@ -13,7 +13,7 @@ import {
 import { MockDataService } from './mock-data.service';
 import { SpaceMockGenerator } from './mock-data/space-mock-generator';
 import { MockHttp } from './mock-http';
-import Globals = require('./../shared/globals');
+import { inTestMode } from './globals';
 
 @Injectable()
 export class SpaceService {
@@ -28,7 +28,7 @@ export class SpaceService {
     // init mock data and broadcaster
     // TODO: evaluate if the local broadcaster or a global broadcaster (like in Broadcaster service class) makes sense.
     // FIXME: Need to find out a better way to write this service and event listener
-    if (Globals.inTestMode) {
+    if (inTestMode) {
       this.logger.log('SpaceService running in ' + process.env.ENV + ' mode.');
       this.spaces = this.createSpacesFromServiceResponse(mockDataService.getAllSpaces());
       this.initSpaces();
@@ -69,9 +69,9 @@ export class SpaceService {
   }
 
   private createSpacesFromServiceResponse(response: any): Space[] {
-    var result: Space[] = [];
-    for (var i = 0; i < response.length; i++) {
-      var thisElem = response[i];
+    let result: Space[] = [];
+    for (let i = 0; i < response.length; i++) {
+      let thisElem = response[i];
       let thisTeam: Team = {
         name: 'Team ' + thisElem.attributes.name,
         members: [ this.mockDataService.getUser() ]

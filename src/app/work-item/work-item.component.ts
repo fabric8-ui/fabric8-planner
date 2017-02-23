@@ -119,7 +119,7 @@ export class WorkItemComponent implements OnInit, AfterViewInit {
 
   moveItem(moveto: string) {
     this.broadcaster.broadcast('move_item', moveto);
-  }
+  };
 
   //Detailed add functions
   getWorkItemTypes(){
