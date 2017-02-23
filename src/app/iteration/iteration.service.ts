@@ -1,4 +1,4 @@
-import Globals = require('./../shared/globals');
+import { GlobalSettings } from '../shared/globals';
 
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
@@ -20,13 +20,18 @@ export class IterationService {
   constructor(
       private logger: Logger,
       private http: Http,
-      private auth: AuthenticationService) {
-    if (Globals.inTestMode) {
+      private auth: AuthenticationService,
+      private globalSettings: GlobalSettings
+  ) {
+    let testMode: boolean;
+    this.globalSettings.inTestMode$.subscribe(mode => mode = testMode);
+    if (testMode) {
       this.logger.log('IterationService running in ' + process.env.ENV + ' mode.');
       this.http = new MockHttp(logger);
     } else {
       this.logger.log('IterationService running in production mode.');
     }
+    this.logger.log('GlobalSettings.inTestMode = ' + testMode);
     if (this.auth.getToken() != null) {
       this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
     }
