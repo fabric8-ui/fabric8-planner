@@ -457,8 +457,8 @@ class WorkItemListPage {
     return this.workItemKebabMoveToBottomButton (parentElement).click();
   }
   /**Iterations Page object model */
-  iterationAddButton  (){
-    return element(by.css('.pficon-add-circle-o.fa-icon'));
+  iterationAddButton (){
+    return element(by.id('add-iteration-icon'));
   }
   clickIterationCreateLabel  (){
     return element(by.id("add-iteration")).click();
