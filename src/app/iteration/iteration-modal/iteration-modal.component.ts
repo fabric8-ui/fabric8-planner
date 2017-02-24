@@ -71,18 +71,24 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
 
   resetValues() {
     this.iteration  = {
+      id: '',
       attributes: {
-        name: "",
-        description: ""
+        name: '',
+        description: '',
+        state: ''
       },
       relationships: {
         space: {
           data: {
-            id: "",
+            id: '',
+            type: ''
+          },
+          links: {
+            self: ''
           }
         }
       },
-      type: "iterations"
+      type: 'iterations'
     } as IterationModel;
     let today = moment();
     this.startDate = { date: { year: today.format('YYYY'), month: today.format('M'), day: today.format('D') } };
