@@ -27,8 +27,6 @@ $dropdown-link-hover-border-color:                                  $color-pf-bl
 $dropdown-link-focus-color:                                         $color-pf-white !default;
 $flyout-transition-pf:                                              all .2s cubic-bezier(.35,0,.25,1) !default;
 $font-family-monospace:                                             Menlo, Monaco, Consolas, monospace !default;
-$font-path:                                                         if($patternfly-sass-asset-helper, "patternfly", "/node_modules/patternfly/dist/fonts") !default;
-$fa-font-path:                                                      if($patternfly-sass-asset-helper, "patternfly", "/node_modules/patternfly/dist/fonts") !default;
 $fa-font-size-base:                                                 14px;
 $fa-line-height-base:                                               1;
 $fa-css-prefix:                                                     fa;
@@ -38,7 +36,7 @@ $footer-pf-padding-top:                                             10px !defaul
 $footer-pf-height:                                                  37px !default;
 $gray-light-pf:                                                     $color-pf-black-400 !default;
 $gray-pf:                                                           $color-pf-black-700 !default;
-$icon-font-name-fa:                                                 "fontawesome-webfont" !default;
+$icon-font-name-fa:                                                 "FontAwesome" !default;
 $icon-font-name-pf:                                                 "PatternFlyIcons-webfont" !default;
 $icon-prefix:                                                       pficon !default;
 $img-bg-login:                                                      "bg-login.jpg" !default;
