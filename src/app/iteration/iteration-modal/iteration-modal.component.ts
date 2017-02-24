@@ -70,18 +70,19 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   }
 
   resetValues() {
+
     this.iteration  = {
       id: '',
       attributes: {
         name: '',
         description: '',
-        state: ''
+        state: 'new'
       },
       relationships: {
         space: {
           data: {
             id: '',
-            type: ''
+            type: 'space'
           },
           links: {
             self: ''
@@ -90,6 +91,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
       },
       type: 'iterations'
     } as IterationModel;
+
     let today = moment();
     this.startDate = { date: { year: today.format('YYYY'), month: today.format('M'), day: today.format('D') } };
     let inaweek = moment().add(7, 'd');
