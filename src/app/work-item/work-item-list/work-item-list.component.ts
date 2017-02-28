@@ -7,12 +7,16 @@ import {
   OnInit,
   ViewChild,
   ViewChildren,
-  QueryList, TemplateRef
+  QueryList, 
+  TemplateRef,
+  DoCheck
 } from '@angular/core';
 import {
   Router,
   ActivatedRoute
 } from '@angular/router';
+
+import { TreeNode } from 'angular2-tree-component';
 
 import { cloneDeep } from 'lodash';
 import {
@@ -38,7 +42,7 @@ import { TreeListComponent } from 'ngx-widgets';
   templateUrl: './work-item-list.component.html',
   styleUrls: ['./work-item-list.component.scss']
 })
-export class WorkItemListComponent implements OnInit, AfterViewInit {
+export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
 
   @ViewChildren('activeFilters', {read: ElementRef}) activeFiltersRef: QueryList<ElementRef>;
   @ViewChild('activeFiltersDiv') activeFiltersDiv: any;
@@ -47,7 +51,8 @@ export class WorkItemListComponent implements OnInit, AfterViewInit {
   @ViewChild('template') listItemTemplate: TemplateRef<any>;
   @ViewChild('treeList') treeList: TreeListComponent;
 
-  workItems: WorkItem[];
+  workItems: WorkItem[] = [];
+  prevWorkItemLength: number = 0;
   workItemTypes: WorkItemType[];
   selectedWorkItemEntryComponent: WorkItemListEntryComponent;
   workItemToMove: WorkItemListEntryComponent;
@@ -65,7 +70,11 @@ export class WorkItemListComponent implements OnInit, AfterViewInit {
 
   // See: https://angular2-tree.readme.io/docs/options
   treeListOptions = {
-    allowDrag: true
+    allowDrag: true,
+    getChildren: (node: TreeNode): any => {
+      return this.workItemService.getChildren(node.data);
+    },
+    levelPadding: 30
   }
 
   constructor(
@@ -95,6 +104,13 @@ export class WorkItemListComponent implements OnInit, AfterViewInit {
     let oldHeight = 0;
     this.allUsers = cloneDeep(this.route.snapshot.data['allusers']) as User[];
     this.authUser = cloneDeep(this.route.snapshot.data['authuser']);
+  }
+
+  ngDoCheck() {
+    if (this.workItems.length!=this.prevWorkItemLength) {
+      this.treeList.updateTree();
+      this.prevWorkItemLength = this.workItems.length;
+    }
   }
 
   // model handlers

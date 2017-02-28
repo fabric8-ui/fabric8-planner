@@ -3,6 +3,7 @@ import { Headers, Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 import { Subscription } from 'rxjs/Subscription';
+import { Observable } from 'rxjs/Observable';
 
 import { cloneDeep } from 'lodash';
 import { DropdownOption } from 'ngx-widgets';
@@ -86,6 +87,36 @@ export class WorkItemService {
   //   this.renderUrl = space.spaceBaseUrl + 'render';
   //   this.logger.log('WorkItemService using url ' + this.workItemUrl);
   // }
+
+  getChildren(parent: WorkItem): Promise<WorkItem[]> {
+    if (parent.relationships.childs) {
+      this.logger.log('Requesting children for work item ' + parent.id);
+      let url = parent.relationships.childs.links.related;
+      return this.http
+        .get(url, { headers: this.headers })
+        .toPromise()
+        .then(response => {
+          let wItems: WorkItem[];
+          wItems = response.json().data as WorkItem[];
+          wItems.forEach((item) => {
+            // Resolve the assignee and creator
+            this.resolveUsersForWorkItem(item);
+            this.resolveIterationForWorkItem(item);
+          });
+          return wItems;
+        })
+        .catch ((e) => {
+          if (e.status === 401) {
+            this.auth.logout(true);
+          } else {
+            this.handleError(e);
+          }
+        });
+    } else {
+      this.logger.log('Work item does not have child related link, skipping: ' + parent.id);
+      return Observable.of([]).toPromise();   
+    }
+  }
 
   /**
    * We maintain a big list of work WorkItem
