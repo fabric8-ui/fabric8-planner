@@ -35,7 +35,7 @@ export class WorkItemMockGenerator {
               },
               'id': 'comment-0',
               'links': {
-                'self': 'http://demo.api.almighty.io/api/comments/comment-0'
+                'self': 'http://api.prod-preview.openshift.io/api/comments/comment-0'
               },
               'relationships': {
                 'created-by': {
