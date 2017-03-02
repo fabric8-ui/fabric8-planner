@@ -7,7 +7,7 @@ import { cloneDeep } from 'lodash';
 import * as moment from 'moment';
 import { IMyOptions, IMyDateModel } from 'mydatepicker';
 import { Broadcaster } from 'ngx-login-client';
-import { SpaceService, Space } from 'ngx-fabric8-wit';
+import { Space } from 'ngx-fabric8-wit';
 
 import { IterationService } from '../iteration.service';
 import { IterationModel } from '../../models/iteration.model';
@@ -57,21 +57,20 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
 
   constructor(
     private iterationService: IterationService,
-    private broadcaster: Broadcaster,
-    private spaceService: SpaceService) {}
+    private broadcaster: Broadcaster) { }
 
 
   ngOnInit() {
     this.resetValues();
-    this.spaceSubscription = this.spaceService.getCurrentSpaceBus()
-                                 .subscribe(
-                                    space => console.log('[FabPlannerIterationModalComponent] New Space selected: ' + space.name)
-                                  );
+    this.spaceSubscription = this.broadcaster.on<Space>('spaceChanged')
+      .subscribe(
+      space => console.log('[FabPlannerIterationModalComponent] New Space selected: ' + space.attributes.name)
+      );
   }
 
   resetValues() {
 
-    this.iteration  = {
+    this.iteration = {
       // id: '',
       attributes: {
         name: '',
@@ -196,7 +195,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
             this.resetValues();
             this.createUpdateIterationDialog.close();
           })
-          .catch ((e) => {
+          .catch((e) => {
             this.validationError = true;
             console.log('Some error has occured', e);
           });
@@ -227,18 +226,18 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
             this.resetValues();
             this.createUpdateIterationDialog.close();
           })
-          .catch ((e) => {
+          .catch((e) => {
             this.spaceError = true;
             // this.resetValues();
             // console.log('Some error has occured', e.toString());
           });
-        }
-      } else {
-        this.validationError = true;
       }
+    } else {
+      this.validationError = true;
     }
+  }
 
-    removeError() {
-      this.validationError = false;
-    }
+  removeError() {
+    this.validationError = false;
+  }
 }
