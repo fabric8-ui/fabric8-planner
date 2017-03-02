@@ -1,3 +1,4 @@
+import { SpaceService, Space } from 'ngx-fabric8-wit';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
 import {
@@ -38,12 +39,19 @@ export class AppComponent implements OnInit {
   constructor(
     auth: AuthenticationService,
     private broadcaster: Broadcaster,
-    private globalSettings: GlobalSettings
+    private globalSettings: GlobalSettings,
+    private spaceService: SpaceService
   ) {
     //auth.isLoggedIn();
+    console.log("here");
   }
 
   ngOnInit() {
+    this.spaceService.getSpaces(1).then(val => {
+      if (val && val[0]) {
+        this.broadcaster.broadcast('spaceChanged', val[0]);
+      };
+    });
     this.broadcaster.on<any>('toastNotification')
       .subscribe((notificationData: any) => {
         this.notifications.splice(0, 0, {
