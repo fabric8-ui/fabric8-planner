@@ -143,7 +143,7 @@ export class WorkItemComponent implements OnInit, AfterViewInit {
   }
   onChangeType(type: string) {
     this.showTypesOptions = false;
-    this.router.navigate(['/work-item/list/detail/new?' + type]);
+    this.router.navigate(['/list/detail/new?' + type]);
   }
 
   // event handlers

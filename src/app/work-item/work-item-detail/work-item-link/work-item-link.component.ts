@@ -209,7 +209,7 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck {
     if (links['relationships']['target']['data']['id'] == workItem['id']){
       workItemId = links['relationships']['source']['data']['id'];
     }
-    this.router.navigate(['/work-item/list/detail/' + workItemId]);
+    this.router.navigate([this.router.url.split('detail')[0] + '/detail/' + workItemId]);
   }
 
   linkSearchWorkItem(term: any, event: any) {

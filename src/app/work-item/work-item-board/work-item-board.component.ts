@@ -46,7 +46,8 @@ export class WorkItemBoardComponent implements OnInit {
   }
 
   gotoDetail(workItem: WorkItem) {
-    let link = ['/work-item/board/detail', workItem.id];
+    // console.log(this.router.url.split('detail')[0] + '/detail/' + workItem.id);
+    let link = [ this.router.url.split('detail')[0] + '/detail/' + workItem.id ];
     this.router.navigate(link);
   }
 }

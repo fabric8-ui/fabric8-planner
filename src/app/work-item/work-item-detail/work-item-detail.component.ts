@@ -372,7 +372,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
         this.workItemService
         .create(this.workItem)
         .then((workItem) => {
-          this.router.navigate(['/work-item/list/detail/' + workItem.id]);
+          this.router.navigate(['/list/detail/' + workItem.id]);
         });
       }
     }
@@ -386,11 +386,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
     // From in to out it takes 300 ms
     // So wait for 400 ms
     setTimeout(() => {
-      this.router.navigate(['/' +
-        this.router.url.split('/')[1] +
-        '/' +
-        this.router.url.split('/')[2]]
-      );
+      this.router.navigate([this.router.url.split('detail')[0]]);
     }, 400);
   }
 
