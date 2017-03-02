@@ -15,6 +15,7 @@ import {
   WidgetsModule
 } from 'ngx-widgets';
 
+import { AreaService } from '../area/area.service';
 import { UserService } from 'ngx-login-client';
 
 import { AlmFilterBoardList } from '../pipes/alm-board-filter.pipe';
@@ -63,6 +64,7 @@ import { WorkItemService } from './work-item.service';
   ],
   providers: [
     AstronautService,
+    AreaService,
     AuthUserResolve,
     UserService,
     UsersResolve,

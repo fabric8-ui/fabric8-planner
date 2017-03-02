@@ -16,6 +16,8 @@ import {
 import { ActivatedRoute, Params } from '@angular/router';
 import { Location }               from '@angular/common';
 import { Router }                 from '@angular/router';
+import { Subscription } from 'rxjs/Subscription';
+import { AstronautService } from './../../shared/astronaut.service';
 
 import { cloneDeep } from 'lodash';
 import {
@@ -26,7 +28,8 @@ import {
   UserService
 } from 'ngx-login-client';
 
-
+import { AreaModel } from '../../models/area.model';
+import { AreaService } from '../../area/area.service';
 import { IterationModel } from '../../models/iteration.model';
 import { IterationService } from '../../iteration/iteration.service';
 
@@ -58,6 +61,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
   @ViewChild('userSearch') userSearch: any;
   @ViewChild('userList') userList: any;
   @ViewChild('dropdownButton') dropdownButton: any;
+  @ViewChild('areaSearch') areaSearch: any;
+  @ViewChild('areaList') areaList: any;
   @ViewChild('iterationSearch') iterationSearch: any;
   @ViewChild('iterationList') iterationList: any;
 
@@ -79,6 +84,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
   titleText: any = '';
   descText: any = '';
 
+  searchArea: Boolean = false;
   searchAssignee: Boolean = false;
 
   hasIteration: Boolean = false;
@@ -95,10 +101,13 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
 
   panelState: string = 'out';
 
+  areas: AreaModel[] = [];
   iterations: IterationModel[] = [];
 
   renderedDesc: any = '';
   descViewType: any = 'html';
+
+  private spaceSubscription: Subscription = null;
 
   constructor(
     private auth: AuthenticationService,
@@ -108,8 +117,10 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
     private location: Location,
     private logger: Logger,
     private router: Router,
+    private areaService: AreaService,
     private iterationService: IterationService,
-    private userService: UserService
+    private userService: UserService,
+    private astronaut: AstronautService,
   ) {}
 
   ngOnInit(): void{
@@ -117,8 +128,9 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
     // console.log('AUTH USER DATA', this.route.snapshot.data['authuser']);
     this.listenToEvents();
     this.getWorkItemTypesandStates();
-    this.getIterations();
     this.loggedIn = this.auth.isLoggedIn();
+    this.getAreas();
+    this.getIterations();
     this.route.params.forEach((params: Params) => {
       if (params['id'] !== undefined) {
         let id = params['id'];
@@ -148,6 +160,12 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
         }
       }
     });
+
+    this.spaceSubscription = this.astronaut.getCurrentSpaceBus().subscribe(space => {
+      console.log('[WorkItemDetailsComponent] New Space selected: ' + space);
+      this.getAreas();
+      this.getIterations();
+    });
   }
 
   ngAfterViewInit() {
@@ -172,7 +190,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
   loadWorkItem(id: string): void {
     this.workItemService.getWorkItemById(id)
       .then(workItem => {
-        this.closeRestFields();
+        this.closeUserRestFields();
+        this.closeAreaRestFields();
         this.titleText = workItem.attributes['system.title'];
         this.descText = workItem.attributes['system.description'] || '';
         this.showHtml(this.descText);
@@ -259,7 +278,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
       if (this.descEditable) {
         this.onUpdateDescription();
       }
-      this.closeRestFields();
+      this.closeUserRestFields();
       this.headerEditable = true;
       setTimeout(() => {
         if (this.headerEditable) {
@@ -274,7 +293,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
       if (this.headerEditable) {
         this.onUpdateTitle();
       }
-      this.closeRestFields();
+      this.closeUserRestFields();
       this.descEditable = true;
       this.descViewType = 'markdown';
       setTimeout(() => {
@@ -302,6 +321,14 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
           .then((options) => {
             this.workItemStates = options;
         });
+      });
+  }
+
+  getAreas() {
+    this.areaService.getAreas()
+      .then((response: AreaModel[]) => {
+        this.areas = response;
+        console.log(this.areas);
       });
   }
 
@@ -412,7 +439,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
 
   activeSearchAssignee() {
     if (this.loggedIn) {
-      this.closeRestFields();
+      this.closeUserRestFields();
       this.filteredUsers = this.users.length ? this.users : null;
       this.searchAssignee = true;
       // Takes a while to render the component
@@ -425,7 +452,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
   }
 
   deactiveSearchAssignee() {
-    this.closeRestFields();
+    this.closeUserRestFields();
   }
 
   filterUser(event: any) {
@@ -505,7 +532,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
     this.searchAssignee = false;
   }
 
-  closeRestFields(): void {
+  closeUserRestFields(): void {
     this.searchAssignee = false;
     this.searchIteration = false;
     this.headerEditable = false;
@@ -549,27 +576,46 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
     this.searchIteration = false;
   }
 
-  activeSearchIteration() {
+
+  //set an area
+  setArea(areaId: any): void {
+    this.workItem.relationships.area = {
+      data: {
+        id: areaId,
+        type: 'area'
+      }
+    };
+    this.workItemService.resolveAreaForWorkItem(this.workItem);
+    this.save();
+    this.searchArea = false;
+  }
+
+  activeSearchArea() {
+    //close the assignees
+    this.closeUserRestFields();
     if (this.loggedIn) {
-      this.closeRestFields();
-      this.searchIteration = true;
+      this.searchArea = true;
       // Takes a while to render the component
       setTimeout(() => {
-        if (this.iterationSearch) {
-          this.iterationSearch.nativeElement.focus();
+        if (this.areaSearch) {
+          this.areaSearch.nativeElement.focus();
         }
       }, 50);
     }
   }
 
-  deactiveSearchIteration() {
-    this.closeRestFields();
+  deactiveSearchArea() {
+    this.closeAreaRestFields();
   }
 
-  filterIteration(event: any) {
+  closeAreaRestFields(): void {
+    this.searchArea = false;
+  }
+
+  filterArea(event: any) {
     // Down arrow or up arrow
     if (event.keyCode == 40 || event.keyCode == 38) {
-      let lis = this.iterationList.nativeElement.children;
+      let lis = this.areaList.nativeElement.children;
       let i = 0;
       for (; i < lis.length; i++) {
         if (lis[i].classList.contains('selected')) {
@@ -599,7 +645,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
         }
       }
     } else if (event.keyCode == 13) { // Enter key event
-      let lis = this.iterationList.nativeElement.children;
+      let lis = this.areaList.nativeElement.children;
       let i = 0;
       for (; i < lis.length; i++) {
         if (lis[i].classList.contains('selected')) {
@@ -608,17 +654,17 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
       }
       if (i < lis.length) {
         let selectedId = lis[i].dataset.value;
-        this.assignUser(selectedId);
+        this.setArea(selectedId);
       }
     } else {
-      let inp = this.userSearch.nativeElement.value.trim();
-      this.filteredUsers = this.users.filter((item) => {
-        return item.attributes.fullName.toLowerCase().indexOf(inp.toLowerCase()) > -1;
-      });
+      let inp = this.areaSearch.nativeElement.value.trim();
+      // this.filteredUsers = this.users.filter((item) => {
+      //   return item.attributes.fullName.toLowerCase().indexOf(inp.toLowerCase()) > -1;
+      // });
     }
   }
 
-  showHtml(innerText: string): void {
+showHtml(innerText: string): void {
     // console.log(innerText);
     this.workItemService.renderMarkDown(innerText)
       .then(renderedHtml => {

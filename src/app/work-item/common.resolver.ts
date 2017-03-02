@@ -8,6 +8,8 @@ import {
 } from 'ngx-login-client';
 import { SpaceService, Space } from 'ngx-fabric8-wit';
 
+import { AreaModel } from '../models/area.model';
+import { AreaService } from '../area/area.service';
 import { IterationService } from '../iteration/iteration.service';
 import { IterationModel } from '../models/iteration.model';
 
