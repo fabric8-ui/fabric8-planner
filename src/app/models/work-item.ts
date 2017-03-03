@@ -1,3 +1,4 @@
+import { AreaModel } from './area.model'
 import { Comments, Comment } from './comment';
 import { Link } from './link';
 import { User } from 'ngx-login-client';
@@ -29,6 +30,12 @@ export class WorkItemAttributes {
 }
 
 export class WorkItemRelations {
+  area: {
+    data: {
+      id: string,
+      type: string
+    }
+  };
   assignees: {
     data: {
       id: string,
@@ -75,6 +82,7 @@ export class WorkItemRelations {
 }
 
 export class RelationalData {
+  area?: AreaModel;
   creator?: User;
   comments?: Comment[];
   assignees?: User[];

@@ -111,7 +111,7 @@ export class AstronautService {
         relationships: {
           areas: {
             links: {
-              related: process.env.API_URL + '/areas'
+              related: thisElem.relationships.areas.links.related
             }
           },
           iterations: {

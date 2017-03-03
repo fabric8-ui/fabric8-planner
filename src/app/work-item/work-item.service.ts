@@ -23,6 +23,8 @@ import {
   Comments,
   CommentPost
 } from '../models/comment';
+import { AreaModel } from '../models/area.model';
+import { AreaService } from '../area/area.service';
 import { IterationModel } from '../models/iteration.model';
 import { IterationService } from '../iteration/iteration.service';
 import { LinkType } from '../models/link-type';
@@ -60,6 +62,7 @@ export class WorkItemService {
   private userIdMap = {};
   private workItemIdIndexMap = {};
   private prevFilters: any = [];
+  private areas: AreaModel[] = [];
   private iterations: IterationModel[] = [];
 
   private spaceSubscription: Subscription = null;
@@ -68,6 +71,7 @@ export class WorkItemService {
     private broadcaster: Broadcaster,
     private logger: Logger,
     private astronaut: AstronautService,
+    private areaService: AreaService,
     private auth: AuthenticationService,
     private iterationService: IterationService,
     private userService: UserService,
@@ -105,6 +109,7 @@ export class WorkItemService {
             // Resolve the assignee and creator
             this.resolveUsersForWorkItem(item);
             this.resolveIterationForWorkItem(item);
+            this.resolveAreaForWorkItem(item);
           });
           return wItems;
         })
@@ -168,7 +173,9 @@ export class WorkItemService {
           wItems.forEach((item) => {
             // Resolve the assignee and creator
             this.resolveUsersForWorkItem(item);
-            this.resolveIterationForWorkItem(item);
+            //this.resolveIterationForWorkItem(item);
+            //console.log("list area resolve");
+            //this.resolveAreaForWorkItem(item);
           });
           // Update the existing workItem big list with new data
           this.updateWorkItemBigList(wItems);
@@ -220,7 +227,6 @@ export class WorkItemService {
         newWorkItems.forEach((item) => {
           // Resolve the assignee and creator
           this.resolveUsersForWorkItem(item);
-          this.resolveIterationForWorkItem(item);
         });
         let newItems = cloneDeep(newWorkItems);
         // Update the existing workItem big list with new data
@@ -250,6 +256,10 @@ export class WorkItemService {
   getWorkItemById(id: string): Promise<WorkItem> {
     if (id in this.workItemIdIndexMap) {
       let wItem = this.workItems[this.workItemIdIndexMap[id]];
+      this.resolveIterationForWorkItem(wItem);
+      console.log('resolveAreaForWorkItem Start');
+      this.resolveAreaForWorkItem(wItem);
+      console.log('resolveAreaForWorkItem End');
       this.resolveComments(wItem);
       this.resolveLinks(wItem);
       return Promise.resolve(wItem);
@@ -266,7 +276,6 @@ export class WorkItemService {
           .then((response) => {
             let wItem: WorkItem = response.json().data as WorkItem;
             this.resolveUsersForWorkItem(wItem);
-            this.resolveIterationForWorkItem(wItem);
             // If this work item matches with current filters
             // it goes to the big list and then we call this function
             // again to treat it as a locally saved item
@@ -279,6 +288,10 @@ export class WorkItemService {
             // If this work item doesn't match with current filters
             // it's not get added to the big list so not storing locally
             // it just gets resolved with related data and returned
+            this.resolveIterationForWorkItem(wItem);
+            console.log('resolveAreaForWorkItem Start');
+            this.resolveAreaForWorkItem(wItem);
+            console.log('resolveAreaForWorkItem End');
             this.resolveComments(wItem);
             this.resolveLinks(wItem);
             return wItem;
@@ -423,6 +436,33 @@ export class WorkItemService {
     }
     workItem.relationalData.iteration = this.getIterationById(workItem.relationships.iteration.data.id);
   }
+  /**
+   * Usage: To resolve the areas in eact WorkItem
+   * For now it resolves assignne and creator
+   */
+  resolveAreaForWorkItem(workItem: WorkItem): void {
+    console.log('resolveAreaForWorkItem 1');
+    if (!workItem.hasOwnProperty('relationalData')) {
+      workItem.relationalData = {};
+    }
+    console.log('resolveAreaForWorkItem 2');
+    if (!workItem.relationships.hasOwnProperty('area') || !workItem.relationships.area) {
+      workItem.relationalData.area = null;
+      return;
+    }
+    console.log('resolveAreaForWorkItem 3');
+    if (!workItem.relationships.area.hasOwnProperty('data')) {
+      workItem.relationalData.area = null;
+      return;
+    }
+    console.log('resolveAreaForWorkItem 4');
+    if (!workItem.relationships.area.data) {
+      workItem.relationalData.area = null;
+      return;
+    }
+    console.log('resolveAreaForWorkItem 5');
+    workItem.relationalData.area = this.getAreaById(workItem.relationships.area.data.id);
+  }
 
   /**
    * Usage: Build a ID-User map to dynamically access list of users
@@ -451,6 +491,14 @@ export class WorkItemService {
     } else {
       return null;
     }
+  }
+
+  /**
+   * Usage: Fetch an area by it's ID from the areas list
+   */
+  getAreaById(areaId: string): AreaModel {
+    let areas: AreaModel[] = this.areaService.areas;
+    return areas.filter(item => item.id == areaId)[0];
   }
 
   /**
@@ -731,7 +779,8 @@ export class WorkItemService {
           let newWorkItem: WorkItem = response.json().data as WorkItem;
           // Resolve the user for the new item
           this.resolveUsersForWorkItem(newWorkItem);
-          this.resolveIterationForWorkItem(newWorkItem);
+          //this.resolveIterationForWorkItem(newWorkItem);
+          //this.resolveAreaForWorkItem(newWorkItem);
           // Add newly added item to the top of the list
           this.workItems.splice(0, 0, newWorkItem);
           // Re-build the ID-index map
@@ -774,9 +823,11 @@ export class WorkItemService {
             this.workItems[updateIndex].relationships.creator = updatedWorkItem.relationships.creator;
             this.workItems[updateIndex].relationships.baseType = updatedWorkItem.relationships.baseType;
             this.workItems[updateIndex].relationships.iteration = updatedWorkItem.relationships.iteration;
+            this.workItems[updateIndex].relationships.area = updatedWorkItem.relationships.area;
             // Resolve users for the updated item
             this.resolveUsersForWorkItem(this.workItems[updateIndex]);
             this.resolveIterationForWorkItem(this.workItems[updateIndex]);
+            this.resolveAreaForWorkItem(this.workItems[updateIndex]);
           } else {
             // Remove the item from the list
             this.workItems.splice(updateIndex, 1);
@@ -791,6 +842,7 @@ export class WorkItemService {
           // Resolve users for the updated item
           this.resolveUsersForWorkItem(updatedWorkItem);
           this.resolveIterationForWorkItem(updatedWorkItem);
+          this.resolveAreaForWorkItem(updatedWorkItem);
         }
         return updatedWorkItem;
       })
