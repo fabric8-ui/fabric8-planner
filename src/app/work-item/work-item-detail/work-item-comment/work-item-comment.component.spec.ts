@@ -371,7 +371,7 @@ describe('Comment section for the work item detailed view - ', () => {
       imports: [
         FormsModule,
         RouterTestingModule.withRoutes([
-          { path: 'work-item/list/detail/1', component: WorkItemDetailComponent }
+          { path: 'list/detail/1', component: WorkItemDetailComponent }
         ]),
         CollapseModule,
         CommonModule,

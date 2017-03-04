@@ -349,7 +349,7 @@ describe('Detailed view and edit a selected work item - ', () => {
       imports: [
         FormsModule,
         RouterTestingModule.withRoutes([
-          { path: 'work-item/list/detail/1', component: WorkItemDetailComponent }
+          { path: 'list/detail/1', component: WorkItemDetailComponent }
         ]),
         CollapseModule,
         CommonModule,

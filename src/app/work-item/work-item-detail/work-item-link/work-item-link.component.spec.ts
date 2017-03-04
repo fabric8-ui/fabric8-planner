@@ -411,7 +411,7 @@
 //       imports: [
 //         Ng2CompleterModule,
 //         RouterTestingModule.withRoutes([
-//           {path: 'work-item/list/detail/1', component: WorkItemLinkComponent}
+//           {path: 'list/detail/1', component: WorkItemLinkComponent}
 //         ]),
 //       ],
 

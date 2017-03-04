@@ -9,7 +9,7 @@ import { WorkItemListComponent } from './work-item-list/work-item-list.component
 
 const routes: Routes = [
   {
-    path: 'work-item',
+    path: '',
     component: WorkItemComponent,
     resolve: {
       allusers: UsersResolve,

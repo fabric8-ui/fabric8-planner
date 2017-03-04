@@ -145,7 +145,7 @@ export class WorkItemListEntryComponent implements OnInit {
   onDetail(event: MouseEvent): void {
     event.stopPropagation();
     this.detailEvent.emit(this);
-    this.router.navigate(['/work-item/list/detail/' + this.workItem.id]);
+    this.router.navigate([this.router.url.split('detail')[0] + '/detail/' + this.workItem.id]);
   }
 
   onMoveToTop(event: MouseEvent): void {
