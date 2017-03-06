@@ -443,7 +443,8 @@ export class WorkItemService {
       workItem.relationalData.iteration = null;
       return;
     }
-    workItem.relationalData.iteration = this.getIterationById(workItem.relationships.iteration.data.id);
+    this.getIterationById(workItem.relationships.iteration.data.id)
+      .then((iteration) => workItem.relationalData.iteration = iteration);
   }
 
   /**
@@ -478,9 +479,10 @@ export class WorkItemService {
   /**
    * Usage: Fetch an iteration by it's ID from the iterations list
    */
-  getIterationById(iterationId: string): IterationModel {
-    let iterations: IterationModel[] = this.iterationService.iterations;
-    return iterations.filter(item => item.id == iterationId)[0];
+  getIterationById(iterationId: string): Promise<IterationModel> {
+    return this.iterationService.getIterations().then((iterations) => {
+      return iterations.find(item => item.id == iterationId);
+    });
   }
 
   /**
@@ -591,18 +593,33 @@ export class WorkItemService {
 
   getWorkItemTypesById(id: string): Promise<WorkItemType> {
     if (this._currentSpace) {
-      let workItemType = this.workItemTypes.find((type) => type.id === id);
+      let workItemType = this.workItemTypes ? this.workItemTypes.find((type) => type.id === id) : null;
       if (workItemType) {
         return Promise.resolve(workItemType);
       } else {
         let workItemTypeUrl = this.baseApiUrl + 'workitemtypes/' + id;
         return this.http.get(workItemTypeUrl)
-          .map((response) => {
+          .toPromise()
+          .then((response) => {
             workItemType = response.json().data as WorkItemType;
-            this.workItemTypes.push(workItemType);
+            if (this.workItemTypes) {
+              let existingType = this.workItemTypes.find((type) => type.id === workItemType.id);
+              if (existingType) {
+                existingType = workItemType;
+              } else {
+                this.workItemTypes.push(workItemType);
+              }
+            }
             return workItemType;
-          })
-          .toPromise();
+          });
+        // FIXME: Use observavble instead promise
+        // Can't use observable now, because the mock will not support that
+        // .map((response) => {
+        //   workItemType = response.json().data as WorkItemType;
+        //   this.workItemTypes.push(workItemType);
+        //   return workItemType;
+        // })
+        // .toPromise();
       }
     } else {
       return Promise.resolve<WorkItemType>( {} as WorkItemType );
