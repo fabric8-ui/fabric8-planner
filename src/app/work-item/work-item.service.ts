@@ -591,18 +591,33 @@ export class WorkItemService {
 
   getWorkItemTypesById(id: string): Promise<WorkItemType> {
     if (this._currentSpace) {
-      let workItemType = this.workItemTypes.find((type) => type.id === id);
+      let workItemType = this.workItemTypes ? this.workItemTypes.find((type) => type.id === id) : null;
       if (workItemType) {
         return Promise.resolve(workItemType);
       } else {
         let workItemTypeUrl = this.baseApiUrl + 'workitemtypes/' + id;
         return this.http.get(workItemTypeUrl)
-          .map((response) => {
+          .toPromise()
+          .then((response) => {
             workItemType = response.json().data as WorkItemType;
-            this.workItemTypes.push(workItemType);
+            if (this.workItemTypes) {
+              let existingType = this.workItemTypes.find((type) => type.id === workItemType.id);
+              if (existingType) {
+                existingType = workItemType;
+              } else {
+                this.workItemTypes.push(workItemType);
+              }
+            }
             return workItemType;
-          })
-          .toPromise();
+          });
+        // FIXME: Use observavble instead promise
+        // Can't use observable now, because the mock will not support that
+        // .map((response) => {
+        //   workItemType = response.json().data as WorkItemType;
+        //   this.workItemTypes.push(workItemType);
+        //   return workItemType;
+        // })
+        // .toPromise();
       }
     } else {
       return Promise.resolve<WorkItemType>( {} as WorkItemType );
