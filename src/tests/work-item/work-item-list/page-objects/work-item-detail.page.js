@@ -548,7 +548,28 @@ class WorkItemDetailPage {
   ClosekAreas  (areaid){
     return element(by.id('close_area')).click();
   }
-
+/**Iteration element */
+  getAssociatedIteration  (){
+    return element(by.id('iteration-assocaited')).getText();
+  }
+  getReassociateText(){
+    return element(by.id('reassociate-msg')).getText();
+  }
+  saveIteration(){
+    return element(by.id('assign-iteration-savebtn')).click();
+  }
+  cancleIterationBtn(){
+    return element(by.id('assign-iteration-closebtn')).click();
+  }
+  iterationDropdown(){
+    return element(by.id('WI_details_iteration_dropdown'));
+  }
+  clickAssignIteration(){
+    return this.iterationDropdown().click();
+  }
+  associateIteration (text){
+    return element(by.linkText(text)).click();
+  }
 }
 
 module.exports = WorkItemDetailPage;
