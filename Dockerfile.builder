@@ -1,9 +1,6 @@
 FROM centos:7
 ENV LANG=en_US.utf8
 
-# load the gpg keys
-COPY gpg /gpg
-
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
   && for key in \
@@ -16,7 +13,9 @@ RUN set -ex \
     B9AE9905FFD7803F25714661B63B535A4C206CA9 \
     C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
   ; do \
-    gpg --import "/gpg/${key}.gpg" ; \
+    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" || \
+    gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
+    gpg --keyserver keyserver.pgp.com --recv-keys "$key" ; \
   done
 
 #ENV NPM_CONFIG_LOGLEVEL info
@@ -30,7 +29,20 @@ RUN yum install -y bzip2 fontconfig java-1.8.0-openjdk nmap-ncat psmisc git \
   && tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 \
   && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
-  && yum clean all
+  && yum install google-chrome-stable xorg-x11-server-Xvfb xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic -y
+
+RUN yum install python-setuptools -y
+RUN easy_install supervisor
+RUN yum install xorg-x11-xauth -y
+RUN yum install which -y
+
+COPY google-chrome.repo /etc/yum/repos.d/google-chrome.repo
+RUN yum install google-chrome-stable -y
+
+#RUN yum install wget
+#RUN wget http://chrome.richardlloyd.org.uk/install_chrome.sh
+#RUN chmod +x ./install_chrome.sh && ./install_chrome.sh --stable --force
+RUN yum clean all
 
 ENV FABRIC8_USER_NAME=fabric8
 
@@ -46,7 +58,12 @@ RUN chown -R ${FABRIC8_USER_NAME}:${FABRIC8_USER_NAME} $HOME/*
 
 USER ${FABRIC8_USER_NAME}
 WORKDIR $WORKSPACE/
+#RUN /usr/bin/Xvfb :99 -ac -screen 0 1024x768x24 &
+ENV DISPLAY=:99
 
 VOLUME /dist
 
-ENTRYPOINT ["/bin/bash"]
+#ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/usr/bin/supervisord"]
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
