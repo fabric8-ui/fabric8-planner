@@ -183,7 +183,8 @@ export class WorkItemBoardComponent implements OnInit {
     let state = target.parentElement.parentElement.getAttribute('data-state');
     //this.workItem = this.workItems[el.getAttribute('data-item')];
     //console.log(el.getAttribute('data-item'));
-    this.changeLane(this.workItem.attributes['system.state'], state, this.workItem);
+    let prevEl = el.previousElementSibling.getAttribute('data-id');
+    this.changeLane(this.workItem.attributes['system.state'], state, this.workItem, prevEl);
     this.changeState(state);
   }
 
@@ -224,12 +225,19 @@ export class WorkItemBoardComponent implements OnInit {
     }
   }
 
-  changeLane(oldState, newState, workItem) {
+  changeLane(oldState, newState, workItem, prevIdEl: string | null = null) {
     let oldLane = this.lanes.find((lane) => lane.option === oldState);
     let newLane = this.lanes.find((lane) => lane.option === newState);
     let index = oldLane.workItems.findIndex((item) => item.id === workItem.id);
+
     oldLane.workItems.splice(index, 1);
-    newLane.workItems.push(workItem);
+
+    let newIndex = newLane.workItems.findIndex((item) => item.id === prevIdEl);
+    if (newIndex) {
+      oldLane.workItems.splice(newIndex, 0, workItem);
+    } else {
+        newLane.workItems.push(workItem);
+    }
   }
 
   listenToEvents() {
