@@ -549,8 +549,11 @@ class WorkItemDetailPage {
     return element(by.id('close_area')).click();
   }
 /**Iteration element */
+  IterationOndetailPage(){
+    return element(by.id('iteration-assocaited'));
+  }
   getAssociatedIteration  (){
-    return element(by.id('iteration-assocaited')).getText();
+    return this.IterationOndetailPage().getText();
   }
   getReassociateText(){
     return element(by.id('reassociate-msg')).getText();
@@ -562,12 +565,15 @@ class WorkItemDetailPage {
     return element(by.id('assign-iteration-closebtn')).click();
   }
   iterationDropdown(){
-    return element(by.id('WI_details_iteration_dropdown'));
+    return element(by.id('WI_details_iteration_dropdownbtn'));
   }
   clickAssignIteration(){
     return this.iterationDropdown().click();
   }
   associateIteration (text){
+    return element(by.linkText(text)).click();
+  }
+  genericLinkseach(text){
     return element(by.linkText(text)).click();
   }
 }
