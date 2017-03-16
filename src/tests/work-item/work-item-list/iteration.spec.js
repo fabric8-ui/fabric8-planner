@@ -25,7 +25,7 @@ var waitTime = 30000;
   });
 
   /* Verify the UI buttons are present */
- xit('Verify Iteration add button and label are clickable + dialoge label is present', function() {
+ it('Verify Iteration add button and label are clickable + dialoge label is present', function() {
       expect(page.iterationAddButton().isPresent()).toBe(true);
       page.clickIterationAddButton();
       expect(page.getIterationDialogTitle()).toBe('Create Iteration');
@@ -33,7 +33,7 @@ var waitTime = 30000;
   });
 
   /* Verify the helpful message */
- xit('Verify Iteration helpbox is showing', function() {
+ it('Verify Iteration helpbox is showing', function() {
       page.clickIterationAddButton();
       expect(page.getIterationDialogTitle()).toBe('Create Iteration');
       page.clickCreateIteration();
@@ -41,7 +41,7 @@ var waitTime = 30000;
   });
 
   /* Verify setting the fields */
- xit('Verify setting the Iteration title and description fields', function() {
+ it('Verify setting the Iteration title and description fields', function() {
 
     /* Create a new iteration */ 
     page.clickIterationAddButton();
@@ -58,7 +58,7 @@ var waitTime = 30000;
   }); 
 
   /* Query and edit an interation */
- xit('Query/Edit iteration', function() {
+ it('Query/Edit iteration', function() {
       page.clickExpandFutureIterationIcon();
       page.clickIterationKebab("3");
       page.clickEditIterationKebab();
@@ -73,7 +73,7 @@ var waitTime = 30000;
   });
 
   /* Start and Close an iteration */
- xit('Start iteration', function() {
+ it('Start iteration', function() {
       page.clickExpandFutureIterationIcon();
       page.clickIterationKebab("3");
       page.clickStartIterationKebab();
@@ -86,7 +86,7 @@ var waitTime = 30000;
 
   });
   
- xit('Associate WI with Iteration from Kebab menu', function() {
+ it('Associate WI with Iteration from Kebab menu', function() {
       page.clickWorkItemKebabButton(page.firstWorkItem);
       page.clickWorkItemKebabAssociateIterationButton(page.firstWorkItem);
       page.clickDropDownAssociateIteration("Iteration 0");
@@ -95,7 +95,7 @@ var waitTime = 30000;
       expect(detailPage.getAssociatedIteration()).toBe('Iteration 0');
   });
 
-xit('Re-Associate WI with Iteration from Kebab menu', function() {
+it('Re-Associate WI with Iteration from Kebab menu', function() {
       page.clickWorkItemKebabButton(page.firstWorkItem);
       page.clickWorkItemKebabAssociateIterationButton(page.firstWorkItem);
       page.clickDropDownAssociateIteration("Iteration 0");
@@ -113,7 +113,7 @@ xit('Re-Associate WI with Iteration from Kebab menu', function() {
       expect(detailPage.getAssociatedIteration()).toBe('Iteration 1');
   });
 
-  xit('Create new iteration and Associate item', function() {
+  it('Create new iteration and Associate item', function() {
     page.clickIterationAddButton();
     page.setIterationTitle('Newest Iteration',false);
     page.setIterationDescription('Newest Iteration',false);
@@ -132,16 +132,48 @@ xit('Re-Associate WI with Iteration from Kebab menu', function() {
 
   });
 
-xit('Associate Workitem from detail page', function() {
-    var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0"); 
-    browser.wait(until.elementToBeClickable(detailPage.iterationDropdown()), constants.WAIT, 'Failed ');
-     
-    detailPage.clickAssignIteration();
-    detailPage.associateIteration("Iteration 1");
-    detailPage.saveIteration();
-    expect(detailPage.getAssociatedIteration()).toBe("Iteration 1");
-    detailPage.clickWorkItemDetailCloseButton();
-  });
+  it('Associate Workitem from detail page', function() {
+      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0"); 
+      browser.wait(until.elementToBeClickable(detailPage.workItemStateDropDownButton), constants.WAIT, 'Failed to find workItemStateDropDownButton');   
+      detailPage.IterationOndetailPage().click();
+      detailPage.clickAssignIteration();
+      detailPage.associateIteration("Iteration 1");
+      detailPage.saveIteration();
+      expect(detailPage.getAssociatedIteration()).toBe("Iteration 1");
+      detailPage.clickWorkItemDetailCloseButton();
+    });
+   it('Re-Associate Workitem from detail page', function() {
+      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0"); 
+      detailPage.IterationOndetailPage().click();
+      detailPage.clickAssignIteration();
+      detailPage.associateIteration("Iteration 1");
+      detailPage.saveIteration();
+      expect(detailPage.getAssociatedIteration()).toBe("Iteration 1");
+      detailPage.clickWorkItemDetailCloseButton();
+      // Re - assocaite
+      page.clickWorkItemTitle(page.firstWorkItem, "id0");
+      detailPage.IterationOndetailPage().click();
+      detailPage.clickAssignIteration();
+      detailPage.associateIteration("Iteration 0");
+      detailPage.saveIteration();
+      expect(detailPage.getAssociatedIteration()).toBe("Iteration 0");
+      detailPage.clickWorkItemDetailCloseButton();
+    });
+ 
+ //Problem clicking on Iteration from Left penel
+    // it('Filter Associate Workitem from detail page', function() {
+    //   var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0"); 
+    //   detailPage.IterationOndetailPage().click();
+    //   detailPage.clickAssignIteration();
+    //   detailPage.associateIteration("Iteration 0");
+    //   detailPage.saveIteration();
+    //   expect(detailPage.getAssociatedIteration()).toBe("Iteration 0");
+    //   detailPage.clickWorkItemDetailCloseButton();
+    //   page.clickExpandFutureIterationIcon();
+    //   // expect(page.firstFutureIteration.getText()).toBe('somethi');
+    //   detailPage.genericLinkseach("Iteration 0");
 
+    // });
+ 
 
 });
