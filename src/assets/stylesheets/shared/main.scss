@@ -2,6 +2,7 @@
 @import 'custom-mixins';
 body {
     font-family: Open Sans;
+    font-size: 14px;
 }
 
 //colors
@@ -44,13 +45,17 @@ body {
     text-align: $textCenter;
 }
 
+.posRel {
+  position: relative;
+}
+
 @media (max-width: $grid-float-breakpoint) {
     .mobdn {
         display: none;
     }
     .list-view-pf {
         .list-group-item-heading {
-            font-size: em(12);
+            // font-size: em(12);
         }
     }
 }

@@ -77,7 +77,9 @@ class WorkItemListPage {
  get boardButton () {
      return element(by.id("header_menuBoard"));
  }
-
+ boardButtonBytext  (){
+   return element(by.linkText("WorkBoard")).click();
+ }  
  get clickBoardButton () {
    this.boardButton.click();
    return new WorkItemBoardPage();
@@ -154,11 +156,14 @@ class WorkItemListPage {
     return this.workItemKebabAssocateIterationButton (parentElement).click();
   }
   clickDropDownAssociateIteration (selectIteration){
-     element(by.xpath("(.//button[@type='button'])[11]")).click();
+     this.clickOnIterationDropDown().click();
      return element(by.linkText(selectIteration)).click();
   }
   clickAssociateSave  (){
     return element(by.id("associate-iteration-button")).click();
+  }
+  reassociate (){
+    return element(by.linkText("Reassociate"));
   }
   clickAssociateCancel  (){
     return element(by.id("cancel-iteration-button")).click();
@@ -606,6 +611,9 @@ class WorkItemListPage {
   }
   toastNotification (){
     return element(by.css('.toast-notification-container'));
+  }
+  clickOnIterationDropDown(){
+    return element(by.id('iteration-select-dropdown'));
   }
 
 }
