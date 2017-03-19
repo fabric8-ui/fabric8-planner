@@ -103,7 +103,7 @@ export class WorkItemBoardComponent implements OnInit {
       paramKey: 'filter[workitemstate]',
       value: lane.option
     }, ...this.filters], true)
-      .then(workItems => {
+      .subscribe(workItems => {
         lane.workItems = workItems;
         lane.nextLink = this.workItemService.getNextLink();
      });
@@ -155,7 +155,7 @@ export class WorkItemBoardComponent implements OnInit {
     if (lane.nextLink) {
       this.workItemService.setNextLink(lane.nextLink);
       this.workItemService.getMoreWorkItems()
-        .then((items) => {
+        .subscribe((items) => {
           lane.workItems = [...lane.workItems, ...items];
           lane.nextLink = this.workItemService.getNextLink();
         });

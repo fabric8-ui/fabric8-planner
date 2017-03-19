@@ -187,7 +187,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
 
   loadWorkItem(id: string): void {
     this.workItemService.getWorkItemById(id)
-      .then(workItem => {
+      .subscribe(workItem => {
         this.closeUserRestFields();
         this.titleText = workItem.attributes['system.title'];
         this.descText = workItem.attributes['system.description'] || '';
@@ -199,8 +199,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
         // for this workitem from the list
         this.getAllUsers();
         this.activeOnList(400);
-      })
-      .catch (err => {
+      },
+      err => {
         this.closeDetails();
       });
   }

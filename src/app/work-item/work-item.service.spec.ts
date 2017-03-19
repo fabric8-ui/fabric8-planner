@@ -281,7 +281,7 @@ describe('Work Item Service - ', () => {
     });
 
     apiService.getWorkItems()
-      .then(data => {
+      .subscribe(data => {
         expect(data).toEqual(checkResp);
       });
   }));
