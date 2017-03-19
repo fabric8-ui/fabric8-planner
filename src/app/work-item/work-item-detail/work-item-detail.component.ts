@@ -318,7 +318,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
 
   getIterations() {
     this.iterationService.getIterations()
-      .then((iteration: IterationModel[]) => {
+      .subscribe((iteration: IterationModel[]) => {
         this.iterations = iteration;
       });
   }

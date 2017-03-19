@@ -75,11 +75,11 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   getAndfilterIterations() {
       this.iterationService.getIterations()
-      .then((iterations) => {
+      .subscribe((iterations) => {
           this.allIterations = iterations;
           this.clusterIterations();
-      })
-      .catch ((e) => {
+      },
+      (e) => {
         console.log('Some error has occured', e);
       });
   }

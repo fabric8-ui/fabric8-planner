@@ -226,9 +226,7 @@ describe('Work item list view - ', () => {
 
     fakeIterationService = {
       getIterations: function () {
-        return new Promise((resolve, reject) => {
-          resolve(fakeIterationList);
-        });
+        return Observable.of(fakeIterationList);
       },
       getSpaces: function () {
         let spaces = [{

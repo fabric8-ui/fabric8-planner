@@ -142,24 +142,28 @@ describe('Iteration service - ', () => {
       ));
     });
     apiService.getIterations()
-      .then(data => {
+      .subscribe(data => {
         expect(data).toEqual(checkResp);
       });
 
     // For an invalid URL
     apiService.getIterations()
-      .catch((data) => {
-        expect(data).toEqual([]);
+      .subscribe(() => {
+
+      },
+      (err: any) => {
+        expect(err).toEqual([]);
       });
 
     // Check if data from response is assigned to the private variable
     apiService.getIterations()
-      .then(data => {
+      .subscribe(data => {
         expect(apiService.iterations).toEqual(checkResp);
       });
 
     apiService.getIterations()
-      .catch((data) => {
+      .subscribe(() => {},
+      (err) => {
         expect(apiService.iterations).toEqual([]);
       });
   }));
@@ -179,11 +183,11 @@ describe('Iteration service - ', () => {
 
     // Error response
     apiService.getIterations()
-      .catch(data => {
-        expect(data).toEqual([]);
-      })
-      .then(() => {
+      .subscribe(() => {
         expect(apiService.iterations.length).toEqual(0);
+      },
+      err => {
+        expect(err).toEqual([]);
       });
   }));
 
@@ -203,10 +207,10 @@ describe('Iteration service - ', () => {
     });
 
     apiService.createIteration(requestParams)
-      .then(data => {
+      .do(data => {
         expect(data).toEqual(responseData);
       })
-      .then(() => {
+      .do(() => {
         expect(apiService.iterations.length).toEqual(1);
       });
   }));
@@ -227,10 +231,9 @@ describe('Iteration service - ', () => {
 
     // Error response
     apiService.createIteration(requestParams)
-      .catch(data => {
-        expect(data).toEqual({});
-      })
-      .then(() => {
+      .subscribe(() => {},
+      err => {
+        expect(err).toEqual({});
         expect(apiService.iterations.length).toEqual(0);
       });
   }));
@@ -264,7 +267,7 @@ describe('Iteration service - ', () => {
     });
 
     apiService.updateIteration(requestParams)
-      .then(data => {
+      .subscribe(data => {
         console.log(apiService.iterations);
         expect(apiService.iterations[0].attributes.name).toEqual('New Name');
       });
@@ -290,10 +293,9 @@ describe('Iteration service - ', () => {
     });
 
     apiService.updateIteration(requestParams)
-      .catch(data => {
+      .subscribe(() => {},
+      data => {
         expect(data).toEqual({});
-      })
-      .then(() => {
         expect(apiService.iterations[0].attributes.name).toEqual('Sprint #24');
       });
   }));
