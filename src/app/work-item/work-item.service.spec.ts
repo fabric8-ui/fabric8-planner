@@ -1,3 +1,4 @@
+import { HttpService } from './../shared/http-service';
 import { SpacesService } from './../shared/standalone/spaces.service';
 import { Spaces } from 'ngx-fabric8-wit';
 import {
@@ -200,6 +201,12 @@ describe('Work Item Service - ', () => {
           deps: [MockBackend, BaseRequestOptions]
         },
         {
+          provide: HttpService,
+          useFactory: (backend: MockBackend,
+                       options: BaseRequestOptions) => new HttpService(backend, options, null),
+          deps: [MockBackend, BaseRequestOptions]
+        },
+        {
           provide: AuthenticationService,
           useValue: fakeAuthService
         },
@@ -297,7 +304,7 @@ describe('Work Item Service - ', () => {
     });
 
     apiService.create(resp[0])
-      .then(data => {
+      .subscribe(data => {
         expect(data).toEqual(checkResp[0]);
       });
   }));
@@ -312,7 +319,7 @@ describe('Work Item Service - ', () => {
     });
 
     apiService.delete(resp[0])
-      .then(data => {
+      .subscribe(data => {
         expect(data).toBeUndefined();
       });
   }));
@@ -328,7 +335,7 @@ describe('Work Item Service - ', () => {
     });
 
     apiService.update(resp[0])
-      .then(data => {
+      .subscribe(data => {
         expect(data).toEqual(checkResp[0]);
       });
   }));
