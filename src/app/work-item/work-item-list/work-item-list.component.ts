@@ -284,7 +284,6 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
     this.workItemService.buildWorkItemIdIndexMap();
 
     // save the order of work item.
-    this.workItemService.reOrderWorkItem(workItemId)
-        .catch (e => console.log(e));
+    this.workItemService.reOrderWorkItem(workItemId);
   }
 }

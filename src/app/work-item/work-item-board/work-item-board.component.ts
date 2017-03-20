@@ -112,7 +112,7 @@ export class WorkItemBoardComponent implements OnInit {
   getDefaultWorkItemTypeStates(workItemTypeId?: string) {
     if (!workItemTypeId) {
       // we don't have a type is, fetch the first type and the states of it.
-      this.workItemService.getWorkItemTypes().then((types: WorkItemType[]) => {
+      this.workItemService.getWorkItemTypes().subscribe((types: WorkItemType[]) => {
         // the returned list may be empty because the space is not yet selected.
         if (types.length > 0) {
           let lanes = types[0].attributes.fields['system.state'].type.values;
@@ -133,7 +133,7 @@ export class WorkItemBoardComponent implements OnInit {
       });
     } else {
       // we have a type id, we just fetch the states from it.
-      this.workItemService.getWorkItemTypesById(workItemTypeId).then(workItemType => {
+      this.workItemService.getWorkItemTypesById(workItemTypeId).subscribe(workItemType => {
         let lanes = workItemType.attributes.fields['system.state'].type.values;
         lanes.forEach((value, index) => {
           this.lanes.push({
@@ -223,7 +223,7 @@ export class WorkItemBoardComponent implements OnInit {
     if (this.workItem.id){
       this.workItemService
         .update(this.workItem)
-        .then((workItem) => {
+        .subscribe((workItem) => {
           this.workItem.attributes['version'] = workItem.attributes['version'];
           this.activeOnList();
       });
