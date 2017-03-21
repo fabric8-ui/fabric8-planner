@@ -111,7 +111,7 @@ if (process.env.ENV == 'inmemory') {
       useFactory: (backend: XHRBackend, options: RequestOptions, auth: AuthenticationService) => {
         return new HttpService(backend, options, auth);
       },
-      deps: [XHRBackend, RequestOptions]
+      deps: [XHRBackend, RequestOptions, AuthenticationService]
     }
   ];
 }
