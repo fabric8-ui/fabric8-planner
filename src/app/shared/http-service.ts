@@ -28,7 +28,7 @@ export class HttpService extends Http {
               auth: AuthenticationService) {
     super(backend, options);
     if (auth && auth.getToken() != null) {
-      options.headers.set('Authorization', `Bearer ${auth.getToken()}`);
+      this.headers.set('Authorization', `Bearer ${auth.getToken()}`);
     }
   }
 
@@ -37,7 +37,7 @@ export class HttpService extends Http {
     console.log('URL - ', url);
     console.log('Options - ', options);
 
-    return super.get(url, options);
+    return super.get(url, {headers: this.headers});
   }
 
   post(url: string, body: any, options?: RequestOptionsArgs) {
@@ -46,7 +46,7 @@ export class HttpService extends Http {
     console.log('Body - ', body);
     console.log('Options - ', options);
 
-    return super.post(url, body, options);
+    return super.post(url, body, {headers: this.headers});
   }
 
   put(url: string, body: any, options?: RequestOptionsArgs) {
@@ -55,7 +55,7 @@ export class HttpService extends Http {
     console.log('Body - ', body);
     console.log('Options - ', options);
 
-    return super.put(url, body, options);
+    return super.put(url, body, {headers: this.headers});
   }
 
   patch(url: string, body: any, options?: RequestOptionsArgs) {
@@ -64,7 +64,7 @@ export class HttpService extends Http {
     console.log('Body - ', body);
     console.log('Options - ', options);
 
-    return super.patch(url, body, options);
+    return super.patch(url, body, {headers: this.headers});
   }
 
 }
