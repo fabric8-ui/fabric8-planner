@@ -500,7 +500,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
       data: [{
         id: userId,
         type: 'identities'
-      }]
+      } as User]
     };
     this.workItemService.resolveUsersForWorkItem(this.workItem);
     this.save();

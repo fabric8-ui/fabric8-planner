@@ -39,10 +39,7 @@ export class WorkItemRelations {
     }
   };
   assignees: {
-    data: {
-      id: string,
-      type: string
-    }[]
+    data: User[]
   };
   baseType: {
     data: {
@@ -63,10 +60,7 @@ export class WorkItemRelations {
     };
   };
   creator: {
-    data: {
-      id: string,
-      type: string
-    }
+    data: User;
   };
   iteration: {
     data: {
