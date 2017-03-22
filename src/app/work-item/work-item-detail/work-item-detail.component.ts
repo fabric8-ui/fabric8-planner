@@ -148,15 +148,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
           this.createWorkItemObj(type);
           this.getAllUsers();
         } else {
-          this.addNewWI = false;
-          if (this.workItemService.isListLoaded()) {
-            this.loadWorkItem(id);
-          } else {
-            this.broadcaster.on<string>('list_first_load_done')
-              .subscribe(message => {
-                this.loadWorkItem(id);
-            });
-          }
+          this.loadWorkItem(id);
         }
       }
     });
@@ -186,6 +178,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
   }
 
   loadWorkItem(id: string): void {
+    console.log('########### - 2');
+    console.log(id);
     this.workItemService.getWorkItemById(id)
       .subscribe(workItem => {
         this.closeUserRestFields();

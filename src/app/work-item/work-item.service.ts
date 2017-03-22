@@ -148,8 +148,13 @@ export class WorkItemService {
         this.http.get(url)
       )
       .map((items) => {
-        // const areas = items[0];
-        let resolvedWorkItems = this.resolveWorkItems(items);
+        const iterations = items[0];
+        const users = items[1];
+        const user = items[2];
+        let workItems = items[3].json().data as WorkItem[];
+        let links = items[3].json().links;
+        this.nextLink = links.next;
+        let resolvedWorkItems = this.resolveWorkItems(workItems, iterations, users, user);
         return resolvedWorkItems;
       });
     } else {
@@ -157,12 +162,36 @@ export class WorkItemService {
     }
   }
 
-  resolveWorkItems(items: any): WorkItem[] {
-    const iterations = items[0];
-    const users = items[1];
-    const user = items[2];
-    let workItems = items[3].json().data as WorkItem[];
-    let links = items[3].json().links;
+
+  /**
+   * This function is called from next page onwards in the scroll
+   * It does pretty much same as the getWorkItems function
+   */
+  getMoreWorkItems(): Observable<any> {
+    if (this.nextLink) {
+      return Observable.combineLatest(
+        // this.areaService.getAreas(),
+        this.iterationService.getIterations(),
+        this.userService.getAllUsers(),
+        this.userService.getUser(),
+        this.http.get(this.nextLink)
+      ).map((items) => {
+        const iterations = items[0];
+        const users = items[1];
+        const user = items[2];
+        let workItems = items[3].json().data as WorkItem[];
+        let links = items[3].json().links;
+        this.nextLink = links.next;
+        let resolvedWorkItems = this.resolveWorkItems(workItems, iterations, users, user);
+        return resolvedWorkItems;
+      });
+    } else {
+      return Observable.of('No more item found');
+    }
+  }
+
+
+  resolveWorkItems(workItems, iterations, users, use): WorkItem[] {
     let resolvedWorkItems = workItems.map((item) => {
       // Resolve assignnees
       let assignees = item.relationships.assignees.data ? cloneDeep(item.relationships.assignees.data) : [];
@@ -179,8 +208,6 @@ export class WorkItemService {
       if (iteration) {
         item.relationships.iteration.data = iterations.find((it) => it.id === iteration.id) || iteration;
       }
-
-      // this.nextLink = links.next;
       return item;
     });
     return resolvedWorkItems;
@@ -195,28 +222,6 @@ export class WorkItemService {
 
   isListLoaded() {
     return !!this.workItems.length;
-  }
-
-  /**
-   * This function is called from next page onwards in the scroll
-   * It does pretty much same as the getWorkItems function
-   */
-  getMoreWorkItems(): Observable<any> {
-    if (this.nextLink) {
-      return Observable.combineLatest(
-        // this.areaService.getAreas(),
-        this.iterationService.getIterations(),
-        this.userService.getAllUsers(),
-        this.userService.getUser(),
-        this.http.get(this.nextLink)
-      ).map((items) => {
-        // const areas = items[0];
-        let resolvedWorkItems = this.resolveWorkItems(items);
-        return resolvedWorkItems;
-      });
-    } else {
-      return Observable.of('No more item found');
-    }
   }
 
   getNextLink(): string {
@@ -236,51 +241,14 @@ export class WorkItemService {
    * @param: number - id
    */
   getWorkItemById(id: string): Observable<WorkItem> {
-    if (id in this.workItemIdIndexMap) {
-      let wItem = this.workItems[this.workItemIdIndexMap[id]];
-      this.resolveComments(wItem);
-      this.resolveLinks(wItem);
-      return Observable.of(wItem);
+    if (this._currentSpace) {
+      // FIXME: make the URL great again (when we know the right API URL for this)!
+      this.workItemUrl = this.baseApiUrl + 'workitems';
+      // this.workItemUrl = currentSpace.links.self + '/workitems';
+      this.http.get(this._currentSpace.links.self + '/workitems/' + id)
+        .map((item) => item.json().data);
     } else {
-      this.buildUserIdMap();
-      if (this._currentSpace) {
-        // FIXME: make the URL great again (when we know the right API URL for this)!
-        this.workItemUrl = this.baseApiUrl + 'workitems';
-        // this.workItemUrl = currentSpace.links.self + '/workitems';
-        this.http
-          .get(this.workItemUrl + '/' + id, { headers: this.headers })
-          .subscribe((response) => {
-            let wItem: WorkItem = response.json().data as WorkItem;
-            this.resolveUsersForWorkItem(wItem);
-            this.resolveIterationForWorkItem(wItem);
-            this.resolveType(wItem);
-            this.resolveAreaForWorkItem(wItem);
-            // If this work item matches with current filters
-            // it goes to the big list and then we call this function
-            // again to treat it as a locally saved item
-            if (!(wItem.id in this.workItemIdIndexMap) && this.doesMatchCurrentFilter(wItem)) {
-              this.workItems.splice(this.workItems.length, 0, wItem);
-              this.buildWorkItemIdIndexMap();
-              return this.getWorkItemById(wItem.id);
-            }
-
-            // If this work item doesn't match with current filters
-            // it's not get added to the big list so not storing locally
-            // it just gets resolved with related data and returned
-            this.resolveComments(wItem);
-            this.resolveLinks(wItem);
-            return Observable.of(wItem);
-          })
-          // .catch ((e) => {
-          //   if (e.status === 401) {
-          //     this.auth.logout();
-          //   } else {
-          //     this.handleError(e);
-          //   }
-          // });
-      } else {
-        return Observable.of<WorkItem>( {} as WorkItem );
-      }
+      return Observable.of<WorkItem>( {} as WorkItem );
     }
   }
 
