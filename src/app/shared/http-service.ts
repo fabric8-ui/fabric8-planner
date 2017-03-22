@@ -21,7 +21,7 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class HttpService extends Http {
 
-  private headers = new Headers({'Content-Type': 'application/json'});
+  private headers = new Headers({'Content-Type': 'somethingelse'});
 
   constructor(backend: any,
               options: RequestOptions,
@@ -32,39 +32,38 @@ export class HttpService extends Http {
     }
   }
 
-  get(url: string, options?: RequestOptionsArgs) {
+  get(url: string, options = {}) {
     console.log('GET request initiated');
     console.log('URL - ', url);
     console.log('Options - ', options);
-
-    return super.get(url, {headers: this.headers});
+    return super.get(url, { headers: this.headers });
   }
 
-  post(url: string, body: any, options?: RequestOptionsArgs) {
+  post(url: string, body: any, options: RequestOptionsArgs = {}) {
+    options = Object.assign(options, this.options);
     console.log('POST request initiated');
     console.log('URL - ', url);
     console.log('Body - ', body);
     console.log('Options - ', options);
-
-    return super.post(url, body, {headers: this.headers});
+    return super.post(url, body, { headers: this.headers });
   }
 
-  put(url: string, body: any, options?: RequestOptionsArgs) {
+  put(url: string, body: any, options: RequestOptionsArgs = {}) {
     console.log('PUT request initiated');
     console.log('URL - ', url);
     console.log('Body - ', body);
     console.log('Options - ', options);
 
-    return super.put(url, body, {headers: this.headers});
+    return super.put(url, body, { headers: this.headers });
   }
 
-  patch(url: string, body: any, options?: RequestOptionsArgs) {
+  patch(url: string, body: any, options: RequestOptionsArgs = {}) {
     console.log('PATCH request initiated');
     console.log('URL - ', url);
     console.log('Body - ', body);
     console.log('Options - ', options);
 
-    return super.patch(url, body, {headers: this.headers});
+    return super.patch(url, body, { headers: this.headers });
   }
 
 }

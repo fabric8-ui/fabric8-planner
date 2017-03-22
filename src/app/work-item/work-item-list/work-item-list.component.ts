@@ -1,3 +1,5 @@
+import { IterationService } from './../../iteration/iteration.service';
+import { IterationModel } from './../../models/iteration.model';
 import { Subscription } from 'rxjs/Subscription';
 import {
   AfterViewInit,
@@ -75,6 +77,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
   allUsers: User[] = [] as User[];
   authUser: any = null;
   private spaceSubscription: Subscription = null;
+  private iterations: IterationModel[] = [];
 
   // See: https://angular2-tree.readme.io/docs/options
   treeListOptions = {
@@ -94,7 +97,8 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
     private logger: Logger,
     private userService: UserService,
     private route: ActivatedRoute,
-    private spaces: Spaces) {}
+    private spaces: Spaces,
+    private iterationService: IterationService) {}
 
   ngOnInit(): void {
     this.listenToEvents();
@@ -118,6 +122,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
     let oldHeight = 0;
     this.allUsers = cloneDeep(this.route.snapshot.data['allusers']) as User[];
     this.authUser = cloneDeep(this.route.snapshot.data['authuser']);
+    this.getIterations();
   }
 
   ngDoCheck() {
@@ -134,12 +139,24 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
     this.loadWorkItems();
   }
 
+  getIterations() {
+    this.iterationService.getIterations()
+      .subscribe((iterations) => {
+        this.iterations = iterations;
+      });
+  }
+
   loadWorkItems(): void {
     this.workItemService
-      .getWorkItems(this.pageSize, this.filters)
+      .newGetWorkItems(this.pageSize, this.filters)
       .subscribe((wItems) => {
         this.workItems = wItems;
       });
+    // this.workItemService
+    //   .getWorkItems(this.pageSize, this.filters)
+    //   .subscribe((wItems) => {
+    //     this.workItems = wItems;
+    //   });
   }
 
   fetchMoreWiItems(): void {

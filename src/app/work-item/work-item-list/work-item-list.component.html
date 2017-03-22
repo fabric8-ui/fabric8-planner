@@ -34,6 +34,7 @@
                         class="work-item-list-entry"
                         [listItem]="treeListItem"
                         [workItem]="node.data"
+                        [iterations]="iterations"
                         (selectEvent)="onSelect($event)"
                         (toggleEvent)="onToggle($event)"
                         (detailEvent)="onDetail($event)"

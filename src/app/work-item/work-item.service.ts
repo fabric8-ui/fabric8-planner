@@ -109,7 +109,7 @@ export class WorkItemService {
             this.resolveAreaForWorkItem(item);
           });
           return wItems;
-        })
+        });
         // .catch ((e) => {
         //   if (e.status === 401) {
         //     this.auth.logout();
@@ -127,6 +127,56 @@ export class WorkItemService {
    * We maintain a big list of work WorkItem
    * We also maintain a Map of the index and WorkItem.id in another object for easy access
    */
+
+
+   newGetWorkItems(pageSize: number = 20, filters: any[] = [], onlyResponse: boolean = false): Observable<WorkItem[]> {
+    if (this._currentSpace) {
+      this.workItemUrl = this._currentSpace.links.self + '/workitems';
+      this.nextLink = null;
+      let url = this.workItemUrl + '?page[limit]=' + pageSize;
+      filters.forEach((item) => {
+        if (item.active) {
+          url += '&' + item.paramKey + '=' + item.value;
+        }
+      });
+
+      return Observable.combineLatest(
+        // this.areaService.getAreas(),
+        this.iterationService.getIterations(),
+        this.userService.getAllUsers(),
+        this.userService.getUser(),
+        this.http.get(url)
+      )
+      .map((items) => {
+        // const areas = items[0];
+        const iterations = items[0];
+        const users = items[1];
+        const user = items[2];
+        let workItems = items[3].json().data as WorkItem[];
+
+        let resolvedWorkItems = workItems.map((item) => {
+          // Resolve assignnees
+          let assignees = item.relationships.assignees.data ? cloneDeep(item.relationships.assignees.data) : [];
+          item.relationships.assignees.data = assignees.map((assignee) => {
+            return users.find((user) => user.id === assignee.id) || assignee;
+          });
+
+          // Resolve creator
+          let creator = cloneDeep(item.relationships.creator.data);
+          item.relationships.creator.data = users.find((user) => user.id === creator.id) || creator;
+
+          // Resolve iteration
+          let iteration = cloneDeep(item.relationships.iteration.data);
+          item.relationships.iteration.data = iterations.find((it) => it.id === iteration.id) || iteration;
+
+          return item;
+        });
+        return resolvedWorkItems;
+      });
+    } else {
+      return Observable.of<WorkItem[]>( [] as WorkItem[] );
+    }
+   }
 
   /**
    * We call this function from the list page to get first initial set of data
@@ -153,7 +203,7 @@ export class WorkItemService {
       this.prevFilters = cloneDeep(filters);
 
       return this.http
-        .get(url, { headers: this.headers })
+        .get(url)
         .map(response => {
           // Build the user - id map
           this.buildUserIdMap();
@@ -177,7 +227,7 @@ export class WorkItemService {
           this.broadcaster.broadcast('list_first_load_done');
 
           return onlyResponse ? wItems : this.workItems;
-        })
+        });
         // .catch ((e) => {
         //   if (e.status === 401) {
         //     this.auth.logout();
