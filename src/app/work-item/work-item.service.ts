@@ -129,7 +129,7 @@ export class WorkItemService {
    */
 
 
-   getWorkItems(pageSize: number = 20, filters: any[] = [], onlyResponse: boolean = false): Observable<WorkItem[]> {
+   getWorkItems(pageSize: number = 20, filters: any[] = []): Observable<WorkItem[]> {
     if (this._currentSpace) {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
       this.nextLink = null;
@@ -153,7 +153,7 @@ export class WorkItemService {
         const users = items[1];
         const user = items[2];
         let workItems = items[3].json().data as WorkItem[];
-
+        let links = items[3].json().links;
         let resolvedWorkItems = workItems.map((item) => {
           // Resolve assignnees
           let assignees = item.relationships.assignees.data ? cloneDeep(item.relationships.assignees.data) : [];
@@ -169,6 +169,7 @@ export class WorkItemService {
           let iteration = cloneDeep(item.relationships.iteration.data);
           item.relationships.iteration.data = iterations.find((it) => it.id === iteration.id) || iteration;
 
+          this.nextLink = links.next;
           return item;
         });
         return resolvedWorkItems;
@@ -178,67 +179,6 @@ export class WorkItemService {
     }
    }
 
-  /**
-   * We call this function from the list page to get first initial set of data
-   * Add the data to workItems array
-   * Resolve the users for work item as in get the details of assignee and creator
-   * and store them with the data in the array
-   */
-  oldGetWorkItems(pageSize: number = 20, filters: any[] = [], onlyResponse: boolean = false): Observable<WorkItem[]> {
-    if (this._currentSpace) {
-      this.workItemUrl = this._currentSpace.links.self + '/workitems';
-      this.nextLink = null;
-      let url = this.workItemUrl + '?page[limit]=' + pageSize;
-      filters.forEach((item) => {
-        if (item.active) {
-          url += '&' + item.paramKey + '=' + item.value;
-        }
-      });
-      // Reseting stored data
-      // if filter value is changed
-      if (JSON.stringify(this.prevFilters) != JSON.stringify(filters)) {
-        this.resetWorkItemList();
-      }
-      // Setting current filter as previous filter value
-      this.prevFilters = cloneDeep(filters);
-
-      return this.http
-        .get(url)
-        .map(response => {
-          // Build the user - id map
-          this.buildUserIdMap();
-          let wItems: WorkItem[];
-          let links = response.json().links;
-          if (links.hasOwnProperty('next')) {
-            this.nextLink = links.next;
-          }
-          wItems = response.json().data as WorkItem[];
-          wItems.forEach((item) => {
-            // Resolve the assignee and creator
-            this.resolveUsersForWorkItem(item);
-            this.resolveIterationForWorkItem(item);
-            this.resolveType(item);
-            this.resolveAreaForWorkItem(item);
-          });
-          // Update the existing workItem big list with new data
-          this.updateWorkItemBigList(wItems);
-
-          // Boradcast that the big list is prepared initially
-          this.broadcaster.broadcast('list_first_load_done');
-
-          return onlyResponse ? wItems : this.workItems;
-        });
-        // .catch ((e) => {
-        //   if (e.status === 401) {
-        //     this.auth.logout();
-        //   } else {
-        //     this.handleError(e);
-        //   }
-        // });
-    } else {
-      return Observable.of<WorkItem[]>( [] as WorkItem[] );
-    }
-  }
 
   // Reset work item big list
   resetWorkItemList() {
