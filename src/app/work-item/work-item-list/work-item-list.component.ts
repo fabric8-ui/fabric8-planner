@@ -148,15 +148,10 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
 
   loadWorkItems(): void {
     this.workItemService
-      .newGetWorkItems(this.pageSize, this.filters)
+      .getWorkItems(this.pageSize, this.filters)
       .subscribe((wItems) => {
         this.workItems = wItems;
       });
-    // this.workItemService
-    //   .getWorkItems(this.pageSize, this.filters)
-    //   .subscribe((wItems) => {
-    //     this.workItems = wItems;
-    //   });
   }
 
   fetchMoreWiItems(): void {

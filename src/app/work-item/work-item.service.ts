@@ -129,7 +129,7 @@ export class WorkItemService {
    */
 
 
-   newGetWorkItems(pageSize: number = 20, filters: any[] = [], onlyResponse: boolean = false): Observable<WorkItem[]> {
+   getWorkItems(pageSize: number = 20, filters: any[] = [], onlyResponse: boolean = false): Observable<WorkItem[]> {
     if (this._currentSpace) {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
       this.nextLink = null;
@@ -184,7 +184,7 @@ export class WorkItemService {
    * Resolve the users for work item as in get the details of assignee and creator
    * and store them with the data in the array
    */
-  getWorkItems(pageSize: number = 20, filters: any[] = [], onlyResponse: boolean = false): Observable<WorkItem[]> {
+  oldGetWorkItems(pageSize: number = 20, filters: any[] = [], onlyResponse: boolean = false): Observable<WorkItem[]> {
     if (this._currentSpace) {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
       this.nextLink = null;
