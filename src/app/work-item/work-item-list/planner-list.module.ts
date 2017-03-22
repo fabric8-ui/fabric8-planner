@@ -1,6 +1,6 @@
 import { NgModule }         from '@angular/core';
 import { CommonModule }     from '@angular/common';
-import { HttpModule, Http } from '@angular/http';
+import { HttpModule, Http, XHRBackend, RequestOptions } from '@angular/http';
 
 
 import { DropdownModule, TooltipModule } from 'ng2-bootstrap';
@@ -27,6 +27,39 @@ import { WorkItemListComponent } from './work-item-list.component';
 import { WorkItemListEntryComponent } from './work-item-list-entry/work-item-list-entry.component';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 import { WorkItemService } from '../work-item.service';
+import { MockHttp } from './../../shared/mock-http';
+import { AuthenticationService } from 'ngx-login-client';
+import { HttpService } from './../../shared/http-service';
+
+
+let providers = [];
+
+if (process.env.ENV == 'inmemory') {
+  providers = [
+    AuthUserResolve,
+    GlobalSettings,
+    UsersResolve,
+    WorkItemService,
+    {
+      provide: HttpService,
+      useClass: MockHttp
+    }
+  ];
+} else {
+  providers = [
+    AuthUserResolve,
+    GlobalSettings,
+    UsersResolve,
+    WorkItemService,
+    {
+      provide: HttpService,
+      useFactory: (backend: XHRBackend, options: RequestOptions, auth: AuthenticationService) => {
+        return new HttpService(backend, options, auth);
+      },
+      deps: [XHRBackend, RequestOptions, AuthenticationService]
+    }
+  ];
+}
 
 @NgModule({
   imports: [
@@ -53,12 +86,7 @@ import { WorkItemService } from '../work-item.service';
     WorkItemListComponent,
     WorkItemListEntryComponent
   ],
-  providers: [
-    AuthUserResolve,
-    GlobalSettings,
-    UsersResolve,
-    WorkItemService
-  ],
+  providers: providers,
   exports: [ WorkItemListComponent ]
 })
 export class PlannerListModule {
