@@ -176,9 +176,11 @@ export class WorkItemService {
 
       // Resolve iteration
       let iteration = cloneDeep(item.relationships.iteration.data);
-      item.relationships.iteration.data = iterations.find((it) => it.id === iteration.id) || iteration;
+      if (iteration) {
+        item.relationships.iteration.data = iterations.find((it) => it.id === iteration.id) || iteration;
+      }
 
-      this.nextLink = links.next;
+      // this.nextLink = links.next;
       return item;
     });
     return resolvedWorkItems;
