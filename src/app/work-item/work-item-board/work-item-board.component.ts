@@ -102,7 +102,7 @@ export class WorkItemBoardComponent implements OnInit {
       active: true,
       paramKey: 'filter[workitemstate]',
       value: lane.option
-    }, ...this.filters], true)
+    }, ...this.filters])
       .subscribe(workItems => {
         lane.workItems = workItems;
         lane.nextLink = this.workItemService.getNextLink();

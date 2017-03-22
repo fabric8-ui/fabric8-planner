@@ -149,35 +149,40 @@ export class WorkItemService {
       )
       .map((items) => {
         // const areas = items[0];
-        const iterations = items[0];
-        const users = items[1];
-        const user = items[2];
-        let workItems = items[3].json().data as WorkItem[];
-        let links = items[3].json().links;
-        let resolvedWorkItems = workItems.map((item) => {
-          // Resolve assignnees
-          let assignees = item.relationships.assignees.data ? cloneDeep(item.relationships.assignees.data) : [];
-          item.relationships.assignees.data = assignees.map((assignee) => {
-            return users.find((user) => user.id === assignee.id) || assignee;
-          });
-
-          // Resolve creator
-          let creator = cloneDeep(item.relationships.creator.data);
-          item.relationships.creator.data = users.find((user) => user.id === creator.id) || creator;
-
-          // Resolve iteration
-          let iteration = cloneDeep(item.relationships.iteration.data);
-          item.relationships.iteration.data = iterations.find((it) => it.id === iteration.id) || iteration;
-
-          this.nextLink = links.next;
-          return item;
-        });
+        let resolvedWorkItems = this.resolveWorkItems(items);
         return resolvedWorkItems;
       });
     } else {
       return Observable.of<WorkItem[]>( [] as WorkItem[] );
     }
-   }
+  }
+
+  resolveWorkItems(items: any): WorkItem[] {
+    const iterations = items[0];
+    const users = items[1];
+    const user = items[2];
+    let workItems = items[3].json().data as WorkItem[];
+    let links = items[3].json().links;
+    let resolvedWorkItems = workItems.map((item) => {
+      // Resolve assignnees
+      let assignees = item.relationships.assignees.data ? cloneDeep(item.relationships.assignees.data) : [];
+      item.relationships.assignees.data = assignees.map((assignee) => {
+        return users.find((user) => user.id === assignee.id) || assignee;
+      });
+
+      // Resolve creator
+      let creator = cloneDeep(item.relationships.creator.data);
+      item.relationships.creator.data = users.find((user) => user.id === creator.id) || creator;
+
+      // Resolve iteration
+      let iteration = cloneDeep(item.relationships.iteration.data);
+      item.relationships.iteration.data = iterations.find((it) => it.id === iteration.id) || iteration;
+
+      this.nextLink = links.next;
+      return item;
+    });
+    return resolvedWorkItems;
+  }
 
 
   // Reset work item big list
@@ -196,36 +201,17 @@ export class WorkItemService {
    */
   getMoreWorkItems(): Observable<any> {
     if (this.nextLink) {
-      return this.http
-      .get(this.nextLink, { headers: this.headers })
-      .map(response => {
-        this.buildUserIdMap();
-        let links = response.json().links;
-        if (links.hasOwnProperty('next')) {
-          this.nextLink = links.next;
-        } else {
-          this.nextLink = null;
-        }
-        let newWorkItems: WorkItem[] = response.json().data as WorkItem[];
-        newWorkItems.forEach((item) => {
-          // Resolve the assignee and creator
-          this.resolveUsersForWorkItem(item);
-          this.resolveIterationForWorkItem(item);
-          this.resolveType(item);
-          this.resolveAreaForWorkItem(item);
-        });
-        let newItems = cloneDeep(newWorkItems);
-        // Update the existing workItem big list with new data
-        this.updateWorkItemBigList(newItems);
-        return newWorkItems;
-      })
-      // .catch ((e) => {
-      //   if (e.status === 401) {
-      //     this.auth.logout();
-      //   } else {
-      //     this.handleError(e);
-      //   }
-      // });
+      return Observable.combineLatest(
+        // this.areaService.getAreas(),
+        this.iterationService.getIterations(),
+        this.userService.getAllUsers(),
+        this.userService.getUser(),
+        this.http.get(this.nextLink)
+      ).map((items) => {
+        // const areas = items[0];
+        let resolvedWorkItems = this.resolveWorkItems(items);
+        return resolvedWorkItems;
+      });
     } else {
       return Observable.of('No more item found');
     }
