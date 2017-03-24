@@ -82,6 +82,22 @@
                 </aside>
               </div>
             </div>
+            <div *ngIf="loggedIn && (currentUser.id === comment.relationalData.creator?.id)"
+                  class="dropdown dropdown-kebab-pf" dropdown>
+              <button class="btn btn-link dropdown-toggle"
+                      id="commentActionsKebab"
+                      type="button"
+                      dropdownToggle
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="true">
+                <span class="fa fa-ellipsis-v"></span>
+              </button>
+              <ul class="dropdown-menu " aria-labelledby="commentActionsKebab" dropdownMenu>
+                <li><a (click)="openComment(comment.id)">Edit...</a></li>
+                <li><a (click)="confirmCommentDelete(comment.id)">Delete</a></li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

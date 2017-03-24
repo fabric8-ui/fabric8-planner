@@ -94,6 +94,10 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
           });
     }
 
+    confirmCommentDelete(id: string): void {
+        // Show modal dialog
+    }
+
     onCommentEdit($event, inpId, saveBtnId) {
       this.preventDef($event);
       // console.log(document.getElementById(saveBtnId).cla);
