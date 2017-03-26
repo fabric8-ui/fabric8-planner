@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs/Observable';
 import { IterationService } from './../../iteration/iteration.service';
 import { IterationModel } from './../../models/iteration.model';
 import { Subscription } from 'rxjs/Subscription';
@@ -77,6 +78,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
   authUser: any = null;
   private spaceSubscription: Subscription = null;
   private iterations: IterationModel[] = [];
+  private nextLink: string = '';
 
   // See: https://angular2-tree.readme.io/docs/options
   treeListOptions = {
@@ -106,7 +108,6 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
   ngOnInit(): void {
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
-    // console.log('ALL USER DATA', this.route.snapshot.data['allusers']);
     // console.log('AUTH USER DATA', this.route.snapshot.data['authuser']);
     this.spaceSubscription = this.spaces.current.subscribe(space => {
       if (space) {
@@ -123,9 +124,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
 
   ngAfterViewInit() {
     let oldHeight = 0;
-    this.allUsers = cloneDeep(this.route.snapshot.data['allusers']) as User[];
     this.authUser = cloneDeep(this.route.snapshot.data['authuser']);
-    this.getIterations();
   }
 
   ngDoCheck() {
@@ -142,25 +141,36 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
     this.loadWorkItems();
   }
 
-  getIterations() {
-    this.iterationService.getIterations()
-      .subscribe((iterations) => {
-        this.iterations = iterations;
-      });
-  }
 
   loadWorkItems(): void {
-    this.workItemService
-      .getWorkItems(this.pageSize, this.filters)
-      .subscribe((wItems) => {
-        this.workItems = wItems;
-      });
+    Observable.combineLatest(
+      this.iterationService.getIterations(),
+      this.userService.getAllUsers(),
+      this.workItemService.getWorkItemTypes(),
+      this.workItemService.getWorkItems(this.pageSize, this.filters)
+    ).map((items) => {
+      return items;
+    })
+    .subscribe(([iterations, users, wiTypes, workItemResp]) => {
+      this.allUsers = users;
+      this.iterations = iterations;
+      this.workItemTypes = wiTypes;
+      const workItems = workItemResp.workItems;
+      this.nextLink = workItemResp.nextLink;
+      this.workItems = this.workItemService.resolveWorkItems(workItems, this.iterations, this.allUsers);
+    });
   }
 
   fetchMoreWiItems(): void {
     this.workItemService
-      .getMoreWorkItems()
-      .subscribe((newWiItems) => {
+      .getMoreWorkItems(this.nextLink)
+      .subscribe((newWiItemResp) => {
+        const workItems = newWiItemResp.workItems;
+        this.nextLink = newWiItemResp.nextLink;
+        this.workItems = [
+          ...this.workItems,
+          ...this.workItemService.resolveWorkItems(workItems, this.iterations, this.allUsers)
+        ];
         this.treeList.updateTree();
       },
       (e) => console.log(e));

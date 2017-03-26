@@ -122,36 +122,24 @@ export class WorkItemService {
     }
   }
 
-  getWorkItems(pageSize: number = 20, filters: any[] = []): Observable<WorkItem[]> {
+  getWorkItems(pageSize: number = 20, filters: any[] = []): Observable<{workItems: WorkItem[], nextLink: string | null}> {
     if (this._currentSpace) {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
-      this.nextLink = null;
       let url = this.workItemUrl + '?page[limit]=' + pageSize;
       filters.forEach((item) => {
         if (item.active) {
           url += '&' + item.paramKey + '=' + item.value;
         }
       });
-
-      return Observable.combineLatest(
-        // this.areaService.getAreas(),
-        this.iterationService.getIterations(),
-        this.userService.getAllUsers(),
-        this.userService.getUser(),
-        this.http.get(url)
-      )
-      .map((items) => {
-        const iterations = items[0];
-        const users = items[1];
-        const user = items[2];
-        let workItems = items[3].json().data as WorkItem[];
-        let links = items[3].json().links;
-        this.nextLink = links.next;
-        let resolvedWorkItems = this.resolveWorkItems(workItems, iterations, users, user);
-        return resolvedWorkItems;
-      });
+      return this.http.get(url)
+        .map((resp) => {
+          return {
+            workItems: resp.json().data as WorkItem[],
+            nextLink: resp.json().links.next
+          };
+        });
     } else {
-      return Observable.of<WorkItem[]>( [] as WorkItem[] );
+      return Observable.of<{workItems: WorkItem[], nextLink: string | null}>( {workItems: [] as WorkItem[], nextLink: null} );
     }
   }
 
@@ -159,31 +147,22 @@ export class WorkItemService {
    * This function is called from next page onwards in the scroll
    * It does pretty much same as the getWorkItems function
    */
-  getMoreWorkItems(): Observable<any> {
-    if (this.nextLink) {
-      return Observable.combineLatest(
-        // this.areaService.getAreas(),
-        this.iterationService.getIterations(),
-        this.userService.getAllUsers(),
-        this.userService.getUser(),
-        this.http.get(this.nextLink)
-      ).map((items) => {
-        const iterations = items[0];
-        const users = items[1];
-        const user = items[2];
-        let workItems = items[3].json().data as WorkItem[];
-        let links = items[3].json().links;
-        this.nextLink = links.next;
-        let resolvedWorkItems = this.resolveWorkItems(workItems, iterations, users, user);
-        return resolvedWorkItems;
-      });
+  getMoreWorkItems(url): Observable<{workItems: WorkItem[], nextLink: string | null}> {
+    if (url) {
+      return this.http.get(url)
+        .map((resp) => {
+          return {
+            workItems: resp.json().data as WorkItem[],
+            nextLink: resp.json().links.next
+          };
+        });
     } else {
-      return Observable.of('No more item found');
+      return Observable.throw('No more item found');
     }
   }
 
 
-  resolveWorkItems(workItems, iterations, users, use): WorkItem[] {
+  resolveWorkItems(workItems, iterations, users): WorkItem[] {
     let resolvedWorkItems = workItems.map((item) => {
       // Resolve assignnees
       let assignees = item.relationships.assignees.data ? cloneDeep(item.relationships.assignees.data) : [];
