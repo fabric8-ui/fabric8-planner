@@ -38,7 +38,7 @@ export class HttpService extends Http {
   ) {
     super(backend, options);
     if (auth && auth.getToken() != null) {
-      options.headers.set('Authorization', `Bearer ${auth.getToken()}`);
+      this.headers.set('Authorization', `Bearer ${auth.getToken()}`);
     }
   }
 
