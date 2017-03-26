@@ -3,9 +3,7 @@ export * from './lib/shared/http-service.service';
 export * from './lib/work-item/work-item.module'
 export * from './lib/shared/mock-data.service';
 export * from './lib/auth/authentication.service';
-export * from './lib/shared/broadcaster.service';
 export * from './lib/user/user.service';
-export * from './lib/shared/logger.service';
 export * from './lib/footer/footer.component';
 export * from './lib/header/header.component';
 export * from './lib/login/login.component';

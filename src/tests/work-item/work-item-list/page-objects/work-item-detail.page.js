@@ -442,6 +442,9 @@ class WorkItemDetailPage {
   clickCreatorAvatar  (){
     return element(by.id('WI_details_reporter_img')).click();
   }
+  get creatorUsername  (){
+    return element(by.id('WI_details_reporter_user'));
+  }
   getCreatorUsername  (){
     return element(by.id('WI_details_reporter_user')).getText();
   }
@@ -459,7 +462,7 @@ class WorkItemDetailPage {
     return element(by.id('wi-link'));
   }
   linkItemHeaderCaret (){
-    return element(by.css('.fa.fa-angle-up'));
+    return element(by.id('caret-right'));
   }
   linkItemDetailedDiv (){
     return element(by.css('.link-list-wrap'));
@@ -542,10 +545,10 @@ class WorkItemDetailPage {
   saveAreasButton (){
     return element(by.id('save_area'));
   }
-  SaveAreas  (areaid){
+  SaveAreas  (){
     return this.saveAreasButton().click();
   }
-  ClosekAreas  (areaid){
+  ClosekAreas  (){
     return element(by.id('close_area')).click();
   }
 /**Iteration element */

@@ -8,10 +8,9 @@ import { Observable } from 'rxjs/Observable';
 
 import { cloneDeep } from 'lodash';
 import { DropdownOption } from 'ngx-widgets';
+import { Broadcaster, Logger } from 'ngx-base';
 import {
   AuthenticationService,
-  Broadcaster,
-  Logger,
   User,
   UserService
 } from 'ngx-login-client';
@@ -123,13 +122,7 @@ export class WorkItemService {
     }
   }
 
-  /**
-   * We maintain a big list of work WorkItem
-   * We also maintain a Map of the index and WorkItem.id in another object for easy access
-   */
-
-
-   getWorkItems(pageSize: number = 20, filters: any[] = []): Observable<WorkItem[]> {
+  getWorkItems(pageSize: number = 20, filters: any[] = []): Observable<WorkItem[]> {
     if (this._currentSpace) {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
       this.nextLink = null;
@@ -161,7 +154,6 @@ export class WorkItemService {
       return Observable.of<WorkItem[]>( [] as WorkItem[] );
     }
   }
-
 
   /**
    * This function is called from next page onwards in the scroll
@@ -242,9 +234,6 @@ export class WorkItemService {
    */
   getWorkItemById(id: string): Observable<WorkItem> {
     if (this._currentSpace) {
-      // FIXME: make the URL great again (when we know the right API URL for this)!
-      this.workItemUrl = this.baseApiUrl + 'workitems';
-      // this.workItemUrl = currentSpace.links.self + '/workitems';
       this.http.get(this._currentSpace.links.self + '/workitems/' + id)
         .map((item) => item.json().data);
     } else {
@@ -646,22 +635,30 @@ export class WorkItemService {
    */
   moveItem(wi: WorkItem, dir: String): Promise<any> {
     let index = this.workItems.findIndex(x => x.id == wi.id);
-    wi.attributes.nextitem = '';
-    wi.attributes.previousitem = '';
     switch (dir){
       case 'top':
         //move the item as the first item
         this.workItems.splice(0, 0, wi);
         //remove the duplicate element
         this.workItems.splice( index + 1, 1);
-        wi.attributes.nextitem = parseInt(this.workItems[1].id);
+        this.buildWorkItemIdIndexMap();
+        this.reOrderWorkItem(wi.id, null, 'top')
+            .then((workitem) => {
+              let updateIndex = this.workItemIdIndexMap[wi.id];
+              this.workItems[updateIndex].attributes['version'] = workitem.attributes['version'];
+            });
         break;
       case 'bottom':
         //move the item as the last of the loaded list
         this.workItems.splice((this.workItems.length), 0, wi);
         //remove the duplicate element
         this.workItems.splice( index, 1);
-        wi.attributes.previousitem = parseInt(this.workItems[this.workItems.length-2].id);
+        this.buildWorkItemIdIndexMap();
+        this.reOrderWorkItem(wi.id, null, 'bottom')
+            .then((workitem) => {
+              let updateIndex = this.workItemIdIndexMap[wi.id];
+              this.workItems[updateIndex].attributes['version'] = workitem.attributes['version'];
+          });
         break;
       case 'up':
         if (index > 0) { //no moving of element if it is the first element
@@ -670,12 +667,13 @@ export class WorkItemService {
           //remove the duplicate element
           this.workItems.splice( index + 1, 1);
           //Set the previous and next WI ids
-          wi.attributes.nextitem = parseInt(this.workItems[index].id);
-          //If the element has been moved and becomes the first element
-          // it will not have a previous value
-          if (index !== 1) {
-            wi.attributes.previousitem = parseInt(this.workItems[index - 2].id);
-          }
+          // wi.attributes.nextitem = parseInt(this.workItems[index].id);
+          this.buildWorkItemIdIndexMap();
+          this.reOrderWorkItem(wi.id, this.workItems[index].id, 'above')
+              .then((workitem) => {
+                let updateIndex = this.workItemIdIndexMap[wi.id];
+                this.workItems[updateIndex].attributes['version'] = workitem.attributes['version'];
+          });
         }
         break;
       case 'down':
@@ -685,12 +683,13 @@ export class WorkItemService {
           //remove the duplicate element
           this.workItems.splice( index, 1);
           //Set the previous and next WI ids
-          wi.attributes.previousitem = parseInt(this.workItems[index].id);
-          //If the element has been moved and becomes the last element
-          // it will not have a next value
-          if ((index + 2) !== this.workItems.length) {
-            wi.attributes.nextitem = parseInt(this.workItems[index + 2].id);
-          }
+          // wi.attributes.previousitem = parseInt(this.workItems[index].id);
+          this.buildWorkItemIdIndexMap();
+          this.reOrderWorkItem(wi.id, this.workItems[index].id, 'below')
+              .then((workitem) => {
+                let updateIndex = this.workItemIdIndexMap[wi.id];
+                this.workItems[updateIndex].attributes['version'] = workitem.attributes['version'];
+          });
         }
         break;
     }
@@ -763,9 +762,7 @@ export class WorkItemService {
   create(workItem: WorkItem): Observable<WorkItem> {
     let payload = JSON.stringify({data: workItem});
     if (this._currentSpace) {
-      // FIXME: make the URL great again (when we know the right API URL for this)!
-      this.workItemUrl = this.baseApiUrl + 'workitems';
-      // this.workItemUrl = currentSpace.links.self + '/workitems';
+      this.workItemUrl = this._currentSpace.links.self + '/workitems';
       return this.http
         .post(this.workItemUrl, payload, { headers: this.headers })
         .map(response => {
@@ -1133,7 +1130,7 @@ export class WorkItemService {
     let wiIndex = this.workItemIdIndexMap[workItemId];
     let prevItemId = '';
     let nextItemId = '';
-    if(wiIndex > 0){
+    if (wiIndex > 0){
       prevItemId = this.workItems[wiIndex - 1].id;
     }
 
@@ -1154,20 +1151,18 @@ export class WorkItemService {
    *
    * @param workItemId: string
    */
-  reOrderWorkItem(workItemId: string): Observable<void> {
+  reOrderWorkItem(workItemId: string, prevWiId: string | null = null, direction: string): Promise<any> {
     let newWItem = new WorkItem();
     let wiIndex = this.workItemIdIndexMap[workItemId];
     let wItem = this.workItems[wiIndex];
-
-    // Get the adjacent work items
-    let adjacentWI = this.getAdjacentWorkItemsIdById(workItemId);
+    let arr = [];
 
     newWItem.id = workItemId.toString();
     newWItem.attributes = {} as WorkItemAttributes;
     newWItem.attributes.version = wItem.attributes.version;
     newWItem.type = wItem.type;
-    newWItem.attributes.previousitem = parseInt(adjacentWI.prevItemId);
-    newWItem.attributes.nextitem = parseInt(adjacentWI.nextItemId);
+
+    arr.push(newWItem);
 
     if (this._currentSpace) {
       // FIXME: make the URL great again (when we know the right API URL for this)!
@@ -1175,12 +1170,14 @@ export class WorkItemService {
       // this.workItemUrl = currentSpace.links.self + '/workitems';
       let url = `${this.workItemUrl}/reorder`;
       return this.http
-        .patch(url, JSON.stringify({data: newWItem}), { headers: this.headers })
-        .map(response => {
-          let updatedWorkItem: WorkItem = response.json().data as WorkItem;
+        .patch(url, JSON.stringify({data: arr, position: {direction: direction, id: prevWiId}}), { headers: this.headers })
+        .toPromise()
+        .then(response => {
+          let updatedWorkItem: WorkItem = response.json().data[0] as WorkItem;
+          wItem.attributes['system.order'] = updatedWorkItem.attributes['system.order'];
           wItem.attributes['version'] = updatedWorkItem.attributes['version'];
-          wItem.attributes['order'] = updatedWorkItem.attributes['order'];
-        })
+          return updatedWorkItem;
+        });
         // .catch ((e) => {
         //   if (e.status === 401) {
         //     this.auth.logout();

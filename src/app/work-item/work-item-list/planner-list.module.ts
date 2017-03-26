@@ -1,12 +1,16 @@
 import { NgModule }         from '@angular/core';
 import { CommonModule }     from '@angular/common';
-import { HttpModule, Http, XHRBackend, RequestOptions } from '@angular/http';
 
+import {
+  HttpModule,
+  Http,
+  XHRBackend,
+  RequestOptions
+} from '@angular/http';
 
 import { DropdownModule, TooltipModule } from 'ng2-bootstrap';
 import { ModalModule } from 'ngx-modal';
 import { TreeModule } from 'angular2-tree-component';
-
 import {
   AlmIconModule,
   DialogModule,
@@ -14,6 +18,8 @@ import {
   TreeListModule,
   WidgetsModule
 } from 'ngx-widgets';
+import { Broadcaster, Logger } from 'ngx-base';
+import { AuthenticationService } from 'ngx-login-client';
 
 import { AuthUserResolve, UsersResolve } from '../common.resolver';
 import { FabPlannerAssociateIterationModalComponent } from '../work-item-iteration-association-modal/work-item-iteration-association-modal.component';
@@ -28,8 +34,8 @@ import { WorkItemListEntryComponent } from './work-item-list-entry/work-item-lis
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 import { WorkItemService } from '../work-item.service';
 import { MockHttp } from './../../shared/mock-http';
-import { AuthenticationService } from 'ngx-login-client';
 import { HttpService } from './../../shared/http-service';
+
 
 
 let providers = [];
@@ -40,6 +46,8 @@ if (process.env.ENV == 'inmemory') {
     GlobalSettings,
     UsersResolve,
     WorkItemService,
+    Broadcaster,
+    Logger,
     {
       provide: HttpService,
       useClass: MockHttp
@@ -51,6 +59,8 @@ if (process.env.ENV == 'inmemory') {
     GlobalSettings,
     UsersResolve,
     WorkItemService,
+    Broadcaster,
+    Logger,
     {
       provide: HttpService,
       useFactory: (backend: XHRBackend, options: RequestOptions, auth: AuthenticationService) => {

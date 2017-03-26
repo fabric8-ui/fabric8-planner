@@ -1,10 +1,10 @@
-import { MockBackend } from '@angular/http/testing';
 import {
   Inject,
   Injectable,
   ReflectiveInjector,
   forwardRef
 } from '@angular/core';
+
 import {
   Http,
   XHRBackend,
@@ -14,21 +14,31 @@ import {
   Response,
   Headers
 } from '@angular/http';
-import { AuthenticationService } from 'ngx-login-client';
 
+import { AuthenticationService } from 'ngx-login-client';
 import { Observable } from 'rxjs/Observable';
+
+/**
+ * This class is an abstract of Angular2 HTTP
+ * Extended from Angular2 HTTP
+ *
+ * Purpose:
+ * Error handling on API services
+ * To implement a general retry logic
+ */
 
 @Injectable()
 export class HttpService extends Http {
 
-  private headers = new Headers({'Content-Type': 'somethingelse'});
-
-  constructor(backend: any,
-              options: RequestOptions,
-              auth: AuthenticationService) {
+  private headers = new Headers({'Content-Type': 'application/json'});
+  constructor (
+    backend: any,
+    options: RequestOptions,
+    auth: AuthenticationService
+  ) {
     super(backend, options);
     if (auth && auth.getToken() != null) {
-      this.headers.set('Authorization', `Bearer ${auth.getToken()}`);
+      options.headers.set('Authorization', `Bearer ${auth.getToken()}`);
     }
   }
 
@@ -53,7 +63,6 @@ export class HttpService extends Http {
     console.log('URL - ', url);
     console.log('Body - ', body);
     console.log('Options - ', options);
-
     return super.put(url, body, { headers: this.headers });
   }
 
@@ -62,7 +71,6 @@ export class HttpService extends Http {
     console.log('URL - ', url);
     console.log('Body - ', body);
     console.log('Options - ', options);
-
     return super.patch(url, body, { headers: this.headers });
   }
 

@@ -1,13 +1,18 @@
-import { HttpService } from './../../shared/http-service';
 import { NgModule }         from '@angular/core';
 import { CommonModule }     from '@angular/common';
-import { HttpModule, Http, RequestOptions, XHRBackend } from '@angular/http';
+import {
+  HttpModule,
+  Http,
+  XHRBackend,
+  RequestOptions
+} from '@angular/http';
 
 import { ModalModule } from 'ngx-modal';
 import { DragulaModule } from 'ng2-dragula';
 import { DropdownModule } from 'ng2-bootstrap';
 import { TreeModule } from 'angular2-tree-component';
 import { TooltipModule } from 'ng2-bootstrap';
+import { Broadcaster, Logger } from 'ngx-base';
 import {
   AlmIconModule,
   DialogModule,
@@ -16,6 +21,9 @@ import {
   WidgetsModule
 } from 'ngx-widgets';
 import { AuthenticationService } from 'ngx-login-client';
+
+import { HttpService } from './../../shared/http-service';
+
 import { AlmFilterBoardList } from '../../pipes/alm-board-filter.pipe';
 import { AuthUserResolve, UsersResolve } from '../common.resolver';
 import { GlobalSettings } from '../../shared/globals';
@@ -38,6 +46,8 @@ if (process.env.ENV == 'inmemory') {
     GlobalSettings,
     UsersResolve,
     WorkItemService,
+    Broadcaster,
+    Logger,
     {
       provide: HttpService,
       useClass: MockHttp
@@ -49,6 +59,8 @@ if (process.env.ENV == 'inmemory') {
     GlobalSettings,
     UsersResolve,
     WorkItemService,
+    Broadcaster,
+    Logger,
     {
       provide: HttpService,
       useFactory: (backend: XHRBackend, options: RequestOptions, auth: AuthenticationService) => {

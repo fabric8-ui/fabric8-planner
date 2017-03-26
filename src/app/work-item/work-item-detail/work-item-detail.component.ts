@@ -20,10 +20,9 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { cloneDeep, trimEnd } from 'lodash';
 import { Space, Spaces } from 'ngx-fabric8-wit';
+import { Broadcaster, Logger } from 'ngx-base';
 import {
   AuthenticationService,
-  Broadcaster,
-  Logger,
   User,
   UserService
 } from 'ngx-login-client';
@@ -110,6 +109,10 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
 
   spaceSubscription: Subscription;
 
+  activeButton: boolean = true;
+
+  arrowUp: boolean = true;
+
   constructor(
     private areaService: AreaService,
     private auth: AuthenticationService,
@@ -144,8 +147,9 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
           //Add a new work item
           this.addNewWI = true;
           this.headerEditable = true;
-          let type = id.substring((id.indexOf('?') + 1), id.length);
-          this.createWorkItemObj(type);
+          let type = this.route.queryParams.forEach(params => {
+            this.createWorkItemObj(params['type']);
+          });
           this.getAllUsers();
         } else {
           this.loadWorkItem(id);
@@ -156,6 +160,24 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
       this.getAreas();
       this.getIterations();
     });
+  }
+
+  // toggles active state for Preview as HTML and Write in Markdown
+  toggleActive(newValue: boolean) {
+    if (this.activeButton === newValue) {
+      this.activeButton = true;
+    }
+    else {
+      this.activeButton = newValue;
+    }
+  }
+
+  arrowDescription(newValue: boolean) {
+    if (this.arrowUp === newValue) {
+      this.arrowUp = true;
+    } else {
+      this.arrowUp = newValue;
+    }
   }
 
   ngAfterViewInit() {
@@ -300,6 +322,10 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
     this.description.nativeElement.innerHTML = this.workItem.attributes['system.description.rendered'];
     this.showHtml(this.descText);
     this.descEditable = false;
+  }
+
+  showDescription(): void {
+    this.description.toggle('show-more');
   }
 
   getAreas() {
@@ -517,7 +543,9 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
   closeUserRestFields(): void {
     this.searchAssignee = false;
     this.searchIteration = false;
-    this.headerEditable = false;
+    if (this.workItem && this.workItem.id != null) {
+      this.headerEditable = false;
+    }
     this.descEditable = false;
   }
 

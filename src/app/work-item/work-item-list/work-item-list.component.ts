@@ -22,10 +22,9 @@ import {
 import { TreeNode } from 'angular2-tree-component';
 
 import { cloneDeep } from 'lodash';
+import { Broadcaster, Logger } from 'ngx-base';
 import {
   AuthenticationService,
-  Broadcaster,
-  Logger,
   User,
   UserService
 } from 'ngx-login-client';
@@ -85,7 +84,11 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
     getChildren: (node: TreeNode): any => {
       return this.workItemService.getChildren(node.data);
     },
-    levelPadding: 30
+    levelPadding: 30,
+    allowDrop: (element, to) => {
+      // return true / false based on element, to.parent, to.index. e.g.
+      return to.parent.hasChildren;
+    }
   };
 
   constructor(
@@ -296,6 +299,27 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
     this.workItemService.buildWorkItemIdIndexMap();
 
     // save the order of work item.
-    this.workItemService.reOrderWorkItem(workItemId);
+    // this.workItemService.reOrderWorkItem(workItemId);
+  }
+
+  onMoveNode($event) {
+    let movedWI = $event.node;
+    let prevWI = $event.to.parent.children[$event.to.index - 1];
+    let nextWI = $event.to.parent.children[$event.to.index + 1];
+
+    if(typeof prevWI !== 'undefined') {
+      this.workItemService.reOrderWorkItem(movedWI.id, prevWI.id, 'below')
+          .then((workItem) => {
+            this.workItems.find((item) => item.id === movedWI.id).attributes['version'] = workItem.attributes['version'];
+            this.workItemService.buildWorkItemIdIndexMap();
+          });
+    }
+    else {
+      this.workItemService.reOrderWorkItem(movedWI.id, nextWI.id, 'above')
+          .then((workItem) => {
+            this.workItems.find((item) => item.id === movedWI.id).attributes['version'] = workItem.attributes['version'];
+            this.workItemService.buildWorkItemIdIndexMap();
+          });
+    }
   }
 }
