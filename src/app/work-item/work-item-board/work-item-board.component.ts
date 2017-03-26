@@ -152,17 +152,17 @@ export class WorkItemBoardComponent implements OnInit {
   }
 
   fetchMoreWiItems(lane) {
-    console.log('More for ' + lane.option);
-    if (lane.nextLink) {
-      this.workItemService.setNextLink(lane.nextLink);
-      this.workItemService.getMoreWorkItems()
-        .subscribe((items) => {
-          lane.workItems = [...lane.workItems, ...items];
-          lane.nextLink = this.workItemService.getNextLink();
-        });
-    } else {
-      console.log('No More for ' + lane.option);
-    }
+    // console.log('More for ' + lane.option);
+    // if (lane.nextLink) {
+    //   this.workItemService.setNextLink(lane.nextLink);
+    //   this.workItemService.getMoreWorkItems(lane.nextLink)
+    //     .subscribe((items) => {
+    //       lane.workItems = [...lane.workItems, ...items];
+    //       lane.nextLink = this.workItemService.getNextLink();
+    //     });
+    // } else {
+    //   console.log('No More for ' + lane.option);
+    // }
   }
 
   gotoDetail(workItem: WorkItem) {
