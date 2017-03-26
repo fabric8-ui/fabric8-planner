@@ -208,6 +208,11 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
     this.showWorkItemDetails = true;
   }
 
+  onCreateWorkItem(workItem) {
+    let resolveItem = this.workItemService.resolveWorkItems([workItem], this.iterations, this.allUsers);
+    this.workItems = [...resolveItem, ...this.workItems];
+  }
+
   onMoveSelectedToTop(): void{
     this.workItemDetail = this.workItemToMove.getWorkItem();
     this.workItemService.moveItem(this.workItemDetail, 'top').then(() => {

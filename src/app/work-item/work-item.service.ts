@@ -756,7 +756,7 @@ export class WorkItemService {
           // Re-build the ID-index map
           this.buildWorkItemIdIndexMap();
           return newWorkItem;
-        })
+        });
         // .catch ((e) => {
         //   if (e.status === 401) {
         //     this.auth.logout();
