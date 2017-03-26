@@ -1,4 +1,8 @@
-<detail-add-type-selector #typeSelectPanel></detail-add-type-selector>
+<detail-add-type-selector
+  #typeSelectPanel
+  [takeFromInput]="true"
+  [wiTypes]="wiTypes">
+</detail-add-type-selector>
 <header class="toolbar-header">
   <div class="flex-container flex-grow-1 in-column-direction">
     <alm-toolbar
@@ -50,7 +54,9 @@
         </span>
       </template>
       <template #add>
-        <div *ngIf="loggedIn && editEnabled" class="with-cursor-pointer" placement="bottom" tooltip="Add A Work Item" (click)="typeSelectPanel.openPanel()">
+        <div *ngIf="loggedIn && editEnabled && wiTypes.length"
+          class="with-cursor-pointer" placement="bottom"
+          tooltip="Add A Work Item" (click)="typeSelectPanel.openPanel()">
           <i class="pficon pficon-add-circle-o margin-top-4"></i>
         </div>
       </template>

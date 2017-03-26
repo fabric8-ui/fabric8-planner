@@ -63,7 +63,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
 
   workItems: WorkItem[] = [];
   prevWorkItemLength: number = 0;
-  workItemTypes: WorkItemType[];
+  workItemTypes: WorkItemType[] = [];
   selectedWorkItemEntryComponent: WorkItemListEntryComponent;
   workItemToMove: WorkItemListEntryComponent;
   workItemDetail: WorkItem;

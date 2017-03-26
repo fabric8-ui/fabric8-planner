@@ -34,6 +34,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit {
   @ViewChild('add') addTemplate: TemplateRef<any>;
 
   @Input() context: string;
+  @Input() wiTypes: WorkItemType[] = [];
 
   areas: any[] = [];
   filters: any[] = [];
