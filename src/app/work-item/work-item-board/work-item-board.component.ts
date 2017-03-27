@@ -56,6 +56,7 @@ export class WorkItemBoardComponent implements OnInit {
   private allUsers: User[] = [];
   private iterations: IterationModel[] = [];
   private workItemTypes: WorkItemType[] = [];
+  private readyToInit = false;
 
   constructor(
     private auth: AuthenticationService,
@@ -104,28 +105,35 @@ export class WorkItemBoardComponent implements OnInit {
         this.workItemService.resetWorkItemList();
       }
     });
+    this.initStuff();
   }
 
-  getWorkItems(pageSize, lane) {
+  initStuff() {
     Observable.combineLatest(
       this.iterationService.getIterations(),
       this.userService.getAllUsers(),
-      this.workItemService.getWorkItemTypes(),
-      this.workItemService.getWorkItems(pageSize, [{
+      this.workItemService.getWorkItemTypes()
+    ).map((items) => {
+      return items;
+    })
+    .subscribe(([iterations, users, wiTypes]) => {
+      this.allUsers = users;
+      this.iterations = iterations;
+      this.workItemTypes = wiTypes;
+      this.readyToInit = true;
+    });
+  }
+
+  getWorkItems(pageSize, lane) {
+    this.workItemService.getWorkItems(pageSize, [{
         active: true,
         paramKey: 'filter[workitemstate]',
         value: lane.option
       }, ...this.filters])
-    ).map((items) => {
-      return items;
-    })
-    .subscribe(([iterations, users, wiTypes, workItemResp]) => {
-      this.allUsers = users;
-      this.iterations = iterations;
-      this.workItemTypes = wiTypes;
+    .subscribe(workItemResp => {
       const workItems = workItemResp.workItems;
       lane.workItems = this.workItemService.resolveWorkItems(workItems, this.iterations, this.allUsers);
-      lane.nextLink = workItemResp.nextLink;;
+      lane.nextLink = workItemResp.nextLink;
     });
   }
 
