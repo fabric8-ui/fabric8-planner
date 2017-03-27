@@ -320,6 +320,16 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
             break;
         }
     });
+
+    this.broadcaster.on<string>('updateWorkItem')
+      .subscribe((workItem: string) => {
+        let updatedItem = JSON.parse(workItem) as WorkItem;
+        let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
+        if (index > -1) {
+          this.workItems[index] = updatedItem;
+          this.treeList.updateTree();
+        }
+      });
   }
 
   onDragStart() {

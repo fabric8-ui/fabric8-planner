@@ -8,27 +8,27 @@ import { IterationModel } from './iteration.model';
 export class WorkItem {
   attributes: WorkItemAttributes;
   id: string;
-  relationships: WorkItemRelations;
+  relationships?: WorkItemRelations;
   type: string;
   relationalData?: RelationalData;
-  links: {
+  links?: {
     self: string;
-    sourceLinkTypes: string;
-    targetLinkTypes: string;
+    sourceLinkTypes?: string;
+    targetLinkTypes?: string;
   };
 }
 
 export class WorkItemAttributes {
-  'system.created_at': string;
-  'system.description': any;
-  'system.description.rendered': string;
-  'system.remote_item_id': string;
-  'system.state': string;
-  'system.title': string;
+  'system.created_at'?: string;
+  'system.description'?: any;
+  'system.description.rendered'?: string;
+  'system.remote_item_id'?: string;
+  'system.state'?: string;
+  'system.title'?: string;
   'version': number;
-  'previousitem': string | number;
-  'nextitem': string | number;
-  'order': number | string;
+  'previousitem'?: string | number;
+  'nextitem'?: string | number;
+  'order'?: number | string;
 }
 
 export class WorkItemRelations {
