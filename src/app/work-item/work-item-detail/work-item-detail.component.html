@@ -7,7 +7,7 @@
       <fieldset>
         <div class="form-group col-md-12 col-sm-12 col-xs-12 mobile-bar ">
           <div class="dropdown-kebab-pf detail-type-dropdown col-sm-8">
-            <span class="wi-type-icon fa {{workItem.relationalData?.wiType?.attributes?.icon}} fa-2x"></span>
+            <span class="wi-type-icon fa {{workItem.relationships?.baseType?.data?.attributes?.icon}} fa-2x"></span>
             <span *ngIf="workItem.id" class="detail-id" id="wi-detail-id">{{workItem.id}}</span>
           </div>
             <!--Commenting type drop down related tests for issue 635
@@ -91,7 +91,7 @@
                 <span *ngIf="loggedIn" class="caret pull-right"></span>
               </button>
               <ul *ngIf="loggedIn" id="wi-status-dropdown" class="dropdown-menu-right dropdown-ul" role="menu" dropdownMenu>
-                <li class="dropdown-li" *ngFor="let state of workItem.relationalData.wiType?.attributes.fields['system.state'].type.values;" (click)="onChangeState(state)">
+                <li class="dropdown-li" *ngFor="let state of workItem.relationships?.baseType?.data?.attributes.fields['system.state'].type.values;" (click)="onChangeState(state)">
                   <a>
                     <span class='dropdown-icon' almIcon [iconType]="state"></span>
                     <span class='dropdown-text'>{{state}}</span>
@@ -105,26 +105,26 @@
         <div class="form-group">
           <div class="detail-assignee-wrap">
               <label class="col-sm-2">
-                {{workItem.relationalData.wiType?.attributes?.fields['system.assignees']?.label}}
+                {{workItem.relationships?.baseType?.data?.attributes?.fields['system.assignees']?.label}}
               </label>
               <span
-                *ngIf="!workItem.relationalData?.assignees?.length"
+                *ngIf="!workItem.relationships?.assignees?.data?.length"
                 (click)="activeSearchAssignee()"
                 class="pull-left fa fa-user-plus user-assign-icon">
               </span>
               <img
-                *ngIf="workItem.relationalData?.assignees?.length"
+                *ngIf="workItem.relationships?.assignees?.data?.length"
                 (click)="activeSearchAssignee()"
                 class="pull-left user-assign-avatar"
                 placement="bottom"
-                tooltip="{{workItem.relationalData.assignees[0]?.attributes.fullName}}"
-                src="{{workItem.relationalData.assignees[0]?.attributes.imageURL + '&s=20'}}"
+                tooltip="{{workItem.relationships?.assignees?.data[0]?.attributes.fullName}}"
+                src="{{workItem.relationships?.assignees?.data[0]?.attributes.imageURL + '&s=20'}}"
                 onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'" />
 
               <div class="pull-left detail-assignee-name">
-                  <span *ngIf="!searchAssignee && !workItem.relationalData?.assignees?.length" (click)="activeSearchAssignee()" class="placeholder pointer"> Unassigned </span>
-                  <span *ngIf="!searchAssignee && workItem.relationalData?.assignees?.length" (click)="activeSearchAssignee()" class="pointer" id="WI_details_assigned_user">
-                    {{workItem.relationalData?.assignees[0] | almUserName:'Assignee not found' }}
+                  <span *ngIf="!searchAssignee && !workItem.relationships?.assignees?.data?.length" (click)="activeSearchAssignee()" class="placeholder pointer"> Unassigned </span>
+                  <span *ngIf="!searchAssignee && workItem.relationships?.assignees?.data?.length" (click)="activeSearchAssignee()" class="pointer" id="WI_details_assigned_user">
+                    {{workItem.relationships?.assignees?.data[0] | almUserName:'Assignee not found' }}
                   </span>
                   <div *ngIf="searchAssignee" class="user-search" >
                     <div class="list-container">
@@ -174,26 +174,26 @@
         </div>
         <!--Creator-->
         <div class="form-group">
-          <label class="col-sm-2">{{workItem.relationalData.wiType?.attributes?.fields['system.creator']?.label}}</label>
-          <span *ngIf="!workItem.relationalData?.creator"
+          <label class="col-sm-2">{{workItem.relationships?.baseType?.data?.attributes?.fields['system.creator']?.label}}</label>
+          <span *ngIf="!workItem.relationships?.creator?.data"
             class="fa pficon-user user-creator-icon" id="user_creator_icon">
           </span>
-          <img *ngIf="workItem.relationalData?.creator"
+          <img *ngIf="workItem.relationships?.creator?.data"
             class="user-avatar"
             placement="bottom"
-            tooltip="{{workItem.relationalData.creator.attributes.fullName}}"
-            src="{{workItem.relationalData.creator.attributes.imageURL + '&s=20'}}"
+            tooltip="{{workItem.relationships.creator.data.attributes.fullName}}"
+            src="{{workItem.relationships.creator.data.attributes.imageURL + '&s=20'}}"
             id="WI_details_reporter_img" />
           <div class="marginR10" style="display: inline-block;">
               <span id="WI_details_reporter_user">
-                {{workItem.relationalData?.creator | almUserName:'Creator not found'}}
+                {{workItem.relationships?.creator?.data | almUserName:'Creator not found'}}
               </span>
           </div>
         </div>
         <!-- Areas -->
         <div class="form-group detail-area-wrap">
           <label class="col-sm-2" id="area_label">
-            {{workItem.relationalData.wiType?.attributes?.fields['system.area']?.label}}
+            {{workItem.relationships?.baseType?.data?.attributes?.fields['system.area']?.label}}
           </label>
           <div class="col-sm-10 detail-area-name pull-left">
               <div *ngIf="!searchArea" (click)="activeSearchArea()"
@@ -231,7 +231,7 @@
         <!--Iteration-->
         <div class="form-group">
           <label class="col-sm-2">
-            {{workItem.relationalData.wiType?.attributes?.fields['system.iteration']?.label}}
+            {{workItem.relationships?.baseType?.data?.attributes?.fields['system.iteration']?.label}}
           </label>
           <div class="pull-left detail-iteration-name">
             <span *ngIf="!searchIteration" (click)="lookupIterations()" class="pointer" id="iteration-assocaited">
@@ -347,8 +347,8 @@
       </fieldset>
     </form>
     <div *ngIf="workItem.id" class="work-item-section">
-      <alm-work-item-link [workItem]="workItem" [loggedIn]="loggedIn"></alm-work-item-link>
-      <alm-work-item-comment [workItem]="workItem" [loggedIn]="loggedIn"></alm-work-item-comment>
+      <!-- <alm-work-item-link [workItem]="workItem" [loggedIn]="loggedIn"></alm-work-item-link> -->
+      <!-- <alm-work-item-comment [workItem]="workItem" [loggedIn]="loggedIn"></alm-work-item-comment> -->
     </div>
   </div>
 </div>

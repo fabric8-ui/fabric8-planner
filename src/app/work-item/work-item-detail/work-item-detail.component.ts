@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs/Observable';
 import {
   animate,
   AfterViewInit,
@@ -86,6 +87,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
 
   hasIteration: Boolean = false;
   searchIteration: Boolean = false;
+
   // TODO: should take current iteration as value after fetching
   selectedIteration: any;
   selectedArea: AreaModel;
@@ -201,7 +203,42 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
 
   loadWorkItem(id: string): void {
     this.workItemService.getWorkItemById(id)
-      .subscribe(workItem => {
+      .switchMap(workItem => {
+        return Observable.forkJoin(
+          Observable.of(workItem),
+          this.workItemService.getWorkItemTypes(),
+          this.areaService.getArea(workItem.relationships.area),
+          this.iterationService.getIteration(workItem.relationships.iteration),
+          this.workItemService.resolveAssignees(workItem.relationships.assignees),
+          this.workItemService.resolveCreator2(workItem.relationships.creator)
+        );
+      })
+      .subscribe(([workItem, workItemTypes, area, iteration, assignees, creator]) => {
+        // Resolve area
+        workItem.relationships.area = {
+          data: area
+        };
+
+        // Resolve iteration
+        workItem.relationships.iteration = {
+          data: iteration
+        };
+
+        // Resolve work item type
+        workItem.relationships.baseType.data =
+          workItemTypes.find(type => type.id === workItem.relationships.baseType.data.id) ||
+          workItem.relationships.baseType.data;
+
+        // Resolve assignees
+        workItem.relationships.assignees = {
+          data: assignees
+        };
+
+        // Resolve creator
+        workItem.relationships.creator = {
+          data: creator
+        };
+
         this.closeUserRestFields();
         this.titleText = workItem.attributes['system.title'];
         this.descText = workItem.attributes['system.description'] || '';
@@ -550,7 +587,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
   selectIteration(iteration: any): void {
     this.selectedIteration = iteration;
     this.dropdownButton.nativeElement.innerHTML = this.selectedIteration.attributes.name +
-                                                  ' <span class="caret"></span>'
+                                                  ' <span class="caret"></span>';
   }
 
   assignIteration(): void {

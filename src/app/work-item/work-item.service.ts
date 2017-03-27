@@ -307,6 +307,28 @@ export class WorkItemService {
     });
   }
 
+  resolveAssignees(assignees: any): Observable<User[]> {
+    if (Object.keys(assignees).length) {
+      let observableBatch = assignees.data.map((assignee) => {
+        return this.http.get(assignee.links.self)
+                .map((res) => res.json().data);
+      });
+      return Observable.forkJoin(observableBatch);
+    } else {
+      return Observable.of(assignees);
+    }
+  }
+
+  resolveCreator2(creator): Observable<User>{
+    if (Object.keys(creator).length) {
+      let creatorLink = creator.data.links.self;
+      return this.http.get(creatorLink)
+        .map(creator => creator.json().data);
+    } else {
+      return Observable.of(creator);
+    }
+  }
+
   /**
    * Usage: Resolve the creator for a WorkItem
    */
