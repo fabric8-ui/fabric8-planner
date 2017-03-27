@@ -44,6 +44,11 @@ RUN yum install google-chrome-stable -y
 #RUN chmod +x ./install_chrome.sh && ./install_chrome.sh --stable --force
 RUN yum clean all
 
+##New
+#RUN chmod u+s /usr/bin/Xvfb && chown fabric8 /usr/bin/Xvfb  
+ENV CHROME_BIN=/usr/bin/google-chrome-stable 
+ENV DISPLAY=:99.0 
+
 ENV FABRIC8_USER_NAME=fabric8
 
 RUN useradd --user-group --create-home --shell /bin/false ${FABRIC8_USER_NAME}
@@ -53,13 +58,17 @@ ENV HOME=/home/${FABRIC8_USER_NAME}
 ENV WORKSPACE=$HOME/fabric8-planner
 RUN mkdir $WORKSPACE
 
+##*
+RUN chmod u+s /usr/bin/Xvfb && chown fabric8 /usr/bin/Xvfb  
+
 COPY . $WORKSPACE
 RUN chown -R ${FABRIC8_USER_NAME}:${FABRIC8_USER_NAME} $HOME/*
 
 USER ${FABRIC8_USER_NAME}
 WORKDIR $WORKSPACE/
 #RUN /usr/bin/Xvfb :99 -ac -screen 0 1024x768x24 &
-ENV DISPLAY=:99
+RUN /usr/bin/Xvfb :99 &
+#ENV DISPLAY=:99
 
 VOLUME /dist
 
