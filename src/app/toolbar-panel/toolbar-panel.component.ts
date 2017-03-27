@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, AfterViewInit, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, AfterViewInit, TemplateRef, ViewChild, ViewEncapsulation, OnChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { cloneDeep } from 'lodash';
@@ -29,7 +29,7 @@ import {
   templateUrl: './toolbar-panel.component.html',
   styleUrls: ['./toolbar-panel.component.scss']
 })
-export class ToolbarPanelComponent implements OnInit, AfterViewInit {
+export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild('actions') actionsTemplate: TemplateRef<any>;
   @ViewChild('add') addTemplate: TemplateRef<any>;
 
@@ -41,7 +41,6 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit {
   loggedIn: boolean = false;
   editEnabled: boolean = false;
   authUser: any = null;
-  workItemTypes: WorkItemType[] = [];
   currentBoardType: WorkItemType;
   workItemToMove: WorkItemListEntryComponent;
   workItemDetail: WorkItem;
@@ -69,17 +68,13 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit {
     this.listenToEvents();
     // we need to get the wi types for the types dropdown on the board item
     // even when there is no active space change (initial population).
-    if (this.context === 'boardview')
-      this.getWorkItemTypes();
     this.spaceSubscription = this.spaces.current.subscribe(space => {
       if (space) {
         console.log('[FilterPanelComponent] New Space selected: ' + space.attributes.name);
         this.editEnabled = true;
-        this.getWorkItemTypes();
       } else {
         console.log('[FilterPanelComponent] Space deselected.');
         this.editEnabled = false;
-        this.workItemTypes = [];
       }
     });
 
@@ -132,6 +127,14 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.setFilterValues();
+  }
+
+  ngOnChanges() {
+    if (this.wiTypes.length) {
+      this.currentBoardType = this.wiTypes[0];
+    } else {
+      this.currentBoardType = null;
+    }
   }
 
   filterChange($event: FilterEvent): void {
@@ -207,19 +210,6 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit {
   moveItem(moveto: string) {
     this.broadcaster.broadcast('move_item', moveto);
   };
-
-  //Detailed add functions
-  getWorkItemTypes(){
-    this.workItemService.getWorkItemTypes()
-      .subscribe((types) => {
-        this.workItemTypes = types;
-        // if the current board type is empty, this is the first time
-        // we retrieve the types, then the default type to display is the
-        // first type returned.
-        if (!this.currentBoardType)
-          this.currentBoardType = this.workItemTypes[0];
-      });
-  }
 
   showTypes() {
     this.showTypesOptions = true;

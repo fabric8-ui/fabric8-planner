@@ -11,7 +11,7 @@
         [viewsTemplate]="addTemplate"
         (onFilterChange)="filterChange($event)">
       <template #actions>
-        <div *ngIf="context==='boardview' && (workItemTypes.length!=0)" dropdown class="card-pf-time-frame-filter board-type-dropdown">
+        <div *ngIf="context==='boardview' && (wiTypes.length!=0)" dropdown class="card-pf-time-frame-filter board-type-dropdown">
           <button dropdownToggle
               id="wi-board-type"
               type="button"
@@ -23,7 +23,7 @@
             <span class="caret"></span>
           </button>
           <ul *ngIf="loggedIn" id="wi-board-type-dropdown" class="dropdown-menu dropdown-ul" role="menu" dropdownMenu>
-            <li class="dropdown-li" *ngFor="let type of workItemTypes;" (click)="onChangeBoardType(type)">
+            <li class="dropdown-li" *ngFor="let type of wiTypes;" (click)="onChangeBoardType(type)">
               <a>
                 <span class='dropdown-icon fa {{type.attributes.icon}}'></span>
                 <span class='dropdown-text'>{{type.attributes.name}}</span>

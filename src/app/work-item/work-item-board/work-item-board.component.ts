@@ -87,7 +87,6 @@ export class WorkItemBoardComponent implements OnInit {
   ngOnInit() {
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
-    this.getDefaultWorkItemTypeStates();
     this.spaceSubscription = this.spaces.current.subscribe(space => {
       if (space) {
         console.log('[WorkItemBoardComponent] New Space selected: ' + space.attributes.name);
@@ -95,14 +94,14 @@ export class WorkItemBoardComponent implements OnInit {
       } else {
         console.log('[WorkItemBoardComponent] Space deselected');
         this.lanes = [];
-        this.workItemService.resetWorkItemList();
+        this.workItemTypes = [];
       }
     });
     this.boardContextSubscription = this.broadcaster.on<WorkItemType>('board_type_context').subscribe(workItemType => {
       if (workItemType) {
         console.log('[WorkItemBoardComponent] New type context selected: ' + workItemType.attributes.name);
         this.lanes = [];
-        this.workItemService.resetWorkItemList();
+        this.getDefaultWorkItemTypeStates(workItemType.id);
       }
     });
     this.initStuff();
@@ -121,6 +120,9 @@ export class WorkItemBoardComponent implements OnInit {
       this.iterations = iterations;
       this.workItemTypes = wiTypes;
       this.readyToInit = true;
+
+      // Set lanes
+      this.getDefaultWorkItemTypeStates();
     });
   }
 
@@ -138,13 +140,10 @@ export class WorkItemBoardComponent implements OnInit {
   }
 
   getDefaultWorkItemTypeStates(workItemTypeId?: string) {
+    this.lanes = [];
     if (!workItemTypeId) {
-      // we don't have a type is, fetch the first type and the states of it.
-      this.workItemService.getWorkItemTypes().subscribe((types: WorkItemType[]) => {
-        // the returned list may be empty because the space is not yet selected.
-        if (types.length > 0) {
-          let lanes = types[0].attributes.fields['system.state'].type.values;
-          this.lanes = [];
+        if (this.workItemTypes.length) {
+          let lanes = this.workItemTypes[0].attributes.fields['system.state'].type.values;
           lanes.forEach((value, index) => {
             this.lanes.push({
               option: value,
@@ -155,14 +154,14 @@ export class WorkItemBoardComponent implements OnInit {
           this.filters = [ {
             active: true,
             paramKey: 'filter[workitemtype]',
-            value: types[0].id
+            value: this.workItemTypes[0].id
           } ];
         }
-      });
     } else {
       // we have a type id, we just fetch the states from it.
-      this.workItemService.getWorkItemTypesById(workItemTypeId).subscribe(workItemType => {
-        let lanes = workItemType.attributes.fields['system.state'].type.values;
+      let witype = this.workItemTypes.find(type => type.id === workItemTypeId);
+      if (witype) {
+        let lanes = witype.attributes.fields['system.state'].type.values;
         lanes.forEach((value, index) => {
           this.lanes.push({
             option: value,
@@ -170,7 +169,9 @@ export class WorkItemBoardComponent implements OnInit {
             nextLink: null
           });
         });
-      });
+      } else {
+        this.getDefaultWorkItemTypeStates();
+      }
     }
   }
 
