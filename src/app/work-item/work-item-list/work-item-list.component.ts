@@ -128,7 +128,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
   }
 
   ngDoCheck() {
-    if (this.workItems.length!=this.prevWorkItemLength) {
+    if (this.workItems.length != this.prevWorkItemLength) {
       this.treeList.updateTree();
       this.prevWorkItemLength = this.workItems.length;
     }
@@ -157,7 +157,12 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
       this.workItemTypes = wiTypes;
       const workItems = workItemResp.workItems;
       this.nextLink = workItemResp.nextLink;
-      this.workItems = this.workItemService.resolveWorkItems(workItems, this.iterations, this.allUsers);
+      this.workItems = this.workItemService.resolveWorkItems(
+        workItems,
+        this.iterations,
+        this.allUsers,
+        this.workItemTypes
+      );
     });
   }
 
@@ -169,7 +174,13 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
         this.nextLink = newWiItemResp.nextLink;
         this.workItems = [
           ...this.workItems,
-          ...this.workItemService.resolveWorkItems(workItems, this.iterations, this.allUsers)
+          // Returns an array of resolved work items
+          ...this.workItemService.resolveWorkItems(
+            workItems,
+            this.iterations,
+            this.allUsers,
+            this.workItemTypes
+          )
         ];
         this.treeList.updateTree();
       },
@@ -209,7 +220,12 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
   }
 
   onCreateWorkItem(workItem) {
-    let resolveItem = this.workItemService.resolveWorkItems([workItem], this.iterations, this.allUsers);
+    let resolveItem = this.workItemService.resolveWorkItems(
+      [workItem],
+      this.iterations,
+      this.allUsers,
+      this.workItemTypes
+    );
     this.workItems = [...resolveItem, ...this.workItems];
   }
 
@@ -322,7 +338,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
     let prevWI = $event.to.parent.children[$event.to.index - 1];
     let nextWI = $event.to.parent.children[$event.to.index + 1];
 
-    if(typeof prevWI !== 'undefined') {
+    if (typeof prevWI !== 'undefined') {
       this.workItemService.reOrderWorkItem(movedWI.id, prevWI.id, 'below')
           .then((workItem) => {
             this.workItems.find((item) => item.id === movedWI.id).attributes['version'] = workItem.attributes['version'];

@@ -134,7 +134,12 @@ export class WorkItemBoardComponent implements OnInit {
       }, ...this.filters])
     .subscribe(workItemResp => {
       const workItems = workItemResp.workItems;
-      lane.workItems = this.workItemService.resolveWorkItems(workItems, this.iterations, this.allUsers);
+      lane.workItems = this.workItemService.resolveWorkItems(
+        workItems,
+        this.iterations,
+        this.allUsers,
+        this.workItemTypes
+      );
       lane.nextLink = workItemResp.nextLink;
     });
   }
@@ -186,7 +191,12 @@ export class WorkItemBoardComponent implements OnInit {
         .subscribe((workItemResp) => {
           lane.workItems = [
             ...lane.workItems,
-            ...this.workItemService.resolveWorkItems(workItemResp.workItems, this.iterations, this.allUsers)];
+            ...this.workItemService.resolveWorkItems(
+              workItemResp.workItems,
+              this.iterations,
+              this.allUsers,
+              this.workItemTypes
+          )];
           lane.nextLink = workItemResp.nextLink;
         });
     } else {

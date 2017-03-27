@@ -162,7 +162,7 @@ export class WorkItemService {
   }
 
 
-  resolveWorkItems(workItems, iterations, users): WorkItem[] {
+  resolveWorkItems(workItems, iterations, users, wiTypes): WorkItem[] {
     let resolvedWorkItems = workItems.map((item) => {
       // Resolve assignnees
       let assignees = item.relationships.assignees.data ? cloneDeep(item.relationships.assignees.data) : [];
@@ -178,6 +178,12 @@ export class WorkItemService {
       let iteration = cloneDeep(item.relationships.iteration.data);
       if (iteration) {
         item.relationships.iteration.data = iterations.find((it) => it.id === iteration.id) || iteration;
+      }
+
+      // Resolve work item types
+      let wiType = cloneDeep(item.relationships.baseType.data);
+      if (wiType) {
+        item.relationships.baseType.data = wiTypes.find((type) => type.id === wiType.id) || wiType;
       }
       return item;
     });
@@ -213,8 +219,8 @@ export class WorkItemService {
    */
   getWorkItemById(id: string): Observable<WorkItem> {
     if (this._currentSpace) {
-      this.http.get(this._currentSpace.links.self + '/workitems/' + id)
-        .map((item) => item.json().data);
+      return this.http.get(this._currentSpace.links.self + '/workitems/' + id)
+        .map(item => item.json().data);
     } else {
       return Observable.of<WorkItem>( {} as WorkItem );
     }

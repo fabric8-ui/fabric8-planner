@@ -33,19 +33,13 @@ export class WorkItemAttributes {
 
 export class WorkItemRelations {
   area: {
-    data: {
-      id: string,
-      type: string
-    }
+    data: AreaModel
   };
   assignees: {
     data: User[]
   };
   baseType: {
-    data: {
-      id: string;
-      type: string;
-    }
+    data: WorkItemType;
   };
   childs?: {
     links: {
