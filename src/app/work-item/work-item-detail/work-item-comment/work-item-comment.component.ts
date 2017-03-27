@@ -1,5 +1,5 @@
 import { CommentLink } from './../../../models/comment';
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Http } from '@angular/http';
 
@@ -20,6 +20,7 @@ import { WorkItemService } from '../../work-item.service';
 export class WorkItemCommentComponent implements OnInit, OnChanges {
     @Input() workItem: WorkItem;
     @Input() loggedIn: Boolean;
+    @ViewChild('deleteCommentModal') deleteCommentModal: any;
     comment: Comment;
     users: User[];
     isCollapsedComments: Boolean = false;
@@ -95,7 +96,7 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
     }
 
     confirmCommentDelete(id: string): void {
-        // Show modal dialog
+        this.deleteCommentModal.open();
     }
 
     onCommentEdit($event, inpId, saveBtnId) {
