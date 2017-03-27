@@ -82,7 +82,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
 
   // See: https://angular2-tree.readme.io/docs/options
   treeListOptions = {
-    allowDrag: true,
+    allowDrag: false,
     getChildren: (node: TreeNode): any => {
       return this.workItemService.getChildren(node.data);
     },
@@ -109,6 +109,9 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
     // console.log('AUTH USER DATA', this.route.snapshot.data['authuser']);
+    if(this.loggedIn) {
+      this.treeListOptions['allowDrag'] = true;
+    }
     this.spaceSubscription = this.spaces.current.subscribe(space => {
       if (space) {
         console.log('[WorkItemListComponent] New Space selected: ' + space.attributes.name);
@@ -280,6 +283,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
       .subscribe(message => {
         this.loggedIn = false;
         this.authUser = null;
+        this.treeListOptions['allowDrag'] = false;
     });
     //Filters like assign to me should stack with the current filters
     this.broadcaster.on<string>('item_filter')
