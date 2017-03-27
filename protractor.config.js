@@ -11,13 +11,10 @@ exports.config = {
         defaultTimeoutInterval: 60000
     },
 
-    capabilities: {
-          'browserName': 'chrome',
-        //   'browserName': 'phantomjs',
-        //   'maxInstances': 2,
-        //   'shardTestFiles': true
-        //   'phantomjs.binary.path': require('phantomjs-prebuilt').path,
-        //   'phantomjs.cli.args': ['--webdriver-loglevel=ERROR', '--local-storage-path=/tmp/phantom_' + Math.random()]
-
+  capabilities: {  
+    'browserName': 'chrome',
+    'chromeOptions': {
+        'args': ['--window-size=1440,1024', '--test-type', '--no-sandbox']
     }
-};
+} 
+};  
