@@ -95,7 +95,7 @@
               </button>
               <ul class="dropdown-menu " aria-labelledby="commentActionsKebab" dropdownMenu>
                 <li><a (click)="openComment(comment.id)">Edit...</a></li>
-                <li><a (click)="confirmCommentDelete(comment.id)">Delete</a></li>
+                <li><a (click)="confirmCommentDelete(comment)">Delete</a></li>
               </ul>
             </div>
           </div>
@@ -104,7 +104,7 @@
     </div>
 </div>
 
-<modal #deleteCommentModal title="Delete Comment">
+<modal title="Delete Comment" (onSubmit)="deleteComment()" #deleteCommentModal>
   <modal-content>
     <div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -116,7 +116,7 @@
       <!-- Action buttons to cancel/delete -->
       <div class="text-right">
         <button type="submit" id="comment-delete-cancel" class="btn" (click)="deleteCommentModal.close()">Cancel</button>
-        <button type="submit" id="comment-delete-confirm" class="btn btn-dange" (click)="deleteComment()">Delete</button>
+        <button type="submit" id="comment-delete-confirm" class="btn btn-danger" (click)="deleteCommentModal.onSubmit.emit(undefined)">Delete</button>
       </div>
 
     </div>

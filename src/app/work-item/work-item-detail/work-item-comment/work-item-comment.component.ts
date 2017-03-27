@@ -27,6 +27,7 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
     currentUser: User;
     commentEditable: Boolean = false;
     selectedCommentId: String = '';
+    convictedComment: Comment;
 
     constructor(
         private workItemService: WorkItemService,
@@ -95,8 +96,18 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
           });
     }
 
-    confirmCommentDelete(id: string): void {
+    confirmCommentDelete(comment: Comment): void {
         this.deleteCommentModal.open();
+        this.convictedComment = comment;
+    }
+
+    deleteComment(): void {
+        this.workItemService
+            .deleteComment(this.convictedComment)
+            .subscribe(res => console.log(res), err => console.log(err));
+
+        this.deleteCommentModal.close();
+        this.createCommentObject();
     }
 
     onCommentEdit($event, inpId, saveBtnId) {
