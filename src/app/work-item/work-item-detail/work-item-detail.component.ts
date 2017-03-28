@@ -765,6 +765,10 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
     this.searchIteration = false;
   }
 
+  closeIteration() {
+    this.searchIteration = false;
+  }
+
   activeSearchIteration() {
     if (this.loggedIn) {
       this.closeUserRestFields();
