@@ -282,6 +282,20 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
         }
       }
     } as WorkItemRelations;
+
+    // Add creator
+    this.userService.getUser()
+      .subscribe(user => {
+        this.workItem.relationships = Object.assign(
+          this.workItem.relationships,
+          {
+            creator: {
+              data: user
+            }
+          }
+        );
+      });
+
     this.workItem.relationalData = {};
     this.workItemService.resolveType(this.workItem);
     this.workItem.attributes = {
@@ -319,6 +333,10 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
 
   updateOnList() {
     this.broadcaster.broadcast('updateWorkItem', JSON.stringify(this.workItem));
+  }
+
+  addNewItem(workItem: WorkItem) {
+    this.broadcaster.broadcast('addWorkItem', JSON.stringify(workItem));
   }
 
   checkTitle(event: any): void {
@@ -459,9 +477,13 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
     this.isValid(this.titleText.trim());
     if (this.validTitle) {
       this.workItem.attributes['system.title'] = this.titleText;
-      let payload = cloneDeep(this.workItemPayload);
-      payload.attributes['system.title'] = this.titleText;
-      this.save(payload);
+      if (this.workItem.id) {
+        let payload = cloneDeep(this.workItemPayload);
+        payload.attributes['system.title'] = this.titleText;
+        this.save(payload);
+      } else {
+        this.save();
+      }
       this.closeHeader();
     }
   }
@@ -515,7 +537,25 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
       if (this.validTitle){
         this.workItemService
         .create(this.workItem)
-        .subscribe((workItem) => {
+        .switchMap(workItem => {
+          return Observable.forkJoin(
+            Observable.of(workItem),
+            this.workItemService.getWorkItemTypes(),
+            this.workItemService.resolveCreator2(workItem.relationships.creator)
+          );
+        })
+        .subscribe(([workItem, workItemTypes, creator]) => {
+          // Resolve work item type
+          workItem.relationships.baseType.data =
+            workItemTypes.find(type => type.id === workItem.relationships.baseType.data.id) ||
+            workItem.relationships.baseType.data;
+
+          // Resolve creator
+          workItem.relationships.creator = {
+            data: creator
+          };
+
+          this.addNewItem(workItem);
           this.router.navigateByUrl(trimEnd(this.router.url.split('detail')[0], '/') + '/detail/' + workItem.id, { relativeTo: this.route });
         });
       }

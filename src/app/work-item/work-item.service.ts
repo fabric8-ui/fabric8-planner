@@ -357,21 +357,9 @@ export class WorkItemService {
    * Usage: Resolve the wi type for a WorkItem
    */
   resolveType(workItem: WorkItem): void {
-    if (!workItem.relationships.hasOwnProperty('baseType') || !workItem.relationships.baseType) {
-      workItem.relationalData.wiType = null;
-      return;
-    }
-    if (!workItem.relationships.baseType.hasOwnProperty('data')) {
-      workItem.relationalData.wiType = null;
-      return;
-    }
-    if (!workItem.relationships.baseType.data) {
-      workItem.relationalData.wiType = null;
-      return;
-    }
     this.getWorkItemTypesById(workItem.relationships.baseType.data.id)
       .subscribe((type: WorkItemType) => {
-        workItem.relationalData.wiType = type;
+        workItem.relationships.baseType.data = type;
     });
   }
 
@@ -573,12 +561,12 @@ export class WorkItemService {
    */
 
   getWorkItemTypesById(id: string): Observable<WorkItemType> {
-    if (this._currentSpace) {
+    if (this._currentSpace && typeof(id) !== 'undefined') {
       let workItemType = this.workItemTypes ? this.workItemTypes.find((type) => type.id === id) : null;
       if (workItemType) {
         return Observable.of(workItemType);
       } else {
-        let workItemTypeUrl = this.baseApiUrl + 'workitemtypes/' + id;
+        let workItemTypeUrl = this._currentSpace.links.self + '/workitemtypes/' + id;
         return this.http.get(workItemTypeUrl)
           .map((response) => {
             workItemType = response.json().data as WorkItemType;
@@ -592,14 +580,6 @@ export class WorkItemService {
             }
             return workItemType;
           });
-        // FIXME: Use observavble instead promise
-        // Can't use observable now, because the mock will not support that
-        // .map((response) => {
-        //   workItemType = response.json().data as WorkItemType;
-        //   this.workItemTypes.push(workItemType);
-        //   return workItemType;
-        // })
-        // .toPromise();
       }
     } else {
       return Observable.of<WorkItemType>( {} as WorkItemType );
@@ -773,17 +753,7 @@ export class WorkItemService {
       return this.http
         .post(this.workItemUrl, payload, { headers: this.headers })
         .map(response => {
-          let newWorkItem: WorkItem = response.json().data as WorkItem;
-          // Resolve the user for the new item
-          this.resolveUsersForWorkItem(newWorkItem);
-          this.resolveIterationForWorkItem(newWorkItem);
-          this.resolveType(newWorkItem);
-          this.resolveAreaForWorkItem(newWorkItem);
-          // Add newly added item to the top of the list
-          this.workItems.splice(0, 0, newWorkItem);
-          // Re-build the ID-index map
-          this.buildWorkItemIdIndexMap();
-          return newWorkItem;
+          return response.json().data as WorkItem;
         });
         // .catch ((e) => {
         //   if (e.status === 401) {
@@ -808,42 +778,8 @@ export class WorkItemService {
     return this.http
       .patch(workItem.links.self, JSON.stringify({data: workItem}), { headers: this.headers })
       .map(response => {
-        let updatedWorkItem = response.json().data as WorkItem;
-        // Find the index in the big list
-        let updateIndex = this.workItems.findIndex(item => item.id == updatedWorkItem.id);
-        //Item is in the list
-        if (updateIndex > -1) {
-          if (this.doesMatchCurrentFilter(updatedWorkItem)) {
-            // Update work item attributes
-            this.workItems[updateIndex].attributes = updatedWorkItem.attributes;
-            this.workItems[updateIndex].relationships.assignees = updatedWorkItem.relationships.assignees;
-            this.workItems[updateIndex].relationships.creator = updatedWorkItem.relationships.creator;
-            this.workItems[updateIndex].relationships.baseType = updatedWorkItem.relationships.baseType;
-            this.workItems[updateIndex].relationships.iteration = updatedWorkItem.relationships.iteration;
-            // Resolve users for the updated item
-            this.resolveUsersForWorkItem(this.workItems[updateIndex]);
-            this.resolveIterationForWorkItem(this.workItems[updateIndex]);
-            this.resolveType(this.workItems[updateIndex]);
-            this.resolveAreaForWorkItem(this.workItems[updateIndex]);
-          } else {
-            // Remove the item from the list
-            this.workItems.splice(updateIndex, 1);
-            this.buildWorkItemIdIndexMap();
-          }
-        } else {
-          //Item is not in the list
-          this.workItems.splice(0, 0, updatedWorkItem);
-          this.buildWorkItemIdIndexMap();
-          // This part is for mock service in unit test
-          // this.workItems stays in case of unit test
-          // Resolve users for the updated item
-          this.resolveUsersForWorkItem(updatedWorkItem);
-          this.resolveIterationForWorkItem(updatedWorkItem);
-          this.resolveType(updatedWorkItem);
-          this.resolveAreaForWorkItem(updatedWorkItem);
-        }
-        return updatedWorkItem;
-      })
+        return response.json().data as WorkItem;
+      });
       // .catch ((e) => {
       //   if (e.status === 401) {
       //     this.auth.logout();

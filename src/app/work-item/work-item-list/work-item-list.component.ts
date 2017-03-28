@@ -109,7 +109,7 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
     // console.log('AUTH USER DATA', this.route.snapshot.data['authuser']);
-    if(this.loggedIn) {
+    if (this.loggedIn) {
       this.treeListOptions['allowDrag'] = true;
     }
     this.spaceSubscription = this.spaces.current.subscribe(space => {
@@ -329,6 +329,13 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck {
           this.workItems[index] = updatedItem;
           this.treeList.updateTree();
         }
+      });
+
+    this.broadcaster.on<string>('addWorkItem')
+      .subscribe((workItem: string) => {
+        let newItem = JSON.parse(workItem) as WorkItem;
+        this.workItems.splice(0, 0, newItem);
+        this.treeList.updateTree();
       });
   }
 
