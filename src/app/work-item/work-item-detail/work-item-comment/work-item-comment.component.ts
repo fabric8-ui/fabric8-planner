@@ -3,6 +3,8 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@
 import { Router } from '@angular/router';
 import { Http } from '@angular/http';
 
+import { remove } from 'lodash';
+
 import {
     User,
     UserService
@@ -104,7 +106,13 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
     deleteComment(): void {
         this.workItemService
             .deleteComment(this.convictedComment)
-            .subscribe(res => console.log(res), err => console.log(err));
+            .subscribe(response => {
+                remove(this.workItem.relationalData.comments, comment => {
+                    if (!!this.convictedComment) {
+                        return comment.id == this.convictedComment.id;
+                    }
+                });
+            }, err => console.log(err));
 
         this.deleteCommentModal.close();
         this.createCommentObject();
