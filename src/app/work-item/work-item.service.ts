@@ -315,7 +315,7 @@ export class WorkItemService {
       });
       return Observable.forkJoin(observableBatch);
     } else {
-      return Observable.of(assignees);
+      return Observable.of([]);
     }
   }
 

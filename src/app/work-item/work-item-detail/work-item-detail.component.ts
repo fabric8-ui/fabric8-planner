@@ -541,14 +541,20 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
           return Observable.forkJoin(
             Observable.of(workItem),
             this.workItemService.getWorkItemTypes(),
+            this.workItemService.resolveAssignees(workItem.relationships.assignees),
             this.workItemService.resolveCreator2(workItem.relationships.creator)
           );
         })
-        .subscribe(([workItem, workItemTypes, creator]) => {
+        .subscribe(([workItem, workItemTypes, assignees, creator]) => {
           // Resolve work item type
           workItem.relationships.baseType.data =
             workItemTypes.find(type => type.id === workItem.relationships.baseType.data.id) ||
             workItem.relationships.baseType.data;
+
+          // Resolve assignees
+          workItem.relationships.assignees = {
+            data: assignees
+          };
 
           // Resolve creator
           workItem.relationships.creator = {
