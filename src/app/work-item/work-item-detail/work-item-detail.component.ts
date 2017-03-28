@@ -212,10 +212,11 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
           this.areaService.getArea(workItem.relationships.area),
           this.iterationService.getIteration(workItem.relationships.iteration),
           this.workItemService.resolveAssignees(workItem.relationships.assignees),
-          this.workItemService.resolveCreator2(workItem.relationships.creator)
+          this.workItemService.resolveCreator2(workItem.relationships.creator),
+          this.workItemService.resolveLinks(workItem.links.self + '/relationships/links')
         );
       })
-      .subscribe(([workItem, workItemTypes, area, iteration, assignees, creator]) => {
+      .subscribe(([workItem, workItemTypes, area, iteration, assignees, creator, [links, includes]]) => {
         // Resolve area
         workItem.relationships.area = {
           data: area
@@ -240,6 +241,20 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit {
         workItem.relationships.creator = {
           data: creator
         };
+
+        // Resolve links
+        workItem = Object.assign(
+          workItem,
+          {
+            relationalData: {
+              linkDicts: [],
+              totalLinkCount: 0
+            }
+          }
+        );
+        links.forEach((link) => {
+          this.workItemService.addLinkToWorkItem(link, includes, workItem);
+        });
 
         this.closeUserRestFields();
         this.titleText = workItem.attributes['system.title'];

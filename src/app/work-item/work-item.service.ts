@@ -487,7 +487,7 @@ export class WorkItemService {
               creator : this.getUserById(comment.relationships['created-by'].data.id)
             };
           });
-        })
+        });
         // .catch ((e) => {
         //   if (e.status === 401) {
         //     this.auth.logout();
@@ -504,21 +504,10 @@ export class WorkItemService {
    *
    * @param: WorkItem - wItem
    */
-  resolveLinks(wItem: WorkItem): void {
-    wItem.relationalData.linkDicts = null;
-    wItem.relationalData.totalLinkCount = 0;
-    this.http
-      .get(wItem.links.self + '/relationships/links', { headers: this.headers })
-      .subscribe((response) => {
-        let links = response.json().data as Link[];
-        let includes = response.json().included;
-        let linkDicts: LinkDict[] = [];
-        // Prepare relational data for links
-        wItem.relationalData.linkDicts = [];
-        links.forEach((link) => {
-          this.addLinkToWorkItem(link, includes, wItem);
-        });
-      });
+  resolveLinks(url: string): Observable<any> {
+    return this.http
+      .get(url, { headers: this.headers })
+      .map(response => [response.json().data as Link[], response.json().included]);
       // .catch ((e) => {
       //   if (e.status === 401) {
       //     this.auth.logout();
@@ -962,8 +951,7 @@ export class WorkItemService {
    * @param link: Link
    * @param wItem: WorkItem
    */
-  removeLinkFromWorkItem(deletedLink: Link, wiId: string) {
-    let wItem = this.workItems[this.workItemIdIndexMap[wiId]];
+  removeLinkFromWorkItem(deletedLink: Link, wItem: WorkItem) {
     wItem.relationalData.totalLinkCount -= 1;
     wItem.relationalData.linkDicts.every((item: LinkDict, index: number): boolean => {
       let linkIndex = item.links.findIndex((link: Link) => link.id == deletedLink.id);
@@ -975,7 +963,7 @@ export class WorkItemService {
         return false;
       }
       return true;
-    })
+    });
   }
 
   /**
@@ -987,20 +975,14 @@ export class WorkItemService {
    * @param currentWiId: string - The work item ID where the link is created
    * @returns Promise<Link>
    */
-  createLink(link: Object, currentWiId: string): Observable<Link> {
+  createLink(link: Object, currentWiId: string): Observable<any> {
     if (this._currentSpace) {
       // FIXME: make the URL great again (when we know the right API URL for this)!
       this.linksUrl = this.baseApiUrl + 'workitemlinks';
       // this.linksUrl = currentSpace.links.self + '/workitemlinks';
       return this.http
         .post(this.linksUrl, JSON.stringify(link), {headers: this.headers})
-        .map(response => {
-          let newLink: Link = response.json().data as Link;
-          let includes = response.json().included as Link;
-          let wItem = this.workItems[this.workItemIdIndexMap[currentWiId]];
-          this.addLinkToWorkItem(newLink, includes, wItem);
-          return newLink;
-        })
+        .map(response => [response.json().data as Link, response.json().included]);
         // .catch ((e) => {
         //   if (e.status === 401) {
         //     this.auth.logout();
@@ -1029,7 +1011,7 @@ export class WorkItemService {
       const url = `${this.linksUrl}/${link.id}`;
       return this.http
         .delete(url, {headers: this.headers})
-        .map(response => { this.removeLinkFromWorkItem(link, currentWiId) })
+        .map(response => {} );
         // .catch ((e) => {
         //   if (e.status === 401) {
         //     this.auth.logout();
