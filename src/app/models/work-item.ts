@@ -48,10 +48,14 @@ export class WorkItemRelations {
     };
   };
   comments?: {
+    data?: Comment[];
     links: {
       self: string;
       related: string;
     };
+    meta?: {
+      totalCount?: number;
+    }
   };
   creator: {
     data: User;

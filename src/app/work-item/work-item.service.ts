@@ -475,18 +475,11 @@ export class WorkItemService {
    *
    * @param: WorkItem - wItem
    */
-  resolveComments(wItem: WorkItem): void {
-    if (wItem.relationships.comments.links.related)
-      this.http
-        .get(wItem.relationships.comments.links.related, { headers: this.headers })
-        .subscribe((response) => {
-          wItem.relationalData.comments =
-            response.json().data as Comment[];
-          wItem.relationalData.comments.forEach((comment) => {
-            comment.relationalData = {
-              creator : this.getUserById(comment.relationships['created-by'].data.id)
-            };
-          });
+  resolveComments(url: string): Observable<any> {
+      return this.http
+        .get(url, { headers: this.headers })
+        .map(response => {
+          return { data: response.json().data };
         });
         // .catch ((e) => {
         //   if (e.status === 401) {
@@ -784,21 +777,13 @@ export class WorkItemService {
    * @param: string - id (Work Item ID)
    * @param: Comment
    */
-  createComment(id: string, comment: Comment): Observable<Comment> {
+  createComment(url: string, comment: Comment): Observable<Comment> {
     let c = new CommentPost();
     c.data = comment;
     return this.http
-      .post(this.workItems[this.workItemIdIndexMap[id]]
-              .relationships.comments.links.related, c, { headers: this.headers })
+      .post(url, c, { headers: this.headers })
       .map(response => {
-        let comment: Comment = response.json().data as Comment;
-        comment.relationalData = {
-          creator : this.getUserById(comment.relationships['created-by'].data.id)
-        };
-        this.workItems[this.workItemIdIndexMap[id]]
-          .relationalData
-          .comments.unshift(comment);
-        return comment;
+        return response.json().data as Comment;
       })
       .catch (this.handleError);
   }
