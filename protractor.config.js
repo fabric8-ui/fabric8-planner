@@ -10,11 +10,7 @@ exports.config = {
     jasmineNodeOpts: {
         defaultTimeoutInterval: 60000
     },
-
-  capabilities: {  
-    'browserName': 'chrome',
-    'chromeOptions': {
-        'args': ['--window-size=1440,1024', '--test-type', '--no-sandbox']
+    capabilities: {
+      'browserName': 'firefox'
     }
-} 
-};  
+};
