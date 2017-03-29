@@ -11,6 +11,9 @@ exports.config = {
         defaultTimeoutInterval: 60000
     },
     capabilities: {
-      'browserName': 'firefox'
+      'browserName': 'chrome',
+      'chromeOptions': {
+        'args': [ '--no-sandbox']
+      }
     }
 };

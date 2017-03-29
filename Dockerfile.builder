@@ -24,12 +24,13 @@ ENV NODE_VERSION 6.9.2
 USER root
 RUN yum -y update && \
     yum install -y bzip2 fontconfig tar java-1.8.0-openjdk nmap-ncat psmisc gtk3 git \
-      python-setuptools xorg-x11-xauth wget unzip which xorg-x11-server-Xvfb \
-      xfonts-100dpi xorg-x11-fonts-75dpi xfonts-scalable xfonts-cyrillic \
+      python-setuptools xorg-x11-xauth wget unzip which \
+      xorg-x11-server-Xvfb xfonts-100dpi \
+      xorg-x11-fonts-75dpi xfonts-scalable xfonts-cyrillic \
       ipa-gothic-fonts xorg-x11-utils xorg-x11-fonts-Type1 xorg-x11-fonts-misc \
       GConf2 wget libXfont wget && \
       yum -y clean all
-RUN yum install -y firefox
+RUN yum install -y firefox google-chrome-stable
 
 RUN wget "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
   && tar -xvf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
@@ -42,6 +43,9 @@ RUN  wget https://github.com/mozilla/geckodriver/releases/download/v0.14.0/gecko
   mv geckodriver /usr/bin
 
 RUN npm install -g jasmine-node karma-firefox-launcher protractor
+
+COPY google-chrome.repo /etc/yum.repos.d/google-chrome.repo
+RUN yum install -y xorg-x11-server-Xvfb google-chrome-stable
 
 ENV DISPLAY=:99
 ENV FABRIC8_USER_NAME=fabric8
