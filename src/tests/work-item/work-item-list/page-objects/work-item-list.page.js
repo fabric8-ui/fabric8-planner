@@ -337,20 +337,29 @@ class WorkItemListPage {
 
   /* Workitem filter pulldown */
   get workItemFilterPulldown () {
-    return element(by.css(".dropdown.filter-dropdown"));
+//    return element(by.css(".dropdown.filter-dropdown"));
+    return element(by.css(".filter-option.pull-left"));
   }
   clickWorkItemFilterPulldown () {
     return this.workItemFilterPulldown.click();
   }
   /* Access the user assignment filter dropdown - 'assign to me' filter*/
   get filterAssignToMe () {
-    browser.wait(until.presenceOf(this.workItemFilterPulldown.element(by.xpath(".//*//li[.//text()[contains(.,'Assign to Me')]]"))), constants.WAIT, 'Failed to find assigment filter');
-    return this.workItemFilterPulldown.element(by.xpath(".//*//li[.//text()[contains(.,'Assign to Me')]]"));
+    browser.wait(until.presenceOf(element(by.xpath(".//*//li//text()[contains(.,'Assigned to Me')]/.."))), constants.WAIT, 'Failed to find assigment filter');
+    return element(by.xpath(".//*//li//text()[contains(.,'Assigned to Me')]/.."));
   }
   clickFilterAssignToMe () {
     this.filterAssignToMe.click();
   }
-
+  get activeFilters () {
+    return element(by.xpath(".//*//text()[contains(.,'Active filters:')]"));
+  }
+  get currentActiveFilter () {
+    return element(by.css(".active-filter.label.label-info"));
+  }
+  get closeCurrentActiveFilter () {
+    return element(by.css(".pficon.pficon-close"));
+  }
   filterDropdownId () {
     return  element(by.id("wi_filter_dropdown"));
   }
