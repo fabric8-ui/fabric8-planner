@@ -1,6 +1,9 @@
 FROM centos:7
 ENV LANG=en_US.utf8
 
+# load the gpg keys
+COPY gpg /gpg
+
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
   && for key in \
@@ -13,34 +16,34 @@ RUN set -ex \
     B9AE9905FFD7803F25714661B63B535A4C206CA9 \
     C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
   ; do \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" || \
-    gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
-    gpg --keyserver keyserver.pgp.com --recv-keys "$key" ; \
+    gpg --import "/gpg/${key}.gpg" ; \
   done
 
 #ENV NPM_CONFIG_LOGLEVEL info
 ENV NODE_VERSION 6.9.2
 
-USER root
 RUN yum -y update && \
     yum install -y bzip2 fontconfig tar java-1.8.0-openjdk nmap-ncat psmisc gtk3 git \
       python-setuptools xorg-x11-xauth wget unzip which \
       xorg-x11-server-Xvfb xfonts-100dpi \
       xorg-x11-fonts-75dpi xfonts-scalable xfonts-cyrillic \
       ipa-gothic-fonts xorg-x11-utils xorg-x11-fonts-Type1 xorg-x11-fonts-misc \
-      GConf2 wget libXfont wget && \
+      GConf2 wget libXfont wget firefox && \
       yum -y clean all
-RUN yum install -y firefox google-chrome-stable
 
-RUN wget "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
-  && tar -xvf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
-  && rm "node-v$NODE_VERSION-linux-x64.tar.gz" \
+RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
+  && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
+  && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
+  && grep " node-v$NODE_VERSION-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
+  && tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 \
+  && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
-RUN  wget https://github.com/mozilla/geckodriver/releases/download/v0.14.0/geckodriver-v0.14.0-linux64.tar.gz && \
-  tar -xvf geckodriver-v0.14.0-linux64.tar.gz && \
-  chmod +x geckodriver && \
-  mv geckodriver /usr/bin
+RUN  wget https://github.com/mozilla/geckodriver/releases/download/v0.14.0/geckodriver-v0.14.0-linux64.tar.gz \
+  && tar -xvf geckodriver-v0.14.0-linux64.tar.gz \
+  && chmod +x geckodriver \
+  && rm geckodriver-v0.14.0-linux64.tar.gz \
+  && mv geckodriver /usr/bin
 
 RUN npm install -g jasmine-node karma-firefox-launcher protractor
 
@@ -56,8 +59,6 @@ ENV HOME=/home/${FABRIC8_USER_NAME}
 ENV WORKSPACE=$HOME/fabric8-planner
 RUN mkdir $WORKSPACE
 
-RUN chmod u+s /usr/bin/Xvfb && chown fabric8 /usr/bin/Xvfb
-
 COPY . $WORKSPACE
 RUN chown -R ${FABRIC8_USER_NAME}:${FABRIC8_USER_NAME} $HOME/*
 
@@ -65,10 +66,5 @@ USER ${FABRIC8_USER_NAME}
 WORKDIR $WORKSPACE/
 
 VOLUME /dist
-
-COPY docker-entrypoint.sh /home/fabric8/fabric8-planner/
-
-# Open ports
-EXPOSE 4444
 
 ENTRYPOINT ["/home/fabric8/fabric8-planner/docker-entrypoint.sh"]
