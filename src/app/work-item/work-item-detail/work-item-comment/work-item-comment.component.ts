@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { CommentLink } from './../../../models/comment';
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
@@ -34,14 +35,13 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
     constructor(
         private workItemService: WorkItemService,
         private router: Router,
-        private UserService: UserService,
+        private userService: UserService,
         http: Http
     ) {
     }
 
     ngOnInit() {
-        this.UserService.getAllUsers().subscribe((users) => this.users = users);
-        this.currentUser = this.UserService.getSavedLoggedInUser();
+        this.currentUser = this.userService.getSavedLoggedInUser();
         this.createCommentObject();
     }
 
@@ -54,7 +54,28 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
         }
     }
 
-    ngOnChanges(changes: SimpleChanges) {}
+    ngOnChanges(changes: SimpleChanges) {
+      this.resolveComments();
+    }
+
+    resolveComments() {
+      Observable.forkJoin(
+        this.userService.getAllUsers(),
+        this.workItemService.resolveComments(this.workItem.relationships.comments.links.related)
+      )
+      .subscribe(([users, comments]) => {
+        this.workItem.relationships.comments = Object.assign(
+          this.workItem.relationships.comments,
+          comments
+        );
+        this.workItem.relationships.comments.data =
+          this.workItem.relationships.comments.data.map((comment) => {
+            comment.relationships['created-by'].data =
+              users.find(user => user.id === comment.relationships['created-by'].data.id);
+            return comment;
+          });
+      });
+    }
 
     createCommentObject(): void {
         this.comment = new Comment();
@@ -69,12 +90,23 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
         this.commentEditable = true;
       }
     }
+
     createComment(event: any = null): void {
       this.preventDef(event);
       this.comment.attributes.body = event.target.textContent;
       this.workItemService
-        .createComment(this.workItem['id'], this.comment)
-        .subscribe(response => {
+        .createComment(this.workItem.relationships.comments.links.related, this.comment)
+        .switchMap((comment: Comment) => {
+          return this.userService.getAllUsers()
+            .map((users) => {
+              comment.relationships['created-by'].data =
+                users.find(user => user.id === comment.relationships['created-by'].data.id);
+              return comment;
+            });
+        })
+        .subscribe((comment: Comment) => {
+            this.workItem.relationships.comments.data.splice(0, 0, comment);
+            this.workItem.relationships.comments.meta.totalCount += 1;
             event.target.textContent = '';
             this.createCommentObject();
         },
