@@ -56,16 +56,17 @@
         margin-top: em(0);
         margin-bottom: em(5);
         flex-shrink: 1;
-        flex-grow: 1;
         min-width: 0;  //fix for having full wrapper width and overflowen content
         max-width: 100%;
-        padding-right: rem(10);
         strong {
           display: inline-block;
           width: $width100;
           padding-left: em(6);
           padding-right: em(6);
         }
+      }
+      small {
+        color: #999;
       }
       .createTimeBlock {
         line-height: 1.2;
@@ -86,6 +87,9 @@
       p.editableComment {
         height: auto;
       }
+    }
+    .dropdown-menu {
+      margin-top: -11px;
     }
   }
 }
