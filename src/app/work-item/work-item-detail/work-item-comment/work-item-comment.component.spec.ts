@@ -43,6 +43,8 @@ import {
   AlmIconModule
 } from 'ngx-widgets';
 
+import { ModalModule } from 'ngx-modal';
+
 import { AreaModel } from '../../../models/area.model';
 import { AreaService } from '../../../area/area.service';
 import { IterationModel } from '../../../models/iteration.model';
@@ -411,6 +413,7 @@ describe('Comment section for the work item detailed view - ', () => {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
+        ModalModule,
         RouterTestingModule.withRoutes([
           // this needs to be a relative path but I don't know how to do that in a test
           { path: './detail/1', component: WorkItemDetailComponent }
