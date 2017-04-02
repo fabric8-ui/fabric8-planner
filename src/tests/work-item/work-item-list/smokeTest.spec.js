@@ -29,6 +29,10 @@ describe('Work item list', function () {
   var EXAMPLE_USER_0 = "Example User 0";
   var EXAMPLE_USER_1 = "Example User 1";
   var MOCK_WORKITEM_TITLE_0 = "Title Text 0";
+  var WORKITEM_0_ID = 'id0';
+  var WORKITEM_1_ID = 'id1';
+  var AREA_0_TITLE = 'Area 0';
+  var AREA_1_TITLE = 'Area 1';
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
@@ -166,6 +170,55 @@ describe('Work item list', function () {
 //    detailPage = page.workItemByURLId("id1");
 //    expect(detailPage.workItemDetailTitle.getText()).toBe('17 minutes ago');
    });
+   it('Updating area to a WI -desktop ', function() {
+      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, WORKITEM_0_ID);
+      browser.wait(until.elementToBeClickable(detailPage.areaLabel), constants.WAIT, 'Failed to find areaLabel');   
+      detailPage.clickAreaSelect();
+      detailPage.clickAreas(WORKITEM_0_ID);
+      expect(detailPage.saveAreasButton().isPresent()).toBe(true);
+      detailPage.SaveAreas();
+
+      browser.wait(until.elementToBeClickable(detailPage.AreaSelect()), constants.WAIT, 'Failed to find area');   
+      expect(detailPage.AreaSelect().getText()).toBe(AREA_0_TITLE);
+      detailPage.clickAreaSelect();
+      detailPage.clickAreas(WORKITEM_1_ID);
+     
+      detailPage.SaveAreas();
+      browser.wait(until.elementToBeClickable(detailPage.AreaSelect()), constants.WAIT, 'Failed to find area');   
+      expect(detailPage.AreaSelect().getText()).toBe(AREA_1_TITLE);
+     });
+
+   it('Re-Associate Workitem from detail page', function() {
+      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0"); 
+      detailPage.IterationOndetailPage().click();
+      detailPage.clickAssignIteration();
+      detailPage.associateIteration("Iteration 1");
+      detailPage.saveIteration();
+      expect(detailPage.getAssociatedIteration()).toBe("Iteration 1");
+      detailPage.clickWorkItemDetailCloseButton();
+      // Re - assocaite
+      page.clickWorkItemTitle(page.firstWorkItem, "id0");
+      detailPage.IterationOndetailPage().click();
+      detailPage.clickAssignIteration();
+      detailPage.associateIteration("Iteration 0");
+      detailPage.saveIteration();
+      expect(detailPage.getAssociatedIteration()).toBe("Iteration 0");
+      detailPage.clickWorkItemDetailCloseButton();
+    });
+
+  it('Try clicking on start coding it should redirect - Desktop', function () {
+    var detailPage = page.clickWorkItemTitle(page.workItemByTitle("Title Text 0"), "id0");
+    expect(detailPage.startCodingElement.isPresent()).toBe(true);
+    detailPage.clickStartCoding();
+   });
+
+  it('Edit comment and cancel -desktop ', function() {
+      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0");
+      detailPage.commentBody("0").click();
+      detailPage.editComments("updated comment !",'0',false);
+      detailPage.clickCloseComment("0");
+      expect(detailPage.getCommentBody("0")).toBe('Some Comment 0');
+     });
 });
 
 /* Compare an expected and actual work item - the offset values enable us to track
