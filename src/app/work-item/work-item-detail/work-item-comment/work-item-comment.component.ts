@@ -140,7 +140,7 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
             .deleteComment(this.convictedComment)
             .subscribe(response => {
                 if (response.status === 200) {
-                    remove(this.workItem.relationalData.comments, comment => {
+                    remove(this.workItem.relationships.comments.data, comment => {
                         if (!!this.convictedComment) {
                             return comment.id == this.convictedComment.id;
                         }

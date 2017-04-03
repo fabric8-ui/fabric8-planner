@@ -82,7 +82,7 @@
               </div>
             </div>
             <div class="dropdown dropdown-kebab-pf" dropdown>
-              <button *ngIf="loggedIn && (currentUser.id === comment.relationalData.creator?.id)"
+              <button *ngIf="loggedIn && (currentUser.id === comment.relationships['created-by']?.data?.id)"
                       class="btn btn-link dropdown-toggle"
                       id="commentActionsKebab"
                       type="button"
@@ -92,7 +92,7 @@
                       aria-expanded="true">
                 <span class="fa fa-ellipsis-v"></span>
               </button>
-              <ul *ngIf="loggedIn && (currentUser.id === comment.relationalData.creator?.id)"
+              <ul *ngIf="loggedIn && (currentUser.id === comment.relationships['created-by']?.data?.id)"
                   class="dropdown-menu dropdown-menu-right"
                   aria-labelledby="commentActionsKebab"
                   dropdownMenu>
