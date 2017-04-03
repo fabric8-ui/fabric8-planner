@@ -5,7 +5,7 @@ import { WorkItem } from './../../../models/work-item';
 @Pipe({ name: 'workItemLinkFilterByTypeName', pure: true })
 export class WorkItemLinkFilterByTypeName implements PipeTransform {
   transform(selectedLinkType: string, arr: any[]): any[] {
-    if (selectedLinkType !== null) {
+    if (selectedLinkType !== null && selectedLinkType !== 'all') {
       let outputArr: any[] = arr.filter(item => item.linkName === selectedLinkType);
       return outputArr;
     }
@@ -17,7 +17,7 @@ export class WorkItemLinkFilterByTypeName implements PipeTransform {
 @Pipe({ name: 'workItemLinkTypeFilterByTypeName', pure: true })
 export class WorkItemLinkTypeFilterByTypeName implements PipeTransform {
   transform(selectedLinkType: string, arr: any[]): any[] {
-    if (selectedLinkType !== null) {
+    if (selectedLinkType !== 'all') {
       let outputArr: any[] = arr.filter(item => item.name === selectedLinkType);
       return outputArr;
     }

@@ -172,6 +172,13 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck {
         this.showLinkComponent = !this.showLinkComponent;
       }
     }
+    if (!this.showLinkComponent) {
+      this.selectedTab = null;
+    } else {
+      if (!this.selectedTab) {
+        this.selectedTab = 'all';
+      }
+    }
   }
 
   toggleLinkView(): void{
@@ -241,10 +248,11 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck {
       // Search on atleast 3 char or numeric
         if (term.length >= 3 || !isNaN(term)) {
           this.workItemService.searchLinkWorkItem(term, this.searchAllowedType)
-            .subscribe((searchData: WorkItem[]) =>{
+            .subscribe((searchData: WorkItem[]) => {
               this.searchWorkItems = searchData.filter((item) => {
                 return this.searchNotAllowedIds.indexOf(item.id) == -1;
-                });
+              });
+              console.log(this.searchWorkItems);
             });
         }
       }
@@ -267,7 +275,7 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck {
 
   selectSearchResult(id: string, title: string){
     this.selectedWorkItemId = id;
-    this.selectedValue = id+' - '+title;
+    this.selectedValue = id + ' - ' + title;
     this.searchWorkItems = [];
   }
 
