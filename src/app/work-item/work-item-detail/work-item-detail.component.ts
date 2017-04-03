@@ -1,20 +1,22 @@
 import { Observable } from 'rxjs/Observable';
 import {
-  animate,
   AfterViewInit,
   Component,
   ElementRef,
   HostListener,
   OnInit,
   OnDestroy,
-  trigger,
-  state,
-  style,
-  transition,
   ViewChild,
   ViewChildren,
   QueryList
 } from '@angular/core';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger
+} from '@angular/animations';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Location }               from '@angular/common';
 import { Router }                 from '@angular/router';
@@ -139,6 +141,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     // console.log('AUTH USER DATA', this.route.snapshot.data['authuser']);
     this.listenToEvents();
     this.getAreas();
+    this.getAllUsers();
     this.getIterations();
     this.loggedIn = this.auth.isLoggedIn();
     this.route.params.forEach((params: Params) => {
@@ -161,7 +164,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
           // Open the panel
           if (this.panelState === 'out') {
             this.panelState = 'in';
-            if (this.headerEditable) {
+            if (this.headerEditable && typeof(this.title) !== 'undefined') {
               this.title.nativeElement.focus();
             }
           }
@@ -201,7 +204,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   ngAfterViewInit() {
     // Open the panel
-
     // Why use a setTimeOut -
     // This is for unit testing.
     // After every round of change detection,
@@ -290,7 +292,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         // Open the panel once all the data is ready
         if (this.panelState === 'out') {
           this.panelState = 'in';
-          if (this.headerEditable) {
+          if (this.headerEditable && typeof(this.title) !== 'undefined') {
             this.title.nativeElement.focus();
           }
         }
@@ -337,26 +339,19 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     } as WorkItemAttributes;
   }
 
-  getAllUsers() {
-    this.users = cloneDeep(this.route.snapshot.data['allusers']) as User[];
-    this.filteredUsers = cloneDeep(this.route.snapshot.data['allusers']) as User[];
-    let authUser = cloneDeep(this.route.snapshot.data['authuser']);
-    this.setLoggedInUser(authUser);
-  }
-
-  setLoggedInUser(authUser: any) {
-    for (let i = 0; i < this.users.length; i++) {
-      // This check needs to be updated by ID
-      // once we have the new user format
-      // on getting loggedIn user i.e. /user endpoint
-      if (this.users[i].id === authUser.id) {
-        this.loggedInUser = this.users[i];
-
-        // removing logged in user from the list
-        this.users.splice(i, 1);
-        this.filteredUsers.splice(i, 1);
-      }
-    }
+  getAllUsers(): void {
+    Observable.combineLatest(
+      this.userService.getUser(),
+      this.userService.getAllUsers()
+    )
+    .subscribe(([authUser, allUsers]) => {
+      this.users = allUsers;
+      this.loggedInUser = authUser;
+      this.users = this.users.filter(user => {
+        return user.id !== authUser.id;
+      });
+      this.filteredUsers = this.users;
+    });
   }
 
   activeOnList(timeOut: number = 0) {
@@ -398,7 +393,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.closeUserRestFields();
       this.headerEditable = true;
       setTimeout(() => {
-        if (this.headerEditable) {
+        if (this.headerEditable && typeof(this.title) !== 'undefined') {
           this.title.nativeElement.focus();
         }
       });

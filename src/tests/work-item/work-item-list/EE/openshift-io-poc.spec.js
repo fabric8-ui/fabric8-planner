@@ -17,6 +17,7 @@ var until = protractor.ExpectedConditions;
 var OpenShiftIoStartPage = require('../page-objects/openshift-io-start.page'),
     OpenShiftIoRHDLoginPage = require('../page-objects/openshift-io-RHD-login.page'),
     OpenShiftIoGithubLoginPage = require('../page-objects/openshift-io-github-login.page'),
+    OpenShiftIoDashboardPage = require('../page-objects/openshift-io-dashboard.page'),
     testSupport = require('../testSupport'),
     constants = require("../constants");
 
@@ -62,8 +63,36 @@ describe('openshift.io End-to-End POC test - Scenario - New user registers', fun
     OpenShiftIoGithubLoginPage.clickGithubPassword();
     OpenShiftIoGithubLoginPage.typeGithubPassword("myalmighty@123");
 
+    OpenShiftIoDashboardPage = OpenShiftIoGithubLoginPage.clickGithubLoginButton();
+    OpenShiftIoDashboardPage.clickNewSpaceButton();
+
+    var spaceTime = returnTime();
+    OpenShiftIoDashboardPage.typeNewSpaceName((spaceTime));
+
+    OpenShiftIoDashboardPage.typeDevProcess("Scenario Driven Planning");
+    OpenShiftIoDashboardPage.clickCreateSpaceButton();
+     
+    browser.wait(until.elementToBeClickable(OpenShiftIoDashboardPage.noThanksButton), constants.WAIT, 'Failed to find active filter');  
+    OpenShiftIoDashboardPage.clickNoThanksButton();
+
+    browser.wait(until.presenceOf(element(by.linkText("Overview"))), constants.WAIT, 'Failed to find active filter');  
+    expect(browser.getCurrentUrl()).toEqual('http://prod-preview.openshift.io/almusertest1/'+spaceTime);
+
   });
 
+
 });
+
+  /* Get system time in seconds since 1970 */
+  var returnTime = function () {
+    var d = new Date();
+    var n = d.getTime();
+    console.log ("Creating space: " + n.toString());
+    return n.toString();
+  }
+
+
+
+
 
 

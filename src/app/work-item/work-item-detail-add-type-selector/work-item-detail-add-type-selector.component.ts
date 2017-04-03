@@ -1,5 +1,6 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { WorkItemDetailAddTypeSelectorWidgetComponent } from './work-item-detail-add-type-selector-widget/work-item-detail-add-type-selector-widget.component';
+import { Component, OnInit, Input, OnChanges, ViewChild } from '@angular/core';
+import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 
 import { cloneDeep } from 'lodash';
 import { Broadcaster } from 'ngx-base';
@@ -26,9 +27,10 @@ export class WorkItemDetailAddTypeSelectorComponent implements OnInit, OnChanges
   @Input() wiTypes: WorkItemType[] = [];
   @Input() takeFromInput: boolean = false;
 
+  @ViewChild('detailAddTypeSelector') workItemDetailAddTypeSelectorWidget: WorkItemDetailAddTypeSelectorWidgetComponent;
+
   loggedIn: boolean = false;
   workItemTypes: WorkItemType[] = [];
-  showTypesOptions: boolean = false;
   spaceSubscription: Subscription = null;
 
   constructor(
@@ -60,30 +62,31 @@ export class WorkItemDetailAddTypeSelectorComponent implements OnInit, OnChanges
   }
 
   //Detailed add functions
-  getWorkItemTypes(){
+  getWorkItemTypes() {
     if (this.takeFromInput) {
       this.workItemTypes = this.wiTypes;
     } else {
       this.workItemService.getWorkItemTypes()
-      .subscribe((types) => {
-        this.workItemTypes = types;
-      });
+        .subscribe((types) => {
+          this.workItemTypes = types;
+        });
     }
   }
+
   showTypes() {
-    this.showTypesOptions = true;
+    this.workItemDetailAddTypeSelectorWidget.open();
   }
 
   closePanel() {
-    this.showTypesOptions = false;
+    this.workItemDetailAddTypeSelectorWidget.close();
   }
 
   openPanel() {
-    this.showTypesOptions = true;
+    this.workItemDetailAddTypeSelectorWidget.open();
   }
 
-  onChangeType(type: string) {
-    this.showTypesOptions = false;
-    this.router.navigateByUrl(this.router.url + '/detail/new?type=' + type);
+  onChangeType(type: WorkItemType) {
+    this.workItemDetailAddTypeSelectorWidget.close();
+    this.router.navigate(['detail', 'new'], { queryParams: { type: type.id }, relativeTo: this.route } as NavigationExtras);
   }
 }

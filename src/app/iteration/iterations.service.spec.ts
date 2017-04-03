@@ -1,5 +1,3 @@
-import { SpacesService } from './../shared/standalone/spaces.service';
-import { Spaces } from 'ngx-fabric8-wit';
 import {
   BaseRequestOptions,
   Http,
@@ -12,11 +10,14 @@ import {
   TestBed
 } from '@angular/core/testing';
 import { MockBackend } from '@angular/http/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { cloneDeep } from 'lodash';
 import { Broadcaster, Logger} from 'ngx-base';
+import { Spaces } from 'ngx-fabric8-wit';
 import { AuthenticationService } from 'ngx-login-client';
 
+import { SpacesService } from '../shared/standalone/spaces.service';
 import { IterationModel } from '../models/iteration.model';
 import { IterationService } from './iteration.service';
 import { GlobalSettings } from '../shared/globals';
@@ -58,6 +59,9 @@ describe('Iteration service - ', () => {
     };
 
     TestBed.configureTestingModule({
+      imports: [
+        BrowserAnimationsModule
+      ],
       providers: [
         Broadcaster,
         Logger,
@@ -181,10 +185,9 @@ describe('Iteration service - ', () => {
     // Error response
     apiService.getIterations()
       .subscribe(() => {
-        expect(apiService.iterations.length).toEqual(0);
       },
-      err => {
-        expect(err).toEqual([]);
+      () => {
+        expect(apiService.iterations.length).toEqual(0);
       });
   }));
 
@@ -230,7 +233,6 @@ describe('Iteration service - ', () => {
     apiService.createIteration(requestParams)
       .subscribe(() => {},
       err => {
-        expect(err).toEqual({});
         expect(apiService.iterations.length).toEqual(0);
       });
   }));
@@ -292,7 +294,6 @@ describe('Iteration service - ', () => {
     apiService.updateIteration(requestParams)
       .subscribe(() => {},
       data => {
-        expect(data).toEqual({});
         expect(apiService.iterations[0].attributes.name).toEqual('Sprint #24');
       });
   }));

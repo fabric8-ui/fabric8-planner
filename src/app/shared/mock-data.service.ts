@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { Logger } from 'ngx-base';
 
+import { cloneDeep } from 'lodash';
 import { WorkItem } from '../work-item/work-item';
 
 // mock data generators
@@ -152,13 +153,17 @@ export class MockDataService {
     var localWorkItem = this.makeCopy(entity.data);
     localWorkItem.id = this.createId();
     localWorkItem.links = {
-          'self': 'http://mock.service/api/workitems/id' + localWorkItem.id
+          'self': 'http://mock.service/api/workitems/id' + localWorkItem.id,
+          'sourceLinkTypes': 'http://mock.service/api/source-link-types',
+          'targetLinkTypes': 'http://mock.service/api/target-link-types'
         };
     localWorkItem.relationships = {
           'assignees': { },
+          'iteration': { },
+          'area': { },
           'baseType': {
             'data': {
-              'id': 'userstory',
+              'id': '86af5178-9b41-469b-9096-57e5155c3f31',
               'type': 'workitemtypes'
             }
           },
@@ -171,12 +176,13 @@ export class MockDataService {
           'creator': {
             'data': {
               'id': 'user0',
+              'imageURL': 'https://avatars.githubusercontent.com/u/2410471?v=3',
               'links': {
-                'self': 'http://mock.service/api/users/some-creator-id'
+                'self': 'http://mock.service/api/user'
               },
               'type': 'identities'
             }
-          }
+          },
         };
     this.workItems.push(localWorkItem);
     return { data: this.makeCopy(localWorkItem) };
@@ -221,12 +227,36 @@ export class MockDataService {
   };
 
   public updateWorkItem(workItem: any): any {
-    var localWorkItem = this.makeCopy(workItem);
-    for (var i = 0; i < this.workItems.length; i++)
+    var localWorkItem = cloneDeep(workItem);
+    for (var i = 0; i < this.workItems.length; i++) {
       if (this.workItems[i].id === localWorkItem.id) {
-        this.workItems.splice(i, 1, localWorkItem);
-        return this.makeCopy(localWorkItem);
+        // Some relationship update
+        if (typeof(workItem.relationships) !== 'undefined') {
+          // Iteration update
+          if (typeof(workItem.relationships.iteration) !== 'undefined') {
+            this.workItems[i].relationships.iteration.data
+              = this.getIteration(workItem.relationships.iteration.data.id);
+          }
+          // Area update
+          else if (typeof(workItem.relationships.area) !== 'undefined') {
+            this.workItems[i].relationships.area.data
+              = this.getArea(workItem.relationships.area.data.id);
+          }
+          // Assignee update
+          else if (typeof(workItem.relationships.assignees) !== 'undefined') {
+            this.workItems[i].relationships.assignees.data
+              = workItem.relationships.assignees.data.map((assignee) => {
+                return this.getUserById(assignee.id);
+              });
+          }
+        }
+        // Iteration update
+        else {
+          Object.assign(this.workItems[i].attributes, localWorkItem.attributes);
+        }
+        return cloneDeep(this.workItems[i]);
       }
+    }
     return null;
   }
 
@@ -305,6 +335,10 @@ export class MockDataService {
     return this.userMockGenerator.getUser();
   }
 
+  public getUserById(id: string): any {
+    return this.userMockGenerator.getAllUsers().find(u => u.id === id);
+  }
+
   public getAllUsers(): any {
     return this.userMockGenerator.getAllUsers();
   }
@@ -326,6 +360,10 @@ export class MockDataService {
   public getAllAreas(): any {
     console.log('Area - ', this.areas);
     return this.areas;
+  }
+
+  public getArea(id: string): any {
+    return this.areas.find(a => a.id === id);
   }
 
   // iterations
