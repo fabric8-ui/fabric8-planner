@@ -240,8 +240,7 @@
              id="iteration-assocaited">
               {{ workItem.relationships?.iteration?.data?.attributes?.name || "None" }}
             </span>
-            <div *ngIf="searchIteration"
-              id="WI_details_iteration">
+            <div *ngIf="searchIteration" id="WI_details_iteration">
               <div class="col-sm-6 padding-0">
                 <div class="input-group" dropdown>
                  <input type="text" autocomplete="false" id="WI_details_iteration_dropdownbtn"
