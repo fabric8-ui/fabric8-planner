@@ -6,6 +6,38 @@
 .marginR10 {
   margin-right: em(10);
 }
+.parent-iteration-container {
+  position: relative;
+  .down-angle-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: $color-pf-black-400;
+    padding: em(5);
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .iteration-list {
+    position: absolute;
+    background-color: $color-pf-white;
+    padding-left: 0;
+    width: $width100;
+    box-shadow: 0 1px 10px 0 $color-pf-black-500;
+    max-height: em(140);
+    overflow-y: auto;
+    li {
+      list-style: none;
+      padding: em(5) em(15);
+      &:hover {
+        background-color: $color-pf-black-300;
+        cursor: pointer;
+      }
+      &.selected {
+        background-color: $color-pf-black-300;
+      }
+    }
+  }
+}
 .datepicker-container {
   display: flex;
   justify-content: space-between;
