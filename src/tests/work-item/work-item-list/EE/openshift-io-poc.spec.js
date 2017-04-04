@@ -52,16 +52,17 @@ describe('openshift.io End-to-End POC test - Scenario - New user registers', fun
 
   /* Simple test for registered user */
   it('should enable a registered user to login', function() {
+    
     OpenShiftIoRHDLoginPage = page.clickLoginButton();
     OpenShiftIoGithubLoginPage = OpenShiftIoRHDLoginPage.clickGithubLoginButton();
 
     browser.wait(until.presenceOf(OpenShiftIoGithubLoginPage.githubLoginField), constants.LONG_WAIT, 'Failed to find github loginbutton');
 
     OpenShiftIoGithubLoginPage.clickGithubLoginField();
-    OpenShiftIoGithubLoginPage.typeGithubLoginField("almightytest");
+    OpenShiftIoGithubLoginPage.typeGithubLoginField(browser.params.login.user); 
 
     OpenShiftIoGithubLoginPage.clickGithubPassword();
-    OpenShiftIoGithubLoginPage.typeGithubPassword("myalmighty@123");
+    OpenShiftIoGithubLoginPage.typeGithubPassword(browser.params.login.password);   
 
     OpenShiftIoDashboardPage = OpenShiftIoGithubLoginPage.clickGithubLoginButton();
     OpenShiftIoDashboardPage.clickNewSpaceButton();
