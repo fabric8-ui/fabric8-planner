@@ -76,7 +76,6 @@ describe('openshift.io End-to-End POC test - Scenario - New user registers', fun
 
     OpenShiftIoDashboardPage.clickBrowseSpaces();
     OpenShiftIoDashboardPage.clickSelectSpace(spaceTime);
-
     browser.wait(until.urlContains('http://prod-preview.openshift.io/almusertest1/'+ spaceTime), constants.WAIT);
     browser.wait(until.urlIs('http://prod-preview.openshift.io/almusertest1/'+ spaceTime), constants.WAIT); 
     expect(browser.getCurrentUrl()).toEqual('http://prod-preview.openshift.io/almusertest1/'+ spaceTime);

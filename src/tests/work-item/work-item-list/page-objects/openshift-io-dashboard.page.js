@@ -96,6 +96,7 @@ class OpenShiftIoDashboardPage {
     return this.newSpaceCancelButton.click();
   }
 
+
   get browseSpaces () {
     return element(by.xpath(".//a[contains(text(),'Browse')]"));
   }
@@ -111,7 +112,6 @@ class OpenShiftIoDashboardPage {
     browser.wait(until.elementToBeClickable(this.selectSpace(spaceName)), constants.WAIT, 'Failed to find element selected space ' + spaceName);
     return this.selectSpace(spaceName).click();
   }
-
 
 }
 

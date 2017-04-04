@@ -1,11 +1,13 @@
 import { NgModule }     from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule }  from '@angular/forms';
+import { FormsModule, ReactiveFormsModule }  from '@angular/forms';
 import { HttpModule, Http }    from '@angular/http';
 
 import { CollapseModule, TooltipModule } from 'ng2-bootstrap';
 import { Ng2CompleterModule } from 'ng2-completer';
 import { DropdownModule } from 'ng2-bootstrap';
+import { MyDatePickerModule } from 'mydatepicker';
+
 import { MockHttp } from './../../shared/mock-http';
 
 import { AlmUserName } from '../../pipes/alm-user-name.pipe';
@@ -16,21 +18,26 @@ import {
   WidgetsModule
 } from 'ngx-widgets';
 
+import { ModalModule } from 'ngx-modal';
+
 import { AreaService } from '../../area/area.service';
 import { WorkItemDetailComponent } from './work-item-detail.component';
+import { DynamicFieldComponent } from './dynamic-form/dynamic-field.component';
+import { MarkdownControlComponent } from './markdown-control/markdown-control.component';
 import { WorkItemLinkComponent } from './work-item-link/work-item-link.component';
 import { WorkItemCommentComponent } from './work-item-comment/work-item-comment.component';
 import {
   WorkItemLinkFilterByTypeName,
   WorkItemLinkTypeFilterByTypeName
 } from './work-item-detail-pipes/work-item-link-filters.pipe';
+import { WorkItemTypeControlService } from '../work-item-type-control.service';
 
 let providers = [];
 
 if (process.env.ENV == 'inmemory') {
-  providers = [ AreaService, { provide: Http, useClass: MockHttp } ];
+  providers = [ AreaService, WorkItemTypeControlService, { provide: Http, useClass: MockHttp } ];
 } else {
-  providers = [ AreaService ];
+  providers = [ AreaService, WorkItemTypeControlService ];
 }
 
 @NgModule({
@@ -39,17 +46,22 @@ if (process.env.ENV == 'inmemory') {
     WidgetsModule,
     AlmIconModule,
     AlmEditableModule,
+    ModalModule,
     CommonModule,
     CollapseModule,
     DropdownModule,
     FormsModule,
     TooltipModule,
-    Ng2CompleterModule
+    Ng2CompleterModule,
+    ReactiveFormsModule,
+    MyDatePickerModule
   ],
   declarations: [
     AlmUserName,
     WorkItemCommentComponent,
     WorkItemDetailComponent,
+    DynamicFieldComponent,
+    MarkdownControlComponent,
     WorkItemLinkComponent,
     WorkItemLinkFilterByTypeName,
     WorkItemLinkTypeFilterByTypeName
