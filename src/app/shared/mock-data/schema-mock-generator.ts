@@ -198,11 +198,58 @@ export class SchemaMockGenerator {
             'icon': 'fa-bookmark',
             'fields' : {
                'system.description' : {
-                  'type' : {
-                     'kind' : 'markup'
-                  },
-                  'required' : false
+                'type' : {
+                    'kind' : 'markup'
+                },
+                'required' : false
                },
+              'system.reproduction' : {
+                'description' : 'Reproducing Steps',
+                'label' : 'Steps to Reproduce',
+                'required' : false,
+                'type' : {
+                  'kind' : 'markup'
+                }
+              },
+              'system.storypoints' : {
+                'description' : 'Storypoints for the story',
+                'label' : 'Story Points',
+                'required' : false,
+                'type' : {
+                  'kind' : 'integer'
+                }
+              },
+              'system.important' : {
+                'description' : 'Important or not',
+                'label' : 'Important',
+                'required' : false,
+                'type' : {
+                  'kind' : 'boolean'
+                }
+              },
+              'system.duedate' : {
+                'description' : 'Due date',
+                'label' : 'Due Date',
+                'required' : false,
+                'type' : {
+                  'kind' : 'instant'
+                }
+              },
+              'system.severity' : {
+                'description' : 'Severity for the story',
+                'label' : 'Severity',
+                'required' : false,
+                'type' : {
+                    'values' : [
+                      'low',
+                      'mid',
+                      'high',
+                      'blocker'
+                    ],
+                    'baseType' : 'string',
+                    'kind' : 'enum'
+                }
+              },
               'system.iteration' : {
                 'description' : 'The iteration to which the work item belongs',
                 'label' : 'Iteration',
@@ -750,7 +797,7 @@ export class SchemaMockGenerator {
   public renderText(text: string) {
     return {
         attributes: {
-          renderedContent: text
+          renderedContent: 'MARKDOWN RENDERED: ' + text
         },
         id: 'd9da8f40-30cd-4fb3-afd0-ab3302fa694f',
         type: 'rendering'

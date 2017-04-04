@@ -1,23 +1,26 @@
 import { Observable } from 'rxjs/Observable';
 import {
-  animate,
   AfterViewInit,
   Component,
   ElementRef,
   HostListener,
   OnInit,
   OnDestroy,
-  trigger,
-  state,
-  style,
-  transition,
   ViewChild,
   ViewChildren,
   QueryList
 } from '@angular/core';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger
+} from '@angular/animations';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Location }               from '@angular/common';
 import { Router }                 from '@angular/router';
+import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs/Subscription';
 
 import { cloneDeep, trimEnd } from 'lodash';
@@ -33,8 +36,10 @@ import { AreaModel } from '../../models/area.model';
 import { AreaService } from '../../area/area.service';
 import { IterationModel } from '../../models/iteration.model';
 import { IterationService } from '../../iteration/iteration.service';
+import { WorkItemTypeControlService } from '../work-item-type-control.service';
+import { MarkdownControlComponent } from './markdown-control/markdown-control.component';
 
-import { WorkItem, WorkItemAttributes, WorkItemRelations } from '../../models/work-item';
+import { WorkItem, WorkItemRelations } from '../../models/work-item';
 import { WorkItemService } from '../work-item.service';
 import { WorkItemType } from '../../models/work-item-type';
 
@@ -57,7 +62,7 @@ import { WorkItemType } from '../../models/work-item-type';
 })
 
 export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('desc') description: any;
+
   @ViewChild('title') title: any;
   @ViewChild('userSearch') userSearch: any;
   @ViewChild('userList') userList: any;
@@ -77,10 +82,10 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   loggedIn: Boolean = false;
 
   headerEditable: Boolean = false;
-  descEditable: Boolean = false;
 
   validTitle: Boolean = true;
   titleText: any = '';
+
   descText: any = '';
 
   searchArea: Boolean = false;
@@ -107,18 +112,14 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   iterations: IterationModel[] = [];
 
-  renderedDesc: any = '';
-  descViewType: any = 'html';
-
   spaceSubscription: Subscription;
-
-  activeButton: boolean = true;
-
-  arrowUp: boolean = true;
 
   workItemPayload: WorkItem;
 
   eventListeners: any[] = [];
+
+  dynamicFormGroup: FormGroup;
+  dynamicFormDataArray: any;
 
   constructor(
     private areaService: AreaService,
@@ -131,10 +132,11 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     private router: Router,
     private iterationService: IterationService,
     private userService: UserService,
+    private workItemTypeControlService: WorkItemTypeControlService,
     private spaces: Spaces
   ) {}
 
-  ngOnInit(): void{
+  ngOnInit(): void {
     // console.log('ALL USER DATA', this.route.snapshot.data['allusers']);
     // console.log('AUTH USER DATA', this.route.snapshot.data['authuser']);
     this.listenToEvents();
@@ -145,11 +147,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.route.params.forEach((params: Params) => {
       if (params['id'] !== undefined) {
         let id = params['id'];
-
-        // On changing item's details page
-        // Reset the description value
-        this.renderedDesc = '';
-        this.descViewType = 'html';
 
         if (id.indexOf('new') >= 0){
           //Add a new work item
@@ -162,7 +159,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
           // Open the panel
           if (this.panelState === 'out') {
             this.panelState = 'in';
-            if (this.headerEditable) {
+            if (this.headerEditable && typeof(this.title) !== 'undefined') {
               this.title.nativeElement.focus();
             }
           }
@@ -180,24 +177,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   ngOnDestroy() {
     console.log('Destroying all the listeners in detail component');
     this.eventListeners.forEach(subscriber => subscriber.unsubscribe());
-  }
-
-  // toggles active state for Preview as HTML and Write in Markdown
-  toggleActive(newValue: boolean) {
-    if (this.activeButton === newValue) {
-      this.activeButton = true;
-    }
-    else {
-      this.activeButton = newValue;
-    }
-  }
-
-  arrowDescription(newValue: boolean) {
-    if (this.arrowUp === newValue) {
-      this.arrowUp = true;
-    } else {
-      this.arrowUp = newValue;
-    }
   }
 
   ngAfterViewInit() {
@@ -232,6 +211,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         );
       })
       .subscribe(([workItem, workItemTypes, area, iteration, assignees, creator, [links, includes]]) => {
+
         // Resolve area
         workItem.relationships.area = {
           data: area
@@ -274,8 +254,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.closeUserRestFields();
         this.titleText = workItem.attributes['system.title'];
         this.descText = workItem.attributes['system.description'] || '';
-        this.renderedDesc = workItem.attributes['system.description.rendered'];
         this.workItem = workItem;
+
         this.workItemPayload = {
           id: this.workItem.id,
           attributes: {
@@ -290,10 +270,20 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         // Open the panel once all the data is ready
         if (this.panelState === 'out') {
           this.panelState = 'in';
-          if (this.headerEditable) {
+          if (this.headerEditable && typeof(this.title) !== 'undefined') {
             this.title.nativeElement.focus();
           }
         }
+
+        // init dynamic form
+        this.dynamicFormGroup = this.workItemTypeControlService.toFormGroup(this.workItem);
+        this.dynamicFormDataArray = this.workItemTypeControlService.toAttributeArray(this.workItem.relationships.baseType.data.attributes.fields); 
+
+        // fetch the list of user
+        // after getting the Workitem
+        // to set assigned user
+        // for this workitem from the list
+        this.getAllUsers();
 
         this.activeOnList(400);
       },
@@ -305,7 +295,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   createWorkItemObj(type: string) {
     this.workItem = new WorkItem();
     this.workItem.id = null;
-    this.workItem.attributes = new WorkItemAttributes();
+    this.workItem.attributes = new Map<string, string | number>();
     this.workItem.relationships = new WorkItemRelations();
     this.workItem.type = 'workitems';
     this.workItem.relationships = {
@@ -332,9 +322,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.workItem.relationalData = {};
     this.workItemService.resolveType(this.workItem);
-    this.workItem.attributes = {
-      'system.state': 'new'
-    } as WorkItemAttributes;
+    this.workItem.attributes['system.state'] = 'new';
   }
 
   getAllUsers(): void {
@@ -375,8 +363,43 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.validTitle = checkTitle.trim() != '';
   }
 
+  descOpen(): void {
+    if (this.loggedIn) {
+      if (this.headerEditable) {
+        this.onUpdateTitle();
+      }
+      this.closeUserRestFields();
+    }
+  }
+
   descUpdate(event: any): void {
     this.descText = event;
+    this.workItem.attributes['system.description'] = {
+      markup: 'Markdown',
+      content: this.descText.trim()
+    };
+    if (this.workItem.id) {
+      let payload = cloneDeep(this.workItemPayload);
+      payload.attributes['system.description'] = {
+        markup: 'Markdown',
+        content: this.descText.trim()
+      };
+      this.save(payload);
+    } else {
+      this.save();
+    }
+  }
+
+  // called when a dynamic field is updated.
+  dynamicFieldUpdated(event: any) {
+    this.workItem.attributes[event.formControlName] = event.newValue;
+    if (this.workItem.id) {
+      let payload = cloneDeep(this.workItemPayload);
+      payload.attributes[event.formControlName] = event.newValue;
+      this.save(payload);
+    } else {
+      this.save();
+    }
   }
 
   closeHeader(): void {
@@ -385,43 +408,19 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   openHeader(): void {
     if (this.loggedIn) {
+      /* TODO: send "close up" to the markdown field
       if (this.descEditable) {
         this.onUpdateDescription();
       }
+      */
       this.closeUserRestFields();
       this.headerEditable = true;
       setTimeout(() => {
-        if (this.headerEditable) {
+        if (this.headerEditable && typeof(this.title) !== 'undefined') {
           this.title.nativeElement.focus();
         }
       });
     }
-  }
-
-  openDescription(): void {
-    if (this.loggedIn) {
-      if (this.headerEditable) {
-        this.onUpdateTitle();
-      }
-      this.closeUserRestFields();
-      this.descEditable = true;
-      this.descViewType = 'markdown';
-      setTimeout(() => {
-        if (this.descEditable) {
-          this.description.nativeElement.focus();
-        }
-      });
-    }
-  }
-
-  closeDescription(): void {
-    this.description.nativeElement.innerHTML = this.workItem.attributes['system.description.rendered'];
-    this.showHtml(this.descText);
-    this.descEditable = false;
-  }
-
-  showDescription(): void {
-    this.description.toggle('show-more');
   }
 
   getAreas() {
@@ -484,22 +483,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   //   this.save(payload);
   // }
 
-  onUpdateDescription(): void {
-    this.workItem.attributes['system.description'] = {
-      markup: 'Markdown',
-      content: this.descText.trim()
-    };
-    this.showHtml(this.descText.trim());
-
-    let payload = cloneDeep(this.workItemPayload);
-    payload.attributes['system.description'] = {
-      markup: 'Markdown',
-      content: this.descText.trim()
-    };
-    this.save(payload);
-    this.closeDescription();
-  }
-
   onUpdateTitle(): void {
     this.isValid(this.titleText.trim());
     if (this.validTitle) {
@@ -516,7 +499,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   save(payload?: WorkItem): void {
-    if (this.workItem.id){
+    if (this.workItem.id) {
       this.workItemService
         .update(payload)
         .switchMap(workItem => {
@@ -749,13 +732,13 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.workItem && this.workItem.id != null) {
       this.headerEditable = false;
     }
-    this.descEditable = false;
+    // this.descEditable = false; // TODO: close markdown field
   }
 
   selectIteration(iteration: any): void {
     this.selectedIteration = iteration;
     this.dropdownButton.nativeElement.innerHTML = this.selectedIteration.attributes.name +
-                                                  ' <span class="caret"></span>';
+                                                  ' <span class="caret"></span>'
   }
 
   assignIteration(): void {
@@ -769,7 +752,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     });
 
     // If already closed iteration
-    if (this.workItem.attributes['system.state'] === 'closed') {
+    if (this.workItem.attributes['system.state'] == 'closed') {
       this.broadcaster.broadcast('wi_change_state_it', [{
         iterationId: currenIterationID,
         closedItem: -1
@@ -916,14 +899,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  showHtml(innerText: string): void {
-    this.workItemService.renderMarkDown(innerText)
-      .subscribe(renderedHtml => {
-        this.renderedDesc = renderedHtml;
-        this.descViewType = 'html';
-      });
-  }
-
   @HostListener('window:keydown', ['$event'])
   onKeyEvent(event: any) {
     event = (event || window.event);
@@ -934,9 +909,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
       } catch (x){
         event.returnValue = false; //IE
       }
-      if (this.descEditable) {
-        this.closeDescription();
-      } else if (this.headerEditable) {
+      if (this.headerEditable) {
         this.closeHeader();
       } else if (this.searchAssignee) {
         this.searchAssignee = false;

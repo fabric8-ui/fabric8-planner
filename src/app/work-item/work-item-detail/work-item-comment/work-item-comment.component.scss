@@ -79,6 +79,7 @@
         -moz-box-shadow: none;
         box-shadow: none;
         height: auto;
+        word-break: break-word;
         &:hover {
           border-color: $color-pf-blue-200;
         }
@@ -86,6 +87,13 @@
       p.editableComment {
         height: auto;
       }
+    }
+    .dropdown {
+      min-width: em(10);
+      text-align: right;
+    }
+    .dropdown-menu {
+      margin-top: -11px;
     }
   }
 }

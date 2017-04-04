@@ -6,7 +6,7 @@ import { User } from 'ngx-login-client';
 import { IterationModel } from './iteration.model';
 
 export class WorkItem {
-  attributes: WorkItemAttributes;
+  attributes: object = {};
   id: string;
   relationships?: WorkItemRelations;
   type: string;
@@ -18,25 +18,12 @@ export class WorkItem {
   };
 }
 
-export class WorkItemAttributes {
-  'system.created_at'?: string;
-  'system.description'?: any;
-  'system.description.rendered'?: string;
-  'system.remote_item_id'?: string;
-  'system.state'?: string;
-  'system.title'?: string;
-  'version': number;
-  'previousitem'?: string | number;
-  'nextitem'?: string | number;
-  'order'?: number | string;
-}
-
 export class WorkItemRelations {
   area: {
-    data: AreaModel
+    data?: AreaModel
   };
   assignees: {
-    data: User[]
+    data?: User[]
   };
   baseType: {
     data: WorkItemType;
@@ -61,7 +48,7 @@ export class WorkItemRelations {
     data: User;
   };
   iteration: {
-    data: {
+    data?: {
       id: string,
       type: string
     }

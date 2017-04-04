@@ -35,20 +35,20 @@ describe('openshift.io End-to-End POC test - Scenario - New user registers', fun
   });
 
   /* Simple test for new user */
-  it('should enable a new user to register', function() {
-
-    page.setEmail (EMAIL_ADDRESS);
-    page.setVoucherCode (VOUCHER_CODE);
-
-    page.clickRegisterButton();
-    expect (page.toastMessage.getText()).toBe("We've placed you on the waitlist! We'll be in touch soon.");
-
-    /* Verify that after registration the user is prevented from registering again */
-    page.clickToastMessageCloseButton();
-    expect (page.registerButton.isEnabled()).toBe(false);
-    expect (page.email.isEnabled()).toBe(false);
-    expect (page.voucherCode.isEnabled()).toBe(false);
-  });
+//  it('should enable a new user to register', function() {
+//
+//    page.setEmail (EMAIL_ADDRESS);
+//    page.setVoucherCode (VOUCHER_CODE);
+//
+//    page.clickRegisterButton();
+//    expect (page.toastMessage.getText()).toBe("We've placed you on the waitlist! We'll be in touch soon.");
+//
+//    /* Verify that after registration the user is prevented from registering again */
+//    page.clickToastMessageCloseButton();
+//    expect (page.registerButton.isEnabled()).toBe(false);
+//    expect (page.email.isEnabled()).toBe(false);
+//    expect (page.voucherCode.isEnabled()).toBe(false);
+//  });
 
   /* Simple test for registered user */
   it('should enable a registered user to login', function() {
@@ -71,17 +71,16 @@ describe('openshift.io End-to-End POC test - Scenario - New user registers', fun
 
     OpenShiftIoDashboardPage.typeDevProcess("Scenario Driven Planning");
     OpenShiftIoDashboardPage.clickCreateSpaceButton();
-    OpenShiftIoDashboardPage.clickCreateSpaceButton();
-    
-//    browser.wait(until.elementToBeClickable(OpenShiftIoDashboardPage.noThanksButton), constants.WAIT, 'Failed to find active filter');  
-//    OpenShiftIoDashboardPage.clickNoThanksButton();
-    
-    browser.wait(until.elementToBeClickable(OpenShiftIoDashboardPage.wizardButton), constants.WAIT, 'Failed to find active filter');  
     OpenShiftIoDashboardPage.clickWizardButton();
+    OpenShiftIoDashboardPage.clickNewSpaceCancelButton();
 
-    browser.wait(until.presenceOf(element(by.id("this-is-not-here"))), constants.WAIT, 'Failed to find active filter');  
-
-
+    OpenShiftIoDashboardPage.clickBrowseSpaces();
+    OpenShiftIoDashboardPage.clickSelectSpace(spaceTime);
+    
+    browser.wait(until.urlContains('http://prod-preview.openshift.io/almusertest1/'+ spaceTime), constants.WAIT);
+    browser.wait(until.urlIs('http://prod-preview.openshift.io/almusertest1/'+ spaceTime), constants.WAIT); 
+    expect(browser.getCurrentUrl()).toEqual('http://prod-preview.openshift.io/almusertest1/'+ spaceTime);
+//    browser.wait(until.presenceOf(element(by.linkText("Overview"))), constants.WAIT, 'Failed to find active filter');  
   });
 
 });
