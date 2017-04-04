@@ -114,6 +114,16 @@ class OpenShiftIoDashboardPage {
     return this.selectSpace(spaceName).click();
   }
 
+  /* "Plan" in page heading */
+  get headerPlan () {
+    return element(by.xpath(".//a[contains(text(),'Plan')]"));
+  }
+  clickHeaderPlan () {
+    browser.wait(until.elementToBeClickable(this.headerPlan), constants.WAIT, 'Failed to find element headerPlan');
+    return this.headerPlan.click();
+  }
+
+
 }
 
 module.exports = OpenShiftIoDashboardPage;
