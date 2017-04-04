@@ -102,6 +102,67 @@ describe('Work item list', function () {
   //     });
   //   });
   // });
+ it('User can read, update, remove assignee and delete WI', function() {
+    page.clickWorkItemQuickAdd();
+    page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
+    page.clickQuickAddSave().then(function() {
+      page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
+
+        var detailPage = page.clickWorkItemTitle(page.workItemByTitle(WORK_ITEM_TITLE), text);
+        browser.wait(until.elementToBeClickable(detailPage.workItemDetailAssigneeIcon), constants.WAIT, 'Failed to find Assignee Icon');
+
+        detailPage.clickworkItemDetailAssigneeIcon();
+        detailPage.setWorkItemDetailAssigneeSearch(EXAMPLE_USER_1, false);
+        detailPage.clickAssignedUserDropDownList(EXAMPLE_USER_1);
+        expect(detailPage.details_assigned_user().getText()).toContain(EXAMPLE_USER_1);
+
+        detailPage.details_assigned_user().click();
+        detailPage.clickworkItemDetailUnassignButton();
+        // expect(detailPage.workItemDetailAssigneeNameClickable().getText()).toBe('Unassigned');
+        detailPage.clickWorkItemDetailCloseButton();
+        page.clickWorkItemKebabButton(page.firstWorkItem);
+        page.clickWorkItemKebabDeleteButton(page.firstWorkItem);
+        browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find Assignee Icon');
+
+        page.clickWorkItemPopUpDeleteConfirmButton().then(function() {
+
+//        expect(page.workItemTitle(page.firstWorkItem)).not.toBe(WORK_ITEM_TITLE);
+//        expect(page.workItemTitle(page.workItemByNumber(0))).not.toBe(WORK_ITEM_TITLE);
+      });
+      });
+    });
+  });
+
+  /* Create a new workitem, fill in the details, save, retrieve, update, save, verify updates are saved */
+ it('should find and update the workitem through its detail page - desktop.', function() {
+
+    /* Create a new workitem */
+    page.clickWorkItemQuickAdd();
+    page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
+    page.typeQuickAddWorkItemDesc(WORK_ITEM_DESCRIPTION);
+    page.clickQuickAddSave().then(function() {
+      expect(page.workItemTitle(page.firstWorkItem)).toBe(WORK_ITEM_TITLE);
+
+      /* Fill in/update the new work item's title and details field */
+      expect(page.workItemTitle(page.workItemByTitle(WORK_ITEM_TITLE))).toBe(WORK_ITEM_TITLE);
+
+      page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
+        var detailPage = page.clickWorkItemTitle(page.workItemByTitle(WORK_ITEM_TITLE), text);
+        browser.wait(until.elementToBeClickable(detailPage.workItemDetailAssigneeIcon), constants.WAIT, 'Failed to find Assignee Icon');
+
+        detailPage.clickWorkItemDetailTitleClick();
+        detailPage.setWorkItemDetailTitle (WORK_ITEM_UPDATED_TITLE, false);
+        detailPage.clickWorkItemTitleSaveIcon();
+        detailPage.clickWorkItemDetailDescription()
+        detailPage.setWorkItemDetailDescription (WORK_ITEM_UPDATED_DESCRIPTION, false);
+        detailPage.clickWorkItemDescriptionSaveIcon();
+
+        detailPage.clickWorkItemDetailCloseButton();
+        browser.wait(until.presenceOf(page.firstWorkItem), constants.WAIT, 'Failed to find workItemList');
+        expect(page.workItemTitle(page.firstWorkItem)).toBe(WORK_ITEM_UPDATED_TITLE);
+      });
+    });
+  });
 
   // /* Vary the order of execution of the workitems */
   // it('should top workitem to the bottom and back to the top via the workitem kebab - phone.', function() {
@@ -129,13 +190,13 @@ describe('Work item list', function () {
   // });
 
   /* Test that the Quick add work item is visible */
-  it('Test Quick workitem visible without authorization - phone.', function () {
+ it('Test Quick workitem visible without authorization - phone.', function () {
     page.clickLogoutButton().click();
     expect(page.quickAddbuttonById().isPresent()).toBeFalsy();
   });
 
 //  /* Create workitem - verify user and icon */
-//  it('Edit and check WorkItem , creatorname and image is reflected', function () {
+// it('Edit and check WorkItem , creatorname and image is reflected', function () {
 //    page.clickDetailedDialogButton();
 //    var detailPage = page.clickDetailedIcon("userstory");
 //    browser.wait(until.elementToBeClickable(detailPage.workItemDetailAssigneeIcon), constants.WAIT, 'Failed to find workItem');
@@ -160,7 +221,7 @@ describe('Work item list', function () {
 //   });
 // });
 
- it('check date showing up correctly - Desktop', function () {
+it('check date showing up correctly - Desktop', function () {
     var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "Title Text 0");
     browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find workItem');
     expect(detailPage.getCreatedtime()).toBe('a few seconds ago');
@@ -170,7 +231,7 @@ describe('Work item list', function () {
 //    detailPage = page.workItemByURLId("id1");
 //    expect(detailPage.workItemDetailTitle.getText()).toBe('17 minutes ago');
    });
-   it('Updating area to a WI -desktop ', function() {
+  it('Updating area to a WI -desktop ', function() {
       var detailPage = page.clickWorkItemTitle(page.firstWorkItem, WORKITEM_0_ID);
       browser.wait(until.elementToBeClickable(detailPage.areaLabel), constants.WAIT, 'Failed to find areaLabel');
       detailPage.clickAreaSelect();
@@ -192,6 +253,7 @@ describe('Work item list', function () {
       var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0");
       detailPage.IterationOndetailPage().click();
       detailPage.clickAssignIteration();
+      detailPage.iterationCaretdropdown().click();
       detailPage.associateIteration("Iteration 1");
       detailPage.saveIteration();
       expect(detailPage.getAssociatedIteration()).toBe("Iteration 1");
@@ -200,19 +262,20 @@ describe('Work item list', function () {
       page.clickWorkItemTitle(page.firstWorkItem, "id0");
       detailPage.IterationOndetailPage().click();
       detailPage.clickAssignIteration();
+      detailPage.iterationCaretdropdown().click();
       detailPage.associateIteration("Iteration 0");
       detailPage.saveIteration();
       expect(detailPage.getAssociatedIteration()).toBe("Iteration 0");
       detailPage.clickWorkItemDetailCloseButton();
     });
 
-  it('Try clicking on start coding it should redirect - Desktop', function () {
+ it('Try clicking on start coding it should redirect - Desktop', function () {
     var detailPage = page.clickWorkItemTitle(page.workItemByTitle("Title Text 0"), "id0");
     expect(detailPage.startCodingElement.isPresent()).toBe(true);
     detailPage.clickStartCoding();
    });
 
-  it('Edit comment and cancel -desktop ', function() {
+ it('Edit comment and cancel -desktop ', function() {
       var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0");
       detailPage.commentBody("0").click();
       detailPage.editComments("updated comment !",'0',false);
