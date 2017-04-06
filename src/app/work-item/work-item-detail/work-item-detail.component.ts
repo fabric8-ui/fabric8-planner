@@ -137,8 +137,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   ) {}
 
   ngOnInit(): void {
-    // console.log('ALL USER DATA', this.route.snapshot.data['allusers']);
-    // console.log('AUTH USER DATA', this.route.snapshot.data['authuser']);
     this.listenToEvents();
     this.getAreas();
     this.getAllUsers();
@@ -279,7 +277,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
         // init dynamic form
         this.dynamicFormGroup = this.workItemTypeControlService.toFormGroup(this.workItem);
-        this.dynamicFormDataArray = this.workItemTypeControlService.toAttributeArray(this.workItem.relationships.baseType.data.attributes.fields); 
+        this.dynamicFormDataArray = this.workItemTypeControlService.toAttributeArray(this.workItem.relationships.baseType.data.attributes.fields);
 
         // fetch the list of user
         // after getting the Workitem
@@ -745,12 +743,12 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   assignIteration(): void {
     // Send out an iteration change event
-    let currenIterationID = this.workItem.relationships.iteration.data ?
-      this.workItem.relationships.iteration.data.id : 0;
+    let newIteration = this.selectedIteration?this.selectedIteration.id:undefined;
+    let currenIterationID = this.workItem.relationships.iteration.data ? this.workItem.relationships.iteration.data.id : 0; 
     this.broadcaster.broadcast('associate_iteration', {
       workItemId: this.workItem.id,
       currentIterationId: currenIterationID,
-      futureIterationId: this.selectedIteration.id
+      futureIterationId: newIteration
     });
 
     // If already closed iteration
@@ -759,22 +757,30 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         iterationId: currenIterationID,
         closedItem: -1
       }, {
-        iterationId: this.selectedIteration.id,
+        iterationId: newIteration,
         closedItem: +1
       }]);
     }
 
     let payload = cloneDeep(this.workItemPayload);
-    payload = Object.assign(payload, {
-      relationships : {
-        iteration: {
-          data: {
-            id: this.selectedIteration.id,
-            type: 'iteration'
+    if (newIteration) {
+      payload = Object.assign(payload, {
+        relationships : {
+          iteration: {
+            data: {
+              id: this.selectedIteration.id,
+              type: 'iteration'
+            }
           }
         }
-      }
-    });
+      });
+    } else {
+      payload = Object.assign(payload, {
+        relationships : {
+          iteration: { }
+        }      
+      });
+    }
     this.save(payload);
     this.searchIteration = false;
   }
