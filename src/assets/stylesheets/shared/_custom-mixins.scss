@@ -97,3 +97,6 @@
     right: 0;
     border-width: 0;
 }
+@mixin none-assigned {
+  color: $color-pf-blue;
+}

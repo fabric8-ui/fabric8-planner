@@ -41,7 +41,7 @@ describe('Work item list', function () {
   });
 
   /* User can read, update, remove assignee on a workitem  */
-  it('User can read, update, remove assignee and delete WI', function() {
+ it('User can read, update, remove assignee and delete WI', function() {
     page.clickWorkItemQuickAdd();
     page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
     page.clickQuickAddSave().then(function() {
@@ -73,7 +73,7 @@ describe('Work item list', function () {
   });
 
   /* Create a new workitem, fill in the details, save, retrieve, update, save, verify updates are saved */
-  it('should find and update the workitem through its detail page - desktop.', function() {
+ it('should find and update the workitem through its detail page - desktop.', function() {
 
     /* Create a new workitem */
     page.clickWorkItemQuickAdd();
@@ -129,13 +129,13 @@ describe('Work item list', function () {
   // });
 
   /* Test that the Quick add work item is visible */
-  it('Test Quick workitem visible without authorization - phone.', function () {
+ it('Test Quick workitem visible without authorization - phone.', function () {
     page.clickLogoutButton().click();
     expect(page.quickAddbuttonById().isPresent()).toBeFalsy();
   });
 
 //  /* Create workitem - verify user and icon */
-//  it('Edit and check WorkItem , creatorname and image is reflected', function () {
+// it('Edit and check WorkItem , creatorname and image is reflected', function () {
 //    page.clickDetailedDialogButton();
 //    var detailPage = page.clickDetailedIcon("userstory");
 //    browser.wait(until.elementToBeClickable(detailPage.workItemDetailAssigneeIcon), constants.WAIT, 'Failed to find workItem');   
@@ -160,7 +160,7 @@ describe('Work item list', function () {
 //   });
 // });
 
- it('check date showing up correctly - Desktop', function () {
+it('check date showing up correctly - Desktop', function () {
     var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "Title Text 0");
     browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find workItem');   
     expect(detailPage.getCreatedtime()).toBe('a few seconds ago');
@@ -170,7 +170,7 @@ describe('Work item list', function () {
 //    detailPage = page.workItemByURLId("id1");
 //    expect(detailPage.workItemDetailTitle.getText()).toBe('17 minutes ago');
    });
-   it('Updating area to a WI -desktop ', function() {
+  it('Updating area to a WI -desktop ', function() {
       var detailPage = page.clickWorkItemTitle(page.firstWorkItem, WORKITEM_0_ID);
       browser.wait(until.elementToBeClickable(detailPage.areaLabel), constants.WAIT, 'Failed to find areaLabel');   
       detailPage.clickAreaSelect();
@@ -192,6 +192,7 @@ describe('Work item list', function () {
       var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0"); 
       detailPage.IterationOndetailPage().click();
       detailPage.clickAssignIteration();
+      detailPage.iterationCaretdropdown().click();
       detailPage.associateIteration("Iteration 1");
       detailPage.saveIteration();
       expect(detailPage.getAssociatedIteration()).toBe("Iteration 1");
@@ -200,19 +201,20 @@ describe('Work item list', function () {
       page.clickWorkItemTitle(page.firstWorkItem, "id0");
       detailPage.IterationOndetailPage().click();
       detailPage.clickAssignIteration();
+      detailPage.iterationCaretdropdown().click();
       detailPage.associateIteration("Iteration 0");
       detailPage.saveIteration();
       expect(detailPage.getAssociatedIteration()).toBe("Iteration 0");
       detailPage.clickWorkItemDetailCloseButton();
     });
 
-  it('Try clicking on start coding it should redirect - Desktop', function () {
+ it('Try clicking on start coding it should redirect - Desktop', function () {
     var detailPage = page.clickWorkItemTitle(page.workItemByTitle("Title Text 0"), "id0");
     expect(detailPage.startCodingElement.isPresent()).toBe(true);
     detailPage.clickStartCoding();
    });
 
-  it('Edit comment and cancel -desktop ', function() {
+ it('Edit comment and cancel -desktop ', function() {
       var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0");
       detailPage.commentBody("0").click();
       detailPage.editComments("updated comment !",'0',false);
