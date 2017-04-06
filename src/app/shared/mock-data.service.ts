@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Logger } from 'ngx-base';
 
 import { cloneDeep } from 'lodash';
-import { WorkItem } from '../work-item/work-item';
+import { WorkItem } from '../models/work-item';
 
 // mock data generators
 import { SchemaMockGenerator } from './mock-data/schema-mock-generator';
@@ -244,10 +244,14 @@ export class MockDataService {
           }
           // Assignee update
           else if (typeof(workItem.relationships.assignees) !== 'undefined') {
-            this.workItems[i].relationships.assignees.data
-              = workItem.relationships.assignees.data.map((assignee) => {
-                return this.getUserById(assignee.id);
-              });
+            if (workItem.relationships.assignees.data.length) {
+              this.workItems[i].relationships.assignees.data
+                = workItem.relationships.assignees.data.map((assignee) => {
+                    return this.getUserById(assignee.id);
+                  });
+            } else {
+              this.workItems[i].relationships.assignees = {};
+            }
           }
         }
         // Iteration update
