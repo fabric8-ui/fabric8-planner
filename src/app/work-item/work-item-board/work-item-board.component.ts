@@ -13,7 +13,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import { Response } from '@angular/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { cloneDeep, trimEnd } from 'lodash';
 
 import { IterationService } from './../../iteration/iteration.service';
@@ -41,7 +41,7 @@ import { WorkItemService } from '../work-item.service';
   styleUrls: ['./work-item-board.component.scss']
 })
 
-export class WorkItemBoardComponent implements OnInit, OnDestroy {
+export class WorkItemBoardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChildren('activeFilters', {read: ElementRef}) activeFiltersRef: QueryList<ElementRef>;
   @ViewChild('activeFiltersDiv') activeFiltersDiv: any;
@@ -59,6 +59,7 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
   private workItemTypes: WorkItemType[] = [];
   private readyToInit = false;
   eventListeners: any[] = [];
+  authUser: any = null;
 
   constructor(
     private auth: AuthenticationService,
@@ -68,6 +69,7 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
     private dragulaService: DragulaService,
     private iterationService: IterationService,
     private userService: UserService,
+    private route: ActivatedRoute,
     private spaces: Spaces) {
       this.dragulaService.drag.subscribe((value) => {
         this.onDrag(value.slice(1));
@@ -89,6 +91,13 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
+
+    if (typeof this.dragulaService.find('first-bag') == 'undefined' && !this.loggedIn) {
+      this.dragulaService.setOptions('first-bag', {
+        moves: () => { return this.loggedIn }
+      });
+    }
+
     this.spaceSubscription = this.spaces.current.subscribe(space => {
       if (space) {
         console.log('[WorkItemBoardComponent] New Space selected: ' + space.attributes.name);
@@ -107,6 +116,10 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
       }
     });
     this.initStuff();
+  }
+
+  ngAfterViewInit() {
+    this.authUser = cloneDeep(this.route.snapshot.data['authuser']);
   }
 
   ngOnDestroy() {
@@ -335,6 +348,19 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
   }
 
   listenToEvents() {
+
+    this.eventListeners.push(
+      this.broadcaster.on<string>('logout')
+        .subscribe(message => {
+          this.loggedIn = false;
+          this.authUser = null;
+          if (typeof this.dragulaService.find('first-bag') == 'undefined' && !this.loggedIn) {
+            this.dragulaService.setOptions('first-bag', {
+              moves: () => { return this.loggedIn }
+            });
+          }
+      })
+    );
 
     this.eventListeners.push(
       this.broadcaster.on<string>('updateWorkItem')
