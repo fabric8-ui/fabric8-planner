@@ -35,6 +35,9 @@
       color: $color-pf-blue;
     }
     .iteration-header {
+      .pointer {
+        cursor: pointer;
+      }
       padding: em(10) em(20);
       > h4 {
         margin: 0;
@@ -87,6 +90,11 @@
         }
         .iteration-description {
           @include multiline-truncate($line-height: 1.5em, $line-count: 2, $bg-color: $color-pf-black-700);
+
+          &:after, &:before {
+            background: transparent !important;
+            content: none !important;
+          }
         }
       }
     }

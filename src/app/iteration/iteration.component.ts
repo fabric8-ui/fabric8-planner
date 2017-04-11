@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { Params, ActivatedRoute } from '@angular/router';
 import { Component, OnInit, OnDestroy, Input, OnChanges } from '@angular/core';
 
-import { Broadcaster } from 'ngx-base';
+import { Broadcaster, Logger } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
 import { Space, Spaces } from 'ngx-fabric8-wit';
 
@@ -43,6 +43,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   private spaceSubscription: Subscription = null;
 
   constructor(
+    private log: Logger,
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
     private iterationService: IterationService,
@@ -58,7 +59,6 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     this.spaceSubscription = this.spaces.current.subscribe(space => {
       if (space) {
         console.log('[IterationComponent] New Space selected: ' + space.attributes.name);
-        console.log(space);
         this.editEnabled = true;
         this.getAndfilterIterations();
       } else {
@@ -74,7 +74,13 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnChanges() {
     if (this.takeFromInput) {
-      this.allIterations = this.iterations;
+      // do not display the root iteration on the iteration panel.
+      this.allIterations = [];
+      for (let i=0; i<this.iterations.length; i++) {
+        if (!this.iterationService.isRootIteration(this.iterations[i])) {
+          this.allIterations.push(this.iterations[i]);
+        }
+      }
       this.clusterIterations();
     }
   }
@@ -86,17 +92,29 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
 
   getAndfilterIterations() {
     if (this.takeFromInput) {
-      this.allIterations = this.iterations;
+      // do not display the root iteration on the iteration panel.
+      this.allIterations = [];
+      for (let i=0; i<this.iterations.length; i++) {
+        if (!this.iterationService.isRootIteration(this.iterations[i])) {
+          this.allIterations.push(this.iterations[i]);
+        }
+      }
       this.clusterIterations();
     } else {
       this.iterationService.getIterations()
-      .subscribe((iterations) => {
-          this.allIterations = iterations;
+        .subscribe((iterations) => {
+          // do not display the root iteration on the iteration panel.
+          this.allIterations = [];
+          for (let i=0; i<iterations.length; i++) {
+            if (!this.iterationService.isRootIteration(iterations[i])) {
+              this.allIterations.push(iterations[i]);
+            }
+          }
           this.clusterIterations();
-      },
-      (e) => {
-        console.log('Some error has occured', e);
-      });
+        },
+        (e) => {
+          console.log('Some error has occured', e);
+        });
     }
   }
 
@@ -146,7 +164,19 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     this.broadcaster.broadcast('unique_filter', filters);
   }
 
-  updateItemCounts(data: any) {
+  updateItemCounts() {
+    this.log.log('Updating item counts..');
+    this.iterationService.getIterations().first().subscribe((updatedIterations:IterationModel[]) => {
+      // updating the counts from the response. May not the best solution on performance right now.
+      updatedIterations.forEach((thisIteration:IterationModel) => {
+        for (let i=0; i<this.iterations.length; i++) {
+          if (this.iterations[i].id === thisIteration.id) {
+            this.iterations[i].relationships.workitems.meta.total = thisIteration.relationships.workitems.meta.total;
+            this.iterations[i].relationships.workitems.meta.closed = thisIteration.relationships.workitems.meta.closed;
+          }
+        }
+      });
+    });
   }
 
   listenToEvents() {
@@ -162,33 +192,15 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     });
     this.broadcaster.on<string>('wi_change_state_it')
       .subscribe((actions: any) => {
-        actions.forEach((data: any) => {
-          let iteration: IterationModel = this.allIterations.find((it) => it.id == data.iterationId);
-          if (iteration) {
-            iteration.relationships.workitems.meta.closed += data.closedItem;
-          }
-        });
+        this.updateItemCounts();
     });
     this.broadcaster.on<string>('associate_iteration')
       .subscribe((data: any) => {
-        let currentIteration: IterationModel = this.allIterations.find((it) => it.id == data.currentIterationId);
-        if (currentIteration) {
-          currentIteration.relationships.workitems.meta.total -= 1;
-        }
-        let futureIteration: IterationModel = this.allIterations.find((it) => it.id == data.futureIterationId);
-        if (futureIteration) {
-          futureIteration.relationships.workitems.meta.total += 1;
-        }
+        this.updateItemCounts();
     });
     this.broadcaster.on<WorkItem>('delete_workitem')
       .subscribe((data: WorkItem) => {
-        // if the workitem was associated with an iteration, deduct one from that iterations count
-        if (data.relationships.iteration.data) {
-          let currentIteration: IterationModel = this.allIterations.find((it) => it.id == data.relationships.iteration.data.id);
-          if (currentIteration) {
-            currentIteration.relationships.workitems.meta.total -= 1;
-          }
-        }
+        this.updateItemCounts();
     });
   }
  }

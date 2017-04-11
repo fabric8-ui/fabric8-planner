@@ -91,7 +91,9 @@
                 <span *ngIf="loggedIn" class="caret pull-right"></span>
               </button>
               <ul *ngIf="loggedIn" id="wi-status-dropdown" class="dropdown-menu-right dropdown-ul" role="menu" dropdownMenu>
-                <li class="dropdown-li" *ngFor="let state of workItem.relationships?.baseType?.data?.attributes?.fields['system.state'].type.values;" (click)="onChangeState(state)">
+                <li class="dropdown-li" (click)="onChangeState(state)"
+                  *ngFor="let state of workItem.relationships?.baseType?.data?.attributes?.fields['system.state'].type.values;"
+                >
                   <a>
                     <span class='dropdown-icon' almIcon [iconType]="state"></span>
                     <span class='dropdown-text'>{{state}}</span>
@@ -139,7 +141,7 @@
                           [class.only-first-item] = "!filteredUsers || !filteredUsers.length"
                           *ngIf="loggedInUser"
                           [attr.data-value]="loggedInUser.id"
-                          (click)="assignUser(loggedInUser.id)">
+                          (click)="assignUser(loggedInUser)">
                             <!-- <span class="pull-left fa fa-user user-assign-icon active"></span> -->
                             <img
                               class="pull-left user-assign-avatar"
@@ -152,7 +154,7 @@
                           class="item-li"
                           *ngFor="let user of filteredUsers;"
                           [attr.data-value]="user.id"
-                          (click)="assignUser(user.id)">
+                          (click)="assignUser(user)">
                             <!-- <span class="pull-left fa fa-user user-assign-icon active"></span> -->
                             <img
                               class="pull-left user-assign-avatar"
@@ -209,6 +211,7 @@
                       autocomplete="off" />
                     <ul class="item-ul area-list" #areaList>
                       <li *ngIf="!areas.length" class="textCenter"><i class="fa fa-spinner fa-pulse"></i></li>
+                      <li *ngIf="!filteredAreas.length">No matches found.</li>
                       <li
                         class="item-li"
                         *ngFor="let area of filteredAreas;"
@@ -220,7 +223,8 @@
                   </div>
                 </div>
                 <div *ngIf="searchArea" class="btn-bar"  >
-                  <button class="btn btn-lg btn-default"  type="button" (click)=setArea() id="save_area">
+                  <button class="btn btn-lg btn-default" type="button" (click)=setArea()
+                    id="save_area" [disabled]="!filteredAreas.length || !selectedArea">
                     <span class="fa fa-check" ></span>
                   </button>
                   <button class="btn btn-lg btn-default"  type="button" (click)=closeAreaDropdown()>
@@ -253,7 +257,8 @@
                   </a>
                 </li>
               </ul>
-              <button class="btn btn-lg btn-default" type="button" (click)=assignIteration() id="assign-iteration-savebtn">
+              <button class="btn btn-lg btn-default" type="button" (click)=assignIteration()
+                [disabled]="!selectedIteration" id="assign-iteration-savebtn">
                 <span class="fa fa-check"></span>
               </button>
               <button class="btn btn-lg btn-default" type="button" (click)=closeIteration() id="assign-iteration-closebtn">

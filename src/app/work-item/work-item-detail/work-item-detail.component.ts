@@ -454,9 +454,11 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
       }
     }
     this.workItem.attributes['system.state'] = option;
-    let payload = cloneDeep(this.workItemPayload);
-    payload.attributes['system.state'] = option;
-    this.save(payload);
+    if(this.workItem.id) {
+      let payload = cloneDeep(this.workItemPayload);
+      payload.attributes['system.state'] = option;
+      this.save(payload);
+    }
   }
 
   // onChangeType(type: any): void {
@@ -491,31 +493,36 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  save(payload?: WorkItem): void {
+  save(payload?: WorkItem, returnObservable: boolean = false): Observable<WorkItem> {
+    let retObservable: Observable<WorkItem>;
     if (this.workItem.id) {
-      this.workItemService
+      retObservable = this.workItemService
         .update(payload)
         .switchMap(workItem => {
-        return Observable.forkJoin(
-          Observable.of(workItem),
-          this.workItemService.getWorkItemTypes(),
-          this.areaService.getArea(workItem.relationships.area),
-          this.iterationService.getIteration(workItem.relationships.iteration),
-          this.workItemService.resolveAssignees(workItem.relationships.assignees),
-          this.workItemService.resolveCreator2(workItem.relationships.creator),
-          this.workItemService.resolveLinks(workItem.links.self + '/relationships/links')
+          return Observable.forkJoin(
+            Observable.of(workItem),
+            this.workItemService.getWorkItemTypes(),
+            this.areaService.getArea(workItem.relationships.area),
+            this.iterationService.getIteration(workItem.relationships.iteration),
+            this.workItemService.resolveAssignees(workItem.relationships.assignees),
+            this.workItemService.resolveCreator2(workItem.relationships.creator),
+            this.workItemService.resolveLinks(workItem.links.self + '/relationships/links')
         );
       })
-      .subscribe(([workItem, workItemTypes, area, iteration, assignees, creator, [links, includes]]) => {
+      .map(([workItem, workItemTypes, area, iteration, assignees, creator, [links, includes]]) => {
         // Resolve area
         workItem.relationships.area = {
           data: area
         };
 
         // Resolve iteration
-        workItem.relationships.iteration = {
-          data: iteration
-        };
+        if (iteration) {
+          workItem.relationships.iteration = {
+            data: iteration
+          };
+        } else {
+          workItem.relationships.iteration = { };
+        }
 
         // Resolve work item type
         workItem.relationships.baseType.data =
@@ -550,10 +557,12 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.workItemPayload.attributes['version'] = workItem.attributes['version'];
         this.updateOnList();
         this.activeOnList();
+
+        return workItem;
       });
     } else {
-      if (this.validTitle){
-        this.workItemService
+      if (this.validTitle) {
+        retObservable = this.workItemService
         .create(this.workItem)
         .switchMap(workItem => {
           return Observable.forkJoin(
@@ -563,7 +572,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
             this.workItemService.resolveCreator2(workItem.relationships.creator)
           );
         })
-        .subscribe(([workItem, workItemTypes, assignees, creator]) => {
+        .map(([workItem, workItemTypes, assignees, creator]) => {
           // Resolve work item type
           workItem.relationships.baseType.data =
             workItemTypes.find(type => type.id === workItem.relationships.baseType.data.id) ||
@@ -581,8 +590,17 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
           this.addNewItem(workItem);
           this.router.navigateByUrl(trimEnd(this.router.url.split('detail')[0], '/') + '/detail/' + workItem.id, { relativeTo: this.route });
+
+          return workItem;
         });
+      } else {
+        retObservable = Observable.throw('error');
       }
+    }
+    if (returnObservable) {
+      return retObservable;
+    } else {
+      retObservable.subscribe();
     }
   }
 
@@ -697,19 +715,32 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  assignUser(userId: any): void {
-    let payload = cloneDeep(this.workItemPayload);
-    payload = Object.assign(payload, {
-      relationships : {
-        assignees: {
-          data: [{
-            id: userId,
-            type: 'identities'
-          }]
+  assignUser(user: User): void {
+    if(this.workItem.id) {
+      let payload = cloneDeep(this.workItemPayload);
+      payload = Object.assign(payload, {
+        relationships : {
+          assignees: {
+            data: [{
+              id: user.id,
+              type: 'identities'
+            }]
+          }
         }
-      }
-    });
-    this.save(payload);
+      });
+      this.save(payload);
+    } else {
+      let assignee = [{
+        attributes: {
+          fullName: user.attributes.fullName
+        },
+        id: user.id,
+        type: 'identities'
+      } as User];
+      this.workItem.relationships.assignees = {
+        data : assignee
+      };
+    }
     this.searchAssignee = false;
   }
 
@@ -746,46 +777,62 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   assignIteration(): void {
-    // Send out an iteration change event
-    let newIteration = this.selectedIteration?this.selectedIteration.id:undefined;
-    let currenIterationID = this.workItem.relationships.iteration.data ? this.workItem.relationships.iteration.data.id : 0;
-    this.broadcaster.broadcast('associate_iteration', {
-      workItemId: this.workItem.id,
-      currentIterationId: currenIterationID,
-      futureIterationId: newIteration
-    });
+    if(this.workItem.id) {
+      let newIteration = this.selectedIteration?this.selectedIteration.id:undefined;
+      let currenIterationID = this.workItem.relationships.iteration.data ? this.workItem.relationships.iteration.data.id : 0;
 
-    // If already closed iteration
-    if (this.workItem.attributes['system.state'] == 'closed') {
-      this.broadcaster.broadcast('wi_change_state_it', [{
-        iterationId: currenIterationID,
-        closedItem: -1
-      }, {
-        iterationId: newIteration,
-        closedItem: +1
-      }]);
-    }
+      // If already closed iteration
+      if (this.workItem.attributes['system.state'] == 'closed') {
+        this.broadcaster.broadcast('wi_change_state_it', [{
+          iterationId: currenIterationID,
+          closedItem: -1
+        }, {
+          iterationId: newIteration,
+          closedItem: +1
+        }]);
+      }
 
-    let payload = cloneDeep(this.workItemPayload);
-    if (newIteration) {
-      payload = Object.assign(payload, {
-        relationships : {
-          iteration: {
-            data: {
-              id: this.selectedIteration.id,
-              type: 'iteration'
+      let payload = cloneDeep(this.workItemPayload);
+      if (newIteration) {
+        payload = Object.assign(payload, {
+          relationships : {
+            iteration: {
+              data: {
+                id: this.selectedIteration.id,
+                type: 'iteration'
+              }
             }
           }
-        }
+        });
+      } else {
+        payload = Object.assign(payload, {
+          relationships : {
+            iteration: { }
+          }
+        });
+      }
+      this.save(payload, true).subscribe((workItem:WorkItem) => {
+        this.logger.log('Iteration has been updated, sending event to iteration panel to refresh counts.');
+        this.broadcaster.broadcast('associate_iteration', {
+          workItemId: workItem.id,
+          currentIterationId: this.workItem.relationships.iteration.data?this.workItem.relationships.iteration.data.id:undefined,
+          futureIterationId: workItem.relationships.iteration.data?workItem.relationships.iteration.data.id:undefined
+        });
       });
     } else {
-      payload = Object.assign(payload, {
-        relationships : {
-          iteration: { }
-        }
-      });
+      // creating a new work item - save the user input
+      let iteration = {
+        attributes: {
+          name: this.selectedIteration.attributes.name
+        },
+        id: this.selectedIteration.id,
+        type: 'iteration'
+      } as IterationModel;
+
+      this.workItem.relationships.iteration = {
+        data: iteration
+      };
     }
-    this.save(payload);
     this.searchIteration = false;
   }
 
@@ -817,18 +864,33 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   }
   //set an area
   setArea(): void {
-    let payload = cloneDeep(this.workItemPayload);
-    payload = Object.assign(payload, {
-      relationships : {
-        area: {
-          data: {
-            id: this.selectedArea.id,
-            type: 'area'
+    if(this.workItem.id) {
+      let payload = cloneDeep(this.workItemPayload);
+      payload = Object.assign(payload, {
+        relationships : {
+          area: {
+            data: {
+              id: this.selectedArea.id,
+              type: 'area'
+            }
           }
         }
-      }
-    });
-    this.save(payload);
+      });
+      this.save(payload);
+    } else {
+      let area = {
+        attributes: {
+          name: this.selectedArea.attributes.name,
+        },
+        id: this.selectedArea.id,
+        type: 'area'
+      } as AreaModel;
+
+      this.workItem.relationships.area = {
+        data : area
+      };
+    }
+
     this.searchArea = false;
   }
 
