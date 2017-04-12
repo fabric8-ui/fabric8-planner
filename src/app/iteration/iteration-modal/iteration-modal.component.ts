@@ -144,9 +144,10 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
 
   openCreateUpdateModal(
     type: string = 'create',
-    iteration: IterationModel | null = null
+    iteration: IterationModel | null = null,
+    e: any
   ) {
-    event.stopPropagation();
+    e.stopPropagation();
     this.modalType = type;
     if (iteration) {
       this.iteration = cloneDeep(iteration);
