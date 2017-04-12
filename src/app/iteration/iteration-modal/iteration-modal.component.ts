@@ -148,6 +148,17 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   ) {
     event.stopPropagation();
     this.modalType = type;
+    if (iteration) {
+      this.iteration = cloneDeep(iteration);
+      if (this.iteration.attributes.startAt) {
+        let startDate = moment(this.iteration.attributes.startAt);
+        this.startDate = { date: { year: startDate.format('YYYY'), month: startDate.format('M'), day: startDate.format('D') } };
+      }
+      if (this.iteration.attributes.endAt) {
+        let endDate = moment(this.iteration.attributes.endAt);
+        this.endDate = { date: { year: endDate.format('YYYY'), month: endDate.format('M'), day: endDate.format('D') } };
+      }
+    }
     if (this.modalType == 'create') {
       this.getIterations();
       this.submitBtnTxt = 'Create';
@@ -177,22 +188,13 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
       this.modalTitle = 'Create Iteration';
       this.selectedParentIterationName = (iteration.attributes.resolved_parent_path+'/'+iteration.attributes.name).replace("//", "/");
       this.selectedParentIteration = iteration;
-      iteration.attributes.name = '';
+      this.iteration.attributes.name = '';
+      this.iteration.attributes.startAt = '';
+      this.iteration.attributes.endAt = '';
     }
     if (this.modalType == 'close') {
       this.submitBtnTxt = 'Close';
       this.modalTitle = 'Close Iteration';
-    }
-    if (iteration) {
-      this.iteration = cloneDeep(iteration);
-      if (this.iteration.attributes.startAt) {
-        let startDate = moment(this.iteration.attributes.startAt);
-        this.startDate = { date: { year: startDate.format('YYYY'), month: startDate.format('M'), day: startDate.format('D') } };
-      }
-      if (this.iteration.attributes.endAt) {
-        let endDate = moment(this.iteration.attributes.endAt);
-        this.endDate = { date: { year: endDate.format('YYYY'), month: endDate.format('M'), day: endDate.format('D') } };
-      }
     }
 
     this.createUpdateIterationDialog.open();
