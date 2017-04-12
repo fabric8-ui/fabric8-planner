@@ -1,4 +1,7 @@
 <div [@slideInOut]="panelState" class="detail-panel">
+  <h3 *ngIf="saving">
+    <p><span class="spinner spinner-xs spinner-inline"></span>Saving work item.</p>
+  </h3>
   <div class="detail-container" *ngIf="workItem" id="workItemDetail_Wrapper">
     <form *ngIf="active"
           #almWorkItemDetailForm="ngForm"
