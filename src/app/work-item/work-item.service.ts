@@ -62,6 +62,8 @@ export class WorkItemService {
   private iterations: IterationModel[] = [];
   public _currentSpace;
 
+  private selfId;
+
   constructor(private http: HttpService,
     private broadcaster: Broadcaster,
     private logger: Logger,
@@ -76,6 +78,17 @@ export class WorkItemService {
     if (this.auth.getToken() != null) {
       this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
     }
+    this.selfId = this.createId();
+    this.logger.log('Launching WorkItemService instance id ' + this.selfId);
+  }
+
+  createId(): string {
+    let id = '';
+    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 5; i++)
+      id += possible.charAt(Math.floor(Math.random() * possible.length));
+    console.log('Created new id ' + id);
+    return id;
   }
 
   // switchSpace(space: Space) {
