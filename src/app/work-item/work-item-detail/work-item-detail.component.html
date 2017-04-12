@@ -208,7 +208,7 @@
               <div *ngIf="searchArea" class=" col-sm-6 padding-0">
                 <div class="input-group " dropdown>
                   <input id="areaSearchInput" #areaSearch (keyup)="filterArea($event)" placeholder="Select Area"
-                    autocomplete="off" value="{{ workItem.relationships?.area?.data?.attributes?.name }}"
+                    autocomplete="off"
                     class="combobox form-control"/>
                   <ul class="dropdown-menu typeahead typeahead-long" #areaList dropdownMenu>
                     <li
@@ -217,12 +217,12 @@
                       [attr.data-value]="area.id"
                       (click)="showAreaOnInput(area)" [id]="area.id">
                       <a class="truncate left-truncate">
-                        <span [innerHTML]="area.attributes?.name | almSearchHighlight: areaSearch.value" >
+                        <span [innerHTML]="area.attributes?.name | almSearchHighlight: areaSearch.value">
                         </span>
                       </a>
                     </li>
                   </ul>
-                  <span class="input-group-addon dropdown-toggle" dropdownToggle data-dropdown="dropdown">
+                  <span class="input-group-addon dropdown-toggle" dropdownToggle data-dropdown="dropdown" #areaClick>
                     <span class="fa fa-search"></span>
                     <span class="glyphicon glyphicon-remove"></span>
                   </span>

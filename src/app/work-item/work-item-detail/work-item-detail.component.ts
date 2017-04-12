@@ -67,6 +67,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild('userSearch') userSearch: any;
   @ViewChild('userList') userList: any;
   @ViewChild('dropdownButton') dropdownButton: any;
+  @ViewChild('areaClick') areaClick: any;
   @ViewChild('areaSearch') areaSearch: any;
   @ViewChild('areaList') areaList: any;
   @ViewChild('iterationSearch') iterationSearch: any;
@@ -907,6 +908,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
       setTimeout(() => {
         if (this.areaSearch) {
           this.areaSearch.nativeElement.focus();
+          this.areaClick.nativeElement.click();
         }
       }, 50);
     }
