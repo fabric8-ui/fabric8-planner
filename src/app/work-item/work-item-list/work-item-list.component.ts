@@ -21,7 +21,7 @@ import {
   ActivatedRoute
 } from '@angular/router';
 
-import { TreeNode } from 'angular-tree-component';
+import { TreeNode } from 'angular2-tree-component';
 
 import { cloneDeep } from 'lodash';
 import { Broadcaster, Logger } from 'ngx-base';
@@ -117,8 +117,8 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck, On
     this.spaceSubscription = this.spaces.current.subscribe(space => {
       if (space) {
         console.log('[WorkItemListComponent] New Space selected: ' + space.attributes.name);
-        this.loadWorkItems();
         this.workItemService.resetWorkItemList();
+        this.loadWorkItems();
       } else {
         console.log('[WorkItemListComponent] Space deselected');
         this.workItems = [];
@@ -398,6 +398,13 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck, On
           this.treeList.updateTree();
         })
       );
+    
+    this.eventListeners.push(
+      this.broadcaster.on<string>('detail_close')
+      .subscribe(()=>{
+        this.selectedWorkItemEntryComponent.deselect();
+      })
+    );
   }
 
   onDragStart() {
