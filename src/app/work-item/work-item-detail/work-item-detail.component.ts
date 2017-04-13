@@ -67,6 +67,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild('userSearch') userSearch: any;
   @ViewChild('userList') userList: any;
   @ViewChild('dropdownButton') dropdownButton: any;
+  @ViewChild('areaClick') areaClick: any;
   @ViewChild('areaSearch') areaSearch: any;
   @ViewChild('areaList') areaList: any;
   @ViewChild('iterationSearch') iterationSearch: any;
@@ -122,6 +123,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   dynamicFormDataArray: any;
   usersLoaded: Boolean = false;
 
+  saving: Boolean = false;
+
   constructor(
     private areaService: AreaService,
     private auth: AuthenticationService,
@@ -138,6 +141,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   ) {}
 
   ngOnInit(): void {
+    this.saving = false;
     this.listenToEvents();
     // this.getAreas();
     // this.getAllUsers();
@@ -335,6 +339,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   activeOnList(timeOut: number = 0) {
     setTimeout(() => {
+      this.saving = false;
       this.broadcaster.broadcast('activeWorkItem', this.workItem.id);
     }, timeOut);
   }
@@ -557,11 +562,11 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.workItemPayload.attributes['version'] = workItem.attributes['version'];
         this.updateOnList();
         this.activeOnList();
-
         return workItem;
       });
     } else {
       if (this.validTitle) {
+        this.saving = true;
         retObservable = this.workItemService
         .create(this.workItem)
         .switchMap(workItem => {
@@ -590,7 +595,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
           this.addNewItem(workItem);
           this.router.navigateByUrl(trimEnd(this.router.url.split('detail')[0], '/') + '/detail/' + workItem.id, { relativeTo: this.route });
-
           return workItem;
         });
       } else {
@@ -772,8 +776,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   selectIteration(iteration: any): void {
     this.selectedIteration = iteration;
-    this.dropdownButton.nativeElement.innerHTML = this.selectedIteration.attributes.name +
-                                                  ' <span class="caret"></span>'
+   // this.dropdownButton.nativeElement.innerHTML = this.selectedIteration.attributes.name +
+     //                                             ' <span class="caret"></span>'
   }
 
   assignIteration(): void {
@@ -908,6 +912,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
       setTimeout(() => {
         if (this.areaSearch) {
           this.areaSearch.nativeElement.focus();
+          this.areaClick.nativeElement.click();
         }
       }, 50);
     }
