@@ -38,6 +38,7 @@ import { IterationModel } from '../../models/iteration.model';
 import { IterationService } from '../../iteration/iteration.service';
 import { WorkItemTypeControlService } from '../work-item-type-control.service';
 import { MarkdownControlComponent } from './markdown-control/markdown-control.component';
+import { TypeaheadDropdown, TypeaheadDropdownValue } from './typeahead-dropdown/typeahead-dropdown.component';
 
 import { WorkItem, WorkItemRelations } from '../../models/work-item';
 import { WorkItemService } from '../work-item.service';
@@ -67,11 +68,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild('userSearch') userSearch: any;
   @ViewChild('userList') userList: any;
   @ViewChild('dropdownButton') dropdownButton: any;
-  @ViewChild('areaClick') areaClick: any;
-  @ViewChild('areaSearch') areaSearch: any;
-  @ViewChild('areaList') areaList: any;
-  @ViewChild('iterationSearch') iterationSearch: any;
-  @ViewChild('iterationList') iterationList: any;
+  @ViewChild('areaSelectbox') areaSelectbox: TypeaheadDropdown;
+  @ViewChild('iterationSelectbox') iterationSelectbox: TypeaheadDropdown;
 
   workItem: WorkItem;
   workItemTypes: WorkItemType[];
@@ -89,15 +87,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   descText: any = '';
 
-  searchArea: Boolean = false;
   searchAssignee: Boolean = false;
-
-  hasIteration: Boolean = false;
-  searchIteration: Boolean = false;
-
-  // TODO: should take current iteration as value after fetching
-  selectedIteration: any;
-  selectedArea: AreaModel;
 
   users: User[] = [];
   filteredUsers: User[] = [];
@@ -109,7 +99,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   panelState: string = 'out';
 
   areas: AreaModel[] = [];
-  filteredAreas: AreaModel[] = [];
 
   iterations: IterationModel[] = [];
 
@@ -143,9 +132,9 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   ngOnInit(): void {
     this.saving = false;
     this.listenToEvents();
-    // this.getAreas();
+    this.getAreas();
     // this.getAllUsers();
-    // this.getIterations();
+    this.getIterations();
     this.loggedIn = this.auth.isLoggedIn();
     this.route.params.forEach((params: Params) => {
       if (params['id'] !== undefined) {
@@ -173,8 +162,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     });
     this.spaceSubscription = this.spaces.current.subscribe(space => {
       if (space) {
-        // this.getAreas();
-        // this.getIterations();
+        this.getAreas();
+        this.getIterations();
       }
     });
   }
@@ -425,7 +414,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.areaService.getAreas()
       .subscribe((response: AreaModel[]) => {
         this.areas = response;
-        this.filteredAreas = cloneDeep(response);
       });
   }
 
@@ -635,11 +623,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     event.preventDefault();
   }
 
-  lookupIterations() {
-    this.getIterations();
-    this.searchIteration = !this.searchIteration;
-  }
-
   activeSearchAssignee() {
     if (this.loggedIn) {
       this.getAllUsers()
@@ -767,24 +750,22 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   closeUserRestFields(): void {
     this.searchAssignee = false;
-    this.searchIteration = false;
     if (this.workItem && this.workItem.id != null) {
       this.headerEditable = false;
     }
-    // this.descEditable = false; // TODO: close markdown field
+    if (this.areaSelectbox && this.areaSelectbox.isOpen()) {
+      this.areaSelectbox.close();
+    }
+    if (this.iterationSelectbox && this.iterationSelectbox.isOpen()) {
+      this.iterationSelectbox.close();
+    }
   }
 
-  selectIteration(iteration: any): void {
-    this.selectedIteration = iteration;
-   // this.dropdownButton.nativeElement.innerHTML = this.selectedIteration.attributes.name +
-     //                                             ' <span class="caret"></span>'
-  }
-
-  assignIteration(): void {
-    if(this.workItem.id) {
-      let newIteration = this.selectedIteration?this.selectedIteration.id:undefined;
+  iterationUpdated(iterationId: string): void {
+    if (this.workItem.id) {
+      // Send out an iteration change event
+      let newIteration = iterationId;
       let currenIterationID = this.workItem.relationships.iteration.data ? this.workItem.relationships.iteration.data.id : 0;
-
       // If already closed iteration
       if (this.workItem.attributes['system.state'] == 'closed') {
         this.broadcaster.broadcast('wi_change_state_it', [{
@@ -795,14 +776,13 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
           closedItem: +1
         }]);
       }
-
       let payload = cloneDeep(this.workItemPayload);
       if (newIteration) {
         payload = Object.assign(payload, {
           relationships : {
             iteration: {
               data: {
-                id: this.selectedIteration.id,
+                id: iterationId,
                 type: 'iteration'
               }
             }
@@ -824,158 +804,132 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         });
       });
     } else {
-      // creating a new work item - save the user input
-      let iteration = {
-        attributes: {
-          name: this.selectedIteration.attributes.name
-        },
-        id: this.selectedIteration.id,
-        type: 'iteration'
-      } as IterationModel;
-
-      this.workItem.relationships.iteration = {
-        data: iteration
-      };
-    }
-    this.searchIteration = false;
-  }
-
-  closeIteration() {
-    this.searchIteration = false;
-  }
-
-  activeSearchIteration() {
-    if (this.loggedIn) {
-      this.closeUserRestFields();
-      this.searchIteration = true;
-      // Takes a while to render the component
-      setTimeout(() => {
-        if (this.iterationSearch) {
-          this.iterationSearch.nativeElement.focus();
-        }
-      }, 50);
-    }
-  }
-
-  deactiveSearchIteration() {
-    this.closeUserRestFields();
-  }
-
-  //On clicking the area drop down option the selected value needs to get displayed in the input box
-  showAreaOnInput(area: AreaModel): void {
-    this.areaSearch.nativeElement.value = area.attributes.name;
-    this.selectedArea = area;
-  }
-  //set an area
-  setArea(): void {
-    if(this.workItem.id) {
-      let payload = cloneDeep(this.workItemPayload);
-      payload = Object.assign(payload, {
-        relationships : {
-          area: {
-            data: {
-              id: this.selectedArea.id,
-              type: 'area'
-            }
+      //creating a new work item - save the user input
+      let iteration = { };
+      if (iterationId) {
+        iteration = { 
+          data: {
+            attributes: {
+              name: this.findIterationById(iterationId).attributes.name
+            },
+            id: iterationId,
+            type: 'iteration'
           }
         }
+      }
+      this.workItem.relationships.iteration = iteration;
+    }
+  }
+
+  extractAreaKeyValue(areas: AreaModel[]): TypeaheadDropdownValue[] {
+    let result: TypeaheadDropdownValue[] = [];
+    let selectedFound: boolean = false;
+    let selectedAreaId: string;
+    if (this.workItem.relationships.area && this.workItem.relationships.area.data && this.workItem.relationships.area.data.id) {
+      selectedAreaId = this.workItem.relationships.area.data.id;
+    } 
+    for (let i=0; i<areas.length; i++) {
+      result.push({
+        key: areas[i].id,
+        value: areas[i].attributes.name,
+        selected: selectedAreaId===areas[i].id?true:false,
+        cssLabelClass: undefined
       });
+      if (selectedAreaId===areas[i].id)
+        selectedFound = true;
+    };
+    // insert neutral element on index 0, setting it selected when no other selected entry was found.
+    result.splice(0, 0, {
+      key: undefined,
+      value: 'None',
+      selected: selectedFound?false:true,
+      cssLabelClass: 'neutral-entry'
+    });
+    return result;
+  }
+
+  findAreaById(areaId: string): AreaModel {
+    for (let i=0; i<this.areas.length; i++)
+      if (this.areas[i].id === areaId)
+        return this.areas[i];
+    return null;
+  }
+
+  extractIterationKeyValue(iterations: IterationModel[]): TypeaheadDropdownValue[] {
+    let result: TypeaheadDropdownValue[] = [];
+    let selectedFound: boolean = false;
+    let selectedIterationId;
+    if (this.workItem.relationships.iteration && this.workItem.relationships.iteration.data && this.workItem.relationships.iteration.data.id) {
+      selectedIterationId = this.workItem.relationships.iteration.data.id;
+    } 
+    for (let i=0; i<iterations.length; i++) {
+      if (!this.iterationService.isRootIteration(iterations[i])) {
+        result.push({
+          key: iterations[i].id,
+          value: iterations[i].attributes.resolved_parent_path + '/' + iterations[i].attributes.name,
+          selected: selectedIterationId===iterations[i].id?true:false,
+          cssLabelClass: undefined
+        });
+        if (selectedIterationId===iterations[i].id)
+          selectedFound = true;
+      }
+    };
+    // insert neutral element on index 0, setting it selected when no other selected entry was found.
+    result.splice(0, 0, {
+      key: undefined,
+      value: 'None',
+      selected: selectedFound?false:true,
+      cssLabelClass: 'neutral-entry'
+    });
+    return result;
+  }
+
+  findIterationById(iterationId: string): IterationModel {
+    for (let i=0; i<this.iterations.length; i++)
+      if (this.iterations[i].id === iterationId)
+        return this.iterations[i];
+    return null;
+  }
+
+  areaUpdated(areaId: string) {
+    if (this.workItem.id) {
+      let payload = cloneDeep(this.workItemPayload);
+      if (areaId) {
+        // area was set to a value.
+        payload = Object.assign(payload, {
+          relationships : {
+            area: {
+              data: {
+                id: areaId,
+                type: 'area'
+              }
+            }
+          }
+        });
+      } else {
+        // area was unset.
+        payload = Object.assign(payload, {
+          relationships : {
+            area: { }
+          }
+        });
+      }
       this.save(payload);
     } else {
-      let area = {
-        attributes: {
-          name: this.selectedArea.attributes.name,
-        },
-        id: this.selectedArea.id,
-        type: 'area'
-      } as AreaModel;
-
-      this.workItem.relationships.area = {
-        data : area
+      let area = { };
+      if (areaId) {
+        // area was set to a value.
+        let area = { 
+          data: {
+            attributes: {
+              name: this.findAreaById(areaId).attributes.name,
+            },
+            id: areaId,
+            type: 'area' 
+          }
+        };
       };
-    }
-
-    this.searchArea = false;
-  }
-
-  closeAreaDropdown(): void {
-    this.searchArea = false;
-  }
-
-  activeSearchArea() {
-    //close the assignees
-    this.closeUserRestFields();
-    this.getAreas();
-    if (this.loggedIn) {
-      this.searchArea = true;
-      // Takes a while to render the component
-      setTimeout(() => {
-        if (this.areaSearch) {
-          this.areaSearch.nativeElement.focus();
-          this.areaClick.nativeElement.click();
-        }
-      }, 50);
-    }
-  }
-
-  deactiveSearchArea() {
-    this.closeAreaRestFields();
-  }
-
-  closeAreaRestFields(): void {
-    this.searchArea = false;
-  }
-
-  filterArea(event: any) {
-    // Down arrow or up arrow
-    if (event.keyCode == 40 || event.keyCode == 38) {
-      let lis = this.areaList.nativeElement.children;
-      let i = 0;
-      for (; i < lis.length; i++) {
-        if (lis[i].classList.contains('selected')) {
-          break;
-        }
-      }
-      if (i == lis.length) { // No existing selected
-        if (event.keyCode == 40) { // Down arrow
-          lis[0].classList.add('selected');
-          lis[0].scrollIntoView(false);
-        } else { // Up arrow
-          lis[lis.length - 1].classList.add('selected');
-          lis[lis.length - 1].scrollIntoView(false);
-        }
-      } else { // Existing selected
-        lis[i].classList.remove('selected');
-        if (event.keyCode == 40) { // Down arrow
-          lis[(i + 1) % lis.length].classList.add('selected');
-          lis[(i + 1) % lis.length].scrollIntoView(false);
-        } else { // Down arrow
-          // In javascript mod gives exact mod for negative value
-          // For example, -1 % 6 = -1 but I need, -1 % 6 = 5
-          // To get the round positive value I am adding the divisor
-          // with the negative dividend
-          lis[(((i - 1) % lis.length) + lis.length) % lis.length].classList.add('selected');
-          lis[(((i - 1) % lis.length) + lis.length) % lis.length].scrollIntoView(false);
-        }
-      }
-    } else if (event.keyCode == 13) { // Enter key event
-      let lis = this.areaList.nativeElement.children;
-      let i = 0;
-      for (; i < lis.length; i++) {
-        if (lis[i].classList.contains('selected')) {
-          break;
-        }
-      }
-      if (i < lis.length) {
-        let selectedId = lis[i].dataset.value;
-        this.selectedArea = lis[i];
-        this.setArea();
-      }
-    } else {
-      let inp = this.areaSearch.nativeElement.value.trim();
-      this.filteredAreas = this.areas.filter((item) => {
-         return item.attributes.name.toLowerCase().indexOf(inp.toLowerCase()) > -1;
-      });
+      this.workItem.relationships.area = area;
     }
   }
 
@@ -993,8 +947,10 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.closeHeader();
       } else if (this.searchAssignee) {
         this.searchAssignee = false;
-      } else if (this.searchArea) {
-        this.closeAreaRestFields();
+      } else if (this.areaSelectbox.isOpen()) {
+        this.areaSelectbox.close();
+      } else if (this.iterationSelectbox.isOpen()) {
+        this.iterationSelectbox.close();
     } else {
         this.closeDetails();
       }
