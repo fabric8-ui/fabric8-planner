@@ -59,7 +59,6 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck, On
   @ViewChild('treeListItemTemplate') treeListItemTemplate: TemplateRef<any>;
   @ViewChild('treeListLoadTemplate') treeListLoadTemplate: TemplateRef<any>;
   @ViewChild('treeListTemplate') treeListTemplate: TemplateRef<any>;
-
   @ViewChild('treeListItem') treeListItem: TreeListComponent;
 
   workItems: WorkItem[] = [];
@@ -398,6 +397,13 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck, On
           this.treeList.updateTree();
         })
       );
+    
+    this.eventListeners.push(
+      this.broadcaster.on<string>('detail_close')
+      .subscribe(()=>{
+        this.selectedWorkItemEntryComponent.deselect();
+      })
+    );
   }
 
   onDragStart() {
