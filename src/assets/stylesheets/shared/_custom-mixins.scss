@@ -2,8 +2,6 @@
 @import 'patternfly/mixins';
 @import 'patternfly/mixin_overrides';
 
-@import 'patternfly/variables';
-
 // functions
 //convert px to em/rem
 @function em($px) {
@@ -131,7 +129,4 @@
     left: 0;
     right: 0;
     border-width: 0;
-}
-@mixin none-assigned {
-  color: $color-pf-blue;
 }

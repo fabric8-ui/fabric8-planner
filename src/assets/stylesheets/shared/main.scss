@@ -49,10 +49,6 @@ body {
   position: relative;
 }
 
-.none-assigned {
-  @include none-assigned;
-}
-
 @media (max-width: $grid-float-breakpoint) {
     .mobdn {
         display: none;

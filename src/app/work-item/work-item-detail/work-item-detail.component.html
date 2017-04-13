@@ -211,6 +211,8 @@
                     autocomplete="off"
                     class="combobox form-control"/>
                   <ul class="dropdown-menu typeahead typeahead-long" #areaList dropdownMenu>
+                    <li *ngIf="!areas.length" class="textCenter"><i class="fa fa-spinner fa-pulse"></i></li>
+                    <li *ngIf="!filteredAreas.length">No matches found.</li>
                     <li
                       class="item-li"
                       *ngFor="let area of filteredAreas;"
@@ -259,6 +261,7 @@
                   value="{{ selectedIteration?.attributes?.name }}"
                   class="combobox form-control">
                   <ul class="dropdown-menu" role="menu" aria-labelledby="WI_details_iteration_dropdown" dropdownMenu>
+                    <li *ngIf="!iterations.length" class="textCenter"><i class="fa fa-spinner fa-pulse"></i></li>
                     <li *ngFor="let iteration of iterations;" role="presentation">
                       <a role="menuitem" tabindex="-1" (click)="selectIteration(iteration)" class="truncate left-truncate">
                         <span>{{ iteration.attributes?.name }}</span>
