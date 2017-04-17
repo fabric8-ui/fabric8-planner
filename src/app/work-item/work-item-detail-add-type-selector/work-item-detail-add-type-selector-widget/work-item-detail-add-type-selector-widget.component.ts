@@ -89,6 +89,9 @@ export class WorkItemDetailAddTypeSelectorWidgetComponent implements OnInit {
         case 13://enter
           this.select(this.selectedType);
         break
+        case 27://esc
+          this.close();
+        break;
         default:
         //check for starting letter of work item type
         let char = String.fromCharCode(event.keyCode);
