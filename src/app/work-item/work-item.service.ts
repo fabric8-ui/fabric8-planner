@@ -948,14 +948,14 @@ export class WorkItemService {
     if (this._currentSpace) {
       // FIXME: make the URL great again (when we know the right API URL for this)!
       // search within selected space
-      let params = {
+      let queryParams = {
         'spaceID': this._currentSpace.id,
         'q' : term + ' type:' + workItemType
       }
       let searchUrl = this.baseApiUrl + 'search'
       //let searchUrl = currentSpace.links.self + 'search?q=' + term + ' type:' + workItemType;
       return this.http
-          .get(searchUrl, params)
+          .get(searchUrl, queryParams)
           .map((response) => response.json().data as WorkItem[])
           // .catch ((e) => {
           //   if (e.status === 401) {
