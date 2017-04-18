@@ -25,6 +25,7 @@ import { Space, Spaces } from 'ngx-fabric8-wit';
 import { AuthenticationService, User, UserService } from 'ngx-login-client';
 import { ArrayCount } from 'ngx-widgets';
 import { DragulaService } from 'ng2-dragula';
+import { Dialog } from 'ngx-widgets';
 
 import { IterationModel } from './../../models/iteration.model';
 import { WorkItem } from '../../models/work-item';
@@ -59,6 +60,8 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
   private workItemTypes: WorkItemType[] = [];
   private readyToInit = false;
   eventListeners: any[] = [];
+  dialog: Dialog;
+  showDialog = false;
 
   constructor(
     private auth: AuthenticationService,
@@ -211,9 +214,64 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
     }
   }
 
+  onCreateWorkItem(workItem) {
+    let resolveItem = this.workItemService.resolveWorkItems(
+      [workItem],
+      this.iterations,
+      this.allUsers,
+      this.workItemTypes
+    );
+
+    let lane = this.lanes.find((lane) => lane.option === 'new');
+    lane.workItems = [...resolveItem, ...lane.workItems];
+  }
+
   gotoDetail(workItem: WorkItem) {
     let link = trimEnd(this.router.url.split('detail')[0], '/') + '/detail/' + workItem.id;
     this.router.navigateByUrl(link);
+  }
+
+  kebabClick(event: any): void {
+    event.stopPropagation();
+  }
+
+  openDetail(event: any): void {
+    event.stopPropagation();
+  }
+
+  confirmDelete(event: MouseEvent) {
+    event.stopPropagation();
+    this.dialog = {
+      'title': 'Confirm deletion of Work Item',
+      'message': 'Are you sure you want to delete Work Item - ' + this.workItem.attributes['system.title'] + ' ?',
+      'actionButtons': [
+        {'title': 'Confirm', 'value': 1, 'default': false},
+        {'title': 'Cancel', 'value': 0, 'default': true}
+      ]
+    } as Dialog;
+    this.showDialog = true;
+  }
+
+  onButtonClick(val: number) {
+    // callback from the confirm delete dialog
+    if (val == 1) {
+      this.onDelete(null);
+    }
+    this.showDialog = false;
+  }
+
+  onMoveToBacklog(event: any): void {
+    alert('Not Implemented yet');
+    event.stopPropagation();
+  }
+
+  onDelete(event: MouseEvent): void {
+    if (event)
+      event.stopPropagation();
+    this.workItemService.delete(this.workItem)
+    .subscribe(() => {
+      console.log('Deleted');
+    });
   }
 
   onTouchstart(event: any) {
@@ -228,6 +286,10 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
     let lane = this.lanes.find((lane) => lane.option === workItem.attributes['system.state']);
     let _workItem = lane.workItems.find((item) => item.id === workItem.id);
     this.workItem = _workItem;
+  }
+
+  isSelected(wi: WorkItem){
+    return this.workItem == wi;
   }
 
   onDrop(args) {
@@ -319,6 +381,19 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
   }
 
   listenToEvents() {
+
+    this.eventListeners.push(
+      this.broadcaster.on<string>('updateWorkItem')
+        .subscribe((workItem: string) => {
+          let updatedItem = JSON.parse(workItem) as WorkItem;
+          let lane = this.lanes.find((lane) => lane.option === updatedItem.attributes['system.state']);
+          let index = lane.workItems.findIndex((item) => item.id === updatedItem.id);
+          if (index > -1) {
+            lane.workItems[index] = updatedItem;
+          }
+        })
+    );
+
     // filters like assign to me should stack with the current filters
     this.eventListeners.push(
       this.broadcaster.on<string>('item_filter')
@@ -336,6 +411,13 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
       this.broadcaster.on<string>('wi_change_state')
           .subscribe((data: any) => {
             this.changeLane(data[0].oldState, data[0].newState, data[0].workItem);
+      })
+    );
+
+    this.eventListeners.push(
+      this.broadcaster.on<string>('detail_close')
+      .subscribe(()=>{
+        this.workItem = <WorkItem>{};
       })
     );
   }

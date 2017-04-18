@@ -1,4 +1,5 @@
 @import '../../../assets/stylesheets/base';
+@import '../../../assets/stylesheets/shared/layout';
 @import '../../../assets/stylesheets/dragula';
 
 .boardWrapper {
@@ -37,6 +38,13 @@
             background: $color-pf-white;
             padding: rem(15);
             margin: rem(5) 0;
+            @extend .flex-container;
+            @extend .in-column-direction;
+            @extend .flex-grow-1;
+            &.active {
+              border: 2px solid $color-pf-blue-300;
+              box-shadow: none;
+            }
             >div {
               p {
                 margin: 0;
@@ -78,12 +86,17 @@
       height: 100%;
     }
   }
-
+.side-panel-container {
+  background-color: $color-pf-black-900;
+}
 .work-item-page {
   display: flex;
   flex: 1;
   flex-direction: column;
   position: relative;
+  > main {
+      border-top: 0 solid !important;
+  }
   .container-modal {
     border: solid 0 red;
     background-color: $color-pf-black-100;
@@ -117,6 +130,7 @@
   .dropdown {
     a {
       cursor: pointer;
+      color: $color-pf-dark;
     }
   }
   .with-cursor-pointer {

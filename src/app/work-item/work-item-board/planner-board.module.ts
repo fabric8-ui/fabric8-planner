@@ -10,7 +10,7 @@ import {
 import { ModalModule } from 'ngx-modal';
 import { DragulaModule } from 'ng2-dragula';
 import { DropdownModule } from 'ng2-bootstrap';
-import { TreeModule } from 'angular-tree-component';
+import { TreeModule } from 'angular2-tree-component';
 import { TooltipModule } from 'ng2-bootstrap';
 import { Broadcaster, Logger } from 'ngx-base';
 import {
@@ -26,12 +26,16 @@ import { HttpService } from './../../shared/http-service';
 
 import { AlmFilterBoardList } from '../../pipes/alm-board-filter.pipe';
 import { AuthUserResolve, UsersResolve } from '../common.resolver';
+import {
+  FabPlannerAssociateIterationModalModule
+} from '../work-item-iteration-association-modal/work-item-iteration-association-modal.module';
 import { GlobalSettings } from '../../shared/globals';
 import { IterationModule } from '../../iteration/iteration.module';
 import { PlannerBoardRoutingModule } from './planner-board-routing.module';
 import { SidepanelModule } from '../../side-panel/side-panel.module';
 import { ToolbarPanelModule } from '../../toolbar-panel/toolbar-panel.module';
 import { WorkItemBoardComponent } from './work-item-board.component';
+import { WorkItemDetailAddTypeSelectorModule } from '../work-item-detail-add-type-selector/work-item-detail-add-type-selector.module';
 import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.module';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 import { WorkItemService } from '../work-item.service';
@@ -50,7 +54,7 @@ if (process.env.ENV == 'inmemory') {
     Logger,
     {
       provide: HttpService,
-      useClass: MockHttp
+      useExisting: MockHttp
     }
   ];
 } else {
@@ -79,6 +83,7 @@ if (process.env.ENV == 'inmemory') {
     DialogModule,
     DragulaModule,
     DropdownModule,
+    FabPlannerAssociateIterationModalModule,
     HttpModule,
     InfiniteScrollModule,
     IterationModule,
@@ -91,6 +96,7 @@ if (process.env.ENV == 'inmemory') {
     TreeListModule,
     WidgetsModule,
     WorkItemDetailModule,
+    WorkItemDetailAddTypeSelectorModule,
     WorkItemQuickAddModule
   ],
   declarations: [

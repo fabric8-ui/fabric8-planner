@@ -572,7 +572,7 @@ class WorkItemDetailPage {
     return element(by.id('area_label'));
   }
   AreaSelect (){
-    return element(by.id('WI_details_area'));
+    return element(by.css('#area-dropdown .details-dropdown'));
   }
   clickAreaSelect (){
     return this.AreaSelect().click();
@@ -584,18 +584,18 @@ class WorkItemDetailPage {
     return element(by.id('area-'+ areaid)).click();
   }
   saveAreasButton (){
-    return element(by.id('save_area'));
+    return element(by.css('#area-dropdown .save-button'));
   }
   SaveAreas  (){
     return this.saveAreasButton().click();
   }
   ClosekAreas  (){
-    return element(by.id('close_area')).click();
+    return element(by.id('#area-dropdown .cancel-button')).click();
   }
 /**Iteration element */
   IterationOndetailPage(){
-    browser.wait(until.elementToBeClickable(element(by.id('iteration-assocaited'))), constants.WAIT, 'Failed to find IterationOndetailPage');
-    return element(by.id('iteration-assocaited'));
+    browser.wait(until.elementToBeClickable(element(by.css('#iteration-dropdown .details-dropdown'))), constants.WAIT, 'Failed to find iteration on detail page');
+    return element(by.css('#iteration-dropdown .details-dropdown'));
   }
   getAssociatedIteration  (){
     return this.IterationOndetailPage().getText();
@@ -604,13 +604,17 @@ class WorkItemDetailPage {
     return element(by.id('reassociate-msg')).getText();
   }
   saveIteration(){
-    return element(by.id('assign-iteration-savebtn')).click();
+    return element(by.css('#iteration-dropdown .save-button')).click();
   }
   cancleIterationBtn(){
-    return element(by.id('assign-iteration-closebtn')).click();
+    return element(by.css('#iteration-dropdown .cancel-button')).click();
   }
   iterationDropdown(){
-    return element(by.id('WI_details_iteration_dropdownbtn'));
+    browser.wait(until.elementToBeClickable(element(by.css('#iteration-dropdown .details-dropdown'))), constants.WAIT, 'Failed to find iteration on detail page');
+    return element(by.css('#iteration-dropdown .details-dropdown'));
+  }
+  iterationCaretdropdown (){
+    return element(by.id('iteration-caret'));
   }
   clickAssignIteration(){
     return this.iterationDropdown().click();
@@ -618,9 +622,260 @@ class WorkItemDetailPage {
   associateIteration (text){
     return element(by.linkText(text)).click();
   }
+  associateIterationById(iterationid){
+    return element(by.id('iteration-'+ iterationid)).click();
+  }
   genericLinkseach(text){
     return element(by.linkText(text)).click();
   }
+
+
+  /* Dynamic fields - limited at present (April 2017) to workitems of type user story */
+
+  get dynamicFormGroup () {
+    return element(By.css('.form-group>alm-dynamic-field'));
+  }
+
+  /* Dynamic field: Steps to reproduce */
+
+  get stepsToReproduceLabelParent () {
+    return element(By.xpath('.//label[contains(text(),"Steps to Reproduce")]/..'));
+  }
+
+  get stepsToReproduceEditIcon () {
+    return element(by.css('.pficon-edit.markdown-test-btn-edit'));
+  }
+
+  clickStepsToReproduceEditIcon () {
+    this.stepsToReproduceEditIcon.click();
+  }
+
+  get stepsToReproduceText () {
+    return element(By.xpath('.//p[contains(text(),"Edit Text")]'));
+  }
+
+  clickStepsToReproduceText () {
+    browser.wait(until.visibilityOf(this.stepsToReproduceText, constants.WAIT));
+    return this.stepsToReproduceText.click();
+  }
+
+  get editableTextForStepsToReproduce () {
+    return this.stepsToReproduceLabelParent.element(by.css('.text.markdown-test-text'));
+  }
+
+  setstepsToReproduceText (newString) {     
+    browser.wait(until.visibilityOf(this.editableTextForStepsToReproduce, constants.WAIT));
+    return this.editableTextForStepsToReproduce.sendKeys(newString);
+  }
+
+  /* Dynamic field: Story points */
+
+  get storyPointsLabelParent () {
+    return element(By.xpath('.//label[contains(text(),"Story Points")]/..'));
+  }
+
+  get storyPoints () {
+    return this.storyPointsLabelParent.element(by.css('.col-sm-10.no-left-padding>div>input'));
+  }
+
+  setStoryPointsText (newString) {     
+    browser.wait(until.visibilityOf(this.storyPoints, constants.WAIT));
+    return this.storyPoints.sendKeys(newString);
+  }
+
+  get saveStoryPointsButton () {
+    return this.storyPointsLabelParent.element(by.css('.fa.fa-check'));
+  }
+
+  clickSaveStoryPointsButton () {
+    return this.saveStoryPointsButton.click();
+  }
+
+  get cancelStoryPointsButton () {
+    return this.storyPointsLabelParent.element(by.css('.pficon.pficon-close'));
+  }
+
+  clickCancelStoryPointsButton () {
+    return this.cancelStoryPointsButton.click();
+  }
+
+  /* Dynamic field: Important */
+
+  get importantLabelParent () {
+    return element(By.xpath('.//label[contains(text(),"Important")]/..'));
+  }
+
+  get importantDropdown () {
+    return this.importantLabelParent.element(by.css('.dropdown-toggle'));
+  }
+
+  clickImportantDropdown () {
+    return this.importantDropdown.click();
+  }
+
+  get importantDropdownYes () {
+    return this.importantLabelParent.element(by.xpath(".//*[contains(@class,'dropdown-text') and contains(text(),'Yes')]"));
+  }
+
+  clickImportantDropdownYes () {
+    return this.importantDropdownYes.click();
+  }
+
+  get importantDropdownNo () {
+    return this.importantLabelParent.element(by.xpath(".//*[contains(@class,'dropdown-text') and contains(text(),'No')]"));
+  }
+
+  clickImportantDropdownNo () {
+    return this.importantDropdownNo.click();
+  }
+
+
+  /* Dynamic field: Due Date */
+
+  get dueDateLabelParent () {
+    return element(By.xpath('.//label[contains(text(),"Due Date")]/..'));
+  }
+
+  get dueDateSelection () {
+    return this.dueDateLabelParent.element(by.css('.selection'));
+  }
+
+  clickDueDateSelection () {
+    browser.wait(until.elementToBeClickable(this.dueDateSelection, constants.WAIT));
+    return this.dueDateSelection.click();
+  }
+
+  get dueDateCalendarButton () {
+    return this.dueDateLabelParent.element(by.css('.btnpicker.btnpickerenabled.btnleftborder'));
+  }
+
+  clickDueDateCalendarButton () {
+    return this.dueDateCalendarButton.click();
+  }
+
+  displayedMonth (monthString) {   
+    var xpathString = ".//*[contains(@class,'monthlabel') and contains(text(),'" + monthString + "')]";
+    return this.dueDateLabelParent.element(by.xpath(xpathString));  
+  }
+
+  clickDisplayedMonth (monthString) {
+    return this.displayedMonth(monthString).click();
+  }
+
+  monthSelectorLeft (monthString) {
+    /* Example: .//*[contains(@class,'monthlabel') and contains(text(),'Apr')]/../preceding-sibling::*   */
+    var xpathString = ".//*[contains(@class,'monthlabel') and contains(text(),'" + monthString + "')]/../preceding-sibling::*";
+    return this.dueDateLabelParent.element(by.xpath(xpathString));
+  }
+
+  clickMonthSelectorLeft (monthString) {
+    return this.monthSelectorLeft(monthString).click();
+  }
+
+  monthSelectorRight (monthString) {
+    /* Example: .//*[contains(@class,'monthlabel') and contains(text(),'Apr')]/../following-sibling::*   */
+    var xpathString = ".//*[contains(@class,'monthlabel') and contains(text(),'" + monthString + "')]/../following-sibling::*";
+    return this.dueDateLabelParent.element(by.xpath(xpathString));
+  }
+
+  clickMonthSelectorRight (monthString) {
+    return this.monthSelectorRight(monthString).click();
+  }
+
+  displayedYear (yearString) {   
+    var xpathString = ".//*[contains(@class,'yearlabel') and contains(text(),'" + yearString + "')]";
+    return this.dueDateLabelParent.element(by.xpath(xpathString));  
+  }
+
+  clickDisplayedYear (yearString) {
+    return this.displayedYear(yearString).click();
+  }
+
+  yearSelectorLeft (yearString) {
+    /* Example: .//*[contains(@class,'yearlabel') and contains(text(),'2017')]/../preceding-sibling::*   */
+    var xpathString = ".//*[contains(@class,'yearlabel') and contains(text(),'" + yearString + "')]/../preceding-sibling::*";
+    return this.dueDateLabelParent.element(by.xpath(xpathString));
+  }
+
+  clickYearSelectorLeft (yearString) {
+    return this.yearSelectorLeft(yearString).click();
+  }
+
+  yearSelectorRight (yearString) {
+    /* Example: .//*[contains(@class,'yearlabel') and contains(text(),'2017')]/../following-sibling::*   */
+    var xpathString = ".//*[contains(@class,'yearlabel') and contains(text(),'" + yearString + "')]/../following-sibling::*";
+    return this.dueDateLabelParent.element(by.xpath(xpathString));
+  }
+
+  clickYearSelectorRight (yearString) {
+    return this.yearSelectorRight(yearString).click();
+  }
+
+  get currentDate () {
+    return element(By.css('.currday'));
+  }
+
+  clickCurrentDate () {
+    return this.currentDate.click();
+  }
+
+  targetDay (dayOfWeekCounter, weekOfMonthCounter) {
+    var xpathString = ".//tr[" + weekOfMonthCounter + "]/td[contains(@class,'tablesingleday')][" + dayOfWeekCounter + "]";
+    return element(by.xpath(xpathString));
+  }
+
+  clockTargetDay (dayOfWeekCounter, weekOfMonthCounter) {
+    return this.targetDay (dayOfWeekCounter, weekOfMOnthCounter);
+  }
+
+  /* Dynamic field: Severity */
+
+  get severityLabelParent () {
+    return element(By.xpath('.//label[contains(text(),"Severity")]/..'));
+  }
+
+  get severityDropdown () {
+    return this.severityLabelParent.element(by.css('.dropdown-toggle'));
+  }
+
+  clickSeverityDropdown () {
+    browser.wait(until.elementToBeClickable(this.severityDropdown, constants.WAIT));
+    return this.severityDropdown.click();
+  }
+
+  get severityDropdownLow () {
+    return this.severityLabelParent.element(by.xpath(".//*[contains(@class,'dropdown-text') and contains(text(),'low')]"));
+  }
+
+  clickSeverityDropdownLow () {
+    return this.severityDropdownLow.click();
+  }
+
+  get severityDropdownMid () {
+    return this.severityLabelParent.element(by.xpath(".//*[contains(@class,'dropdown-text') and contains(text(),'mid')]"));
+  }
+
+  clickSeverityDropdownMid () {
+    return this.severityDropdownMid.click();
+  }
+
+  get severityDropdownHigh () {
+    return this.severityLabelParent.element(by.xpath(".//*[contains(@class,'dropdown-text') and contains(text(),'high')]"));
+  }
+
+  clickSeverityDropdownHigh () {
+    return this.severityDropdownHigh.click();
+  }
+
+  get severityDropdownBlocker () {
+    return this.severityLabelParent.element(by.xpath(".//*[contains(@class,'dropdown-text') and contains(text(),'blocker')]"));
+  }
+
+  clickSeverityDropdownBlocker () {
+    return this.severityDropdownBlocker.click();
+  }
+
+
 }
 
 module.exports = WorkItemDetailPage;

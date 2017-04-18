@@ -62,6 +62,8 @@ export class WorkItemService {
   private iterations: IterationModel[] = [];
   public _currentSpace;
 
+  private selfId;
+
   constructor(private http: HttpService,
     private broadcaster: Broadcaster,
     private logger: Logger,
@@ -76,6 +78,17 @@ export class WorkItemService {
     if (this.auth.getToken() != null) {
       this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
     }
+    this.selfId = this.createId();
+    this.logger.log('Launching WorkItemService instance id ' + this.selfId);
+  }
+
+  createId(): string {
+    let id = '';
+    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 5; i++)
+      id += possible.charAt(Math.floor(Math.random() * possible.length));
+    console.log('Created new id ' + id);
+    return id;
   }
 
   // switchSpace(space: Space) {
@@ -91,6 +104,7 @@ export class WorkItemService {
   // }
 
   getChildren(parent: WorkItem): Promise<WorkItem[]> {
+    // TODO: it looks like the children are not retrieved with paging. This may cause problems in the future.
     if (parent.relationships.children) {
       this.logger.log('Requesting children for work item ' + parent.id);
       let url = parent.relationships.children.links.related;
@@ -100,6 +114,9 @@ export class WorkItemService {
           let wItems: WorkItem[];
           wItems = response.json().data as WorkItem[];
           wItems.forEach((item) => {
+            // put the hasChildren on the root level for the tree
+            if (item.relationships.children.meta)
+              item.hasChildren = item.relationships.children.meta.hasChildren;
             // Resolve the assignee and creator
             this.resolveUsersForWorkItem(item);
             this.resolveIterationForWorkItem(item);
@@ -157,6 +174,10 @@ export class WorkItemService {
 
   resolveWorkItems(workItems, iterations, users, wiTypes): WorkItem[] {
     let resolvedWorkItems = workItems.map((item) => {
+      // put the hasChildren on the root level for the tree
+      if (item.relationships.children && item.relationships.children.meta)
+        item.hasChildren = item.relationships.children.meta.hasChildren;
+
       // Resolve assignnees
       let assignees = item.relationships.assignees.data ? cloneDeep(item.relationships.assignees.data) : [];
       item.relationships.assignees.data = assignees.map((assignee) => {
@@ -926,7 +947,8 @@ export class WorkItemService {
   searchLinkWorkItem(term: string, workItemType: string): Observable<WorkItem[]> {
     if (this._currentSpace) {
       // FIXME: make the URL great again (when we know the right API URL for this)!
-      let searchUrl = this.baseApiUrl + 'search?q=' + term + ' type:' + workItemType;
+      // search within selected space
+      let searchUrl = this.baseApiUrl + 'search?spaceID=' + this._currentSpace.id + '&q=' + term + ' type:' + workItemType;
       //let searchUrl = currentSpace.links.self + 'search?q=' + term + ' type:' + workItemType;
       return this.http
           .get(searchUrl)

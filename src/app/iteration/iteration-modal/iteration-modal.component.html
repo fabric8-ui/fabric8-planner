@@ -26,9 +26,9 @@
           <div class="parent-iteration-container input-group dropdown open active">
             <input id="parent-iteration" class="form-control " type="text" #iterationSearch (keyup)="filterIteration($event)"
             autocomplete="off" [value]="selectedParentIterationName" (focus)="iterationSearchFocus();" [disabled]="iterationSearchDisable">
-            <ul class="iteration-list dropdown-menu dropdown-ul" *ngIf="filteredIterations.length" #iterationList>
+            <ul class="iteration-list dropdown-menu dropdown-ul" *ngIf="filteredIterations.length && showIterationDropdown" #iterationList>
               <li *ngFor="let iteration of filteredIterations;" [attr.data-id]="iteration.id" (click)="setParentIteration(iteration.id);">
-                <span [innerHTML]="iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name | almSearchHighlight: iterationSearch.value"></span>
+                <span [innerHTML]="(iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name).replace('//', '/') | almSearchHighlight: iterationSearch.value"></span>
               </li>
             </ul>
             <span class="input-group-addon pointer" (click)="iterationSearchFocus();"> <span class="caret"></span> </span>
@@ -47,7 +47,7 @@
         </div>
       </div>
 
-      <div *ngIf="modalType=='update' || modalType=='start' || modalType=='createChild'"
+      <div *ngIf="modalType=='create' || modalType=='update' || modalType=='start' || modalType=='createChild'"
         class="form-group datepicker-container">
         <div class="start-date-container date-container">
           <label>Start Date</label>
