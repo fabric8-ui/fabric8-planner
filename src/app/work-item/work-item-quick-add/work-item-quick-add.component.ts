@@ -44,6 +44,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   descHeight: any = '26px';
   descResize: any = 'none';
   spaceSubscription: Subscription = null;
+  saveInProgress: Boolean = false;
 
   constructor(
     private workItemService: WorkItemService,
@@ -90,6 +91,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   save(event: any = null): void {
+    if (this.saveInProgress) return;
     if (event) event.preventDefault();
 
 
@@ -128,6 +130,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
         this.workItem.attributes['system.description'].trim() : '';
 
     if (this.workItem.attributes['system.title']) {
+      this.saveInProgress = true;
       this.workItemService
         .create(this.workItem)
         .subscribe(workItem => {
@@ -135,8 +138,12 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
           this.logger.log(`created and returned this workitem:` + JSON.stringify(workItem));
           this.workItemCreate.emit(cloneDeep(this.workItem));
           this.resetQuickAdd();
+          this.saveInProgress = false;
         },
-        error => this.error = error); // TODO: Display error message
+        error => {
+          this.error = error;
+          this.saveInProgress = false;
+      }); // TODO: Display error message
 
     } else {
       this.error = 'Title can not be empty.';
