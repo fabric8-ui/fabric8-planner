@@ -30,7 +30,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   @ViewChild('quickAddTitle') qaTitle: any;
   @ViewChild('quickAddDesc') qaDesc: any;
   @ViewChildren('quickAddTitle', {read: ElementRef}) qaTitleRef: QueryList<ElementRef>;
-
+  @ViewChild('quickAddSubmit') qaSubmit: any;
   @Input() wilistview: string = 'wi-list-view';
   @Output('workItemCreate') workItemCreate = new EventEmitter();
 
@@ -44,7 +44,6 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   descHeight: any = '26px';
   descResize: any = 'none';
   spaceSubscription: Subscription = null;
-  saveInProgress: Boolean = false;
 
   constructor(
     private workItemService: WorkItemService,
@@ -91,7 +90,6 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   save(event: any = null): void {
-    if (this.saveInProgress) return;
     if (event) event.preventDefault();
 
 
@@ -130,7 +128,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
         this.workItem.attributes['system.description'].trim() : '';
 
     if (this.workItem.attributes['system.title']) {
-      this.saveInProgress = true;
+      this.qaSubmit.nativeElement.setAttribute('disabled', true);
+      this.qaTitle.nativeElement.setAttribute('disabled', true);
       this.workItemService
         .create(this.workItem)
         .subscribe(workItem => {
@@ -138,11 +137,13 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
           this.logger.log(`created and returned this workitem:` + JSON.stringify(workItem));
           this.workItemCreate.emit(cloneDeep(this.workItem));
           this.resetQuickAdd();
-          this.saveInProgress = false;
+          this.qaSubmit.nativeElement.removeAttribute('disabled');
+          this.qaTitle.nativeElement.removeAttribute('disabled');
         },
         error => {
           this.error = error;
-          this.saveInProgress = false;
+          this.qaSubmit.nativeElement.removeAttribute('disabled');
+          this.qaTitle.nativeElement.removeAttribute('disabled');
       }); // TODO: Display error message
 
     } else {
