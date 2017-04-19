@@ -40,7 +40,8 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   private spaceName: string = 'FIXME';
   private iterationName: string;
   iterations: IterationModel[] = [];
-  filteredIterations: IterationModel[] = [];
+  iterationsValue: any = [];
+  filteredIterations: any = [];
   selectedParentIteration: IterationModel;
   selectedParentIterationName:string = '';
   iterationSearchDisable: Boolean = false;
@@ -119,7 +120,6 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
     let startDatePickerComponentCopy = Object.assign({}, this.startDatePickerOptions);
     let aDayBefore = moment().subtract(1, 'days');
     let aDayBeforeDate = { date: { year: aDayBefore.format('YYYY'), month: aDayBefore.format('M'), day: aDayBefore.format('D') }} as any;
-    startDatePickerComponentCopy['disableUntil'] = aDayBeforeDate.date;
     endDatePickerComponentCopy['disableUntil'] = aDayBeforeDate.date;
     startDatePickerComponentCopy['componentDisabled'] = false;
     this.startDatePickerOptions = startDatePickerComponentCopy;
@@ -131,6 +131,10 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
     this.selectedParentIteration = null;
     this.iterationSearchDisable = false;
     this.showIterationDropdown = false;
+    this.iterations = [];
+    this.iterationsValue = [];
+    this.startDate = '';
+    this.endDate = '';
   }
 
   ngOnChanges() {
@@ -165,6 +169,8 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
       this.submitBtnTxt = 'Create';
       this.modalTitle = 'Create Iteration';
       this.iterationSearch.nativeElement.setAttribute('placeholder', 'None');
+      this.startDate = '';
+      this.endDate = '';
     }
     if (this.modalType == 'start') {
       this.submitBtnTxt = 'Start';
@@ -190,8 +196,8 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
       this.selectedParentIterationName = (iteration.attributes.resolved_parent_path+'/'+iteration.attributes.name).replace("//", "/");
       this.selectedParentIteration = iteration;
       this.iteration.attributes.name = '';
-      this.iteration.attributes.startAt = '';
-      this.iteration.attributes.endAt = '';
+      this.startDate = '';
+      this.endDate = '';
     }
     if (this.modalType == 'close') {
       this.submitBtnTxt = 'Close';
@@ -232,7 +238,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
       if (this.showIterationDropdown) {
         this.showIterationDropdown = false;
       } else {
-        this.filteredIterations = this.iterations;
+        this.filteredIterations = this.iterationsValue;
         this.showIterationDropdown = true;
       }
     }
@@ -240,21 +246,30 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
 
   getIterations() {
     this.iterationService.getIterations()
-      .subscribe((iteration: IterationModel[]) => {
-        this.iterations = iteration;
+      .subscribe((iterations: IterationModel[]) => {
+        this.iterations = iterations;
+        for (let i=0; i<iterations.length; i++) {
+          if (!this.iterationService.isRootIteration(iterations[i])) {
+            this.iterationsValue.push({
+              key: iterations[i].id,
+              value: iterations[i].attributes.resolved_parent_path + '/' + iterations[i].attributes.name
+            });
+          }
+        };
       });
   }
 
-  setParentIteration(id: string) {
-    this.selectedParentIteration =  this.filteredIterations.find((iteration) => iteration.id === id);
-    this.selectedParentIterationName = (this.selectedParentIteration.attributes['resolved_parent_path'] + '/' + this.selectedParentIteration.attributes['name']).replace("//", "/");
+  setParentIteration(value: any) {
+    this.selectedParentIteration =  this.iterations.find((iteration) => iteration.id === value.key);
+    this.selectedParentIterationName = value.value;
     this.iterationSearch.nativeElement.focus();
     // this.iteration.relationships.parent.data.id = this.selectedParentIteration.id;
-    this.filteredIterations = [];
+    this.showIterationDropdown = false;
   }
 
   filterIteration(event:any) {
     event.stopPropagation();
+    this.showIterationDropdown = true;
     // Down arrow or up arrow
     if (event.keyCode == 40 || event.keyCode == 38) {
       let lis = this.iterationList.nativeElement.children;
@@ -299,13 +314,15 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
         }
       }
       if (i < lis.length) {
-        this.selectedParentIteration = lis[i];
-        this.setParentIteration(lis[i].getAttribute('data-id'));
+        if (lis[i].getAttribute('data-id') !== null) {
+          let item = this.iterationsValue.find((iteration) => iteration.key === lis[i].getAttribute('data-id'));
+          this.setParentIteration(item);
+        }
       }
     } else {
       let inp = this.iterationSearch.nativeElement.value.trim();
-      this.filteredIterations = this.iterations.filter((item) => {
-         return item.attributes.name.toLowerCase().indexOf(inp.toLowerCase()) > -1;
+      this.filteredIterations = this.iterationsValue.filter((item) => {
+         return item.value.toLowerCase().indexOf(inp.toLowerCase()) > -1;
       });
       if (this.filteredIterations.length == 0) {
         this.selectedParentIteration = null;

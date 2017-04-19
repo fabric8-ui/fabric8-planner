@@ -50,6 +50,7 @@ import { ModalModule } from 'ngx-modal';
 import { AreaModel } from '../../../models/area.model';
 import { AreaService } from '../../../area/area.service';
 import { DynamicFieldComponent } from './../dynamic-form/dynamic-field.component';
+import { TypeaheadDropdown } from './../typeahead-dropdown/typeahead-dropdown.component';
 import { IterationModel } from '../../../models/iteration.model';
 import { IterationService } from '../../../iteration/iteration.service';
 import { MarkdownControlComponent } from './../markdown-control/markdown-control.component';
@@ -353,6 +354,12 @@ describe('Comment section for the work item detailed view - ', () => {
           'type': 'spaces'
         }];
         return spaces;
+      },
+      isRootIteration: function(iteration: IterationModel): boolean {
+        if (iteration.attributes.parent_path==='/')
+          return true;
+        else
+          return false;
       }
     };
 
@@ -447,6 +454,7 @@ describe('Comment section for the work item detailed view - ', () => {
         AlmTrim,
         AlmUserName,
         DynamicFieldComponent,
+        TypeaheadDropdown,
         MarkdownControlComponent,
         WorkItemCommentComponent,
         WorkItemDetailComponent,

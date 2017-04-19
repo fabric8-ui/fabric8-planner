@@ -175,7 +175,7 @@ export class WorkItemService {
   resolveWorkItems(workItems, iterations, users, wiTypes): WorkItem[] {
     let resolvedWorkItems = workItems.map((item) => {
       // put the hasChildren on the root level for the tree
-      if (item.relationships.children.meta)
+      if (item.relationships.children && item.relationships.children.meta)
         item.hasChildren = item.relationships.children.meta.hasChildren;
 
       // Resolve assignnees
@@ -947,7 +947,8 @@ export class WorkItemService {
   searchLinkWorkItem(term: string, workItemType: string): Observable<WorkItem[]> {
     if (this._currentSpace) {
       // FIXME: make the URL great again (when we know the right API URL for this)!
-      let searchUrl = this.baseApiUrl + 'search?q=' + term + ' type:' + workItemType;
+      // search within selected space
+      let searchUrl = this.baseApiUrl + 'search?spaceID=' + this._currentSpace.id + '&q=' + term + ' type:' + workItemType;
       //let searchUrl = currentSpace.links.self + 'search?q=' + term + ' type:' + workItemType;
       return this.http
           .get(searchUrl)
