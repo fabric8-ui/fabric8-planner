@@ -110,8 +110,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     this.workItem.relationships = {
       baseType: {
         data: {
-          id: this.selectedType.id,
-          type: this.selectedType.type
+          id: this.selectedType?this.selectedType.id:'testtypeid',
+          type: this.selectedType?this.selectedType.type:'testtype'
         }
       }
     } as WorkItemRelations;
