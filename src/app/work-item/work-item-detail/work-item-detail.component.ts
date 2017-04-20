@@ -869,13 +869,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
       if (selectedAreaId===areas[i].id)
         selectedFound = true;
     };
-    // insert neutral element on index 0, setting it selected when no other selected entry was found.
-    result.splice(0, 0, {
-      key: undefined,
-      value: 'None',
-      selected: selectedFound?false:true,
-      cssLabelClass: 'neutral-entry'
-    });
     return result;
   }
 

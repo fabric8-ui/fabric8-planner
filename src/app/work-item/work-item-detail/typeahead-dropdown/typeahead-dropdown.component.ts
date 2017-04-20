@@ -28,6 +28,7 @@ export class TypeaheadDropdown implements OnInit {
 
   // array of possible values
   @Input() protected values: TypeaheadDropdownValue[];
+  @Input() protected noValueLabel: string;
 
   // event when value is updated, emits new value as the event.
   @Output() protected onUpdate = new EventEmitter();
@@ -68,7 +69,14 @@ export class TypeaheadDropdown implements OnInit {
     for (let i=0; i<this.values.length; i++)
       if (this.values[i].selected)
         return this.values[i];
-    return null;
+    // this only happens if there was no 
+    // "selected" value in the list
+    return {
+      key: 'nilvalue',
+      value: this.noValueLabel,
+      selected: true,
+      cssLabelClass: 'no-value-label'
+    };
   }
 
   // on clicking the area drop down option, the selected 
