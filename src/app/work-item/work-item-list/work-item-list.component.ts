@@ -1,7 +1,11 @@
+import { AreaModel } from './../../models/area.model';
+import { AreaService } from './../../area/area.service';
+import { FilterService } from './../../shared/filter.service';
 import { Observable } from 'rxjs/Observable';
 import { IterationService } from './../../iteration/iteration.service';
 import { IterationModel } from './../../models/iteration.model';
 import { Subscription } from 'rxjs/Subscription';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import {
   AfterViewInit,
   Component,
@@ -81,7 +85,12 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck, On
   eventListeners: any[] = [];
   private spaceSubscription: Subscription = null;
   private iterations: IterationModel[] = [];
+  private areas: AreaModel[] = [];
   private nextLink: string = '';
+  private wiSubscriber: any = null;
+  private allowedFilterParams: string[] = ['iteration'];
+  private currentIteration: BehaviorSubject<string | null>;
+  private loggedInUser: User | Object = {};
 
   // See: https://angular2-tree.readme.io/docs/options
   treeListOptions = {
@@ -106,26 +115,28 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck, On
     private userService: UserService,
     private route: ActivatedRoute,
     private spaces: Spaces,
-    private iterationService: IterationService) {}
+    private iterationService: IterationService,
+    private filterService: FilterService,
+    private areaService: AreaService) {}
 
   ngOnInit(): void {
+    // If there is an iteration on the URL
+    // Setting the value to currentIteration
+    // BehaviorSubject so that we can compare
+    // on update the value on URL
+    const queryParams = this.route.snapshot.queryParams;
+    if (Object.keys(queryParams).indexOf('iteration') > -1) {
+      this.currentIteration = new BehaviorSubject(queryParams['iteration']);
+    } else {
+      this.currentIteration = new BehaviorSubject(null);
+    }
+
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
     // console.log('AUTH USER DATA', this.route.snapshot.data['authuser']);
     if (this.loggedIn) {
       this.treeListOptions['allowDrag'] = true;
     }
-    this.spaceSubscription = this.spaces.current.subscribe(space => {
-      if (space) {
-        console.log('[WorkItemListComponent] New Space selected: ' + space.attributes.name);
-        this.workItemService.resetWorkItemList();
-        this.loadWorkItems();
-      } else {
-        console.log('[WorkItemListComponent] Space deselected');
-        this.workItems = [];
-        this.workItemService.resetWorkItemList();
-      }
-    });
   }
 
   ngAfterViewInit() {
@@ -143,29 +154,74 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck, On
   ngOnDestroy() {
     console.log('Destroying all the listeners in list component');
     this.eventListeners.forEach(subscriber => subscriber.unsubscribe());
+    this.spaceSubscription.unsubscribe();
   }
 
   // model handlers
 
   initWiItems(event: any): void {
     this.pageSize = event.pageSize;
-    this.loadWorkItems();
+    this.spaceSubscription =
+      Observable.combineLatest(
+        this.spaces.current, this.filterService.filterChange, this.currentIteration)
+        .subscribe(([space, activeFilter, iteration]) => {
+          if (space) {
+            console.log('[WorkItemListComponent] New Space selected: ' + space.attributes.name);
+            this.workItemService.resetWorkItemList();
+            this.loadWorkItems();
+          } else {
+            console.log('[WorkItemListComponent] Space deselected');
+            this.workItems = [];
+            this.workItemService.resetWorkItemList();
+          }
+        });
   }
 
 
   loadWorkItems(): void {
-    Observable.combineLatest(
+    if (this.wiSubscriber) {
+      this.wiSubscriber.unsubscribe();
+    }
+    this.wiSubscriber = Observable.combineLatest(
       this.iterationService.getIterations(),
       this.userService.getAllUsers(),
       this.workItemService.getWorkItemTypes(),
-      this.workItemService.getWorkItems(this.pageSize, this.filters)
-    ).map((items) => {
-      return items;
+      this.areaService.getAreas(),
+      this.userService.getUser().catch(err => Observable.of({})),
+    ).do((items) => {
+      const iterations = items[0];
+      this.allUsers = items[1];
+      this.iterations = items[0];
+      this.workItemTypes = items[2];
+      this.areas = items[3];
+      this.loggedInUser = items[4];
+
+      // If there is an iteration filter on the URL
+      const queryParams = this.route.snapshot.queryParams;
+      if (Object.keys(queryParams).indexOf('iteration') > -1) {
+        const iteration = iterations.find(it => {
+          return it.attributes.resolved_parent_path + '/' + it.attributes.name
+            === queryParams['iteration'];
+        })
+        if (iteration) {
+          this.filterService.setFilterValues('iteration', iteration.id);
+        }
+      } else {
+        this.filterService.clearFilters(['iteration']);
+      }
+    })
+    .switchMap((items) => {
+      return Observable.forkJoin(
+        Observable.of(items[0]),
+        Observable.of(items[1]),
+        Observable.of(items[2]),
+        this.workItemService.getWorkItems(
+          this.pageSize,
+          this.filterService.getAppliedFilters()
+        )
+      )
     })
     .subscribe(([iterations, users, wiTypes, workItemResp]) => {
-      this.allUsers = users;
-      this.iterations = iterations;
-      this.workItemTypes = wiTypes;
       const workItems = workItemResp.workItems;
       this.nextLink = workItemResp.nextLink;
       this.workItems = this.workItemService.resolveWorkItems(
@@ -327,26 +383,6 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck, On
           this.treeListOptions['allowDrag'] = false;
       })
     );
-    //Filters like assign to me should stack with the current filters
-    this.eventListeners.push(
-      this.broadcaster.on<string>('item_filter')
-        .subscribe((filters: any) => {
-          this.filters = this.filters.concat(filters);
-          this.loadWorkItems();
-      })
-    );
-    //Filters like iteration should clear the previous filter
-    //and then set the current selected value
-    this.eventListeners.push(
-      this.broadcaster.on<string>('unique_filter')
-        .subscribe((filters: any) => {
-          //this.filters = this.filters.filter(item => item.paramKey !== filters[0].paramKey);
-          //this.filters = this.filters.concat(filters);
-          //clear top filters
-          this.filters = filters;
-          this.loadWorkItems();
-      })
-    );
 
     this.eventListeners.push(
       this.broadcaster.on<string>('move_item')
@@ -399,11 +435,27 @@ export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck, On
           this.treeList.updateTree();
         })
       );
-    
+
     this.eventListeners.push(
       this.broadcaster.on<string>('detail_close')
       .subscribe(()=>{
         this.selectedWorkItemEntryComponent.deselect();
+      })
+    );
+
+    this.eventListeners.push(
+      this.route.queryParams.subscribe((params) => {
+        if (Object.keys(params).indexOf('iteration') > -1) {
+          if (params['iteration'] !== this.currentIteration.getValue()) {
+            this.currentIteration.next(params['iteration']);
+          }
+        }
+        // If no iteration in the URL
+        // and curent iteration value is not null
+        // this means iteration has just got removed
+        else if (this.currentIteration.getValue() !== null) {
+          this.currentIteration.next(null);
+        }
       })
     );
   }

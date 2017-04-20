@@ -1,4 +1,3 @@
-import { HttpService } from './../shared/http-service';
 import { Injectable, Component, Inject } from '@angular/core';
 import { Headers } from '@angular/http';
 
@@ -34,6 +33,7 @@ import {
   WorkItem
 } from '../models/work-item';
 import { WorkItemType } from './../models/work-item-type';
+import { HttpService } from './../shared/http-service';
 
 @Injectable()
 export class WorkItemService {
@@ -136,9 +136,7 @@ export class WorkItemService {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
       let url = this.workItemUrl + '?page[limit]=' + pageSize;
       filters.forEach((item) => {
-        if (item.active) {
-          url += '&' + item.paramKey + '=' + item.value;
-        }
+        url += '&' + item.paramKey + '=' + item.value;
       });
       return this.http.get(url)
         .map((resp) => {

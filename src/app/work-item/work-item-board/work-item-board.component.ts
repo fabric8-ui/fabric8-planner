@@ -1,3 +1,6 @@
+import { FilterService } from './../../shared/filter.service';
+import { AreaModel } from './../../models/area.model';
+import { AreaService } from './../../area/area.service';
 import {
   AfterViewInit,
   Component,
@@ -13,7 +16,8 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import { Response } from '@angular/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { cloneDeep, trimEnd } from 'lodash';
 
 import { IterationService } from './../../iteration/iteration.service';
@@ -31,6 +35,7 @@ import { IterationModel } from './../../models/iteration.model';
 import { WorkItem } from '../../models/work-item';
 import { WorkItemType } from '../../models/work-item-type';
 import { WorkItemService } from '../work-item.service';
+import { CollaboratorService } from './../../collaborator/collaborator.service';
 
 @Component({
   // tslint:disable-next-line:use-host-property-decorator
@@ -59,20 +64,43 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
   private iterations: IterationModel[] = [];
   private workItemTypes: WorkItemType[] = [];
   private readyToInit = false;
+  private areas: AreaModel[] = [];
+  private loggedInUser: User;
   eventListeners: any[] = [];
   dialog: Dialog;
   showDialog = false;
   dragulaEventListeners: any[] = [];
+  private allowedFilterParams: string[] = ['iteration'];
+  private urlListener = null;
+  private currentBoardType: WorkItemType | Object = {};
+  private currentIteration: BehaviorSubject<string | null>;
+  private currentWIType: BehaviorSubject<string | null>;
+  private existingQueryParams: Object = {};
 
   constructor(
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
+    private collaboratorService: CollaboratorService,
     private router: Router,
     private workItemService: WorkItemService,
     private dragulaService: DragulaService,
     private iterationService: IterationService,
     private userService: UserService,
-    private spaces: Spaces) {
+    private spaces: Spaces,
+    private areaService: AreaService,
+    private filterService: FilterService,
+    private route: ActivatedRoute) {
+      this.dragulaService.drag.subscribe((value) => {
+        this.onDrag(value.slice(1));
+      });
+
+      this.dragulaService.drop.subscribe((value) => {
+        this.onDrop(value.slice(1));
+      });
+
+      this.dragulaService.over.subscribe((value) => {
+        this.onOver(value.slice(1));
+      });
 
       this.dragulaEventListeners.push(
         this.dragulaService.drag.subscribe((value) => {
@@ -91,50 +119,94 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit() {
+    // If there is an iteration on the URL
+    // Setting the value to currentIteration
+    // BehaviorSubject so that we can compare
+    // on update the value on URL
+    const queryParams = this.route.snapshot.queryParams;
+    if (Object.keys(queryParams).indexOf('iteration') > -1) {
+      this.currentIteration = new BehaviorSubject(queryParams['iteration']);
+    } else {
+      this.currentIteration = new BehaviorSubject(null);
+    }
+    if (Object.keys(queryParams).indexOf('workitemtype') > -1) {
+      this.currentWIType = new BehaviorSubject(queryParams['workitemtype']);
+    } else {
+      this.currentWIType = new BehaviorSubject(null);
+    }
+
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
     this.spaceSubscription = this.spaces.current.subscribe(space => {
       if (space) {
         console.log('[WorkItemBoardComponent] New Space selected: ' + space.attributes.name);
-        this.getDefaultWorkItemTypeStates();
+        this.initStuff();
       } else {
         console.log('[WorkItemBoardComponent] Space deselected');
         this.lanes = [];
         this.workItemTypes = [];
       }
     });
-    this.boardContextSubscription = this.broadcaster.on<WorkItemType>('board_type_context').subscribe(workItemType => {
-      if (workItemType) {
-        console.log('[WorkItemBoardComponent] New type context selected: ' + workItemType.attributes.name);
-        this.lanes = [];
-        this.getDefaultWorkItemTypeStates(workItemType.id);
-      }
-    });
-    this.initStuff();
   }
 
   ngOnDestroy() {
     console.log('Destroying all the listeners in board component');
     this.eventListeners.forEach(subscriber => subscriber.unsubscribe());
     this.dragulaEventListeners.forEach(subscriber => subscriber.unsubscribe());
+    if (this.urlListener) {
+      this.urlListener.unsubscribe();
+      this.urlListener = null;
+    }
   }
 
   initStuff() {
     Observable.combineLatest(
       this.iterationService.getIterations(),
-      this.userService.getAllUsers(),
-      this.workItemService.getWorkItemTypes()
-    ).map((items) => {
-      return items;
-    })
-    .subscribe(([iterations, users, wiTypes]) => {
+      this.collaboratorService.getCollaborators(),
+      this.workItemService.getWorkItemTypes(),
+      this.areaService.getAreas(),
+      this.userService.getUser(),
+      this.currentIteration,
+      this.currentWIType
+    )
+    .subscribe(([iterations, users, wiTypes, areas, loggedInUser, currentIteration, currentWIType]) => {
       this.allUsers = users;
       this.iterations = iterations;
       this.workItemTypes = wiTypes;
       this.readyToInit = true;
+      this.areas = areas;
+      this.loggedInUser = loggedInUser;
+      // Resolve iteration filter on the first load of board view
+      // If there is an existing iteration query params already
+      // Set the filter service with iteration filter
+      if (currentIteration !== null) {
+        const filterIteration = this.iterations.find(it => {
+          return it.attributes.resolved_parent_path + '/' + it.attributes.name ===
+            currentIteration;
+        })
+        if (filterIteration) {
+           this.filterService.setFilterValues('iteration', filterIteration.id)
+        }
+      } else {
+        this.filterService.clearFilters(['iteration']);
+      }
 
       // Set lanes
-      this.getDefaultWorkItemTypeStates();
+      // If wi type is there in the URL queryPrams
+      if (currentWIType !== null) {
+        const type = this.workItemTypes.find(
+          t => t.attributes['name'] === this.route.snapshot.queryParams['workitemtype']
+        );
+        if (type) {
+          this.getDefaultWorkItemTypeStates(type.id);
+        } else {
+          this.getDefaultWorkItemTypeStates();
+        }
+      }
+      // Else do with the default type
+      else {
+        this.getDefaultWorkItemTypeStates();
+      }
     });
   }
 
@@ -143,7 +215,7 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
         active: true,
         paramKey: 'filter[workitemstate]',
         value: lane.option
-      }, ...this.filters])
+      }, ...this.filterService.getAppliedFilters()])
     .subscribe(workItemResp => {
       const workItems = workItemResp.workItems;
       lane.workItems = this.workItemService.resolveWorkItems(
@@ -158,26 +230,26 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
 
   getDefaultWorkItemTypeStates(workItemTypeId?: string) {
     this.lanes = [];
+    // In case no type is selected set the first one as default
     if (!workItemTypeId) {
-        if (this.workItemTypes.length) {
-          let lanes = this.workItemTypes[0].attributes.fields['system.state'].type.values;
-          lanes.forEach((value, index) => {
-            this.lanes.push({
-              option: value,
-              workItems: [] as WorkItem[],
-              nextLink: null
-            });
+      if (this.workItemTypes.length) {
+        this.currentBoardType = this.workItemTypes[0];
+        let lanes = this.workItemTypes[0].attributes.fields['system.state'].type.values;
+        lanes.forEach((value, index) => {
+          this.lanes.push({
+            option: value,
+            workItems: [] as WorkItem[],
+            nextLink: null
           });
-          this.filters = [ {
-            active: true,
-            paramKey: 'filter[workitemtype]',
-            value: this.workItemTypes[0].id
-          } ];
-        }
-    } else {
+        });
+        this.filterService.setFilterValues('workitemtype', this.workItemTypes[0].id);
+      }
+    }
+    else {
       // we have a type id, we just fetch the states from it.
       let witype = this.workItemTypes.find(type => type.id === workItemTypeId);
       if (witype) {
+        this.currentBoardType = witype;
         let lanes = witype.attributes.fields['system.state'].type.values;
         lanes.forEach((value, index) => {
           this.lanes.push({
@@ -186,14 +258,32 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
             nextLink: null
           });
         });
+        this.filterService.setFilterValues('workitemtype', witype.id);
       } else {
         this.getDefaultWorkItemTypeStates();
       }
     }
   }
 
+  /**
+   * Called from each lane
+   * @param event
+   * @param lane
+   */
+
   initWiItems($event, lane) {
-    this.getWorkItems($event.pageSize, lane);
+    this.pageSize = $event.pageSize;
+    // Subscribe only once
+    // When the first lane is ready
+    // we have the page size
+    if (this.urlListener === null) {
+      this.listenToUrlParams();
+    }
+
+    // Once all the lanes inititated, apply the filters to load work items
+    if (lane.option === this.lanes[this.lanes.length - 1].option) {
+      this.filterService.applyFilter();
+    }
   }
 
   fetchMoreWiItems(lane) {
@@ -396,19 +486,6 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
         })
     );
 
-    // filters like assign to me should stack with the current filters
-    this.eventListeners.push(
-      this.broadcaster.on<string>('item_filter')
-        .subscribe((filters: any) => {
-          this.filters = filters;
-          // this reloads the states for the lanes, and then the wis inside the lanes.
-          filters.forEach((filter) => {
-            if (filter.paramKey === 'filter[workitemtype]')
-              this.getDefaultWorkItemTypeStates(filter.value);
-          });
-      })
-    );
-
     this.eventListeners.push(
       this.broadcaster.on<string>('wi_change_state')
           .subscribe((data: any) => {
@@ -418,10 +495,42 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
 
     this.eventListeners.push(
       this.broadcaster.on<string>('detail_close')
-      .subscribe(()=>{
-        this.workItem = <WorkItem>{};
+        .subscribe(()=>{
+          this.workItem = <WorkItem>{};
+        })
+    );
+
+    this.eventListeners.push(
+      this.filterService.filterChange.subscribe(filters => {
+        this.lanes.forEach(lane => {
+          this.getWorkItems(this.pageSize, lane);
+        })
       })
     );
+  }
+
+  listenToUrlParams() {
+    this.urlListener =
+      this.route.queryParams.subscribe((params) => {
+        this.existingQueryParams = params;
+
+        if (Object.keys(params).indexOf('iteration') > -1) {
+          if (params['iteration'] !== this.currentIteration.getValue()) {
+            this.currentIteration.next(params['iteration']);
+          }
+        } else if (this.currentIteration.getValue() !== null) {
+          this.currentIteration.next(null);
+        }
+
+        if (Object.keys(params).indexOf('workitemtype') > -1) {
+          if (params['workitemtype'] !== this.currentWIType.getValue()) {
+            console.log('[WorkItemBoardComponent] New type context selected: ' + params['workitemtype']);
+            this.currentWIType.next(params['workitemtype']);
+          }
+        } else if (this.currentWIType.getValue() !== null) {
+          this.currentWIType.next(null);
+        }
+      });
   }
 
 }
