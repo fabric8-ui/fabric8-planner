@@ -42,7 +42,7 @@ export class IterationService {
 
   notifyError(message: string, httpError: any) {
     this.notifications.message({
-        message: message + ' ' + httpError.message,
+        message: message + (httpError.message?' '+httpError.message:''),
         type: NotificationType.DANGER
       } as Notification);
   }
