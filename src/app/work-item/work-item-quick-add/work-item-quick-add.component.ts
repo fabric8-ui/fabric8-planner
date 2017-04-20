@@ -97,7 +97,9 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     });
   }
 
-  selectType(type: WorkItemType) {
+  selectType(event: any, type: WorkItemType) {
+    if (event) 
+      event.preventDefault();
     this.logger.log('Selected type ' + type.attributes.name + ' for quick add.');
     this.selectedType = type;
   }
