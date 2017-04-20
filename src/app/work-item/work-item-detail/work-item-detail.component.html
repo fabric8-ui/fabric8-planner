@@ -211,7 +211,7 @@
           <label class="col-sm-2" id="iteration_label">
             {{workItem.relationships?.baseType?.data?.attributes?.fields['system.iteration']?.label || 'Label'}}
           </label>
-          <typeahead-dropdown id="iteration-dropdown" class="iteration-dropdown" #iterationSelectbox [values]="extractIterationKeyValue(iterations)" (onUpdate)="iterationUpdated($event)"></typeahead-dropdown>
+          <typeahead-dropdown id="iteration-dropdown" class="iteration-dropdown" #iterationSelectbox noValueLabel="None" [values]="extractIterationKeyValue(iterations)" (onUpdate)="iterationUpdated($event)"></typeahead-dropdown>
         </div>
 
         <!-- Extra fields Start -->
