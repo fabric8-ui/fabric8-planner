@@ -44,7 +44,15 @@ export class TypeaheadDropdown implements OnInit {
   }
 
   ngOnInit(): void {
+    this.sortValuesByLength(this.values);
     this.filteredValues = cloneDeep(this.values);
+  }
+
+  protected sortValuesByLength(list: TypeaheadDropdownValue[]) {
+    list.sort(function(a, b) {
+      return a.value.length - b.value.length || // sort by length, if equal then
+         a.value.localeCompare(b.value);    // sort by dictionary order
+    });
   }
 
   protected open() {
@@ -143,6 +151,7 @@ export class TypeaheadDropdown implements OnInit {
       this.filteredValues = this.values.filter((item) => {
          return item.value.toLowerCase().indexOf(inp.toLowerCase()) > -1;
       });
+      this.sortValuesByLength(this.filteredValues);
     }
   }
 }
