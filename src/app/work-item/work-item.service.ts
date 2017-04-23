@@ -1072,4 +1072,15 @@ export class WorkItemService {
       return Observable.of<any>( {} as any );
     }
   }
+
+  getCollaborators(): Observable<User[]> {
+    let collaboratorURL = this._currentSpace.relationships.collaborators.links.related ;
+    console.log(collaboratorURL);
+    return this.http
+      .get( collaboratorURL , { headers: this.headers })
+      .map(response => {
+        return response.json().data as User[];
+      })
+  }
+  
 }

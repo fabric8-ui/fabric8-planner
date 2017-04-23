@@ -324,7 +324,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   getAllUsers(): Observable<any> {
     return Observable.combineLatest(
       this.userService.getUser(),
-      this.userService.getAllUsers()
+      this.workItemService.getCollaborators()
     )
   }
 
