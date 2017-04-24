@@ -36,6 +36,9 @@ export class MarkdownControlComponent implements OnInit, OnChanges {
 
   // the alm-editable element from the DOM.
   @ViewChild('editTextPara') textEditableParaElement: any;
+  // Use detail text'height to determine display of Show More link
+  @ViewChild('detailText') detailText: any;
+  @ViewChild('detailWrapper') detailWrapper: any;
 
   protected loggedIn: Boolean = false;
   protected textEditable: Boolean = false;
@@ -45,6 +48,7 @@ export class MarkdownControlComponent implements OnInit, OnChanges {
   protected markdownText: string = '';
   protected markdownViewExpanded: boolean = false;
   protected tabBarVisible: boolean = false;
+  protected showMore: boolean = false;
 
 constructor(
   protected authService: AuthenticationService,
@@ -98,6 +102,7 @@ constructor(
         this.textViewType = 'preview';
         if (this.textEditableParaElement)
           this.textEditableParaElement.nativeElement.innerHTML = this.renderedText;
+          this.showMore = this.detailText.nativeElement.clientHeight > this.detailWrapper.nativeElement.clientHeight;
       });
   }
 
