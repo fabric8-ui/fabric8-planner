@@ -3,8 +3,25 @@
 #cancel-iteration-button {
   margin-right: em(10);
 }
+
 #reassociate-msg {
   strong {
-    word-break: break-all;
+    word-break: break-all
+  }
+
+.iteration-list {
+  width: $width100;
+  max-height: em(140);
+  overflow-y: auto;
+  li {
+    list-style: none;
+    padding: em(5) em(15);
+    &:hover {
+      background-color: $color-pf-black-300;
+      cursor: pointer;
+    }
+    &.selected {
+      background-color: $color-pf-black-300;
+    }
   }
 }
