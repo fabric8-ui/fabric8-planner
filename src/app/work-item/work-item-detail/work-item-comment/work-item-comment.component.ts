@@ -54,9 +54,6 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
         }
     }
 
-    ngOnChanges(changes: SimpleChanges) {
-    }
-
     createCommentObject(): void {
         this.comment = new Comment();
         this.comment.type = 'comments';
