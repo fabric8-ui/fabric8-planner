@@ -2,7 +2,7 @@ import { IterationModel } from './../../../models/iteration.model';
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { Router, ActivatedRoute }                                            from '@angular/router';
 
-import { Broadcaster, Logger } from 'ngx-base';
+import { Broadcaster, Logger, Notification, NotificationType, Notifications } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
 import { Dialog } from 'ngx-widgets';
 
@@ -56,6 +56,7 @@ export class WorkItemListEntryComponent implements OnInit {
   constructor(private auth: AuthenticationService,
               private broadcaster: Broadcaster,
               private route: ActivatedRoute,
+              private notifications: Notifications,
               private router: Router,
               private workItemService: WorkItemService,
               private logger: Logger) {}
@@ -161,7 +162,33 @@ export class WorkItemListEntryComponent implements OnInit {
   }
 
   onMoveToBacklog(event: MouseEvent): void {
-    alert('NOT IMPLEMENTED YET.');
+    event.stopPropagation();
+    //set this work item's iteration to None
+    //send a patch request
+    this.workItem.relationships.iteration = {}
+    this.workItemService
+      .update(this.workItem)
+      .subscribe(workItem => {
+        this.workItem = workItem;
+        try {
+          this.notifications.message({
+            message: workItem.attributes['system.title'] + ' has been moved to the Backlog.',
+            type: NotificationType.SUCCESS
+          } as Notification);
+        } catch (e) {
+          console.log('Error displaying notification. Iteration was moved to Backlog.')
+        }
+    },
+    (err) => {
+      try{
+        this.notifications.message({
+          message: this.workItem.attributes['system.title'] + ' could not be moved to the Backlog.',
+          type: NotificationType.DANGER
+        } as Notification);
+      } catch (e) {
+        console.log('Error displaying notification. Error moving Iteration to Backlog.')
+      }
+    });
   }
 
   listenToEvents() {

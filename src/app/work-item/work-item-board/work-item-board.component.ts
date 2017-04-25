@@ -24,7 +24,7 @@ import { IterationService } from './../../iteration/iteration.service';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
-import { Broadcaster } from 'ngx-base';
+import { Broadcaster, Notification, NotificationType, Notifications } from 'ngx-base';
 import { Space, Spaces } from 'ngx-fabric8-wit';
 import { AuthenticationService, User, UserService } from 'ngx-login-client';
 import { ArrayCount } from 'ngx-widgets';
@@ -81,6 +81,7 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
     private collaboratorService: CollaboratorService,
+    private notifications: Notifications,
     private router: Router,
     private workItemService: WorkItemService,
     private dragulaService: DragulaService,
@@ -342,8 +343,35 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
   }
 
   onMoveToBacklog(event: any): void {
-    alert('Not Implemented yet');
     event.stopPropagation();
+    //set this work item's iteration to None
+    //send a patch request
+    this.workItem.relationships.iteration = {}
+    this.workItemService
+      .update(this.workItem)
+      .subscribe(workItem => {
+        this.workItem = workItem;
+        try {
+          this.notifications.message({
+            message: workItem.attributes['system.title'] + ' has been moved to the Backlog.',
+            type: NotificationType.SUCCESS
+          } as Notification);
+        } catch (e) {
+          console.log('Error displaying notification. Iteration was moved to Backlog.')
+        }
+
+    },
+    (err) => {
+      try {
+        this.notifications.message({
+          message: this.workItem.attributes['system.title'] + ' could not be moved to the Backlog.',
+          type: NotificationType.DANGER
+        } as Notification);
+      } catch (e) {
+        console.log('Error displaying notification. Error moving Iteration to Backlog.')
+      }
+
+    });
   }
 
   onDelete(event: MouseEvent): void {
