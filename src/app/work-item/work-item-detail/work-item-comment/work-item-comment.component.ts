@@ -2,7 +2,6 @@ import { Observable } from 'rxjs';
 import { CommentLink } from './../../../models/comment';
 
 import {
-    SimpleChanges,
     OnInit, OnChanges,
     Component, ViewChild,
     EventEmitter, Input, Output
