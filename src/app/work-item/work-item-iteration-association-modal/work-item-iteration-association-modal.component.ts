@@ -39,6 +39,7 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
   filteredIterations: any = [];
   selectedIterationName: any = '';
   enableAssociateButton: Boolean = false;
+  modalTitle: string = "Associate with Iteration";
 
   constructor(
     private auth: AuthenticationService,
@@ -73,6 +74,7 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
     this.filteredIterations = [];
     this.iterationsValue = [];
     this.enableAssociateButton = false;
+    this.showIterationDropdown = false;
   }
 
   filterIteration(event:any) {
@@ -125,6 +127,8 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
         if (lis[i].getAttribute('data-id') !== null) {
           let item = this.iterationsValue.find((iteration) => iteration.key === lis[i].getAttribute('data-id'));
           this.associateIteration(item);
+        } else {
+          this.showIterationDropdown = false;
         }
       }
     } else {
@@ -134,6 +138,7 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
       });
       if (this.filteredIterations.length == 0) {
         this.selectedIteration = null;
+        this.enableAssociateButton = false;
       }
     }
   }

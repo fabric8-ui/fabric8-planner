@@ -8,9 +8,18 @@
   strong {
     word-break: break-all
   }
+}
+
+.iteration-association-modal {
+  cursor: auto;
+}
+
+.input-group-addon {
+  cursor: pointer;
+}
 
 .iteration-list {
-  width: $width100;
+  width: 100%;
   max-height: em(140);
   overflow-y: auto;
   li {

@@ -1,6 +1,7 @@
 <modal
   #iterationAssociationModal
-  title="Associate with Iteration"
+  class="iteration-association-modal"
+  [title]="modalTitle"
   (onClose)="actionOnClose()"
   (onOpen)="actionOnOpen()">
   <modal-content>
@@ -20,28 +21,28 @@
       <div class="form-group" [class.has-error]="validationError">
 
         <div class="search-pf-input-group">
-          <label>
+          <div>
             {{ !(workItem.relationships.iteration) ? "Associate" : "Reassociate" }}
             <strong>{{ workItem.attributes['system.title'] }}</strong> with
-          </label>
+          </div>
 
           <div class="parent-iteration-container input-group dropdown open active">
             <input id="parent-iteration" class="form-control " type="text" #iterationSearch (keyup)="filterIteration($event)"
             autocomplete="off" [value]="selectedIterationName" (focus)="iterationSearchFocus();">
             <ul class="iteration-list dropdown-menu dropdown-ul" *ngIf="showIterationDropdown" #iterationList>
-              <li *ngIf="!filteredIterations.length">No matches found.</li>
+              <li *ngIf="!filteredIterations.length" (click)="showIterationDropdown = !showIterationDropdown">No matches found.</li>
               <li *ngFor="let iteration of filteredIterations;" [attr.data-id]="iteration.key" (click)="associateIteration(iteration);">
                 <span [innerHTML]="(iteration.value) | almSearchHighlight: iterationSearch.value"></span>
               </li>
             </ul>
-            <span class="input-group-addon pointer" (click)="iterationSearchFocus();"> <span class="caret"></span> </span>
+            <span class="input-group-addon" (click)="iterationSearchFocus();"> <span class="caret"></span> </span>
           </div>
         </div>
       </div>
 
       <!-- Action buttons to commit/abort -->
       <div class="text-right">
-        <button class="btn" type="submit" id="cancel-iteration-button" (click)="iterationAssociationModal.close()">Cancel</button>
+        <button class="btn btn-default" type="submit" id="cancel-iteration-button" (click)="iterationAssociationModal.close()">Cancel</button>
         <button class="btn btn-primary" type="submit" id="associate-iteration-button" #commitAssociation (click)="assignIteration()"
                 [disabled]="!enableAssociateButton">
           {{ !!(workItem.relationships.iteration) ? "Reassociate" : "Associate" }}
