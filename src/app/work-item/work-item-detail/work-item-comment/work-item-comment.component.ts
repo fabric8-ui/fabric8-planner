@@ -21,7 +21,7 @@ import { CollaboratorService } from './../../../collaborator/collaborator.servic
     templateUrl: './work-item-comment.component.html',
     styleUrls: ['./work-item-comment.component.scss'],
 })
-export class WorkItemCommentComponent implements OnInit, OnChanges {
+export class WorkItemCommentComponent implements OnInit {
     @Input() comments: Comment[];
     @Input() loggedIn: Boolean;
     @Input() loggedInUser: User;
