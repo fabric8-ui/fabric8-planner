@@ -174,6 +174,26 @@ class WorkItemListPage {
     return this.workItemKebabDeleteButton (parentElement).click();
   }
 
+  parentIterationDropDown (){
+    return element(by.id('parent-iteration'));
+  }
+ 
+  clickParentIterationDropDown(){
+    return this.parentIterationDropDown().click();
+  }
+
+  searchParentIteration (text,append){
+    if (!append) { this.parentIterationDropDown().clear(text) };
+    return this.parentIterationDropDown().sendKeys(text);
+  }
+
+  selectParentIterationById  (ids){
+    return element(by.id("iteration-id"+ids)).click();
+  }
+
+  parentIterationById  (ids){
+    return element(by.id("iteration-id"+ids));
+  }
   get workItemPopUpDeleteConfirmButton () {
     return element(by.buttonText('Confirm'));
   }
@@ -524,6 +544,12 @@ class WorkItemListPage {
   }
   clickCloseIterationKebab (){
     return element(by.linkText ("Close")).click();
+  }
+  clickChildIterationKebab (){
+    return element(by.linkText ("Create child")).click();
+  }
+  linkTextSearch (text){
+    return element(by.linkText (text));
   }
   get expandCurrentIterationIcon () {
     return element(by.xpath (".//text()[contains(.,'Current Iteration')]"));
