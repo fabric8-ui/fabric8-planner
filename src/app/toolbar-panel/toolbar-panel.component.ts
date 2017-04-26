@@ -90,6 +90,11 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
           value: null,
           separator: true
       };
+  private loader = {
+          id: 'loader',
+          value: 'Loading...',
+          iconClass: 'fa-spinner'
+      };
 
   constructor(
     private router: Router,
@@ -234,12 +239,15 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
   }
 
   filterChange($event: FilterEvent): void {
-
     // We don't support multiple filter for same type
     // i.e. no two filter by two different users as assignees
     // Unifying the filters with recent filter value
     let recentAppliedFilters = {};
-    $event.appliedFilters.forEach((filter) => recentAppliedFilters[filter.field.id] = filter);
+    $event.appliedFilters.forEach((filter) => {
+      if (filter.query.id !== 'loader') {
+        recentAppliedFilters[filter.field.id] = filter;
+      }
+    });
     this.toolbarConfig.filterConfig.appliedFilters = [];
     Object.keys(recentAppliedFilters).forEach((filterId) => {
       this.toolbarConfig.filterConfig.appliedFilters.push(recentAppliedFilters[filterId]);
@@ -348,7 +356,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
           return {
             queries: users.map(user => {return {id: user.id, value: user.attributes.username, imageUrl: user.attributes.imageURL}}),
             primaryQueries: Object.keys(authUser).length ?
-              [{id: authUser.id, value: authUser.attributes.username, imageUrl: authUser.attributes.imageURL}, {id: 'none', value: 'Unassigned'}] :
+              [{id: authUser.id, value: authUser.attributes.username + ' (me)', imageUrl: authUser.attributes.imageURL}, {id: 'none', value: 'Unassigned'}] :
               [{id: 'none', value: 'Unassigned'}]
           }
         },
@@ -372,13 +380,17 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
     if (Object.keys(filterMap).indexOf(data.id) > -1) {
       const index = this.filterConfig.fields.findIndex(i => i.id === data.id);
       if (this.filterConfig.fields[index].queries.length === 0) {
+        this.toolbarConfig.filterConfig.fields[index].queries = [
+          this.loader
+        ];
         filterMap[data.id].datasource.subscribe(resp => {
           if (filterMap[data.id].datamap(resp).primaryQueries.length) {
-            this.toolbarConfig.filterConfig.fields[index].queries = [
-              ...filterMap[data.id].datamap(resp).primaryQueries,
-              this.separator,
-              ...filterMap[data.id].datamap(resp).queries
-            ];
+            this.toolbarConfig.filterConfig.fields[index].queries =
+              filterMap[data.id].datamap(resp).queries.length ? [
+                ...filterMap[data.id].datamap(resp).primaryQueries,
+                this.separator,
+                ...filterMap[data.id].datamap(resp).queries
+              ] : filterMap[data.id].datamap(resp).primaryQueries;
           } else {
             this.toolbarConfig.filterConfig.fields[index].queries = filterMap[data.id].datamap(resp).queries;
           }
@@ -390,6 +402,11 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
     }
   }
 
+  /**
+   * For type ahead event handle
+   * from tool bar component
+   * @param event
+   */
   filterQueries(event) {
     const index = this.filterConfig.fields.findIndex(i => i.id === event.field.id);
     let inp = event.text.trim();
