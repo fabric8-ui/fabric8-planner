@@ -22,7 +22,8 @@
                   {{iteration.attributes.name | truncate : 45 }}
                 </strong>
               <div class="parent-iteration">
-                <span>
+                <span tooltip="{{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name }}"
+                  placement="top">
                   {{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name | truncate : -50 }}
                 </span>
               </div>
@@ -110,7 +111,9 @@
                 {{iteration.attributes.name | truncate : 35}}
               </strong>
               <div class="parent-iteration">
-                <span>{{(iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name).replace('//', '/') | truncate : -35 }}</span>
+                <span tooltip="{{ (iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name).replace('//', '/') }}"
+                  placement="top">
+                {{(iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name).replace('//', '/') | truncate : -35 }}</span>
               </div>
             </div>
             <div>
@@ -166,8 +169,9 @@
               {{iteration.attributes.name | truncate : 40 }}
             </strong>
             <div class="parent-iteration">
-              <span>
-                {{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name | truncate : -35 }}
+              <span tooltip="{{ iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name }}"
+                placement="top">
+                {{ iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name | truncate : -35 }}
               </span>
             </div>
           </div>
