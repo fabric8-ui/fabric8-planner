@@ -398,6 +398,11 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
           this.savedFIlterFieldQueries[this.filterConfig.fields[index].id]['fixed'] = filterMap[data.id].datamap(resp).primaryQueries;
           this.savedFIlterFieldQueries[this.filterConfig.fields[index].id]['filterable'] = filterMap[data.id].datamap(resp).queries;
         })
+      } else if (this.filterConfig.fields[index].type === 'typeahead'){
+        this.filterQueries({
+          text: '',
+          field: data
+        });
       }
     }
   }
@@ -420,9 +425,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
         })
       ];
     }
-    if (this.filterConfig.fields[index].queries.length ===
-        this.savedFIlterFieldQueries[event.field.id]['fixed'].length + 1 &&
-        inp === '') {
+    if (inp === '' && typeof(this.savedFIlterFieldQueries[event.field.id]) !== 'undefined') {
       this.filterConfig.fields[index].queries = [
         ...this.savedFIlterFieldQueries[event.field.id]['fixed'],
         this.separator,
