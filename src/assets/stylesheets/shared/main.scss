@@ -22,6 +22,9 @@ body {
 .truncate {
     @include truncate;
 }
+.left-truncate {
+    @include left-truncate;
+}
 
 .truncate-ellipsis {
     display: table;
