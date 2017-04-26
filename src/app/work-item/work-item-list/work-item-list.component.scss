@@ -23,9 +23,13 @@
   display: flex;
   align-items: inherit;
 }
-.side-panel-container {
-    background-color: $color-pf-black-900;
-    overflow-x: hidden;
+.side-panel-wrap {
+  min-width: 320px;
+  max-width: 320px;
+  .side-panel-container {
+      background-color: $color-pf-black-900;
+      overflow-x: hidden;
+  }
 }
 .work-item-list-page {
   >.list-group
@@ -71,6 +75,7 @@
     > main {
         border-top: 0 solid !important;
     }
+<<<<<<< HEAD
     .container-modal {
         border: solid 0 red;
         background-color: $color-pf-black-100;
@@ -100,6 +105,8 @@
            }
         }
     }
+=======
+>>>>>>> fix(multi-truncation): use pipe for multiline truncation
 
     .dropdown {
         a {
