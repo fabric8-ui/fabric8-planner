@@ -576,7 +576,14 @@ export class WorkItemService {
       return this.http
         .get(this.workItemTypeUrl)
         .map((response) => {
-          this.workItemTypes = response.json().data as WorkItemType[];
+          let resultTypes = response.json().data as WorkItemType[];
+
+          // THIS IS A HACK!
+          for (let i=0; i<resultTypes.length; i++) 
+            if (resultTypes[i].id==='bed58608f6c13082f5de5ce05cd826d5db51439e')
+              resultTypes.splice(i, 1);
+
+          this.workItemTypes = resultTypes;
           return this.workItemTypes;
         }).catch((error: Error | any) => {
           this.notifyError('Getting work item type information failed.', error);
