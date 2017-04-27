@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, EventEmitter, Output } from '@angular/core';
+import { Component, HostListener, OnInit, Input, OnChanges, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 
 import { cloneDeep } from 'lodash';
@@ -27,7 +27,12 @@ export class WorkItemDetailAddTypeSelectorWidgetComponent implements OnInit {
   @Output('onSelect') onSelect = new EventEmitter();
   @Output('onClose') onClose = new EventEmitter();
 
+  @ViewChild('typeList') typeList: any;
+
+
   panelState: string = 'out';
+  selectedType: WorkItemType;
+  selectedPosition: number = 0;
 
   constructor(
     private router: Router,
@@ -48,10 +53,55 @@ export class WorkItemDetailAddTypeSelectorWidgetComponent implements OnInit {
 
   open() {
     this.panelState = 'in';
+    this.selectedType = this.workItemTypes[0];
+    this.selectedPosition = 0;
   }
 
   select(type: WorkItemType) {
     this.onSelect.emit(type);
     this.panelState = 'out';
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeyEvent(event: any) {
+    if(this.panelState === 'in') {
+      let list = this.typeList.nativeElement.children;
+      let witLength = this.workItemTypes.length;
+      switch(event.keyCode){
+        case 40://down
+        case 37://left
+          //left or down - go to the previous work item type
+          this.selectedPosition--;
+          if(this.selectedPosition <= 0 ) {
+            this.selectedPosition = 0
+          }
+          this.selectedType = this.workItemTypes[this.selectedPosition];
+        break;
+        case 38://top
+        case 39://right
+          //top or right - go to the next work item type
+          this.selectedPosition++;
+          if(this.selectedPosition >= witLength) {
+            this.selectedPosition = witLength - 1;
+          }
+          this.selectedType = this.workItemTypes[this.selectedPosition];
+        break;
+        case 13://enter
+          this.select(this.selectedType);
+        break
+        case 27://esc
+          this.close();
+        break;
+        default:
+        //check for starting letter of work item type
+        let char = String.fromCharCode(event.keyCode);
+        this.workItemTypes.filter( (item,index) => {
+          if((item.attributes.name).charAt(0).toLocaleLowerCase() === char.toLocaleLowerCase())
+            this.selectedPosition = index;
+        });
+        this.selectedType = this.workItemTypes[this.selectedPosition];
+        break;
+      }
+    }
   }
 }
