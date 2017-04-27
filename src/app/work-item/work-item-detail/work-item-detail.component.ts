@@ -43,6 +43,7 @@ import { TypeaheadDropdown, TypeaheadDropdownValue } from './typeahead-dropdown/
 import { WorkItem, WorkItemRelations } from '../../models/work-item';
 import { WorkItemService } from '../work-item.service';
 import { WorkItemType } from '../../models/work-item-type';
+import { CollaboratorService } from '../../collaborator/collaborator.service'
 
 @Component({
   selector: 'alm-work-item-detail',
@@ -127,7 +128,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     private iterationService: IterationService,
     private userService: UserService,
     private workItemTypeControlService: WorkItemTypeControlService,
-    private spaces: Spaces
+    private spaces: Spaces,
+    private collaboratorService: CollaboratorService
   ) {}
 
   ngOnInit(): void {
@@ -325,7 +327,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   getAllUsers(): Observable<any> {
     return Observable.combineLatest(
       this.userService.getUser(),
-      this.userService.getAllUsers()
+      this.collaboratorService.getCollaborators()
     )
   }
 
@@ -597,6 +599,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
             [this.router.url.split('/detail/')[0] + '/detail/' + workItem.id],
             { queryParams: queryParams } as NavigationExtras
           );
+          this.workItemService.emitAddWI(workItem);
           return workItem;
         });
       } else {
@@ -628,6 +631,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         [this.router.url.split('/detail/')[0]],
         {queryParams: queryParams}
       );
+      this.broadcaster.broadcast('detail_close')
     }, 400);
   }
 
@@ -902,7 +906,18 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     return null;
   }
 
+  focusArea() {
+    this.iterationSelectbox.close();
+    this.cancelAssignment();
+  }
+
+  focusIteration() {
+    this.areaSelectbox.close();
+    this.cancelAssignment();
+  }
+
   areaUpdated(areaId: string) {
+
     if (this.workItem.id) {
       let payload = cloneDeep(this.workItemPayload);
       if (areaId) {

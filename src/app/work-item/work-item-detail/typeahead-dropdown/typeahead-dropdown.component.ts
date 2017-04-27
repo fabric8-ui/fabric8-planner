@@ -1,4 +1,4 @@
-import { Component, Input, Output, ViewChild, OnInit, EventEmitter } from '@angular/core';
+import { Component, Input, Output, ViewChild, OnInit, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { cloneDeep } from 'lodash';
@@ -13,10 +13,10 @@ export class TypeaheadDropdownValue {
 }
 
 /*
- * This component provides a typeahead dropdown. It accepts a list of possible values. 
- * The values must be provided using an array of TypeaheadDropdownValue instances 
- * containing key and value of the option. Exactly one of the values needs to have 
- * selected==true. The onUpdate event provides a key to enclosing components when 
+ * This component provides a typeahead dropdown. It accepts a list of possible values.
+ * The values must be provided using an array of TypeaheadDropdownValue instances
+ * containing key and value of the option. Exactly one of the values needs to have
+ * selected==true. The onUpdate event provides a key to enclosing components when
  * an option is selected.
  */
 @Component({
@@ -24,7 +24,7 @@ export class TypeaheadDropdownValue {
   templateUrl: './typeahead-dropdown.component.html',
   styleUrls: ['./typeahead-dropdown.component.scss']
 })
-export class TypeaheadDropdown implements OnInit {
+export class TypeaheadDropdown implements OnInit, OnChanges {
 
   // array of possible values
   @Input() protected values: TypeaheadDropdownValue[];
@@ -32,6 +32,7 @@ export class TypeaheadDropdown implements OnInit {
 
   // event when value is updated, emits new value as the event.
   @Output() protected onUpdate = new EventEmitter();
+  @Output() protected onFocus = new EventEmitter();
 
   @ViewChild('valueSearch') protected valueSearch: any;
   @ViewChild('valueList') protected valueList: any;
@@ -40,7 +41,7 @@ export class TypeaheadDropdown implements OnInit {
   protected selectedValue: TypeaheadDropdownValue;
   protected searchValue: boolean = false;
 
-  constructor(private logger: Logger) {    
+  constructor(private logger: Logger) {
   }
 
   ngOnInit(): void {
@@ -55,8 +56,20 @@ export class TypeaheadDropdown implements OnInit {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    this.logger.log('Typeahead Dropdown values changed.');
+    if (changes.values && JSON.stringify(changes.values.currentValue) !== JSON.stringify(changes.values.previousValue)) {
+      this.values = changes.values.currentValue;
+      this.sortValuesByLength(this.values);
+      this.filteredValues = cloneDeep(this.values);
+    } else if (changes.noValueLabel) {
+      this.noValueLabel = changes.noValueLabel.currentValue;
+    }
+  }
+
   protected open() {
     this.searchValue = true;
+    this.onFocus.emit(this);
     // Takes a while to render the component
     setTimeout(() => {
       if (this.valueSearch) {
@@ -77,7 +90,7 @@ export class TypeaheadDropdown implements OnInit {
     for (let i=0; i<this.values.length; i++)
       if (this.values[i].selected)
         return this.values[i];
-    // this only happens if there was no 
+    // this only happens if there was no
     // "selected" value in the list
     return {
       key: 'nilvalue',
@@ -87,7 +100,7 @@ export class TypeaheadDropdown implements OnInit {
     };
   }
 
-  // on clicking the area drop down option, the selected 
+  // on clicking the area drop down option, the selected
   // value needs to get displayed in the input box.
   protected showValueOnInput(value: TypeaheadDropdownValue): void {
     this.valueSearch.nativeElement.value = value.value;
