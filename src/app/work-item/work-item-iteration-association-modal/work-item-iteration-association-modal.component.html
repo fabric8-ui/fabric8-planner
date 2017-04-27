@@ -13,7 +13,7 @@
         is currently associated with
         <strong>
           {{(workItem.relationships?.iteration?.data?.attributes?.resolved_parent_path +
-             '/' + workItem.relationships.iteration.data.attributes?.name).replace('//', '/')}}
+             '/' + workItem?.relationships?.iteration?.data?.attributes?.name).replace('//', '/')}}
         </strong>
       </div>
 

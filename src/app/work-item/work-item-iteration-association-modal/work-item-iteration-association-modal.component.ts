@@ -1,11 +1,10 @@
 import {
   Component,
   ViewChild,
-  OnInit,
   Output,
   EventEmitter,
-  Input,
-  OnChanges } from '@angular/core';
+  Input
+} from '@angular/core';
 
 import { Broadcaster, Logger } from 'ngx-base';
 import {
@@ -23,7 +22,7 @@ import { IterationService }  from '../../iteration/iteration.service';
   templateUrl: './work-item-iteration-association-modal.component.html',
   styleUrls: ['./work-item-iteration-association-modal.component.scss']
 })
-export class FabPlannerAssociateIterationModalComponent implements OnInit, OnChanges {
+export class FabPlannerAssociateIterationModalComponent {
 
   @Input() workItem: WorkItem;
   @ViewChild('dropdownButton') dropdownButton: any;
@@ -49,13 +48,6 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
     private iterationService: IterationService,
   ) {}
 
-  ngOnInit() {
-  }
-
-  ngOnChanges() {
-
-  }
-
   getIterations() {
     this.iterationService.getIterations()
       .subscribe((iterations: IterationModel[]) => {
@@ -70,7 +62,6 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
   }
 
   resetValues() {
-    console.log('#####@@@@@ reset');
     this.filteredIterations = [];
     this.iterationsValue = [];
     this.enableAssociateButton = false;
@@ -218,7 +209,6 @@ export class FabPlannerAssociateIterationModalComponent implements OnInit, OnCha
   }
 
   actionOnOpen() {
-    console.log(this.workItem);
     if (this.workItem.relationships.iteration) {
       this.selectedIterationName = (this.workItem.relationships.iteration.data.attributes.resolved_parent_path +
         '/' +
