@@ -561,7 +561,6 @@ export class WorkItemService {
       .catch((error: Error | any) => {
         this.notifyError('Getting linked items data failed.', error);
         return Observable.throw(new Error(error.message));                            
-Compressing objects: 100% (178/178), done.                                                                                                                                                
       });
   }
 
