@@ -30,6 +30,7 @@ import { IterationModule } from '../../iteration/iteration.module';
 import { PlannerListRoutingModule } from './planner-list-routing.module';
 import { SidepanelModule } from '../../side-panel/side-panel.module';
 import { ToolbarPanelModule } from '../../toolbar-panel/toolbar-panel.module';
+import { WorkItemDetailAddTypeSelectorModule } from '../../work-item/work-item-detail-add-type-selector/work-item-detail-add-type-selector.module';
 import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.module';
 import { WorkItemDetailAddTypeSelectorModule } from '../work-item-detail-add-type-selector/work-item-detail-add-type-selector.module';
 import { WorkItemListComponent } from './work-item-list.component';
@@ -90,6 +91,7 @@ if (process.env.ENV == 'inmemory') {
     TreeModule,
     TreeListModule,
     WidgetsModule,
+    WorkItemDetailAddTypeSelectorModule,
     WorkItemDetailModule,
     WorkItemQuickAddModule,
     WorkItemDetailAddTypeSelectorModule
