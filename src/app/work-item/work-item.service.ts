@@ -560,7 +560,8 @@ export class WorkItemService {
       .map(response => [response.json().data as Link[], response.json().included])
       .catch((error: Error | any) => {
         this.notifyError('Getting linked items data failed.', error);
-        return Observable.throw(new Error(error.message));
+        return Observable.throw(new Error(error.message));                            
+Compressing objects: 100% (178/178), done.                                                                                                                                                
       });
   }
 
@@ -580,7 +581,7 @@ export class WorkItemService {
 
           // THIS IS A HACK!
           for (let i=0; i<resultTypes.length; i++) 
-            if (resultTypes[i].id==='bed58608f6c13082f5de5ce05cd826d5db51439e')
+            if (resultTypes[i].id==='86af5178-9b41-469b-9096-57e5155c3f31')
               resultTypes.splice(i, 1);
 
           this.workItemTypes = resultTypes;
