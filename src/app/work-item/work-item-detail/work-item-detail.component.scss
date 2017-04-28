@@ -10,6 +10,8 @@
   bottom: 0;
   width: 60%;
   min-width: em(250);
+  z-index: initial;
+  padding: em(20) 0 em(20) em(40);
   border-left: 1px solid darken($color-pf-white, 20%);
   overflow-y: scroll;
   overflow-x: hidden;
