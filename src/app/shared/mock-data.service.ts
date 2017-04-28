@@ -231,7 +231,7 @@ export class MockDataService {
         console.log('Requested comments for workitem ' + wiId);
         if (this.workItemComments[wiId])
           return this.makeCopy(this.workItemComments[wiId]);
-        return { data: [] };
+        return { data: [], totalCount: 0 };
       } else if (subselect === 'relationships') {
         console.log('Request for relationships for workitem ' + wiId);
         if (parts[2] === 'links') {

@@ -47,7 +47,10 @@ export class WorkItemMockGenerator {
               },
               'type': 'comments'
             }
-          ]
+          ],
+          'meta': {
+            'totalCount': 1
+          }
         }
     };
   }
