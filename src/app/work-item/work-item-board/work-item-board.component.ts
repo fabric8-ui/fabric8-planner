@@ -63,6 +63,7 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
   private allUsers: User[] = [];
   private iterations: IterationModel[] = [];
   private workItemTypes: WorkItemType[] = [];
+  private workItemTypesToolbar: WorkItemType[] = [];
   private readyToInit = false;
   private areas: AreaModel[] = [];
   private loggedInUser: User;
@@ -164,6 +165,10 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
       this.allUsers = users;
       this.iterations = iterations;
       this.workItemTypes = wiTypes;
+      //Hack to set Task as the first/default work item type
+      this.workItemTypesToolbar = cloneDeep (this.workItemTypes);
+      let taskPos = this.workItemTypesToolbar.findIndex( item => item.attributes.name.toLowerCase() === 'task');
+      this.workItemTypesToolbar = (this.workItemTypesToolbar.splice(taskPos,1)).concat(this.workItemTypesToolbar);
       this.readyToInit = true;
       this.areas = areas;
       this.loggedInUser = loggedInUser;
@@ -226,8 +231,8 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
     // In case no type is selected set the first one as default
     if (!workItemTypeId) {
       if (this.workItemTypes.length) {
-        this.currentBoardType = this.workItemTypes[0];
-        let lanes = this.workItemTypes[0].attributes.fields['system.state'].type.values;
+        this.currentBoardType = this.workItemTypesToolbar[0];
+        let lanes = this.workItemTypesToolbar[0].attributes.fields['system.state'].type.values;
         lanes.forEach((value, index) => {
           this.lanes.push({
             option: value,
@@ -235,7 +240,7 @@ export class WorkItemBoardComponent implements OnInit, OnDestroy {
             nextLink: null
           });
         });
-        this.filterService.setFilterValues('workitemtype', this.workItemTypes[0].id);
+        this.filterService.setFilterValues('workitemtype', this.workItemTypesToolbar[0].id);
       }
     }
     else {
