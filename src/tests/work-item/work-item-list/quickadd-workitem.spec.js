@@ -38,13 +38,17 @@ describe('Quickadd - Work item list', function () {
     page.clickQuickAddSave().then(function() {
       expect(page.workItemTitle(page.firstWorkItem)).toBe('Quick Add and Delete');
       expect(page.workItemTitle(page.workItemByNumber(0))).toBe('Quick Add and Delete');
-      page.clickWorkItemKebabButton(page.firstWorkItem);
-      page.clickWorkItemKebabDeleteButton(page.firstWorkItem);
-      page.clickWorkItemPopUpDeleteConfirmButton().then(function() {
-        browser.wait(until.textToBePresentInElement((page.firstWorkItem), "Quick Add and Delete" ), constants.WAIT, 'Failed to find text in workitem');
-        expect(page.workItemTitle(page.firstWorkItem)).toBe('Quick Add and Delete');
-        expect(page.workItemTitle(page.workItemByNumber(0))).toBe('Quick Add and Delete');
-      });
+
+      //Commented Due to Delete is temporarily not supported
+      
+      // page.clickWorkItemKebabButton(page.firstWorkItem);
+      // page.clickWorkItemKebabDeleteButton(page.firstWorkItem);
+      // page.clickWorkItemPopUpDeleteConfirmButton().then(function() {
+      //   browser.wait(until.textToBePresentInElement((page.firstWorkItem), "Quick Add and Delete" ), constants.WAIT, 'Failed to find text in workitem');
+      //   expect(page.workItemTitle(page.firstWorkItem)).toBe('Quick Add and Delete');
+      //   expect(page.workItemTitle(page.workItemByNumber(0))).toBe('Quick Add and Delete');
+      // });
+
     });
   });
 
@@ -55,19 +59,20 @@ describe('Quickadd - Work item list', function () {
     page.clickQuickAddSave().then(function() {
       expect(page.workItemTitle(page.firstWorkItem)).toBe(char255Expected);
       expect(page.workItemTitle(page.workItemByNumber(0))).toBe(char255Expected);
-      page.clickWorkItemKebabButton(page.firstWorkItem);
+      //commented due to delete is temporarily removed
+      // page.clickWorkItemKebabButton(page.firstWorkItem);
 
-      browser.wait(until.elementToBeClickable(page.workItemKebabDeleteButton(page.firstWorkItem)), constants.WAIT, 'Failed to find clickWorkItemKebabDeleteButton');
+      // browser.wait(until.elementToBeClickable(page.workItemKebabDeleteButton(page.firstWorkItem)), constants.WAIT, 'Failed to find clickWorkItemKebabDeleteButton');
  
-      page.clickWorkItemKebabDeleteButton(page.firstWorkItem);
+      // page.clickWorkItemKebabDeleteButton(page.firstWorkItem);
 
-      browser.wait(until.elementToBeClickable(page.workItemPopUpDeleteCancelConfirmButton), constants.WAIT, 'Failed to find workItemPopUpDeleteCancelConfirmButton');
+      // browser.wait(until.elementToBeClickable(page.workItemPopUpDeleteCancelConfirmButton), constants.WAIT, 'Failed to find workItemPopUpDeleteCancelConfirmButton');
 
-      page.clickWorkItemPopUpDeleteCancelConfirmButton().then(function() {
-        browser.wait(until.textToBePresentInElement((page.firstWorkItem), char255Expected), constants.WAIT, 'Failed to text in workitem');
-        expect(page.workItemTitle(page.firstWorkItem)).toBe(char255Expected);
-        expect(page.workItemTitle(page.workItemByNumber(0))).toBe(char255Expected);
-      });
+      // page.clickWorkItemPopUpDeleteCancelConfirmButton().then(function() {
+      //   browser.wait(until.textToBePresentInElement((page.firstWorkItem), char255Expected), constants.WAIT, 'Failed to text in workitem');
+      //   expect(page.workItemTitle(page.firstWorkItem)).toBe(char255Expected);
+      //   expect(page.workItemTitle(page.workItemByNumber(0))).toBe(char255Expected);
+      // });
     });
   });
 

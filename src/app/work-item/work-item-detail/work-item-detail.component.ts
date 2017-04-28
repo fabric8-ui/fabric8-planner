@@ -599,6 +599,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
             [this.router.url.split('/detail/')[0] + '/detail/' + workItem.id],
             { queryParams: queryParams } as NavigationExtras
           );
+          this.workItemService.emitAddWI(workItem);
           return workItem;
         });
       } else {
@@ -630,6 +631,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         [this.router.url.split('/detail/')[0]],
         {queryParams: queryParams}
       );
+      this.broadcaster.broadcast('detail_close')
     }, 400);
   }
 

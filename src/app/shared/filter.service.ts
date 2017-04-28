@@ -83,4 +83,31 @@ export class FilterService {
     });
   }
 
+  /**
+   * Usage: to check if the workitem matches with current applied filter or not.
+   * @param WorkItem - workItem
+   * @returns Boolean
+   */
+  doesMatchCurrentFilter(workItem): Boolean {
+    //If filters have been applied
+    if (this.activeFilters.length) {
+      let matchFilterCount = 0;
+      //Loop through active filters
+      for (let i = 0; i < this.activeFilters.length; i++) {
+        let filterValue = this.activeFilters[i].value;
+        //Check for a match under each active filter
+        var res = Object.keys(workItem.relationships)
+          .find((j) =>
+            workItem.relationships[j].data ? workItem.relationships[j].data.id === filterValue : false);
+        if (res) matchFilterCount++; //If a match is found - increase the count
+        else return false; //If no match return false - no need to go through all the filters
+      }
+      //If all filters match - count needs to be equal to active filter length
+      if (matchFilterCount === this.activeFilters.length) return true;
+    } else {
+      //No filters have been applied so the new work item can be displayed
+      return true;
+    }
+  }
+
 }

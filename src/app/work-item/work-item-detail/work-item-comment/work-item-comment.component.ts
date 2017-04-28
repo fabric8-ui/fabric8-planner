@@ -14,6 +14,7 @@ import {
 import { Comment, CommentAttributes } from '../../../models/comment';
 import { WorkItem } from '../../../models/work-item';
 import { WorkItemService } from '../../work-item.service';
+import { CollaboratorService } from './../../../collaborator/collaborator.service';
 
 @Component({
     selector: 'alm-work-item-comment',
@@ -36,6 +37,7 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
         private workItemService: WorkItemService,
         private router: Router,
         private userService: UserService,
+        private collaboratorService: CollaboratorService,
         http: Http
     ) {
     }
@@ -43,11 +45,11 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
     ngOnInit() {
         this.currentUser = this.userService.getSavedLoggedInUser();
         this.createCommentObject();
+        this.resolveComments();
     }
 
     ngAfterViewInit() {
         let commentbox = document.querySelector("#wi-comment-add-comment") as HTMLParagraphElement;
-
         if (!!commentbox) {
             commentbox.textContent = commentbox.dataset['placeholder'];
             commentbox.blur();
@@ -55,12 +57,12 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-      this.resolveComments();
+
     }
 
     resolveComments() {
-      Observable.forkJoin(
-        this.userService.getAllUsers(),
+      Observable.combineLatest(
+        this.collaboratorService.getCollaborators(),
         this.workItemService.resolveComments(this.workItem.relationships.comments.links.related)
       )
       .subscribe(
@@ -100,7 +102,7 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
       this.workItemService
         .createComment(this.workItem.relationships.comments.links.related, this.comment)
         .switchMap((comment: Comment) => {
-          return this.userService.getAllUsers()
+          return this.collaboratorService.getCollaborators()
             .map((users) => {
               comment.relationships['created-by'].data =
                 users.find(user => user.id === comment.relationships['created-by'].data.id);
@@ -108,6 +110,12 @@ export class WorkItemCommentComponent implements OnInit, OnChanges {
             });
         })
         .subscribe((comment: Comment) => {
+            if (typeof(this.workItem.relationships.comments.data) === 'undefined') {
+              this.workItem.relationships.comments = Object.assign(
+                this.workItem.relationships.comments,
+                { data: [] }
+              );
+            }
             this.workItem.relationships.comments.data.splice(0, 0, comment);
             this.workItem.relationships.comments.meta.totalCount += 1;
             event.target.textContent = '';

@@ -1,6 +1,6 @@
 <div class="container-fluid work-item-page">
   <main class="row">
-    <aside>
+    <aside class="side-panel-wrap">
       <div class="contents">
         <side-panel
           [iterations]="iterations" class="side-panel-container">
@@ -38,14 +38,14 @@
                     </div>
                   </div>
                   <div [dragula]='"first-bag"' class="card-wrapper">
-                    <div class="board-card card-pf card-pf-view card-pf-view-select card-pf-view-single-select"
+                    <div  class="board-card card-pf card-pf-view card-pf-view-select card-pf-view-single-select"
                           [class.active]="isSelected(item)" *ngFor='let item of lane.workItems'
                           [attr.data-id]="item.id" (mousedown)="getWI(item)" (touchstart)="getWI(item)"
-                          [routerLink]="['./detail/' + item.id]" [queryParams]="existingQueryParams">
+                          [routerLink]="['./detail/' + item.id]" [queryParams]="existingQueryParams" id={{item.id}}>
                       <div class="row-wrapper">
-                        <div class="">
+                        <div>
                           <span class="wi-type-icon fa {{item.relationships?.baseType?.data?.attributes?.icon}}"></span>
-                          <span class=""> {{item.id}} </span>
+                          <span> {{item.id}} </span>
                         </div>
                         <span class="dropdown-kebab-pf" dropdown>
                           <button class="btn btn-link color-grey" type="button" aria-haspopup="true" aria-expanded="true" (click)="kebabClick($event)" dropdownToggle>
@@ -55,30 +55,26 @@
                             <li><a class="workItemList_Iteration" (click)="associateIterationModal.open($event)">Associate with Iteration...</a></li>
                             <li role="presentation" class="divider"></li>
                             <li><a class="workItemList_Open" [routerLink]="['./detail/' + item.id]" [queryParams]="existingQueryParams">Open</a></li>
-                            <li><a class="workItemList_Delete" (click)="confirmDelete($event)">Delete</a></li>
                             <li><a class="workItemList_Backlog" (click)="onMoveToBacklog($event)">Move to Backlog</a></li>
                           </ul>
                         </span>
                       </div>
                       <div class="row-wrapper">
-                        <div class="margin-right-15">
-                          <a [routerLink]="['./detail/' + item.id]" [queryParams]="existingQueryParams" >
-                            <p class="multiline-truncation">{{ item.attributes['system.title'] }}</p>
-                          </a>
+                        <div class="margin-right-5">
+                          <p [routerLink]="['./detail/' + item.id]" [queryParams]="existingQueryParams">{{ item.attributes['system.title'] | truncate : 87 }}</p>
                         </div>
                         <div class="user-avatar">
                           <img
                             *ngFor="let wItem of item.relationships.assignees.data"
-                            placement="bottom"
+                            placement="top"
                             tooltip="{{wItem?.attributes?.fullName}}"
                             src="{{wItem?.attributes?.imageURL + '&s=20'}}"
                             onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'" />
-                          <span *ngIf="!item.relationships?.assignees?.data?.length" class="pficon-user not-assigned-user-icon"></span>
+                          <span *ngIf="!item.relationships?.assignees?.data?.length" class="pficon-user not-assigned-user-icon" tooltip="unassigned" placement="top"></span>
                         </div>
                       </div>
                       <fab-planner-associate-iteration-modal
                         [workItem]="item"
-                        [iterations]="iterations"
                         #associateIterationModal>
                       </fab-planner-associate-iteration-modal>
                     </div>

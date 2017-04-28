@@ -8,10 +8,10 @@
   border-top: 1px solid darken($color-pf-white, 20%);
   text-align: $textLeft;
   cursor: pointer;
- 
+
   .dropup {
     .dropdown-menu {
-      margin-left: 8px;
+      margin-left: 16px;
       i {
         margin-top: 5px;
         width: 15px;
@@ -22,7 +22,7 @@
   .addWorkItem {
     padding: em(18);
     color: $navbar-pf-border-color;
-    height: 67px; //height is given to avoid jumping between this block and addWorkItemBlk
+    height: 69px; //height is given to avoid jumping between this block and addWorkItemBlk
     .quick-add-label {
       padding-left: em(5);
     }
@@ -43,8 +43,12 @@
     }
   }
   .addWorkItemBlk {
-    padding: em(20);
+    padding: 20px;
     position: relative;
+    .work-item-selector {
+      display: inline-flex;
+      height: 28px;
+    }
     .workItemQuickAdd_IconType {
       width:em(24);
       height: em(25);
@@ -61,19 +65,20 @@
     }
     .workItemQuickAdd_AddBlk {
       .workItemQuickAdd_Add {
-        min-width: em(30);
+        min-width: em(30) !important;
         height: 27px;
         i {
           font-size: em(14);
         }
       }
       .closeQuickAdd {
-        min-width: em(35);
+        min-width: em(30) !important;
         margin-left: em(5);
         height: 27px;
         padding: em(5);
         i {
-          font-size: em(16);
+          font-size: em(14);
+          vertical-align: top;
         }
       }
     }
@@ -87,16 +92,20 @@
   }
 }
 
-.quickAdd_container2 {
+// .quickAdd_container2 {
+.board-quick-add-card {
   position: relative;
-  width: $width100;
+  width: 100%;
   float: left;
-  @include Border(0 , solid , transparent);
+  // border: 2px solid $color-pf-black-300;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
   .addWorkItem{
     background: $color-pf-white;
-    margin: em(5) 0;
-    @include Border(1px, solid ,$color-pf-black-400);
-    text-align: $textCenter;
+    border: 2px solid $color-pf-black-400;
+    text-align: center;
     padding: em(10) em(15);
     .workItemQuickAdd_saveBtn{
       i{
@@ -106,36 +115,34 @@
     }
   }
   .addWorkItemBlk {
-    padding: em(20);
     margin: em(5) 0;
     background:$color-pf-white;
-    @include Border(1px, solid ,$color-pf-black-300);
-    .quickAdd_temp2-Story {
-      float: left;
-      padding: em(2);
-      @include Border(1px, solid ,$color-pf-black-700);
-      i{
-        margin: 0;
-        font-size: em(12);
+    border: 1px solid $color-pf-black-300;
+    .board-inputs {
+      margin-top: 40px;
+      i {
+        padding-top: 5px;
+        padding-left: 10px;
       }
     }
-    .quickAdd_temp2-Title{
-      padding: 0 em(25);
-      input{
-        margin-bottom: em(7);
-      }
+    .board-description {
+      margin-top: 5px;
+      height: 29px;
+      width: 100%;
     }
     .workItemQuickAdd_Add{
-      @include Border(1px, solid ,$color-pf-black-300);
-      margin-top: em(10);
-      padding: em(1);
+      margin-top: 5px;
+      margin-bottom: 10px;
+      margin-left: -10px;
     }
     .closeQuickAdd{
       position: absolute;
-      top: em(10);
+      top: 10px;
+      right: 15px;
+      color: $color-pf-black;
     }
     .icon-btn{
-      @include Border(1px, solid ,$color-pf-blue-400);
+      border: 2px solid $color-pf-blue-400;
     }
   }
 }
