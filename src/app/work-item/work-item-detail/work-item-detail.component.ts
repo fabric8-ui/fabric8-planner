@@ -23,7 +23,7 @@ import { Router }                 from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs/Subscription';
 
-import { cloneDeep, trimEnd } from 'lodash';
+import { cloneDeep, trimEnd, merge, remove } from 'lodash';
 import { Space, Spaces } from 'ngx-fabric8-wit';
 import { Broadcaster, Logger } from 'ngx-base';
 import {
@@ -52,10 +52,10 @@ import { CollaboratorService } from '../../collaborator/collaborator.service'
   animations: [
     trigger('slideInOut', [
       state('in', style({
-        transform: 'translateX(0)'
+        right: 0
       })),
       state('out', style({
-        transform: 'translateX(102%)'
+        right: '-100%'
       })),
       transition('in => out', animate('300ms ease-in-out')),
       transition('out => in', animate('500ms ease-in-out'))
@@ -93,7 +93,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   users: User[] = [];
   filteredUsers: User[] = [];
 
-  loggedInUser: any;
+  loggedInUser: User;
 
   addNewWI: Boolean = false;
 
@@ -102,6 +102,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   areas: AreaModel[] = [];
 
   iterations: IterationModel[] = [];
+
+  comments: Comment[] = [];
 
   spaceSubscription: Subscription;
 
@@ -115,6 +117,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   saving: Boolean = false;
   queryParams: Object = {};
+
+  itemSubscription: any = null;
 
   constructor(
     private areaService: AreaService,
@@ -139,8 +143,14 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     // this.getAllUsers();
     this.getIterations();
     this.loggedIn = this.auth.isLoggedIn();
+    if (this.loggedIn) {
+      this.eventListeners.push(
+        this.userService.loggedInUser.subscribe(user => {
+          this.loggedInUser = user;
+        })
+      );
+    }
     let id = null;
-
     this.eventListeners.push(
       this.spaces.current.switchMap(space => {
         return this.route.params;
@@ -193,19 +203,22 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   loadWorkItem(id: string): void {
+    this.itemSubscription =
     this.workItemService.getWorkItemById(id)
       .switchMap(workItem => {
-        return Observable.forkJoin(
+        return Observable.combineLatest(
           Observable.of(workItem),
+          this.collaboratorService.getCollaborators(),
           this.workItemService.getWorkItemTypes(),
           this.areaService.getArea(workItem.relationships.area),
           this.iterationService.getIteration(workItem.relationships.iteration),
           this.workItemService.resolveAssignees(workItem.relationships.assignees),
           this.workItemService.resolveCreator2(workItem.relationships.creator),
+          this.workItemService.resolveComments(workItem.relationships.comments.links.related),
           this.workItemService.resolveLinks(workItem.links.self + '/relationships/links')
         );
       })
-      .subscribe(([workItem, workItemTypes, area, iteration, assignees, creator, [links, includes]]) => {
+      .subscribe(([workItem, users, workItemTypes, area, iteration, assignees, creator, comments, [links, includes]]) => {
 
         // Resolve area
         workItem.relationships.area = {
@@ -231,6 +244,15 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         workItem.relationships.creator = {
           data: creator
         };
+
+        // Resolve comments
+        merge(workItem.relationships.comments, comments);
+        workItem.relationships.comments.data = workItem.relationships.comments.data.map((comment) => {
+          comment.relationships['created-by'].data =
+            users.find(user => user.id === comment.relationships['created-by'].data.id);
+          return comment;
+        });
+        this.comments = workItem.relationships.comments.data;
 
         // Resolve links
         workItem = Object.assign(
@@ -281,9 +303,13 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         // this.getAllUsers();
 
         this.activeOnList(400);
+        // Used with setTimeout for inmemory mode
+        // where everything is synchronus
+        setTimeout(() => this.itemSubscription.unsubscribe());
       },
       err => {
         console.log(err);
+        setTimeout(() => this.itemSubscription.unsubscribe());
         // this.closeDetails();
       });
   }
@@ -498,17 +524,19 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
       retObservable = this.workItemService
         .update(payload)
         .switchMap(workItem => {
-          return Observable.forkJoin(
+          return Observable.combineLatest(
             Observable.of(workItem),
+            this.collaboratorService.getCollaborators(),
             this.workItemService.getWorkItemTypes(),
             this.areaService.getArea(workItem.relationships.area),
             this.iterationService.getIteration(workItem.relationships.iteration),
             this.workItemService.resolveAssignees(workItem.relationships.assignees),
             this.workItemService.resolveCreator2(workItem.relationships.creator),
+            this.workItemService.resolveComments(workItem.relationships.comments.links.related),
             this.workItemService.resolveLinks(workItem.links.self + '/relationships/links')
         );
       })
-      .map(([workItem, workItemTypes, area, iteration, assignees, creator, [links, includes]]) => {
+      .map(([workItem, users, workItemTypes, area, iteration, assignees, creator, comments, [links, includes]]) => {
         // Resolve area
         workItem.relationships.area = {
           data: area
@@ -536,6 +564,15 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         workItem.relationships.creator = {
           data: creator
         };
+
+        // Resolve comments
+        merge(workItem.relationships.comments, comments);
+        workItem.relationships.comments.data = workItem.relationships.comments.data.map((comment) => {
+          comment.relationships['created-by'].data =
+            users.find(user => user.id === comment.relationships['created-by'].data.id);
+          return comment;
+        });
+        this.comments = workItem.relationships.comments.data;
 
         // Resolve links
         workItem = Object.assign(
@@ -609,8 +646,47 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (returnObservable) {
       return retObservable;
     } else {
-      retObservable.subscribe();
+      this.itemSubscription = retObservable.subscribe(() => {
+        setTimeout(() => this.itemSubscription.unsubscribe())
+      });
     }
+  }
+
+  createComment(comment) {
+    this.workItemService
+        .createComment(this.workItem.relationships.comments.links.related, comment)
+        .subscribe((comment) => {
+            comment.relationships['created-by'].data = this.loggedInUser;
+            this.workItem.relationships.comments.data.splice(0, 0, comment);
+            this.workItem.relationships.comments.meta.totalCount += 1;
+        },
+        (error) => {
+            console.log(error);
+        });
+  }
+
+  updateComment(comment) {
+    this.workItemService
+        .updateComment(comment)
+        .subscribe(response => {
+        },
+        (error) => {
+          console.log(error);
+        });
+  }
+
+  deleteComment(comment) {
+    this.workItemService
+        .deleteComment(comment)
+        .subscribe(response => {
+            if (response.status === 200) {
+                remove(this.workItem.relationships.comments.data, cursor => {
+                    if (!!comment) {
+                        return cursor.id == comment.id;
+                    }
+                });
+            }
+        }, err => console.log(err));
   }
 
   closeDetails(): void {
@@ -826,13 +902,14 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
           }
         });
       }
-      this.save(payload, true).subscribe((workItem:WorkItem) => {
+      this.itemSubscription = this.save(payload, true).subscribe((workItem:WorkItem) => {
         this.logger.log('Iteration has been updated, sending event to iteration panel to refresh counts.');
         this.broadcaster.broadcast('associate_iteration', {
           workItemId: workItem.id,
           currentIterationId: this.workItem.relationships.iteration.data?this.workItem.relationships.iteration.data.id:undefined,
           futureIterationId: workItem.relationships.iteration.data?workItem.relationships.iteration.data.id:undefined
         });
+        setTimeout(() => this.itemSubscription.unsubscribe());
       });
     } else {
       //creating a new work item - save the user input
