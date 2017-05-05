@@ -24,9 +24,12 @@ export class WorkItemMockGenerator {
    * comment structure.
    */
   public createWorkItemComments(): any {
-    return {
-      'id0':
-        {
+    const wiItems = this.createWorkItems();
+    let WiComments = {};
+
+    wiItems.forEach(item => {
+      if (item.id === 'id0') {
+        WiComments[item.id] = {
           'data': [
             {
               'attributes': {
@@ -47,9 +50,21 @@ export class WorkItemMockGenerator {
               },
               'type': 'comments'
             }
-          ]
+          ],
+          'meta': {
+            'totalCount': 1
+          }
+        };
+      } else {
+        WiComments[item.id] = {
+          'data': [],
+          'meta': {
+            'totalCount': 0
+          }
         }
-    };
+      }
+    });
+    return WiComments;
   }
 
   /*
