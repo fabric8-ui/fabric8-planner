@@ -29,9 +29,6 @@ import { witApiUrlProvider } from './shared/wit-api.provider';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-// Footer
-import { FooterComponent } from './footer/footer.component';
-
 // Header
 import { HeaderComponent } from './header/header.component';
 import { DummySpace } from './header/DummySpace.service';
@@ -131,7 +128,6 @@ if (process.env.ENV == 'inmemory') {
   ],
   declarations: [
     AppComponent,
-    FooterComponent,
     HeaderComponent,
     LoginComponent
   ],
