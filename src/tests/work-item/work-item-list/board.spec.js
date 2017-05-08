@@ -93,7 +93,7 @@ describe('Work board tests :: ', function () {
 
   it( 'Verify Board Filter elements are present -desktop ', function() {
        expect(boardPage.getFilterWITButton().isPresent()).toBe(true);
-       expect(boardPage.getTextFilterWITButton()).toBe("User Story");
+       expect(boardPage.getTextFilterWITButton()).toBe("Planner Item");
        var list = ['Fundamental','Experience','Scenario','Feature','Bug','User Story'];
        for (var i=0;i<list.length;i++){
             boardPage.clickFilterWITButton();
