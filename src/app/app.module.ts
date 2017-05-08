@@ -49,8 +49,6 @@ import { WorkItemQuickAddModule } from './work-item/work-item-quick-add/work-ite
 import { MockDataService } from './shared/mock-data.service';
 import { MockHttp } from './shared/mock-http';
 
-import { ToastNotificationComponent } from './toast-notification/toast-notification.component';
-
 // conditionally import the inmemory resource module
 let serviceImports: Array<any[] | any | ModuleWithProviders>;
 let providers: any[] = [
@@ -135,8 +133,7 @@ if (process.env.ENV == 'inmemory') {
     AppComponent,
     FooterComponent,
     HeaderComponent,
-    LoginComponent,
-    ToastNotificationComponent,
+    LoginComponent
   ],
   providers: providers,
   bootstrap: [ AppComponent ]
