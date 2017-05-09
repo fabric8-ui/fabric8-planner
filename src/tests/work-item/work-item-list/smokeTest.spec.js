@@ -229,4 +229,3 @@ it('check date showing up correctly - Desktop', function () {
   var compareWorkitems = function(page, targetIndex, expectedTitle) {
     expect(page.workItemTitle(page.workItemByIndex(targetIndex))).toBe(expectedTitle);
   }
-
