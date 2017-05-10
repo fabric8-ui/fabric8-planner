@@ -24,6 +24,9 @@
       margin-left: rem(5);
       vertical-align: top;
       white-space: normal;
+      .boardQuickAddContainer {
+        margin-bottom: rem(10);
+      }
       .board-lane-column {
         height: 100%;
         padding: 0;
@@ -222,13 +225,5 @@
   img {
     width: 30px;
     height: 30px;
-  }
-}
-
-.gu-mirror {
-  padding: em(15);
-  .row-wrapper {
-    display: flex;
-    justify-content: space-between;
   }
 }
