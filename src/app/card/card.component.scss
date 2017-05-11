@@ -27,5 +27,18 @@
     display: flex;
     justify-content: space-between;
   }
+  .not-assigned-user-icon {
+    @include not-assigned-user-icon;
+    width: 30px;
+    height: 30px;
+  }
+
+  .user-avatar {
+    @include user-avatar;
+    img {
+      width: 30px;
+      height: 30px;
+    }
+  }
 }//boardcard ended
 
