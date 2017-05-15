@@ -114,6 +114,7 @@ describe('Work item list', function () {
   }); 
    
  /** User can read , update , remove assignee  */
+ // https://github.com/fabric8io/fabric8-planner/issues/1854 Bug
    it ('User can read , update , remove assignee - desktop ', function() {
       page.clickWorkItemQuickAdd();
       page.typeQuickAddWorkItemTitle(workItemTitle);
