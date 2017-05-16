@@ -31,3 +31,14 @@
     </div>
   </div>
 </div>
+<fab-planner-associate-iteration-modal
+    [workItem]="item"
+    #associateIterationModal>
+</fab-planner-associate-iteration-modal>
+
+<div *ngIf="showDialog">
+  <alm-dialog
+    (pfDialogClick)="onButtonClick($event)"
+    [dialog]='dialog'
+  ></alm-dialog>
+</div>

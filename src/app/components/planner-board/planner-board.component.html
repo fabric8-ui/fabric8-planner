@@ -42,10 +42,6 @@
                       [queryParams]="existingQueryParams" (mousedown)="getWI(item)" (touchstart)="getWI(item)" [attr.data-id]="item.id">
                       <card [item]='item'
                             (isSelectedEvent)="isSelected(item)"></card>
-                      <fab-planner-associate-iteration-modal
-                          [workItem]="item"
-                          #associateIterationModal>
-                      </fab-planner-associate-iteration-modal>
                     </div>
                   </div>
                 </div>
@@ -63,10 +59,3 @@
   [takeFromInput]="true"
   [wiTypes]="workItemTypes">
 </detail-add-type-selector>
-
-<div *ngIf="showDialog">
-	<alm-dialog
-		(pfDialogClick)="onButtonClick($event)"
-		[dialog]='dialog'
-  ></alm-dialog>
-</div>

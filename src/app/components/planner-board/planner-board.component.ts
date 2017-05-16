@@ -316,10 +316,6 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(link);
   }
 
-  kebabClick(event: any): void {
-    event.stopPropagation();
-  }
-
   openDetail(event: any): void {
     event.stopPropagation();
   }
@@ -343,38 +339,6 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       this.onDelete(null);
     }
     this.showDialog = false;
-  }
-
-  onMoveToBacklog(event: any): void {
-    event.stopPropagation();
-    //set this work item's iteration to None
-    //send a patch request
-    this.workItem.relationships.iteration = {}
-    this.workItemService
-      .update(this.workItem)
-      .subscribe(workItem => {
-        this.workItem = workItem;
-        try {
-          this.notifications.message({
-            message: workItem.attributes['system.title'] + ' has been moved to the Backlog.',
-            type: NotificationType.SUCCESS
-          } as Notification);
-        } catch (e) {
-          console.log('Error displaying notification. Iteration was moved to Backlog.')
-        }
-
-    },
-    (err) => {
-      try {
-        this.notifications.message({
-          message: this.workItem.attributes['system.title'] + ' could not be moved to the Backlog.',
-          type: NotificationType.DANGER
-        } as Notification);
-      } catch (e) {
-        console.log('Error displaying notification. Error moving Iteration to Backlog.')
-      }
-
-    });
   }
 
   onDelete(event: MouseEvent): void {

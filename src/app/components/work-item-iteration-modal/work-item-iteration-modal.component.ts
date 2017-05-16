@@ -209,7 +209,7 @@ export class FabPlannerAssociateIterationModalComponent {
   }
 
   actionOnOpen() {
-    if (this.workItem.relationships.iteration) {
+    if (this.workItem.relationships.iteration.data) {
       this.selectedIterationName = (this.workItem.relationships.iteration.data.attributes.resolved_parent_path +
         '/' +
         this.workItem.relationships.iteration.data.attributes.name).replace('//', '/');
