@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Broadcaster, Logger, Notification, NotificationType, Notifications } from 'ngx-base';
+import { User } from 'ngx-login-client';
 
 import { WorkItem } from './../models/work-item';
 import { WorkItemService } from './../work-item/work-item.service';
@@ -13,6 +14,8 @@ import { WorkItemService } from './../work-item/work-item.service';
 export class CardComponent implements OnInit {
 
   @Input() item: WorkItem;
+  @Input() title: string;
+  @Input() user: User;
 
   @Output() isSelectedEvent: EventEmitter<CardComponent> = new EventEmitter<CardComponent>();
 
