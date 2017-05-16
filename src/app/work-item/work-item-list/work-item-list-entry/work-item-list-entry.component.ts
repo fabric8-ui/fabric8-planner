@@ -7,7 +7,7 @@ import { AuthenticationService } from 'ngx-login-client';
 import { Dialog } from 'ngx-widgets';
 
 import { WorkItem }        from '../../../models/work-item';
-import { WorkItemService } from '../../work-item.service';
+import { WorkItemService } from '../../../services/work-item.service';
 
 import { TreeListItemComponent } from 'ngx-widgets';
 

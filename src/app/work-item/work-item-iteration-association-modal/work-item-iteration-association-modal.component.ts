@@ -12,9 +12,9 @@ import {
 } from 'ngx-login-client';
 
 import { WorkItem }          from '../../models/work-item';
-import { WorkItemService }   from '../work-item.service';
+import { WorkItemService }   from '../../services/work-item.service';
 import { IterationModel }    from '../../models/iteration.model';
-import { IterationService }  from '../../iteration/iteration.service';
+import { IterationService }  from '../../../services/iteration.service';
 
 
 @Component({

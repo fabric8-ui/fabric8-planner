@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { cloneDeep } from 'lodash';
 import { Logger } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
-import { HttpService } from './../shared/http-service';
+import { HttpService } from '../shared/http-service';
 
 import { Space, Spaces } from 'ngx-fabric8-wit';
 import { AreaModel } from '../models/area.model';

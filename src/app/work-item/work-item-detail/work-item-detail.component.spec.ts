@@ -46,24 +46,24 @@ import {
 
 import { ModalModule } from 'ngx-modal';
 import { SpacesService } from '../../shared/standalone/spaces.service';
-import { CollaboratorService } from './../../collaborator/collaborator.service';
+import { CollaboratorService } from '../../services/collaborator.service';
 import { AreaModel } from '../../models/area.model';
-import { AreaService } from '../../area/area.service';
+import { AreaService } from '../../services/area.service';
 import { DynamicFieldComponent } from './dynamic-form/dynamic-field.component';
 import { TypeaheadDropdown } from './typeahead-dropdown/typeahead-dropdown.component';
 import { IterationModel } from '../../models/iteration.model';
-import { IterationService } from '../../iteration/iteration.service';
+import { IterationService } from '../../../services/iteration.service';
 import { LinkType } from '../../models/link-type';
-import { MarkdownControlComponent } from './markdown-control/markdown-control.component';
+import { MarkdownControlComponent } from '../../markdown-control/markdown-control.component';
 import { WorkItem } from '../../models/work-item';
 import { WorkItemType } from '../../models/work-item-type';
-import { WorkItemService } from '../work-item.service';
-import { WorkItemTypeControlService } from './../work-item-type-control.service';
+import { WorkItemService } from '../../services/work-item.service';
+import { WorkItemTypeControlService } from '../../services/work-item-type-control.service';
 
 import { WorkItemLinkComponent } from './work-item-link/work-item-link.component';
 import { WorkItemCommentComponent } from './work-item-comment/work-item-comment.component';
 import { WorkItemDetailComponent } from './work-item-detail.component';
-import { WorkItemLinkTypeFilterByTypeName, WorkItemLinkFilterByTypeName } from './work-item-detail-pipes/work-item-link-filters.pipe';
+import { WorkItemLinkTypeFilterByTypeName, WorkItemLinkFilterByTypeName } from '../../pipes/work-item-link-filters.pipe';
 import { CollapseModule } from 'ng2-bootstrap';
 import {Observable} from 'rxjs';
 

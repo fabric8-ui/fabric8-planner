@@ -19,7 +19,7 @@ import { Broadcaster, Logger } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
 
 import { WorkItem } from '../../models/work-item';
-import { WorkItemService } from '../work-item.service';
+import { WorkItemService } from '../../services/work-item.service';
 
 import { WorkItemQuickAddComponent } from './work-item-quick-add.component';
 

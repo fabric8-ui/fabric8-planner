@@ -21,7 +21,7 @@ import { AuthenticationService } from 'ngx-login-client';
 
 import { WorkItemType } from './../../models/work-item-type';
 import { WorkItem, WorkItemRelations } from '../../models/work-item';
-import { WorkItemService } from '../work-item.service';
+import { WorkItemService } from '../../services/work-item.service';
 
 @Component({
   selector: 'alm-work-item-quick-add',

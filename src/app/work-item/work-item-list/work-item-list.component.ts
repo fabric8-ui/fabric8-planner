@@ -1,8 +1,8 @@
 import { AreaModel } from './../../models/area.model';
-import { AreaService } from './../../area/area.service';
+import { AreaService } from '../../services/area.service';
 import { FilterService } from './../../shared/filter.service';
 import { Observable } from 'rxjs/Observable';
-import { IterationService } from './../../iteration/iteration.service';
+import { IterationService } from '../../../services/iteration.service';
 import { IterationModel } from './../../models/iteration.model';
 import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -41,8 +41,8 @@ import { Space, Spaces } from 'ngx-fabric8-wit';
 import { WorkItem } from '../../models/work-item';
 import { WorkItemType }               from '../../models/work-item-type';
 import { WorkItemListEntryComponent } from './work-item-list-entry/work-item-list-entry.component';
-import { WorkItemService }            from '../work-item.service';
-import { CollaboratorService } from './../../collaborator/collaborator.service';
+import { WorkItemService }            from '../../services/work-item.service';
+import { CollaboratorService } from '../../services/collaborator.service';
 
 import { TreeListComponent } from 'ngx-widgets';
 

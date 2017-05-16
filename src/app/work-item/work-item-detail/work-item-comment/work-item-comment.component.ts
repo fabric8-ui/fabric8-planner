@@ -14,7 +14,7 @@ import { User } from 'ngx-login-client';
 
 import { Comment, CommentAttributes } from '../../../models/comment';
 import { WorkItem } from '../../../models/work-item';
-import { CollaboratorService } from './../../../collaborator/collaborator.service';
+import { CollaboratorService } from '../../../services/collaborator.service';
 
 @Component({
     selector: 'alm-work-item-comment',

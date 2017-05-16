@@ -9,7 +9,7 @@ import { Link } from './../../../models/link';
 import { LinkDict } from './../../../models/work-item';
 import { LinkType, MinimizedLinkType } from './../../../models/link-type';
 import { WorkItem } from './../../../models/work-item';
-import { WorkItemService } from './../../work-item.service';
+import { WorkItemService } from '../../../services/work-item.service';
 
 @Component({
   selector: 'alm-work-item-link',

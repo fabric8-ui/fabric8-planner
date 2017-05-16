@@ -5,8 +5,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Broadcaster, Logger } from 'ngx-base';
 
 import { WorkItem } from '../models/work-item';
-import { WorkItemService } from '../work-item/work-item.service';
-import { IterationService } from '../iteration/iteration.service';
+import { WorkItemService } from '../services/work-item.service';
+import { IterationService } from '../../services/iteration.service';
 
 @Component({
   host:{

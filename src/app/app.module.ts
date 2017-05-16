@@ -35,7 +35,7 @@ import { DummySpace } from './header/DummySpace.service';
 
 // Login
 import { LoginComponent } from './login/login.component';
-import { LoginService } from './login/login.service';
+import { LoginService } from './services/login.service';
 
 // import { WorkItemModule } from './work-item/work-item.module';
 import { PlannerBoardModule } from './work-item/work-item-board/planner-board.module';

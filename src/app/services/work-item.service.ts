@@ -25,17 +25,17 @@ import {
 } from '../models/comment';
 
 import { AreaModel } from '../models/area.model';
-import { AreaService } from '../area/area.service';
+import { AreaService } from './area.service';
 import { IterationModel } from '../models/iteration.model';
-import { IterationService } from '../iteration/iteration.service';
+import { IterationService } from '../../services/iteration.service';
 import { LinkType } from '../models/link-type';
 import { Link } from '../models/link';
 import {
   LinkDict,
   WorkItem
 } from '../models/work-item';
-import { WorkItemType } from './../models/work-item-type';
-import { HttpService } from './../shared/http-service';
+import { WorkItemType } from '../models/work-item-type';
+import { HttpService } from '../shared/http-service';
 
 @Injectable()
 export class WorkItemService {

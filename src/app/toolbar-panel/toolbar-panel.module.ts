@@ -9,9 +9,9 @@ import {
   TooltipConfig
 } from 'ng2-bootstrap';
 
-import { CollaboratorService } from './../collaborator/collaborator.service';
+import { CollaboratorService } from '../services/collaborator.service';
 import { FilterService } from '../shared/filter.service';
-import { WorkItemService } from './../work-item/work-item.service';
+import { WorkItemService } from '../services/work-item.service';
 import { ToolbarPanelComponent } from './toolbar-panel.component';
 
 import {

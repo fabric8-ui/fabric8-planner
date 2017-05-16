@@ -37,7 +37,7 @@ import { WorkItemBoardComponent } from './work-item-board.component';
 import { WorkItemDetailAddTypeSelectorModule } from '../work-item-detail-add-type-selector/work-item-detail-add-type-selector.module';
 import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.module';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
-import { WorkItemService } from '../work-item.service';
+import { WorkItemService } from '../../services/work-item.service';
 
 import { MockHttp } from './../../shared/mock-http';
 

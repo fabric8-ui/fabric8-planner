@@ -21,18 +21,18 @@ import {
 
 import { ModalModule } from 'ngx-modal';
 
-import { AreaService } from '../../area/area.service';
+import { AreaService } from '../../services/area.service';
 import { WorkItemDetailComponent } from './work-item-detail.component';
 import { DynamicFieldComponent } from './dynamic-form/dynamic-field.component';
 import { TypeaheadDropdown } from './typeahead-dropdown/typeahead-dropdown.component';
-import { MarkdownControlComponent } from './markdown-control/markdown-control.component';
+import { MarkdownControlModule } from '../../markdown-control/markdown-control.module';
 import { WorkItemLinkComponent } from './work-item-link/work-item-link.component';
 import { WorkItemCommentComponent } from './work-item-comment/work-item-comment.component';
 import {
   WorkItemLinkFilterByTypeName,
   WorkItemLinkTypeFilterByTypeName
-} from './work-item-detail-pipes/work-item-link-filters.pipe';
-import { WorkItemTypeControlService } from '../work-item-type-control.service';
+} from '../../pipes/work-item-link-filters.pipe';
+import { WorkItemTypeControlService } from '../../services/work-item-type-control.service';
 
 let providers = [];
 
@@ -57,7 +57,8 @@ if (process.env.ENV == 'inmemory') {
     Ng2CompleterModule,
     ReactiveFormsModule,
     MyDatePickerModule,
-    RouterModule
+    RouterModule,
+    MarkdownControlModule
   ],
   declarations: [
     AlmUserName,
@@ -65,7 +66,6 @@ if (process.env.ENV == 'inmemory') {
     WorkItemDetailComponent,
     DynamicFieldComponent,
     TypeaheadDropdown,
-    MarkdownControlComponent,
     WorkItemLinkComponent,
     WorkItemLinkFilterByTypeName,
     WorkItemLinkTypeFilterByTypeName

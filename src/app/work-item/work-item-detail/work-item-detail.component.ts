@@ -33,17 +33,17 @@ import {
 } from 'ngx-login-client';
 
 import { AreaModel } from '../../models/area.model';
-import { AreaService } from '../../area/area.service';
+import { AreaService } from '../../services/area.service';
 import { IterationModel } from '../../models/iteration.model';
-import { IterationService } from '../../iteration/iteration.service';
-import { WorkItemTypeControlService } from '../work-item-type-control.service';
-import { MarkdownControlComponent } from './markdown-control/markdown-control.component';
+import { IterationService } from '../../../services/iteration.service';
+import { WorkItemTypeControlService } from '../../services/work-item-type-control.service';
+import { MarkdownControlComponent } from '../../markdown-control/markdown-control.component';
 import { TypeaheadDropdown, TypeaheadDropdownValue } from './typeahead-dropdown/typeahead-dropdown.component';
 
 import { WorkItem, WorkItemRelations } from '../../models/work-item';
-import { WorkItemService } from '../work-item.service';
+import { WorkItemService } from '../../services/work-item.service';
 import { WorkItemType } from '../../models/work-item-type';
-import { CollaboratorService } from '../../collaborator/collaborator.service'
+import { CollaboratorService } from '../../services/collaborator.service'
 
 @Component({
   selector: 'alm-work-item-detail',

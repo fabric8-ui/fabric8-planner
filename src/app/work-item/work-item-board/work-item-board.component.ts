@@ -1,6 +1,6 @@
 import { FilterService } from './../../shared/filter.service';
 import { AreaModel } from './../../models/area.model';
-import { AreaService } from './../../area/area.service';
+import { AreaService } from '../../services/area.service';
 import {
   AfterViewInit,
   Component,
@@ -20,7 +20,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { cloneDeep, trimEnd } from 'lodash';
 
-import { IterationService } from './../../iteration/iteration.service';
+import { IterationService } from '../../../services/iteration.service';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
@@ -34,8 +34,8 @@ import { Dialog } from 'ngx-widgets';
 import { IterationModel } from './../../models/iteration.model';
 import { WorkItem } from '../../models/work-item';
 import { WorkItemType } from '../../models/work-item-type';
-import { WorkItemService } from '../work-item.service';
-import { CollaboratorService } from './../../collaborator/collaborator.service';
+import { WorkItemService } from '../../services/work-item.service';
+import { CollaboratorService } from '../../services/collaborator.service';
 
 @Component({
   // tslint:disable-next-line:use-host-property-decorator

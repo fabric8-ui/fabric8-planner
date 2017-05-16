@@ -9,11 +9,11 @@ import { Subscription } from 'rxjs/Subscription';
 import { Space, Spaces } from 'ngx-fabric8-wit';
 
 import { AreaModel } from '../models/area.model';
-import { AreaService } from '../area/area.service';
+import { AreaService } from '../services/area.service';
 import { FilterModel } from './../models/filter.model';
-import { CollaboratorService } from './../collaborator/collaborator.service';
+import { CollaboratorService } from '../services/collaborator.service';
 import { FilterService } from '../shared/filter.service';
-import { WorkItemService } from './../work-item/work-item.service';
+import { WorkItemService } from '../services/work-item.service';
 import { WorkItemListEntryComponent } from './../work-item/work-item-list/work-item-list-entry/work-item-list-entry.component';
 import { WorkItemType } from './../models/work-item-type';
 import { WorkItem } from './../models/work-item';

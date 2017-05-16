@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { WorkItem } from './../../../models/work-item';
+import { WorkItem } from '../models/work-item';
 
 // tslint:disable-next-line:use-pipe-transform-interface
 @Pipe({ name: 'workItemLinkFilterByTypeName', pure: true })

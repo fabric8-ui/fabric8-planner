@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { ModalModule } from 'ngx-modal';
 import { DropdownModule } from 'ng2-bootstrap';
 
-import { WorkItemService } from './../work-item.service';
+import { WorkItemService } from '../../services/work-item.service';
 import { WorkItemDetailAddTypeSelectorComponent } from './work-item-detail-add-type-selector.component';
 import { WorkItemDetailAddTypeSelectorWidgetComponent } from './work-item-detail-add-type-selector-widget/work-item-detail-add-type-selector-widget.component';
 
