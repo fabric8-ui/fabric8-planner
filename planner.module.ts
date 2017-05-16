@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 
-import { PlannerBoardModule } from './src/app/work-item/work-item-board/planner-board.module';
-import { PlannerListModule } from './src/app/work-item/work-item-list/planner-list.module';
+import { PlannerBoardModule } from './src/app/components/work-item-board/planner-board.module';
+import { PlannerListModule } from './src/app/components/work-item-list/planner-list.module';
 
 
 @NgModule({
