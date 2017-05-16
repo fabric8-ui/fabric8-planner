@@ -19,8 +19,8 @@ import { IterationService }  from '../../../services/iteration.service';
 
 @Component({
   selector: 'fab-planner-associate-iteration-modal',
-  templateUrl: './work-item-iteration-association-modal.component.html',
-  styleUrls: ['./work-item-iteration-association-modal.component.scss']
+  templateUrl: './work-item-iteration-modal.component.html',
+  styleUrls: ['./work-item-iteration-modal.component.scss']
 })
 export class FabPlannerAssociateIterationModalComponent {
 

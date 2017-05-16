@@ -27,14 +27,14 @@ import { HttpService } from '../../services/http-service';
 
 import {
   FabPlannerAssociateIterationModalModule
-} from '../work-item-iteration-association-modal/work-item-iteration-association-modal.module';
+} from '../work-item-iteration-modal/work-item-iteration-modal.module';
 import { GlobalSettings } from '../../shared/globals';
 import { IterationModule } from '../iterations-panel/iterations-panel.module';
 import { PlannerBoardRoutingModule } from './planner-board-routing.module';
 import { SidepanelModule } from '../side-panel/side-panel.module';
 import { ToolbarPanelModule } from '../toolbar-panel/toolbar-panel.module';
 import { WorkItemBoardComponent } from './work-item-board.component';
-import { WorkItemDetailAddTypeSelectorModule } from '../work-item-detail-add-type-selector/work-item-detail-add-type-selector.module';
+import { WorkItemDetailAddTypeSelectorModule } from '../work-item-create/work-item-create.module';
 import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.module';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 import { WorkItemService } from '../../services/work-item.service';

@@ -49,7 +49,7 @@ import { SpacesService } from '../../mock/standalone/spaces.service';
 import { CollaboratorService } from '../../services/collaborator.service';
 import { AreaModel } from '../../models/area.model';
 import { AreaService } from '../../services/area.service';
-import { DynamicFieldComponent } from '../dynamic-form/dynamic-field.component';
+import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component';
 import { TypeaheadDropdown } from '../typeahead-dropdown/typeahead-dropdown.component';
 import { IterationModel } from '../../models/iteration.model';
 import { IterationService } from '../../../services/iteration.service';

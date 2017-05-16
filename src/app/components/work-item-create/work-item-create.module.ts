@@ -5,8 +5,8 @@ import { ModalModule } from 'ngx-modal';
 import { DropdownModule } from 'ng2-bootstrap';
 
 import { WorkItemService } from '../../services/work-item.service';
-import { WorkItemDetailAddTypeSelectorComponent } from './work-item-detail-add-type-selector.component';
-import { WorkItemDetailAddTypeSelectorWidgetComponent } from './work-item-detail-add-type-selector-widget/work-item-detail-add-type-selector-widget.component';
+import { WorkItemDetailAddTypeSelectorComponent } from './work-item-create.component';
+import { WorkItemDetailAddTypeSelectorWidgetComponent } from './work-item-create-selector/work-item-create-selector.component';
 
 import {
   AlmEditableModule,

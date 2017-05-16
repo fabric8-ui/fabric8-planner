@@ -17,9 +17,9 @@ import {
 } from 'ngx-widgets';
 
 @Component({
-  selector: 'detail-add-type-selector-widget',
-  templateUrl: './work-item-detail-add-type-selector-widget.component.html',
-  styleUrls: ['./work-item-detail-add-type-selector-widget.component.scss']
+  selector: 'create-selector-widget',
+  templateUrl: './work-item-create-selector.component.html',
+  styleUrls: ['./work-item-create-selector.component.scss']
 })
 export class WorkItemDetailAddTypeSelectorWidgetComponent implements OnInit {
 

@@ -24,13 +24,13 @@ import { AuthenticationService } from 'ngx-login-client';
 import { GlobalSettings } from '../../shared/globals';
 import {
   FabPlannerAssociateIterationModalModule
-} from '../work-item-iteration-association-modal/work-item-iteration-association-modal.module';
+} from '../work-item-iteration-modal/work-item-iteration-modal.module';
 import { IterationModule } from '../iterations-panel/iterations-panel.module';
 import { PlannerListRoutingModule } from './planner-list-routing.module';
 import { SidepanelModule } from '../side-panel/side-panel.module';
 import { ToolbarPanelModule } from '../toolbar-panel/toolbar-panel.module';
 import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.module';
-import { WorkItemDetailAddTypeSelectorModule } from '../work-item-detail-add-type-selector/work-item-detail-add-type-selector.module';
+import { WorkItemDetailAddTypeSelectorModule } from '../work-item-create/work-item-create.module';
 import { WorkItemListComponent } from './work-item-list.component';
 import { WorkItemListEntryComponent } from '../work-item-list-entry/work-item-list-entry.component';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';

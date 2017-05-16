@@ -12,7 +12,7 @@ import {
 import { ModalModule } from 'ngx-modal';
 import {
   FabPlannerAssociateIterationModalComponent
-} from './work-item-iteration-association-modal.component';
+} from './work-item-iteration-modal.component';
 
 @NgModule({
   imports: [

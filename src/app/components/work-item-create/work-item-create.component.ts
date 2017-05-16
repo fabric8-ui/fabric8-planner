@@ -1,4 +1,4 @@
-import { WorkItemDetailAddTypeSelectorWidgetComponent } from './work-item-detail-add-type-selector-widget/work-item-detail-add-type-selector-widget.component';
+import { WorkItemDetailAddTypeSelectorWidgetComponent } from './work-item-create-selector/work-item-create-selector.component';
 import { Component, OnInit, Input, OnChanges, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 
@@ -19,8 +19,8 @@ import {
 
 @Component({
   selector: 'detail-add-type-selector',
-  templateUrl: './work-item-detail-add-type-selector.component.html',
-  styleUrls: ['./work-item-detail-add-type-selector.component.scss']
+  templateUrl: './work-item-create.component.html',
+  styleUrls: ['./work-item-create.component.scss']
 })
 export class WorkItemDetailAddTypeSelectorComponent implements OnInit, OnChanges {
 

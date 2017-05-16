@@ -23,7 +23,7 @@ import { ModalModule } from 'ngx-modal';
 
 import { AreaService } from '../../services/area.service';
 import { WorkItemDetailComponent } from './work-item-detail.component';
-import { DynamicFieldComponent } from '../dynamic-form/dynamic-field.component';
+import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component';
 import { TypeaheadDropdown } from '../typeahead-dropdown/typeahead-dropdown.component';
 import { MarkdownControlModule } from '../markdown-control/markdown-control.module';
 import { WorkItemLinkComponent } from '../work-item-link/work-item-link.component';

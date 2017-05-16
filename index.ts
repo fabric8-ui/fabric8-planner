@@ -1,6 +1,6 @@
-export { WorkItemDetailAddTypeSelectorWidgetComponent } from './src/app/components/work-item-detail-add-type-selector/work-item-detail-add-type-selector-widget/work-item-detail-add-type-selector-widget.component';
+export { WorkItemDetailAddTypeSelectorWidgetComponent } from './src/app/components/work-item-create/work-item-create-selector/work-item-create-selector.component';
 export { WorkItemType } from './src/app/models/work-item-type';
-export { WorkItemDetailAddTypeSelectorModule } from './src/app/components/work-item-detail-add-type-selector/work-item-detail-add-type-selector.module';
+export { WorkItemDetailAddTypeSelectorModule } from './src/app/components/work-item-create/work-item-create.module';
 export { WorkItemDetailModule } from './src/app/components/work-item-detail/work-item-detail.module';
 export { WorkItemService } from './src/app/services/work-item.service';
 export { WorkItem } from './src/app/models/work-item';
