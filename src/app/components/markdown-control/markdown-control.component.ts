@@ -14,7 +14,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { AuthenticationService } from 'ngx-login-client';
 import { Broadcaster, Logger } from 'ngx-base';
 
-import { WorkItemService } from '../services/work-item.service';
+import { WorkItemService } from '../../services/work-item.service';
 
 /*
  * A markdown field control with preview and user defined

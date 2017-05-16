@@ -12,8 +12,8 @@ import { Space, Spaces } from 'ngx-fabric8-wit';
 import { Notification, Notifications, NotificationType } from 'ngx-base';
 
 import { IterationModel } from '../app/models/iteration.model';
-import { MockHttp } from '../app/shared/mock-http';
-import { HttpService } from '../app/shared/http-service';
+import { MockHttp } from '../app/mock/mock-http';
+import { HttpService } from '../app/services/http-service';
 
 @Injectable()
 export class IterationService {

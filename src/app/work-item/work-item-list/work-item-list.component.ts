@@ -1,6 +1,6 @@
 import { AreaModel } from './../../models/area.model';
 import { AreaService } from '../../services/area.service';
-import { FilterService } from './../../shared/filter.service';
+import { FilterService } from '../../services/filter.service';
 import { Observable } from 'rxjs/Observable';
 import { IterationService } from '../../../services/iteration.service';
 import { IterationModel } from './../../models/iteration.model';

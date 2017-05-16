@@ -18,9 +18,9 @@ import { Spaces } from 'ngx-fabric8-wit';
 import { AuthenticationService } from 'ngx-login-client';
 import { Notifications } from 'ngx-base';
 
-import { MockHttp } from '../shared/mock-http';
-import { HttpService } from '../shared/http-service';
-import { SpacesService } from '../shared/standalone/spaces.service';
+import { MockHttp } from '../mock/mock-http';
+import { HttpService } from './http-service';
+import { SpacesService } from '../mock/standalone/spaces.service';
 import { IterationModel } from '../models/iteration.model';
 import { IterationService } from '../../services/iteration.service';
 import { GlobalSettings } from '../shared/globals';

@@ -1,5 +1,5 @@
-import { HttpService } from '../shared/http-service';
-import { SpacesService } from '../shared/standalone/spaces.service';
+import { HttpService } from './http-service';
+import { SpacesService } from '../mock/standalone/spaces.service';
 import { Spaces } from 'ngx-fabric8-wit';
 import {
   async,
@@ -25,7 +25,7 @@ import {
 } from 'ngx-login-client';
 import { Notifications } from 'ngx-base';
 
-import { MockDataService } from '../shared/mock-data.service';
+import { MockDataService } from '../mock/mock-data.service';
 import { AreaService } from './area.service';
 import { IterationService } from '../../services/iteration.service';
 import { WorkItem } from '../models/work-item';

@@ -23,7 +23,7 @@ import {
 } from 'ngx-widgets';
 import { AuthenticationService } from 'ngx-login-client';
 
-import { HttpService } from './../../shared/http-service';
+import { HttpService } from '../../services/http-service';
 
 import {
   FabPlannerAssociateIterationModalModule
@@ -39,7 +39,7 @@ import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.modul
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 import { WorkItemService } from '../../services/work-item.service';
 
-import { MockHttp } from './../../shared/mock-http';
+import { MockHttp } from '../../mock/mock-http';
 
 let providers = [];
 

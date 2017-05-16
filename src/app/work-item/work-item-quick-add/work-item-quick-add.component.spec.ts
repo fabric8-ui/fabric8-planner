@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { SpacesService } from './../../shared/standalone/spaces.service';
+import { SpacesService } from '../../mock/standalone/spaces.service';
 import { Spaces } from 'ngx-fabric8-wit';
 import {
   async,

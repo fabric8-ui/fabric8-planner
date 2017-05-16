@@ -1,4 +1,4 @@
-import { FilterService } from './../../shared/filter.service';
+import { FilterService } from '../../services/filter.service';
 import { AreaModel } from './../../models/area.model';
 import { AreaService } from '../../services/area.service';
 import {

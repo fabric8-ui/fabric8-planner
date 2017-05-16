@@ -9,11 +9,11 @@ import { Subscription } from 'rxjs/Subscription';
 import { cloneDeep } from 'lodash';
 import { Logger } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
-import { HttpService } from '../shared/http-service';
+import { HttpService } from './http-service';
 
 import { Space, Spaces } from 'ngx-fabric8-wit';
 import { AreaModel } from '../models/area.model';
-import { MockHttp } from '../shared/mock-http';
+import { MockHttp } from '../mock/mock-http';
 
 @Injectable()
 export class AreaService {

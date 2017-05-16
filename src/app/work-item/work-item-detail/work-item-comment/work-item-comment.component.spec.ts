@@ -54,13 +54,13 @@ import { DynamicFieldComponent } from './../dynamic-form/dynamic-field.component
 import { TypeaheadDropdown } from './../typeahead-dropdown/typeahead-dropdown.component';
 import { IterationModel } from '../../../models/iteration.model';
 import { IterationService } from '../../../../services/iteration.service';
-import { MarkdownControlComponent } from '../../../markdown-control/markdown-control.component';
+import { MarkdownControlComponent } from '../../../components/markdown-control/markdown-control.component';
 import { LinkType } from '../../../models/link-type';
 import { Comment } from '../../../models/comment';
 import { WorkItem } from '../../../models/work-item';
 import { WorkItemType } from '../../../models/work-item-type';
 import { AlmUserName } from '../../../pipes/alm-user-name.pipe';
-import { SpacesService } from '../../../shared/standalone/spaces.service';
+import { SpacesService } from '../../../mock/standalone/spaces.service';
 import { WorkItemService } from '../../../services/work-item.service';
 import { WorkItemLinkComponent } from '../work-item-link/work-item-link.component';
 import { WorkItemCommentComponent } from './work-item-comment.component';

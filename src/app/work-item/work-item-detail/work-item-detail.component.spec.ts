@@ -45,7 +45,7 @@ import {
 } from 'ngx-widgets';
 
 import { ModalModule } from 'ngx-modal';
-import { SpacesService } from '../../shared/standalone/spaces.service';
+import { SpacesService } from '../../mock/standalone/spaces.service';
 import { CollaboratorService } from '../../services/collaborator.service';
 import { AreaModel } from '../../models/area.model';
 import { AreaService } from '../../services/area.service';
@@ -54,7 +54,7 @@ import { TypeaheadDropdown } from './typeahead-dropdown/typeahead-dropdown.compo
 import { IterationModel } from '../../models/iteration.model';
 import { IterationService } from '../../../services/iteration.service';
 import { LinkType } from '../../models/link-type';
-import { MarkdownControlComponent } from '../../markdown-control/markdown-control.component';
+import { MarkdownControlComponent } from '../../components/markdown-control/markdown-control.component';
 import { WorkItem } from '../../models/work-item';
 import { WorkItemType } from '../../models/work-item-type';
 import { WorkItemService } from '../../services/work-item.service';

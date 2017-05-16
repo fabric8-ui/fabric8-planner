@@ -9,7 +9,7 @@ import { Ng2CompleterModule } from 'ng2-completer';
 import { DropdownModule } from 'ng2-bootstrap';
 import { MyDatePickerModule } from 'mydatepicker';
 
-import { MockHttp } from './../../shared/mock-http';
+import { MockHttp } from '../../mock/mock-http';
 
 import { AlmUserName } from '../../pipes/alm-user-name.pipe';
 
@@ -25,7 +25,7 @@ import { AreaService } from '../../services/area.service';
 import { WorkItemDetailComponent } from './work-item-detail.component';
 import { DynamicFieldComponent } from './dynamic-form/dynamic-field.component';
 import { TypeaheadDropdown } from './typeahead-dropdown/typeahead-dropdown.component';
-import { MarkdownControlModule } from '../../markdown-control/markdown-control.module';
+import { MarkdownControlModule } from '../../components/markdown-control/markdown-control.module';
 import { WorkItemLinkComponent } from './work-item-link/work-item-link.component';
 import { WorkItemCommentComponent } from './work-item-comment/work-item-comment.component';
 import {

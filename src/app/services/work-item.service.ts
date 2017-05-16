@@ -35,7 +35,7 @@ import {
   WorkItem
 } from '../models/work-item';
 import { WorkItemType } from '../models/work-item-type';
-import { HttpService } from '../shared/http-service';
+import { HttpService } from './http-service';
 
 @Injectable()
 export class WorkItemService {

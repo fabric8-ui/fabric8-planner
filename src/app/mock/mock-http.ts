@@ -1,4 +1,4 @@
-import { HttpService } from './http-service';
+import { HttpService } from '../services/http-service';
 import { Injectable, ReflectiveInjector } from '@angular/core';
 import { Http } from '@angular/http';
 import { Request, RequestOptions, RequestOptionsArgs } from '@angular/http';

@@ -37,7 +37,7 @@ import { AreaService } from '../../services/area.service';
 import { IterationModel } from '../../models/iteration.model';
 import { IterationService } from '../../../services/iteration.service';
 import { WorkItemTypeControlService } from '../../services/work-item-type-control.service';
-import { MarkdownControlComponent } from '../../markdown-control/markdown-control.component';
+import { MarkdownControlComponent } from '../../components/markdown-control/markdown-control.component';
 import { TypeaheadDropdown, TypeaheadDropdownValue } from './typeahead-dropdown/typeahead-dropdown.component';
 
 import { WorkItem, WorkItemRelations } from '../../models/work-item';

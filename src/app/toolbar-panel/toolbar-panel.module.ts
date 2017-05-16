@@ -10,7 +10,7 @@ import {
 } from 'ng2-bootstrap';
 
 import { CollaboratorService } from '../services/collaborator.service';
-import { FilterService } from '../shared/filter.service';
+import { FilterService } from '../services/filter.service';
 import { WorkItemService } from '../services/work-item.service';
 import { ToolbarPanelComponent } from './toolbar-panel.component';
 
