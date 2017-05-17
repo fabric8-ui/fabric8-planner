@@ -6,7 +6,7 @@ export { WorkItemService } from './src/app/services/work-item.service';
 export { WorkItem } from './src/app/models/work-item';
 export { PlannerModule } from './planner.module';
 
-export { WorkItemBoardComponent } from './src/app/components/work-item-board/work-item-board.component';
-export { PlannerBoardModule } from './src/app/components/work-item-board/planner-board.module';
-export { WorkItemListComponent } from './src/app/components/work-item-list/work-item-list.component';
-export { PlannerListModule } from './src/app/components/work-item-list/planner-list.module';
+export { PlannerBoardComponent } from './src/app/components/planner-board/planner-board.component';
+export { PlannerBoardModule } from './src/app/components/planner-board/planner-board.module';
+export { PlannerListComponent } from './src/app/components/planner-list/planner-list.component';
+export { PlannerListModule } from './src/app/components/planner-list/planner-list.module';

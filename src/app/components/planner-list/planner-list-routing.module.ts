@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { WorkItemDetailComponent } from '../work-item-detail/work-item-detail.component';
-import { WorkItemListComponent } from './work-item-list.component';
+import { PlannerListComponent } from './planner-list.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: WorkItemListComponent,
+    component: PlannerListComponent,
     children: [
       { path: 'detail/:id',
         component: WorkItemDetailComponent,

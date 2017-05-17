@@ -24,7 +24,7 @@ import { AuthenticationService } from 'ngx-login-client';
 import { GlobalSettings } from '../../shared/globals';
 import {
   FabPlannerAssociateIterationModalComponent
-} from './../work-item-iteration-modal/work-item-iteration-modal.component';
+} from '../work-item-iteration-modal/work-item-iteration-modal.component';
 import { IterationModule } from '../iterations-panel/iterations-panel.module';
 import { PlannerListRoutingModule } from './planner-list-routing.module';
 import { SidepanelModule } from '../side-panel/side-panel.module';
