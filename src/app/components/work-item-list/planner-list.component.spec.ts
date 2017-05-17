@@ -41,13 +41,13 @@ import { IterationModel } from '../../models/iteration.model';
 import { IterationService } from '../../../services/iteration.service';
 
 import { WorkItemListEntryComponent } from '../work-item-list-entry/work-item-list-entry.component';
-import { WorkItemListComponent } from './work-item-list.component';
+import { PlannerListComponent } from './planner-list.component';
 import { Observable } from 'rxjs';
 
 
 describe('Work item list view - ', () => {
-  let comp: WorkItemListComponent;
-  let fixture: ComponentFixture<WorkItemListComponent>;
+  let comp: PlannerListComponent;
+  let fixture: ComponentFixture<PlannerListComponent>;
   let el: DebugElement;
   let el1: DebugElement;
   let logger: Logger;
@@ -285,7 +285,7 @@ describe('Work item list view - ', () => {
 
       declarations: [
         WorkItemListEntryComponent,
-        WorkItemListComponent
+        PlannerListComponent
       ],
       providers: [
         Broadcaster,
@@ -311,7 +311,7 @@ describe('Work item list view - ', () => {
       ]
     }).compileComponents()
       .then(() => {
-        fixture = TestBed.createComponent(WorkItemListComponent);
+        fixture = TestBed.createComponent(PlannerListComponent);
         comp = fixture.componentInstance;
 
       });

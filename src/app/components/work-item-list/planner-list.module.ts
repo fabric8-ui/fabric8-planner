@@ -23,15 +23,15 @@ import { AuthenticationService } from 'ngx-login-client';
 
 import { GlobalSettings } from '../../shared/globals';
 import {
-  FabPlannerAssociateIterationModalModule
-} from '../work-item-iteration-modal/work-item-iteration-modal.module';
+  FabPlannerAssociateIterationModalComponent
+} from './../work-item-iteration-modal/work-item-iteration-modal.component';
 import { IterationModule } from '../iterations-panel/iterations-panel.module';
 import { PlannerListRoutingModule } from './planner-list-routing.module';
 import { SidepanelModule } from '../side-panel/side-panel.module';
 import { ToolbarPanelModule } from '../toolbar-panel/toolbar-panel.module';
 import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.module';
 import { WorkItemDetailAddTypeSelectorModule } from '../work-item-create/work-item-create.module';
-import { WorkItemListComponent } from './work-item-list.component';
+import { PlannerListComponent } from './planner-list.component';
 import { WorkItemListEntryComponent } from '../work-item-list-entry/work-item-list-entry.component';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 import { WorkItemService } from '../../services/work-item.service';
@@ -73,7 +73,6 @@ if (process.env.ENV == 'inmemory') {
     CommonModule,
     DialogModule,
     DropdownModule,
-    FabPlannerAssociateIterationModalModule,
     HttpModule,
     InfiniteScrollModule,
     IterationModule,
@@ -90,11 +89,12 @@ if (process.env.ENV == 'inmemory') {
     WorkItemDetailAddTypeSelectorModule
   ],
   declarations: [
-    WorkItemListComponent,
-    WorkItemListEntryComponent
+    PlannerListComponent,
+    WorkItemListEntryComponent,
+    FabPlannerAssociateIterationModalComponent
   ],
   providers: providers,
-  exports: [ WorkItemListComponent ]
+  exports: [ PlannerListComponent ]
 })
 export class PlannerListModule {
   constructor(http: Http) {}

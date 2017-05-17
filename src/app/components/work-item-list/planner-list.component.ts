@@ -56,7 +56,7 @@ import { TreeListComponent } from 'ngx-widgets';
   templateUrl: './work-item-list.component.html',
   styleUrls: ['./work-item-list.component.scss']
 })
-export class WorkItemListComponent implements OnInit, AfterViewInit, DoCheck, OnDestroy {
+export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnDestroy {
 
   @ViewChildren('activeFilters', {read: ElementRef}) activeFiltersRef: QueryList<ElementRef>;
   @ViewChild('activeFiltersDiv') activeFiltersDiv: any;

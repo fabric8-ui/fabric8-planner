@@ -25,7 +25,7 @@ import { AreaService } from '../../services/area.service';
 import { WorkItemDetailComponent } from './work-item-detail.component';
 import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component';
 import { TypeaheadDropdown } from '../typeahead-dropdown/typeahead-dropdown.component';
-import { MarkdownControlModule } from '../markdown-control/markdown-control.module';
+import { MarkdownControlComponent } from '../markdown-control/markdown-control.component';
 import { WorkItemLinkComponent } from '../work-item-link/work-item-link.component';
 import { WorkItemCommentComponent } from '../work-item-comment/work-item-comment.component';
 import {
@@ -58,13 +58,13 @@ if (process.env.ENV == 'inmemory') {
     ReactiveFormsModule,
     MyDatePickerModule,
     RouterModule,
-    MarkdownControlModule
   ],
   declarations: [
     AlmUserName,
     WorkItemCommentComponent,
     WorkItemDetailComponent,
     DynamicFieldComponent,
+    MarkdownControlComponent,
     TypeaheadDropdown,
     WorkItemLinkComponent,
     WorkItemLinkFilterByTypeName,

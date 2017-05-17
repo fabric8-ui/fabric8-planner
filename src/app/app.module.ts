@@ -38,7 +38,7 @@ import { LoginComponent } from './login/login.component';
 import { LoginService } from './services/login.service';
 
 // import { WorkItemModule } from './work-item/work-item.module';
-import { PlannerBoardModule } from './components/work-item-board/planner-board.module';
+import { PlannerBoardModule } from './components/planner-board/planner-board.module';
 import { PlannerListModule } from './components/work-item-list/planner-list.module';
 import { WorkItemQuickAddModule } from './components/work-item-quick-add/work-item-quick-add.module';
 
