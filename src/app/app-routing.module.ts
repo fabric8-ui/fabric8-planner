@@ -12,11 +12,11 @@ const routes: Routes = [
   },
   {
     path: 'plan/list',
-    loadChildren: 'app/components/work-item-list/planner-list.module#PlannerListModule'
+    loadChildren: 'app/components/planner-list/planner-list.module#PlannerListModule'
   },
   {
     path: 'plan/board',
-    loadChildren: 'app/components/work-item-board/planner-board.module#PlannerBoardModule'
+    loadChildren: 'app/components/planner-board/planner-board.module#PlannerBoardModule'
   },
   {
     path: 'login',
