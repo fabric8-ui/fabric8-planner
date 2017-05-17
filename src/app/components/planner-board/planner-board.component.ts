@@ -43,8 +43,8 @@ import { CollaboratorService } from '../../services/collaborator.service';
      'class': 'app-component height-100 flex-container in-column-direction flex-grow-1'
   },
   selector: 'alm-board',
-  templateUrl: './work-item-board.component.html',
-  styleUrls: ['./work-item-board.component.scss']
+  templateUrl: './planner-board.component.html',
+  styleUrls: ['./planner-board.component.scss']
 })
 
 export class PlannerBoardComponent implements OnInit, OnDestroy {
