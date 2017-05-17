@@ -33,7 +33,7 @@ import { IterationModule } from '../iterations-panel/iterations-panel.module';
 import { PlannerBoardRoutingModule } from './planner-board-routing.module';
 import { SidepanelModule } from '../side-panel/side-panel.module';
 import { ToolbarPanelModule } from '../toolbar-panel/toolbar-panel.module';
-import { WorkItemBoardComponent } from './work-item-board.component';
+import { PlannerBoardComponent } from './planner-board.component';
 import { WorkItemDetailAddTypeSelectorModule } from '../work-item-create/work-item-create.module';
 import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.module';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
@@ -96,10 +96,10 @@ if (process.env.ENV == 'inmemory') {
     WorkItemQuickAddModule
   ],
   declarations: [
-    WorkItemBoardComponent,
+    PlannerBoardComponent,
   ],
   providers: providers,
-  exports: [ WorkItemBoardComponent ]
+  exports: [ PlannerBoardComponent ]
 })
 export class PlannerBoardModule {
   constructor(http: Http) {}

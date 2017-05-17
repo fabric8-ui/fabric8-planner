@@ -47,7 +47,7 @@ import { CollaboratorService } from '../../services/collaborator.service';
   styleUrls: ['./work-item-board.component.scss']
 })
 
-export class WorkItemBoardComponent implements OnInit, OnDestroy {
+export class PlannerBoardComponent implements OnInit, OnDestroy {
 
   @ViewChildren('activeFilters', {read: ElementRef}) activeFiltersRef: QueryList<ElementRef>;
   @ViewChild('activeFiltersDiv') activeFiltersDiv: any;
