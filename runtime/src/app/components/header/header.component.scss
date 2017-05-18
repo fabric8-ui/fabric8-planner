@@ -31,7 +31,7 @@ $pf-custom-navbar-debug-border: 0;
   .navbar-utility {
     li {
       a { padding: 0 em(10); }
-      #header_dropdownToggle { line-height: $font-size-base*2;
+      #header_dropdownToggle { line-height: ($font-size-base*2);
         img.img-icon{
           max-width: em(25);
           max-height: em(25);

@@ -1,8 +1,8 @@
 @import '../../../assets/stylesheets/base';
 
 .error { color: $color-pf-red-100; }
-.suppress-hover{
-  &:hover{ background-color: transparent; }
+.suppress-hover {
+  &:hover { background-color: transparent; }
 }
 .tree-list {
   .node-drop-slot.is-dragging-over { height: 70px; }
@@ -108,7 +108,7 @@
               &:first { border-left: none; }
             }
             .toolbar-pf-action-right {
-              .pficon-add-circle-o{ @extend .with-color-blue;}
+              .pficon-add-circle-o { @extend .with-color-blue;}
             }
           }
           // ensure icons dont fold around inputs

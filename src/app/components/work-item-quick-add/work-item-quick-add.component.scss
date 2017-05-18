@@ -25,7 +25,7 @@
     .workItemQuickAdd_saveBtn {
       display: inline-block;
       margin: 0;
-      &:hover{ text-decoration: none; }
+      &:hover { text-decoration: none; }
     }
     i {
       display: inline-block;
@@ -129,7 +129,7 @@
 .add { background-color: $color-pf-white; }
 @media (max-width: $grid-float-breakpoint){
   .quickAdd_container { text-align: center;
-    .addWorkItem{ padding: em(10);
+    .addWorkItem { padding: em(10);
       i,
       h4 { display: block; }
       i { margin-bottom: em(5); }

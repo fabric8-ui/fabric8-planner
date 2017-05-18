@@ -7,9 +7,9 @@
   cursor: -webkit-grabbing;
   cursor:    -moz-grabbing;
   cursor:         grabbing;
-  opacity:    1;
+  opacity: 1;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
-  filter:     alpha(opacity=80);
+  filter: alpha(opacity=80);
 }
 .gu-hide { display: none!important; }
 .gu-unselectable {
@@ -26,7 +26,6 @@
     bottom: 0;
     left: 0;
     height: 0;
-    // padding: 0;
     content: '';
   }
 }
