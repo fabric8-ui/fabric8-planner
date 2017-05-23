@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 LOGFILE=$(pwd)/functional_tests.log
-echo Using logfile $LOGFILE
+echo Using logfile $LOGFILE 
 
 # Default value is netcat for linux
 # For MAC the value should be nc
@@ -16,9 +16,12 @@ fi
 # For the functional tests, we are mocking the core
 export NODE_ENV=inmemory
 
+# Download dependencies
+echo -n Updating Webdriver and Selenium...
+node_modules/protractor/bin/webdriver-manager update
 # Start selenium server just for this test run
 echo -n Starting Webdriver and Selenium...
-(webdriver-manager start --versions.chrome 2.24 >>$LOGFILE 2>&1 &)
+(node_modules/protractor/bin/webdriver-manager start >>$LOGFILE 2>&1 &)
 # Wait for port 4444 to be listening connections
 
 while ! (`$nc_cmd -w 1 127.0.0.1 4444 </dev/null >/dev/null 2>&1`); do sleep 1; done
@@ -31,20 +34,9 @@ echo -n Starting Almighty development server...
 while ! (`$nc_cmd -w 1 127.0.0.1 8088 </dev/null >/dev/null 2>&1`); do sleep 1; done
 echo done.
 
-# Retrieve index.html to trigger webpack to build the source
-echo -n Building source...
-# Wait for the build to finish (index.html is delivered)
-curl http://localhost:8088/ -o /dev/null -s
-echo done.
-
 # Finally run protractor
 echo Running tests...
-if [ -z "$1" ]
-  then
-    node_modules/protractor/bin/protractor protractor.config.js
-else
-    node_modules/protractor/bin/protractor protractor.config.js --suite $1
-fi
+node_modules/protractor/bin/protractor protractor.config.js
 TEST_RESULT=$?
 
 # Cleanup webdriver-manager and web app processes
