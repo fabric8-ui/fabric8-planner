@@ -203,7 +203,6 @@ export class FabPlannerAssociateIterationModalComponent {
   }
 
   open(event: any) {
-    event.stopPropagation();
     this.getIterations();
     this.iterationAssociationModal.open();
   }

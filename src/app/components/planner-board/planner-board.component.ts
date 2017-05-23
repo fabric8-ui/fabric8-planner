@@ -51,6 +51,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
 
   @ViewChildren('activeFilters', {read: ElementRef}) activeFiltersRef: QueryList<ElementRef>;
   @ViewChild('activeFiltersDiv') activeFiltersDiv: any;
+  @ViewChild('associateIterationModal') associateIterationModal: any;
 
   workItem: WorkItem;
   filters: any[] = [];
@@ -209,7 +210,30 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         value: lane.option
       }, ...this.filterService.getAppliedFilters()])
     .map(workItemResp => {
-      const workItems = workItemResp.workItems;
+      let workItems = workItemResp.workItems;
+      let cardValue = [];
+      for (let i = 0; i < workItems.length; i++) {
+        console.log(workItems[i].relationships.baseType.data.attributes);
+        cardValue.push({
+          id: workItems[i].id,
+          type: '', //workItems[i].relationships.baseType.data['attributes']['icon'],
+          title: workItems[i].attributes['system.title'],
+          avatar: '',
+          menuItem: [{
+            id: 'card_associate_iteration',
+            value: 'Associate with iteration...'
+          },
+          {
+            id: 'card_open',
+            value: 'Open',
+            link: "./detail/"+workItems[i].id
+          },
+          {
+            id: 'card_move_to_backlog',
+            value: 'Move to backlog'
+          }]
+        })
+      }
       lane.workItems = this.workItemService.resolveWorkItems(
         workItems,
         this.iterations,
@@ -217,7 +241,49 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         this.workItemTypes
       );
       lane.nextLink = workItemResp.nextLink;
+      lane.cardValue = cardValue;
       return lane;
+    });
+  }
+
+   cardMenuClick(menuId: string, itemId: string, lane: any) {
+    this.workItem = lane.workItems.find((item) => item.id === itemId);;
+    if (menuId === 'card_associate_iteration') {
+      this.associateIterationModal.open();
+    }
+    else if (menuId === 'card_move_to_backlog') {
+      this.onMoveToBacklog();
+    }
+  }
+
+  onMoveToBacklog(): void {
+    //set this work item's iteration to None
+    //send a patch request
+    this.workItem.relationships.iteration = {}
+    this.workItemService
+      .update(this.workItem)
+      .subscribe(workItem => {
+        this.workItem = workItem;
+        try {
+          this.notifications.message({
+            message: workItem.attributes['system.title'] + ' has been moved to the Backlog.',
+            type: NotificationType.SUCCESS
+          } as Notification);
+        } catch (e) {
+          console.log('Error displaying notification. Iteration was moved to Backlog.')
+        }
+
+    },
+    (err) => {
+      try {
+        this.notifications.message({
+          message: this.workItem.attributes['system.title'] + ' could not be moved to the Backlog.',
+          type: NotificationType.DANGER
+        } as Notification);
+      } catch (e) {
+        console.log('Error displaying notification. Error moving Iteration to Backlog.')
+      }
+
     });
   }
 
@@ -265,6 +331,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
    */
 
   initWiItems($event, lane) {
+    console.log('INITWORKITEM $$$$$$$$$$');
     this.pageSize = $event.pageSize;
     // Subscribe only once
     // When the first lane is ready
@@ -358,9 +425,10 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     let [el, source] = args;
   }
 
-  getWI(workItem: WorkItem) {
-    let lane = this.lanes.find((lane) => lane.option === workItem.attributes['system.state']);
-    let _workItem = lane.workItems.find((item) => item.id === workItem.id);
+  getWI(workItemId: string, lane: any) {
+    //let lane = this.lanes.find((lane) => lane.option === workItem.attributes['system.state']);
+    let _workItem = lane.workItems.find((item) => item.id === workItemId);
+    console.log(_workItem, '##$$##$$');
     this.workItem = _workItem;
   }
 
@@ -514,6 +582,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
           this.lanes.forEach((lane, index) => {
             // FIXEME: Need to find a better way to do it
             setTimeout(() => {
+              this.lanes[index].cardValue = cloneDeep(finalLanes[index].cardValue);
               this.lanes[index].workItems = cloneDeep(finalLanes[index].workItems);
             }, 10 * index);
           })

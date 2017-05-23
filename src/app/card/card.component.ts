@@ -6,62 +6,58 @@ import { User } from 'ngx-login-client';
 import { WorkItem } from './../models/work-item';
 import { WorkItemService } from './../work-item/work-item.service';
 
+export class CardValue {
+  id: string;
+  type: string;
+  title: string;
+  avatar?: string;
+  menuItem?: any;
+}
+
 @Component({
   selector: 'card',
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss']
 })
-export class CardComponent implements OnInit {
+export class CardComponent implements OnInit, OnDestroy {
 
-  @Input() item: WorkItem;
-  @Input() title: string;
-  @Input() user: User;
+  @Input() cardValue: CardValue;
 
   @Output() isSelectedEvent: EventEmitter<CardComponent> = new EventEmitter<CardComponent>();
+  @Output() menuClickEvent = new EventEmitter();
 
   constructor(
     private notifications: Notifications,
     private workItemService: WorkItemService,
+    private route: ActivatedRoute
   ) {}
 
-  ngOnInit() {
+  private urlListener = null;
+  private existingQueryParams: Object = {};
 
+  ngOnInit() {
+    if (this.urlListener === null) {
+     this.urlListener =
+      this.route.queryParams.subscribe((params) => {
+        this.existingQueryParams = params;
+      });
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.urlListener) {
+      this.urlListener.unsubscribe();
+      this.urlListener = null;
+    }
   }
 
   kebabClick(event: any): void {
     event.stopPropagation();
   }
 
-  onMoveToBacklog(event: any): void {
+  kebabMenuClick(event: any, menuId: string): void {
     event.stopPropagation();
-    //set this work item's iteration to None
-    //send a patch request
-    this.item.relationships.iteration = {}
-    this.workItemService
-      .update(this.item)
-      .subscribe(workItem => {
-        this.item = workItem;
-        try {
-          this.notifications.message({
-            message: workItem.attributes['system.title'] + ' has been moved to the Backlog.',
-            type: NotificationType.SUCCESS
-          } as Notification);
-        } catch (e) {
-          console.log('Error displaying notification. Iteration was moved to Backlog.')
-        }
-
-    },
-    (err) => {
-      try {
-        this.notifications.message({
-          message: this.item.attributes['system.title'] + ' could not be moved to the Backlog.',
-          type: NotificationType.DANGER
-        } as Notification);
-      } catch (e) {
-        console.log('Error displaying notification. Error moving Iteration to Backlog.')
-      }
-
-    });
+    this.menuClickEvent.emit(menuId);
   }
 
 }
