@@ -66,7 +66,7 @@ module.exports = webpackMerge(commonConfig, {
       'process.env': {
         'ENV': JSON.stringify(METADATA.ENV),
         'FORGE_URL': JSON.stringify(METADATA.FORGE_URL),
-        'FABRIC8_REALM': stringify(METADATA.FABRIC8_REALM),
+        'FABRIC8_REALM': JSON.stringify(METADATA.FABRIC8_REALM),
         'PUBLIC_PATH' : JSON.stringify(METADATA.PUBLIC_PATH)
       }
     })
