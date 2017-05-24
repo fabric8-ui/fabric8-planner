@@ -212,27 +212,30 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     .map(workItemResp => {
       let workItems = workItemResp.workItems;
       let cardValue = [];
+      console.log(workItems);
       for (let i = 0; i < workItems.length; i++) {
-        console.log(workItems[i].relationships.baseType.data.attributes);
-        cardValue.push({
-          id: workItems[i].id,
-          type: '', //workItems[i].relationships.baseType.data['attributes']['icon'],
-          title: workItems[i].attributes['system.title'],
-          avatar: '',
-          menuItem: [{
-            id: 'card_associate_iteration',
-            value: 'Associate with iteration...'
-          },
-          {
-            id: 'card_open',
-            value: 'Open',
-            link: "./detail/"+workItems[i].id
-          },
-          {
-            id: 'card_move_to_backlog',
-            value: 'Move to backlog'
-          }]
-        })
+        if(workItems[i]) {
+          console.log(workItems[i].relationships.baseType);
+          cardValue.push({
+            id: workItems[i].id,
+            type: '',//workItems[i].relationships.baseType.data['attributes'],
+            title: workItems[i].attributes['system.title'],
+            avatar: '',
+            menuItem: [{
+              id: 'card_associate_iteration',
+              value: 'Associate with iteration...'
+            },
+            {
+              id: 'card_open',
+              value: 'Open',
+              link: "./detail/"+workItems[i].id
+            },
+            {
+              id: 'card_move_to_backlog',
+              value: 'Move to backlog'
+            }]
+          })
+        }
       }
       lane.workItems = this.workItemService.resolveWorkItems(
         workItems,
@@ -331,7 +334,6 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
    */
 
   initWiItems($event, lane) {
-    console.log('INITWORKITEM $$$$$$$$$$');
     this.pageSize = $event.pageSize;
     // Subscribe only once
     // When the first lane is ready
@@ -428,7 +430,6 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   getWI(workItemId: string, lane: any) {
     //let lane = this.lanes.find((lane) => lane.option === workItem.attributes['system.state']);
     let _workItem = lane.workItems.find((item) => item.id === workItemId);
-    console.log(_workItem, '##$$##$$');
     this.workItem = _workItem;
   }
 

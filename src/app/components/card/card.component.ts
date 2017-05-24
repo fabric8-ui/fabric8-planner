@@ -3,8 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Broadcaster, Logger, Notification, NotificationType, Notifications } from 'ngx-base';
 import { User } from 'ngx-login-client';
 
-import { WorkItem } from './../models/work-item';
-import { WorkItemService } from './../work-item/work-item.service';
+import { WorkItem } from './../../models/work-item';
+import { WorkItemService } from './../../services/work-item.service';
 
 export class CardValue {
   id: string;

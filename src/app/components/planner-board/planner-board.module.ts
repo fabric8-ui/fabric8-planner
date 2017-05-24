@@ -25,7 +25,7 @@ import { AuthenticationService } from 'ngx-login-client';
 
 import { HttpService } from '../../services/http-service';
 
-import { CardComponent } from '../../card/card.component';
+import { CardComponent } from './../card/card.component';
 
 import {
   FabPlannerAssociateIterationModalModule
