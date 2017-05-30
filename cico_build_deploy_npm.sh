@@ -19,22 +19,22 @@ yum -y install docker
 yum clean all
 service docker start
 
-docker build -t fabric8-planner-builder -f Dockerfile.builder .
+docker build -t fabric8-planner-builder -f deploy/Dockerfile.builder .
 mkdir -p dist && docker run --detach=true --name=fabric8-planner-builder -e JENKINS_URL -e GIT_BRANCH -e "CI=true" -e GH_TOKEN -e NPM_TOKEN -t -v $(pwd)/dist:/dist:Z fabric8-planner-builder
 
 # In order to run semantic-release we need a non detached HEAD, see https://github.com/semantic-release/semantic-release/issues/329
 docker exec fabric8-planner-builder git checkout master
 # Try to fix up the git repo so that npm publish can build the gitHead ref in to package.json
-docker exec fabric8-planner-builder ./fix-git-repo.sh
+docker exec  -i fabric8-planner-builder bash -c "cd scripts ; ./fix-git-repo.sh"
 
 # Build almigty-ui
 docker exec fabric8-planner-builder npm install
 
 ## Build prod
-docker exec fabric8-planner-builder npm run build:prod
+docker exec fabric8-planner-builder npm run build
 
 ## Exec unit tests
-docker exec fabric8-planner-builder ./run_unit_tests.sh
+docker exec fabric8-planner-builder npm run test:unit
 
 ## Exec functional tests
 #docker exec fabric8-planner-builder ./run_functional_tests.sh

@@ -1,3 +1,14 @@
+
+import { Logger } from 'ngx-base';
+import { MockHttp } from '../mock/mock-http';
+
+describe('WorkItem Service', () => {
+  var logger = new Logger();
+  let mockHttp = new MockHttp(new Logger());
+  it('should be able to create a mockHttp service', () => expect(mockHttp).toBeDefined())
+});
+
+/*
 import { HttpService } from './http-service';
 import { SpacesService } from '../mock/standalone/spaces.service';
 import { Spaces } from 'ngx-fabric8-wit';
@@ -27,7 +38,7 @@ import { Notifications } from 'ngx-base';
 
 import { MockDataService } from '../mock/mock-data.service';
 import { AreaService } from './area.service';
-import { IterationService } from '../../services/iteration.service';
+import { IterationService } from './iteration.service';
 import { WorkItem } from '../models/work-item';
 import { WorkItemService } from './work-item.service';
 import { GlobalSettings } from '../shared/globals';
@@ -368,3 +379,4 @@ describe('Work Item Service - ', () => {
   }));
 
 });
+*/

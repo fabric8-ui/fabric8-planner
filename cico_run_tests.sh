@@ -20,29 +20,25 @@ fi
 
 # Get all the deps in
 yum -y install \
-  docker \
-  make \
-  git
+ docker \
+ make \
+ git
 service docker start
 
 # Build builder image
 cp /tmp/jenkins-env .
-docker build -t fabric8-planner-builder -f Dockerfile.builder .
+docker build -t fabric8-planner-builder -f deploy/Dockerfile.builder .
 # User root is required to run webdriver-manager update. This shouldn't be a problem for CI containers
 mkdir -p dist && docker run --detach=true --name=fabric8-planner-builder --user=root --cap-add=SYS_ADMIN -e "API_URL=https://api.prod-preview.openshift.io/api/" -e "CI=true" -t -v $(pwd)/dist:/dist:Z fabric8-planner-builder
 
-
-# Build almigty-ui
 docker exec fabric8-planner-builder npm install
 
-## Exec unit tests
-docker exec fabric8-planner-builder ./run_unit_tests.sh
+docker exec fabric8-planner-builder npm run test:unit
 
+docker exec fabric8-planner-builder npm run build
 
-## Exec functional tests
-docker exec fabric8-planner-builder ./run_functional_tests.sh smokeTest
+docker exec  -i fabric8-planner-builder bash -c "cd runtime ; npm install"
+docker exec fabric8-planner-builder bash -c "cd runtime ; npm run test:funcsmoke"
+docker exec  -i fabric8-planner-builder bash -c "cd runtime ; npm run build"
 
-## All ok, build prod version
-docker exec fabric8-planner-builder ./upload_to_codecov.sh
-docker exec fabric8-planner-builder npm run build:prod
-docker exec -u root fabric8-planner-builder cp -r /home/fabric8/fabric8-planner/dist /
+docker exec -u root fabric8-planner-builder cp -r /home/fabric8/fabric8-planner/runtime/dist /
