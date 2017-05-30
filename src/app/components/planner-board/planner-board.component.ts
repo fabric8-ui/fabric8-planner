@@ -31,6 +31,7 @@ import { ArrayCount } from 'ngx-widgets';
 import { DragulaService } from 'ng2-dragula';
 import { Dialog } from 'ngx-widgets';
 
+import { CardValue } from './../card/card.component';
 import { IterationModel } from '../../models/iteration.model';
 import { WorkItem } from '../../models/work-item';
 import { WorkItemType } from '../../models/work-item-type';
@@ -78,6 +79,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   private currentWIType: BehaviorSubject<string | null>;
   private existingQueryParams: Object = {};
   private wiSubscription = null;
+  lane: any;
 
   constructor(
     private auth: AuthenticationService,
@@ -211,7 +213,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       }, ...this.filterService.getAppliedFilters()])
     .map(workItemResp => {
       let workItems = workItemResp.workItems;
-      let cardValue = [];
+      let cardValue: CardValue[] = [];
       console.log(workItems);
       for (let i = 0; i < workItems.length; i++) {
         if(workItems[i]) {
@@ -249,8 +251,45 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     });
   }
 
+  createCardItem(workItems: WorkItem[]) {
+    let lane;
+    let cardValues: CardValue[] = [];
+    for(let i=0; i<workItems.length; i++) {
+      console.log(workItems[i].relationships.baseType);
+      lane = this.lanes.find((lane) => lane.option === workItems[i].attributes['system.state']);
+      cardValues.push({
+        id: workItems[i].id,
+        type: '', //workItems[i].relationships.baseType.data['attributes'],
+        title: workItems[i].attributes['system.title'],
+        avatar: '',
+        menuItem: [{
+          id: 'card_associate_iteration',
+          value: 'Associate with iteration...'
+        },
+        {
+          id: 'card_open',
+          value: 'Open',
+          link: "./detail/"+workItems[i].id
+        },
+        {
+          id: 'card_move_to_backlog',
+          value: 'Move to backlog'
+        }]
+      });
+      lane.cardValue = [...cardValues, ...lane.cardValue];
+    }
+    //lane.cardValue = [...cardValues, ...lane.cardValue];
+    console.log(lane.cardValue, '##$$##');
+  }
+
+  updateCardItem(workItem: WorkItem) {
+    let lane = this.lanes.find((lane) => lane.option === workItem.attributes['system.state']);
+    let cardItem = lane.cardValue.find((item) => item.id === workItem.id);
+    cardItem.title = workItem.attributes['system.title'];
+  }
+
    cardMenuClick(menuId: string, itemId: string, lane: any) {
-    this.workItem = lane.workItems.find((item) => item.id === itemId);;
+    this.workItem = lane.workItems.find((item) => item.id === itemId);
     if (menuId === 'card_associate_iteration') {
       this.associateIterationModal.open();
     }
@@ -265,6 +304,13 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     this.workItem.relationships.iteration = {}
     this.workItemService
       .update(this.workItem)
+      .switchMap(item => {
+        return this.iterationService.getIteration(item.relationships.iteration)
+          .map(iteration => {
+            item.relationships.iteration.data = iteration;
+            return item;
+          });
+      })
       .subscribe(workItem => {
         this.workItem = workItem;
         try {
@@ -378,12 +424,34 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
 
     let lane = this.lanes.find((lane) => lane.option === workItem.attributes['system.state']);
     lane.workItems = [...resolveItem, ...lane.workItems];
+    // let cardValue = [{
+    //     id: workItem.id,
+    //     type: '',//workItems[i].relationships.baseType.data['attributes'],
+    //     title: workItem.attributes['system.title'],
+    //     avatar: '',
+    //     menuItem: [{
+    //       id: 'card_associate_iteration',
+    //       value: 'Associate with iteration...'
+    //     },
+    //     {
+    //       id: 'card_open',
+    //       value: 'Open',
+    //       link: "./detail/"+workItem.id
+    //     },
+    //     {
+    //       id: 'card_move_to_backlog',
+    //       value: 'Move to backlog'
+    //     }]
+    //   }];
+    // lane.cardValue = [...cardValue, ...lane.cardValue];
+    this.createCardItem([workItem]);
+    console.log(lane.cardValue, lane, '$$$%%%');
   }
 
-  gotoDetail(workItem: WorkItem) {
-    let link = trimEnd(this.router.url.split('detail')[0], '/') + '/detail/' + workItem.id;
-    this.router.navigateByUrl(link);
-  }
+  // gotoDetail(workItem: WorkItem) {
+  //   let link = trimEnd(this.router.url.split('detail')[0], '/') + '/detail/' + workItem.id;
+  //   this.router.navigateByUrl(link);
+  // }
 
   openDetail(event: any): void {
     event.stopPropagation();
@@ -552,6 +620,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
           let index = lane.workItems.findIndex((item) => item.id === updatedItem.id);
           if (index > -1) {
             lane.workItems[index] = updatedItem;
+            this.updateCardItem(updatedItem);
           }
         })
     );
