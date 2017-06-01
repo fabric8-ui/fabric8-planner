@@ -175,10 +175,17 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         this.spaces.current,
         this.filterService.filterChange,
         this.currentIteration,
-        this.eventService.showHierarchyListSubject
+        this.eventService.showHierarchyListSubject,
+        // only emits workItemReload when hierarchy view is on
+        this.eventService.workItemListReloadOnLink.filter(() => this.showHierarchyList)
       )
-      .subscribe(([space, activeFilter, iteration, showHierarchyList]) => {
-
+      .subscribe(([
+        space,
+        activeFilter,
+        iteration,
+        showHierarchyList,
+        workItemListReload
+      ]) => {
         if (showHierarchyList) {
           this.logger.log('Switching to hierarchy list mode.');
         } else {
@@ -441,14 +448,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
               break;
           }
       })
-    );
-
-    this.eventListeners.push(
-      this.broadcaster.on<void>('update_work_item_hierarchy')
-        .subscribe(() => {
-          // hierarchy has potentially changed, reload all data
-          this.loadWorkItems();
-        })
     );
 
     this.eventListeners.push(
