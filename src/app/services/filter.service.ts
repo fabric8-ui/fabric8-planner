@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { GlobalSettings } from '../shared/globals';
 
 import { Injectable, Inject } from '@angular/core';
 import { Http, Headers } from '@angular/http';
@@ -18,7 +17,6 @@ export class FilterService {
 
   constructor(
     private http: HttpService,
-    private globalSettings: GlobalSettings,
     private spaces: Spaces,
     @Inject(WIT_API_URL) private baseApiUrl: string
   ) {}
