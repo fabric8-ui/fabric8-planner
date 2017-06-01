@@ -1,3 +1,4 @@
+import { EventService } from './../../services/event.service';
 import { AreaModel } from '../../models/area.model';
 import { AreaService } from '../../services/area.service';
 import { FilterService } from '../../services/filter.service';
@@ -111,6 +112,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
     private collaboratorService: CollaboratorService,
+    private eventService: EventService,
     private router: Router,
     private user: UserService,
     private workItemService: WorkItemService,
@@ -172,9 +174,19 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       Observable.combineLatest(
         this.spaces.current,
         this.filterService.filterChange,
-        this.currentIteration
+        this.currentIteration,
+        this.eventService.showHierarchyListSubject
       )
-      .subscribe(([space, activeFilter, iteration]) => {
+      .subscribe(([space, activeFilter, iteration, showHierarchyList]) => {
+
+        if (showHierarchyList) {
+          this.logger.log('Switching to hierarchy list mode.');
+        } else {
+          this.logger.log('Switching to flat list mode.');
+        }
+
+        this.showHierarchyList = showHierarchyList;
+
         if (space) {
           console.log('[WorkItemListComponent] New Space selected: ' + space.attributes.name);
           this.loadWorkItems();
@@ -406,24 +418,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
           this.loggedIn = false;
           this.authUser = null;
           this.treeListOptions['allowDrag'] = false;
-      })
-    );
-
-    this.eventListeners.push(
-      this.broadcaster.on<string>('switched_show_wi_hierarchy_mode')
-        .subscribe(message => {
-          this.logger.log('Switching to hierarchy list mode.');
-          this.showHierarchyList = true;
-          this.loadWorkItems();
-      })
-    );
-
-    this.eventListeners.push(
-      this.broadcaster.on<string>('switched_show_wi_flat_mode')
-        .subscribe(message => {
-          this.logger.log('Switching to flat list mode.');
-          this.showHierarchyList = false;
-          this.loadWorkItems();
       })
     );
 
