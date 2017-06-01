@@ -84,7 +84,7 @@
                       (click)="selectSearchResult(workItem.id, workItem.attributes['system.title'])"
                       [attr.data-wiid]="workItem.id"
                       [attr.data-wititle]="workItem.attributes['system.title']">
-                      <a #searchresult><span class="weight-800">{{workItem.id}} - </span>{{workItem.attributes['system.title']}}</a>
+                      <a #searchresult><span class="weight-800">{{workItem.attributes['system.number']}} - </span>{{workItem.attributes['system.title']}}</a>
                   </li>
                 </ul>
                 <!-- <span class="input-group-addon"> <span class="caret"></span> </span> -->
@@ -140,7 +140,7 @@
                       (click)="selectSearchResult(workItem.id, workItem.attributes['system.title'])"
                       [attr.data-wiid]="workItem.id"
                       [attr.data-wititle]="workItem.attributes['system.title']">
-                      <a #searchresult><span class="weight-800">{{workItem.id}} - </span>{{workItem.attributes['system.title']}}</a>
+                      <a #searchresult><span class="weight-800">{{workItem.attributes['system.number']}} - </span>{{workItem.attributes['system.title']}}</a>
                   </li>
                 </ul>
                 <span class="input-group-addon"> <span class="caret"></span> </span>
