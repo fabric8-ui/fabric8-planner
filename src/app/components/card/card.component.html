@@ -21,11 +21,12 @@
     </div>
     <div class="user-avatar">
       <img
+        *ngIf="cardValue.avatar!==''"
         placement="top"
         tooltip="{{wItem?.attributes?.fullName}}"
         src="{{cardValue.avatar + '&s=20'}}"
         onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'" />
-      <span *ngIf="cardValue.avatar" class="pficon-user not-assigned-user-icon" tooltip="unassigned" placement="top"></span>
+      <span *ngIf="cardValue.avatar==''" class="pficon-user not-assigned-user-icon" tooltip="unassigned" placement="top"></span>
     </div>
   </div>
 </div>
