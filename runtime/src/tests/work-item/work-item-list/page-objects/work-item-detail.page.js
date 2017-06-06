@@ -576,7 +576,8 @@ class WorkItemDetailPage {
 
   /** UI elements for Areas */
   get areaLabel (){
-    return element(by.id('area_label'));
+    // return element(by.id('area_label'));
+    return element(by.css('.detail-area-wrap > #area_label'));
   }
   AreaSelect (){
     return element(by.css('#area-dropdown .details-dropdown'));
