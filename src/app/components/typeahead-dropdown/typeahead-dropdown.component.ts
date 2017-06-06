@@ -200,7 +200,6 @@ export class TypeaheadDropdown implements OnInit, OnChanges, OnDestroy {
       this.broadcaster.on<string>('logout')
         .subscribe(message => {
           this.loggedIn = false;
-          console.log('viviv');
       })
     );
   }
