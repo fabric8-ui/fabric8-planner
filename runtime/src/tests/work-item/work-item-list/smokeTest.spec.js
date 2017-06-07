@@ -16,10 +16,13 @@
 
 var WorkItemListPage = require('./page-objects/work-item-list.page'),
   testSupport = require('./testSupport'),
-  constants = require('./constants');
+  constants = require('./constants'),
+  ProtractorPerf = require('protractor-perf');
 
 describe('Work item list', function () {
   var page, items, browserMode;
+
+  var perfRunner = new ProtractorPerf(protractor, browser);
 
   var until = protractor.ExpectedConditions;
   var WORK_ITEM_TITLE = "The test workitem title";
@@ -39,6 +42,42 @@ describe('Work item list', function () {
     page = new WorkItemListPage(true);
     testSupport.setTestSpace(page);
   });
+
+  /* Measure how quickly a page loads for a specific workitem  */
+  it('User can read, update, remove assignee and delete WI', function() {
+
+    /* Create a new workitem - measure the time that it required to display the comment entry field in the detail pane */
+
+    var workItemTitle = "The test workitem title";
+    var workItemUpdatedTitle = "The test workitem title - UPDATED";
+    var workItemDescription = "The test workitem description";
+    var workItemUpdatedDescription = "The test workitem description - UPDATED";
+    page.clickWorkItemQuickAdd();
+    page.typeQuickAddWorkItemTitle(workItemTitle);
+    page.clickQuickAddSave().then(function() {
+      page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
+
+        perfRunner.start();
+    
+        var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+        browser.wait(until.elementToBeClickable(detailPage.commentDiv()), constants.WAIT, 'Failed to display comments');
+          
+        perfRunner.stop().then(function(data) {
+          console.log('Test1:');
+          console.log(data);
+          console.log('Test2:');
+        });
+
+        if (perfRunner.isEnabled) {
+            perfRunner.getStats('loadTime').then(function(stats) {
+                console.log(stats)
+            });
+            expect(perfRunner.getStats('loadTime')).toBeLessThan(10000);
+        };
+	  });
+    });
+  });
+
 
   /* User can read, update, remove assignee on a workitem  */
   it('User can read, update, remove assignee and delete WI', function() {

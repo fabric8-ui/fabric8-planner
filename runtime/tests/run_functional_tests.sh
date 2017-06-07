@@ -32,9 +32,9 @@ echo Running tests...
 if [ -z "$1" ]
   then
 # Shouldn't we have the path appended with tests? e.g. tests/protractor.config.js
-    node_modules/protractor/bin/protractor protractor.config.js 2>&1 | tee -a $BROWSERLOGS
+    node_modules/.bin/protractor-perf protractor.config.js 2>&1 | tee -a $BROWSERLOGS
 else
-    node_modules/protractor/bin/protractor protractor.config.js --suite $1 2>&1 | tee -a $BROWSERLOGS
+    node_modules/.bin/protractor-perf protractor.config.js --suite $1 2>&1 | tee -a $BROWSERLOGS
 fi
 TEST_RESULT=$?
 

@@ -46,9 +46,9 @@ echo done.
 echo Running tests...
 if [ -z "$1" ]
   then
-    node_modules/protractor/bin/protractor tests/protractor.config.js 2>&1 | tee -a $BROWSERLOGS
+    node_modules/.bin/protractor-perf tests/protractor.config.js 2>&1 | tee -a $BROWSERLOGS
 else
-    node_modules/protractor/bin/protractor tests/protractor.config.js --suite $1 2>&1 | tee -a $BROWSERLOGS
+    node_modules/.bin/protractor-perf tests/protractor.config.js --suite $1 2>&1 | tee -a $BROWSERLOGS
 fi
 
 TEST_RESULT=$?
