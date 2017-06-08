@@ -13,6 +13,7 @@ export class FilterService {
   public filters: FilterModel[] = [];
   public activeFilters = [];
   public filterChange = new Subject();
+  public filterObservable: Subject<any> = new Subject();
   private headers = new Headers({'Content-Type': 'application/json'});
 
   constructor(
@@ -33,6 +34,8 @@ export class FilterService {
         value: value
       });
     }
+    //Emit filter update event
+    this.filterObservable.next();
   }
 
   getFilterValue(id): any {
