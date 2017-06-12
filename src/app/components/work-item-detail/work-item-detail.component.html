@@ -9,10 +9,15 @@
           <div class="form-group col-sm-12 mobile-bar">
             <div class="dropdown-kebab-pf detail-type-dropdown col-sm-8">
               <span class="wi-type-icon fa {{workItem.relationships?.baseType?.data?.attributes?.icon}} fa-lg"></span>
+              {{workItem.relationships?.baseType?.data?.attributes?.name}}
               <h3 *ngIf="workItem.id" class="detail-id" id="wi-detail-id">{{workItem.id}}</h3>
               <span *ngIf="saving" class="saving-title">
                 <span class="spinner spinner-sm spinner-inline"></span>
                 Saving Work Item...
+              </span>
+              <span *ngIf="savingError" class="saving-title">
+                <span class="pficon-error-circle-o"></span>
+                  {{ errorMessage }}
               </span>
             </div>
             <div class="col-sm-4 pull-right padding-0">

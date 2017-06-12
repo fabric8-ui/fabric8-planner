@@ -105,7 +105,6 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
     this.workItem.attributes = new Map<string, string | number>();
     this.workItem.relationships = new WorkItemRelations();
     this.workItem.type = 'workitems';
-    this.workItem.id = '42';
     this.workItem.attributes['system.state'] = 'new';
   }
 
@@ -159,7 +158,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
         .subscribe(workItem => {
           this.workItem = workItem; // saved workItem, w/ id if new
           this.logger.log(`created and returned this workitem:` + JSON.stringify(workItem));
-          this.workItemCreate.emit(cloneDeep(this.workItem));
+          //this.workItemCreate.emit(cloneDeep(this.workItem));
+          this.workItemService.emitAddWI(this.workItem);
           this.resetQuickAdd();
           this.qaSubmit.nativeElement.removeAttribute('disabled');
           this.qaTitle.nativeElement.removeAttribute('disabled');
