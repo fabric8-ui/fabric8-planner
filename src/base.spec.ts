@@ -11,8 +11,9 @@ import "zone.js/dist/fake-async-test";
 import { TestBed } from "@angular/core/testing";
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from "@angular/platform-browser-dynamic/testing";
 
-TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+TestBed.initTestEnvironment( BrowserDynamicTestingModule, platformBrowserDynamicTesting( ) ) ;
 
-describe('Unit Test Framework', () => {
-  it('should execute tests', () => expect(true).toBe(true));
-});
+describe ( 'Unit Test Framework', () => {
+      it('should execute tests', () => expect(true).toBe(true));
+}
+         );
