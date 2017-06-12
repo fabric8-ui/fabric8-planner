@@ -221,8 +221,7 @@ export class MockDataService {
       // existing type on entity
       localWorkItem.relationships.baseType = this.makeCopy(entity.data.relationships.baseType);
     }
-    this.workItems.splice(0, 0, localWorkItem);
-    //this.workItems.push(localWorkItem);
+    this.workItems.push(localWorkItem);
     return { data: this.makeCopy(localWorkItem) };
   }
 

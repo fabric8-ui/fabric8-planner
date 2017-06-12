@@ -461,7 +461,26 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
           }
         })
     );
+this.eventListeners.push(
+      this.broadcaster.on<string>('updateWorkItem')
+        .subscribe((workItem: string) => {
+          let updatedItem = JSON.parse(workItem) as WorkItem;
+          let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
+          if (index > -1) {
+            this.workItems[index] = updatedItem;
+            this.treeList.updateTree();
+          }
+        })
+    );
 
+    this.eventListeners.push(
+      this.broadcaster.on<string>('addWorkItem')
+        .subscribe((workItem: string) => {
+          let newItem = JSON.parse(workItem) as WorkItem;
+          this.workItems.splice(0, 0, newItem);
+          this.treeList.updateTree();
+        })
+      );
     this.eventListeners.push(
       this.broadcaster.on<string>('addWorkItem')
         .subscribe((workItem: string) => {
@@ -496,13 +515,34 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
 
     this.eventListeners.push(
       this.workItemService.addWIObservable.subscribe(item => {
-        this.loadWorkItems();
+        //Check if the work item meets the applied filters
+        if(this.filterService.doesMatchCurrentFilter(item)){
+          console.log('Added WI matches the applied filters');
+          this.workItems.splice(0, 0, item);
+          this.treeList.updateTree();
+        } else {
+          console.log('Added WI does not match the applied filters')
+        }
       })
     );
 
     this.eventListeners.push(
-      this.workItemService.editWIObservable.subscribe(item => {
-        this.loadWorkItems();
+      this.workItemService.editWIObservable.subscribe(updatedItem => {
+        let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
+        if(this.filterService.doesMatchCurrentFilter(updatedItem)){
+          console.log('Updated WI matches the applied filters')
+          if (index > -1) {
+            this.workItems[index] = updatedItem;
+          } else {
+            //add the WI at the top of the list
+            this.workItems.splice(0, 0, updatedItem);
+          }
+          this.treeList.updateTree();
+        } else {
+          //Remove the work item from the current displayed list
+          this.workItems.splice(index, 1);
+          console.log('Updated WI does not match the applied filters')
+        }
       })
     );
   }
