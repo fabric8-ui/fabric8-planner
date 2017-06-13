@@ -451,46 +451,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     );
 
     this.eventListeners.push(
-      this.broadcaster.on<string>('updateWorkItem')
-        .subscribe((workItem: string) => {
-          let updatedItem = JSON.parse(workItem) as WorkItem;
-          let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
-          if (index > -1) {
-            this.workItems[index] = updatedItem;
-            this.treeList.updateTree();
-          }
-        })
-    );
-this.eventListeners.push(
-      this.broadcaster.on<string>('updateWorkItem')
-        .subscribe((workItem: string) => {
-          let updatedItem = JSON.parse(workItem) as WorkItem;
-          let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
-          if (index > -1) {
-            this.workItems[index] = updatedItem;
-            this.treeList.updateTree();
-          }
-        })
-    );
-
-    this.eventListeners.push(
-      this.broadcaster.on<string>('addWorkItem')
-        .subscribe((workItem: string) => {
-          let newItem = JSON.parse(workItem) as WorkItem;
-          this.workItems.splice(0, 0, newItem);
-          this.treeList.updateTree();
-        })
-      );
-    this.eventListeners.push(
-      this.broadcaster.on<string>('addWorkItem')
-        .subscribe((workItem: string) => {
-          let newItem = JSON.parse(workItem) as WorkItem;
-          this.workItems.splice(0, 0, newItem);
-          this.treeList.updateTree();
-        })
-      );
-
-    this.eventListeners.push(
       this.broadcaster.on<string>('detail_close')
       .subscribe(()=>{
         this.selectedWorkItemEntryComponent.deselect();
@@ -512,7 +472,6 @@ this.eventListeners.push(
         }
       })
     );
-
     this.eventListeners.push(
       this.workItemService.addWIObservable.subscribe(item => {
         //Check if the work item meets the applied filters
@@ -534,6 +493,10 @@ this.eventListeners.push(
           if (index > -1) {
             this.workItems[index] = updatedItem;
           } else {
+            //Scenario: work item detail panel is open.
+            //Change a value so that it does not match the applied filter and gets removed from the list
+            //The panel is still open - set back the value(s) so that the work item matches the applied
+            //filters
             //add the WI at the top of the list
             this.workItems.splice(0, 0, updatedItem);
           }
