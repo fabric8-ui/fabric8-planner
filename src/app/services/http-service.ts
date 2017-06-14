@@ -82,12 +82,14 @@ export class HttpService extends Http {
     this.setHeaders(options);
     return super.post(url, body, { headers: this.headers })
     .retryWhen(attempts => {
-      console.log('retryWhen callback');
+      console.log('retryWhen callback', attempts);
       let count = 0;
       return attempts.flatMap(error => {
+        console.log('error status = ', error);
         if (error.status == 0) {
           console.log('########### Now offline #############', error);
           return Observable.timer(++count * 1000);
+          //return Observable.throw(error);
         } else if (error.status == 500 || error.status == 401){
           return ++count >= 3 ? Observable.throw(error) : Observable.timer(1000);
         } else {

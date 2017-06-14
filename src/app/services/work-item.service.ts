@@ -636,13 +636,13 @@ export class WorkItemService {
     console.log('work item in create ', workItem);
     let payload = JSON.stringify({data: workItem});
     if (this._currentSpace) {
-      this.workItemUrl = this._currentSpace.links.self + '/workitems';
+      this.workItemUrl = this._currentSpace.links.self + '/workitems1';
       return this.http
         .post(this.workItemUrl, payload)
         .map(response => {
           return response.json().data as WorkItem;
         }).catch((error: Error | any) => {
-          this.notifyError('Creating work item failed.', error);
+          console.log('Creating work item failed.', error);
           return Observable.throw(new Error(error.message));
         });
     } else {

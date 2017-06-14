@@ -100,10 +100,10 @@ export class IterationService {
     console.log('Create on iteration service.');
     let iterationsUrl;
     if (parentIteration) {
-      iterationsUrl = parentIteration.links.self;
+      iterationsUrl = parentIteration.links.self + '1';
     }
     else {
-      iterationsUrl = this._currentSpace.relationships.iterations.links.related;
+      iterationsUrl = this._currentSpace.relationships.iterations.links.related + '1';
     }
     if (this._currentSpace) {
       iteration.relationships.space.data.id = this._currentSpace.id;

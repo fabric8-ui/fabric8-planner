@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { cloneDeep } from 'lodash';
 import * as moment from 'moment';
 import { IMyOptions, IMyDateModel } from 'mydatepicker';
-import { Broadcaster } from 'ngx-base';
+import { Broadcaster, Notification, Notifications ,NotificationType } from 'ngx-base';
 import { Space, Spaces } from 'ngx-fabric8-wit';
 
 import { IterationService } from '../../services/iteration.service';
@@ -66,6 +66,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   };
 
   constructor(
+    private notifications: Notifications,
     private iterationService: IterationService,
     private spaces: Spaces,
     private broadcaster: Broadcaster) {}
@@ -342,11 +343,30 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
               .subscribe((iteration) => {
                 this.onSubmit.emit(iteration);
                 this.resetValues();
+                let message = 'Iteration ' + iteration.attributes.name + ' created.'
+                try {
+                  this.notifications.message({
+                    message: message,
+                    type: NotificationType.SUCCESS
+
+                  } as Notification);
+                } catch (e) {
+                  console.log('Error displaying notification. New iteration added.')
+                }
                 this.createUpdateIterationDialog.close();
           },
           (e) => {
             this.validationError = true;
-            console.log('Some error has occured', e);
+            let message = 'Iteration could not be created. Some error has occured. Reload the page.'
+                try {
+                  this.notifications.message({
+                    message: message,
+                    type: NotificationType.DANGER
+                  } as Notification);
+                } catch (e) {
+                  console.log('Error displaying notification. New iteration was not added - ', e);
+                }
+
           });
         } else {
           if (this.modalType == 'start') {
