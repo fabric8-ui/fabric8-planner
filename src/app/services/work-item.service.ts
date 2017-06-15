@@ -351,14 +351,13 @@ export class WorkItemService {
   }
 
   resolveAssignees(assignees: any): Observable<User[]> {
-    if (Object.keys(assignees).length) {
+    if (Object.keys(assignees).length && assignees.data.length) {
       let observableBatch = assignees.data.map((assignee) => {
         return this.http.get(assignee.links.self)
-                .map((res) => res.json().data)
-                .catch((error: Error | any) => {
-                  this.notifyError('Resolving assignees of work item failed.', error);
-                  return Observable.throw(new Error(error.message));
-                });
+          .map((res) => res.json().data)
+          .catch((error: Error | any) => {
+            return Observable.throw(new Error(error.message));
+          });
       });
       return Observable.forkJoin(observableBatch);
     } else {
@@ -369,6 +368,20 @@ export class WorkItemService {
   resolveCreator2(creator): Observable<User>{
     if (Object.keys(creator).length) {
       let creatorLink = creator.data.links.self;
+      return this.http.get(creatorLink)
+        .map(creator => creator.json().data)
+        .catch((error: Error | any) => {
+          this.notifyError('Getting work item creator failed.', error);
+          return Observable.throw(new Error(error.message));
+        });
+    } else {
+      return Observable.of(creator);
+    }
+  }
+
+  resolveCommentCreator(creator): Observable<User>{
+    if (Object.keys(creator).length) {
+      let creatorLink = creator.links.related;
       return this.http.get(creatorLink)
         .map(creator => creator.json().data)
         .catch((error: Error | any) => {
@@ -675,7 +688,6 @@ export class WorkItemService {
       return this.http
         .post(this.workItemUrl, payload)
         .map(response => {
-          this.broadcaster.broadcast('create_workitem', response.json().data as WorkItem);
           return response.json().data as WorkItem;
         }).catch((error: Error | any) => {
           this.notifyError('Creating work item failed.', error);
