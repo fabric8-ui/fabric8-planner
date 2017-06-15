@@ -87,6 +87,12 @@
                       <a #searchresult><span class="weight-800">{{workItem.id}} - </span>{{workItem.attributes['system.title']}}</a>
                   </li>
                 </ul>
+                <ul *ngIf="!searchWorkItems.length && searchBox.value.length >= 3"
+                    class="dropdown-menu dropdown-ul">
+                  <li class="pointer">
+                      <span>No match found!</span>
+                  </li>
+                </ul>
                 <!-- <span class="input-group-addon"> <span class="caret"></span> </span> -->
               </div>
             </div>
