@@ -1,11 +1,18 @@
 import { IterationModel } from '../../models/iteration.model';
-import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { Router, ActivatedRoute }                                            from '@angular/router';
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation, OnChanges, SimpleChanges, DoCheck, OnDestroy } from '@angular/core';
+import {
+  Router,
+  ActivatedRoute,
+  Event as NavigationEvent,
+  NavigationStart,
+  NavigationEnd
+} from '@angular/router';
 
 import { Broadcaster, Logger, Notification, NotificationType, Notifications } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
 import { Dialog } from 'ngx-widgets';
 
+import { IterationService } from '../../services/iteration.service';
 import { WorkItem }        from '../../models/work-item';
 import { WorkItemService } from '../../services/work-item.service';
 
@@ -36,10 +43,11 @@ import { TreeListItemComponent } from 'ngx-widgets';
   templateUrl: './work-item-list-entry.component.html',
   styleUrls: ['./work-item-list-entry.component.scss'],
 })
-export class WorkItemListEntryComponent implements OnInit {
+export class WorkItemListEntryComponent implements OnInit, OnDestroy {
   @Input() listItem: TreeListItemComponent;
   @Input() workItem: WorkItem;
   @Input() iterations: IterationModel[];
+  @Input() selected: boolean = false;
 
   @Output() toggleEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
   @Output() selectEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
@@ -52,10 +60,13 @@ export class WorkItemListEntryComponent implements OnInit {
   showDialog = false;
   loggedIn: Boolean = false;
   queryParams: Object = {};
+  eventListeners: any[] = [];
+  selectedItemId: string | number = 0;
 
   constructor(private auth: AuthenticationService,
               private broadcaster: Broadcaster,
               private route: ActivatedRoute,
+              private iterationService: IterationService,
               private notifications: Notifications,
               private router: Router,
               private workItemService: WorkItemService,
@@ -64,6 +75,10 @@ export class WorkItemListEntryComponent implements OnInit {
   ngOnInit(): void {
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
+  }
+
+  ngOnDestroy() {
+    this.eventListeners.forEach(subscriber => subscriber.unsubscribe());
   }
 
   getWorkItem(): WorkItem {
@@ -168,9 +183,16 @@ export class WorkItemListEntryComponent implements OnInit {
     this.workItem.relationships.iteration = {}
     this.workItemService
       .update(this.workItem)
+      .switchMap(item => {
+        return this.iterationService.getIteration(item.relationships.iteration)
+          .map(iteration => {
+            item.relationships.iteration.data = iteration;
+            return item;
+          });
+      })
       .subscribe(workItem => {
         //update only the relevant fields
-        this.workItem.relationships.iteration = {}
+        this.workItem.relationships.iteration.data = workItem.relationships.iteration.data;
         this.workItem.attributes['version'] = workItem.attributes['version'];
         try {
           this.notifications.message({
@@ -193,17 +215,39 @@ export class WorkItemListEntryComponent implements OnInit {
     });
   }
 
-  listenToEvents() {
-    this.broadcaster.on<string>('logout')
-      .subscribe(message => {
-        this.loggedIn = false;
-    });
-    this.broadcaster.on<string>('activeWorkItem')
-      .subscribe(wiId => {
-        (this.workItem.id == wiId) ? this.select() : this.deselect();
-    });
-    this.route.queryParams.subscribe((params) => {
-      this.queryParams = params;
-    })
+  selectDeselectFromUrl(url: string) {
+    if (url.indexOf('detail') > -1) {
+      this.selectedItemId = url.split('detail/')[1].split('?')[0];
+    } else {
+      this.selectedItemId = 0;
+    }
+    this.listItem.setSelected(this.selectedItemId == this.workItem.id);
   }
+
+  listenToEvents() {
+    this.eventListeners.push(
+      this.broadcaster.on<string>('logout')
+        .subscribe(message => {
+          this.loggedIn = false;
+      })
+    )
+
+    this.eventListeners.push(
+      this.route.queryParams.subscribe((params) => {
+        this.queryParams = params;
+      })
+    );
+
+    this.selectDeselectFromUrl(this.router.url);
+    this.eventListeners.push(
+      this.router.events
+      .filter((event) => event instanceof NavigationEnd )
+      .map((event: NavigationEnd) => event.url)
+      .subscribe(url => {
+        this.selectDeselectFromUrl(url);
+      })
+    );
+  }
+
+
 }

@@ -231,6 +231,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
               if(item.relationships.assignees.data.length > 0)
                 return item.relationships.assignees.data[0].attributes['imageURL'];
               else return '';})(),
+            hasLink: true,
+            link: "./detail/"+item.id,
             menuItem: [{
               id: 'card_associate_iteration',
               value: 'Associate with iteration...'
@@ -271,6 +273,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
                 if(workItems[i].relationships.assignees.data.length > 0)
                   return workItems[i].relationships.assignees.data[0].attributes['imageURL'];
                 else return '';})(),
+        hasLink: true,
+        link: "./detail/"+workItems[i].id,
         menuItem: [{
           id: 'card_associate_iteration',
           value: 'Associate with iteration...'
@@ -314,7 +318,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   onMoveToBacklog(): void {
     //set this work item's iteration to None
     //send a patch request
-    this.workItem.relationships.iteration = {}
+    this.workItem.relationships.iteration = {};
     this.workItemService
       .update(this.workItem)
       .switchMap(item => {
@@ -325,7 +329,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
           });
       })
       .subscribe(workItem => {
-        this.workItem = workItem;
+        this.workItem.relationships.iteration = workItem.relationships.iteration;
+        this.workItem.attributes['version'] = workItem.attributes['version'];
         try {
           this.notifications.message({
             message: workItem.attributes['system.title'] + ' has been moved to the Backlog.',
@@ -630,13 +635,6 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
           .subscribe((data: any) => {
             this.changeLane(data[0].oldState, data[0].newState, data[0].workItem);
       })
-    );
-
-    this.eventListeners.push(
-      this.broadcaster.on<string>('detail_close')
-        .subscribe(()=>{
-          //this.workItem = <WorkItem>{};
-        })
     );
 
     this.eventListeners.push(
