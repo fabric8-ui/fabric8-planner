@@ -34,6 +34,7 @@ import {
 
 import { AreaModel } from '../../models/area.model';
 import { AreaService } from '../../services/area.service';
+import { Comment } from './../../models/comment';
 import { IterationModel } from '../../models/iteration.model';
 import { IterationService } from '../../services/iteration.service';
 import { WorkItemTypeControlService } from '../../services/work-item-type-control.service';
@@ -57,13 +58,13 @@ import { CollaboratorService } from '../../services/collaborator.service'
       state('out', style({
         right: '-100%'
       })),
-      transition('in => out', animate('300ms ease-in-out')),
-      transition('out => in', animate('500ms ease-in-out'))
+      transition('in => out', animate('200ms ease-in-out')),
+      transition('out => in', animate('200ms ease-in-out'))
     ]),
   ]
 })
 
-export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy {
+export class WorkItemDetailComponent implements OnInit, OnDestroy {
 
   @ViewChild('title') title: any;
   @ViewChild('userSearch') userSearch: any;
@@ -99,9 +100,9 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   panelState: string = 'out';
 
-  areas: AreaModel[] = [];
+  areas: TypeaheadDropdownValue[] = [];
 
-  iterations: IterationModel[] = [];
+  iterations: TypeaheadDropdownValue[] = [];
 
   comments: Comment[] = [];
 
@@ -122,6 +123,11 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   itemSubscription: any = null;
 
+  loadingComments: boolean = true;
+  loadingTypes: boolean = false;
+  loadingIteration: boolean = false;
+  loadingArea: boolean = false;
+
   constructor(
     private areaService: AreaService,
     private auth: AuthenticationService,
@@ -141,9 +147,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   ngOnInit(): void {
     this.saving = false;
     this.listenToEvents();
-    this.getAreas();
-    // this.getAllUsers();
-    this.getIterations();
     this.loggedIn = this.auth.isLoggedIn();
     if (this.loggedIn) {
       this.eventListeners.push(
@@ -186,30 +189,30 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.eventListeners.forEach(subscriber => subscriber.unsubscribe());
   }
 
-  ngAfterViewInit() {
-    // Open the panel
-    // Why use a setTimeOut -
-    // This is for unit testing.
-    // After every round of change detection,
-    // dev mode immediately performs a second round to verify
-    // that no bindings have changed since the end of the first,
-    // as this would indicate that changes are being caused by change detection itself.
-    // I had to triggers another round of change detection
-    // during that method - emit an event, whatever. Wrapping it in a timeout would do the job
-    // setTimeout(() => {
-    //   this.panelState = 'in';
-    //   if (this.headerEditable) {
-    //     this.title.nativeElement.focus();
-    //   }
-    // });
-  }
-
   loadWorkItem(id: string): void {
+    const t1 = performance.now();
     this.workItemService.getWorkItemById(id)
+      .do(workItem => {
+        this.workItem = workItem;
+        // Open the panel once work item is ready
+        const t2 = performance.now();
+        if (this.panelState === 'out') {
+          this.panelState = 'in';
+          console.log('Performance :: Details page first paint - '  + (t2 - t1) + ' milliseconds.');
+          if (this.headerEditable && typeof(this.title) !== 'undefined') {
+            this.title.nativeElement.focus();
+          }
+        }
+      })
+      .do (workItem => console.log('Work item fethced: ', cloneDeep(workItem)))
+      .do (() => {
+        this.loadingComments = true;
+        this.loadingTypes = true;
+        this.loadingIteration = true;
+        this.loadingArea = true;
+      })
       .switchMap(workItem => {
         return Observable.combineLatest(
-          Observable.of(workItem),
-          this.collaboratorService.getCollaborators(),
           this.workItemService.getWorkItemTypes(),
           this.areaService.getArea(workItem.relationships.area),
           this.iterationService.getIteration(workItem.relationships.iteration),
@@ -218,47 +221,55 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
           this.workItemService.resolveComments(workItem.relationships.comments.links.related),
           this.workItemService.resolveLinks(workItem.links.self + '/relationships/links')
         );
-      })
-      .take(1)
-      .subscribe(([workItem, users, workItemTypes, area, iteration, assignees, creator, comments, [links, includes]]) => {
+      }).take(1)
+      .subscribe(([workItemTypes, area, iteration, assignees, creator, comments, [links, includes]]) => {
 
         // Resolve area
-        workItem.relationships.area = {
+        this.workItem.relationships.area = {
           data: area
         };
+        this.areas = this.extractAreaKeyValue([area]);
+        this.loadingArea = false;
 
         // Resolve iteration
-        workItem.relationships.iteration = {
+        this.workItem.relationships.iteration = {
           data: iteration
         };
+        this.iterations = this.extractIterationKeyValue([iteration]);
+        this.loadingIteration = false;
 
         // Resolve work item type
-        workItem.relationships.baseType.data =
-          workItemTypes.find(type => type.id === workItem.relationships.baseType.data.id) ||
-          workItem.relationships.baseType.data;
+        this.workItem.relationships.baseType.data =
+          workItemTypes.find(type => type.id === this.workItem.relationships.baseType.data.id) ||
+          this.workItem.relationships.baseType.data;
+        this.loadingTypes = false;
 
         // Resolve assignees
-        workItem.relationships.assignees = {
+        this.workItem.relationships.assignees = {
           data: assignees
         };
 
         // Resolve creator
-        workItem.relationships.creator = {
+       this.workItem.relationships.creator = {
           data: creator
         };
 
         // Resolve comments
-        merge(workItem.relationships.comments, comments);
-        workItem.relationships.comments.data = workItem.relationships.comments.data.map((comment) => {
-          comment.relationships['created-by'].data =
-            users.find(user => user.id === comment.relationships['created-by'].data.id);
-          return comment;
+        merge(this.workItem.relationships.comments, comments);
+        this.workItem.relationships.comments.data.forEach((comment, index) => {
+          this.workItemService.resolveCommentCreator(comment.relationships['created-by'])
+            .subscribe(creator => {
+              comment.relationships['created-by'] = {
+                data: creator
+              };
+            });
         });
-        this.comments = workItem.relationships.comments.data;
+        this.comments = this.workItem.relationships.comments.data;
+        this.loadingComments = false;
 
         // Resolve links
-        workItem = Object.assign(
-          workItem,
+        this.workItem = Object.assign(
+          this.workItem,
           {
             relationalData: {
               linkDicts: [],
@@ -267,13 +278,12 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
           }
         );
         links.forEach((link) => {
-          this.workItemService.addLinkToWorkItem(link, includes, workItem);
+          this.workItemService.addLinkToWorkItem(link, includes, this.workItem);
         });
 
         this.closeUserRestFields();
-        this.titleText = workItem.attributes['system.title'];
-        this.descText = workItem.attributes['system.description'] || '';
-        this.workItem = workItem;
+        this.titleText = this.workItem.attributes['system.title'];
+        this.descText = this.workItem.attributes['system.description'] || '';
 
         this.workItemPayload = {
           id: this.workItem.id,
@@ -285,14 +295,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
           },
           type: this.workItem.type
         };
-
-        // Open the panel once all the data is ready
-        if (this.panelState === 'out') {
-          this.panelState = 'in';
-          if (this.headerEditable && typeof(this.title) !== 'undefined') {
-            this.title.nativeElement.focus();
-          }
-        }
 
         // init dynamic form
         this.dynamicFormGroup = this.workItemTypeControlService.toFormGroup(this.workItem);
@@ -367,7 +369,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   updateOnList() {
-    this.broadcaster.broadcast('updateWorkItem', JSON.stringify(this.workItem));
+    this.workItemService.emitEditWI(this.workItem);
   }
 
   //addNewItem(workItem: WorkItem) {
@@ -404,7 +406,14 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         markup: 'Markdown',
         content: this.descText.trim()
       };
-      this.save(payload);
+      this.save(payload, true)
+        .subscribe(workItem => {
+          this.workItem.attributes['system.description.rendered'] =
+          workItem.attributes['system.description.rendered'];
+          this.workItem.attributes['system.description'] =
+          workItem.attributes['system.description'];
+          this.updateOnList();
+        })
     } else {
       this.save();
     }
@@ -416,7 +425,12 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.workItem.id) {
       let payload = cloneDeep(this.workItemPayload);
       payload.attributes[event.formControlName] = event.newValue;
-      this.save(payload);
+      this.save(payload, true)
+        .subscribe(workItem => {
+          this.workItem.attributes[event.formControlName] =
+          workItem.attributes[event.formControlName];
+          this.updateOnList();
+        });
     } else {
       this.save();
     }
@@ -446,15 +460,14 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   getAreas() {
     this.areaService.getAreas()
       .subscribe((response: AreaModel[]) => {
-        this.areas = response;
-        // this.filteredAreas = cloneDeep(response);
+        this.areas = this.extractAreaKeyValue(response);
       }, err => console.log(err));
   }
 
   getIterations() {
     this.iterationService.getIterations()
       .subscribe((iteration: IterationModel[]) => {
-        this.iterations = iteration;
+        this.iterations = this.extractIterationKeyValue(iteration);
       }, err => console.log(err));
   }
 
@@ -484,7 +497,12 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if(this.workItem.id) {
       let payload = cloneDeep(this.workItemPayload);
       payload.attributes['system.state'] = option;
-      this.save(payload);
+      this.save(payload, true)
+      .subscribe(
+        workItem => {
+          this.workItem.attributes['system.state'] = workItem.attributes['system.state'];
+          this.updateOnList();
+        });
     }
   }
 
@@ -512,7 +530,11 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
       if (this.workItem.id) {
         let payload = cloneDeep(this.workItemPayload);
         payload.attributes['system.title'] = this.titleText;
-        this.save(payload);
+        this.save(payload, true)
+          .subscribe((workItem: WorkItem) => {
+            this.workItem.attributes['system.title'] = workItem.attributes['system.title'];
+            this.updateOnList();
+          });
       } else {
         this.save();
       }
@@ -525,142 +547,40 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.workItem.id) {
       retObservable = this.workItemService
         .update(payload)
-        .switchMap(workItem => {
-          return Observable.combineLatest(
-            Observable.of(workItem),
-            this.collaboratorService.getCollaborators(),
-            this.workItemService.getWorkItemTypes(),
-            this.areaService.getArea(workItem.relationships.area),
-            this.iterationService.getIteration(workItem.relationships.iteration),
-            this.workItemService.resolveAssignees(workItem.relationships.assignees),
-            this.workItemService.resolveCreator2(workItem.relationships.creator),
-            this.workItemService.resolveComments(workItem.relationships.comments.links.related),
-            this.workItemService.resolveLinks(workItem.links.self + '/relationships/links')
-        );
-      })
-      .take(1)
-      .map(([workItem, users, workItemTypes, area, iteration, assignees, creator, comments, [links, includes]]) => {
-
-        // resolve comments
-        workItem.relationships.comments = Object.assign(
-          workItem.relationships.comments,
-          comments
-        );
-        workItem.relationships.comments.data =
-          workItem.relationships.comments.data.map((comment) => {
-            comment.relationships['created-by'].data = users.find(user => user.id === comment.relationships['created-by'].data.id);
-            return comment;
-          });
-
-        // Resolve area
-        workItem.relationships.area = {
-          data: area
-        };
-        // Resolve iteration
-        if (iteration) {
-          workItem.relationships.iteration = {
-            data: iteration
-          };
-        } else {
-          workItem.relationships.iteration = { };
-        }
-        // Resolve work item type
-        workItem.relationships.baseType.data =
-          workItemTypes.find(type => type.id === workItem.relationships.baseType.data.id) ||
-          workItem.relationships.baseType.data;
-
-        // Resolve assignees
-        workItem.relationships.assignees = {
-          data: assignees
-        };
-
-        // Resolve creator
-        workItem.relationships.creator = {
-          data: creator
-        };
-
-        // Resolve comments
-        merge(workItem.relationships.comments, comments);
-        workItem.relationships.comments.data = workItem.relationships.comments.data.map((comment) => {
-          comment.relationships['created-by'].data =
-            users.find(user => user.id === comment.relationships['created-by'].data.id);
-          return comment;
-        });
-        this.comments = workItem.relationships.comments.data;
-
-        // Resolve links
-        workItem = Object.assign(
-          workItem,
-          {
-            relationalData: {
-              linkDicts: [],
-              totalLinkCount: 0
-            }
+        .do(workItem => {
+          this.workItemPayload.attributes['version'] =
+          this.workItem.attributes['version'] =
+          workItem.attributes['version'];
+        })
+        .take(1)
+        .catch((error: Error | any) => {
+          this.savingError = true;
+          this.errorMessage = 'Something went wrong. Try again.'
+          if (error && error.status && error.statusText) {
+            this.errorMessage = error.status + ' : ' + error.statusText+ '. Try again.';
           }
-        );
-        links.forEach((link) => {
-          this.workItemService.addLinkToWorkItem(link, includes, workItem);
+          return Observable.throw(error);
         });
-
-        this.workItem = workItem;
-        this.workItemPayload.attributes['version'] = workItem.attributes['version'];
-        this.updateOnList();
-        this.activeOnList();
-        this.workItemService.emitEditWI(workItem);
-        return workItem;
-      })
-      .catch((error: Error | any) => {
-        this.savingError = true;
-        this.errorMessage = 'Something went wrong. Try again.'
-        if (error && error.status && error.statusText) {
-          this.errorMessage = error.status + ' : ' + error.statusText+ '. Try again.';
-        }
-        return Observable.throw(error);
-      });
     } else {
+      const t1 = performance.now();
       if (this.validTitle) {
         this.saving = true;
         this.savingError = false;
         retObservable = this.workItemService
         .create(this.workItem)
-        .switchMap(workItem => {
-          return Observable.forkJoin(
-            Observable.of(workItem),
-            this.workItemService.getWorkItemTypes(),
-            this.workItemService.resolveAssignees(workItem.relationships.assignees),
-            this.workItemService.resolveCreator2(workItem.relationships.creator)
-          );
-        })
-        .map(([workItem, workItemTypes, assignees, creator]) => {
-          // Resolve work item type
-          workItem.relationships.baseType.data =
-            workItemTypes.find(type => type.id === workItem.relationships.baseType.data.id) ||
-            workItem.relationships.baseType.data;
-
-          // Resolve assignees
-          workItem.relationships.assignees = {
-            data: assignees
-          };
-
-          // Resolve creator
-          workItem.relationships.creator = {
-            data: creator
-          };
-
-          //this.addNewItem(workItem);
-
+        .do(workItem => {
           let queryParams = cloneDeep(this.queryParams);
           if (Object.keys(queryParams).indexOf('type') > -1) {
             delete queryParams['type'];
           }
-
           this.router.navigate(
             [this.router.url.split('/detail/')[0] + '/detail/' + workItem.id],
             { queryParams: queryParams } as NavigationExtras
           );
           this.workItemService.emitAddWI(workItem);
           this.saving = false;
-          return workItem;
+          const t2 = performance.now();
+          console.log('Performance :: Detail add work item - '  + (t2 - t1) + ' milliseconds.');
         })
         .catch((error: Error | any) => {
           this.saving = false;
@@ -850,7 +770,14 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
           }
         }
       });
-      this.save(payload);
+      this.save(payload, true)
+        .switchMap(workItem => this.workItemService.resolveAssignees(workItem.relationships.assignees))
+        .subscribe(assignees => {
+          this.workItem.relationships.assignees = {
+            data: assignees
+          };
+          this.updateOnList();
+        })
     } else {
       let assignee = [{
         attributes: {
@@ -875,7 +802,11 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         }
       }
     });
-    this.save(payload);
+    this.save(payload, true)
+    .subscribe(() => {
+      this.workItem.relationships.assignees.data = [] as User[];
+      this.updateOnList();
+    });
     this.searchAssignee = false;
   }
 
@@ -897,6 +828,8 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   iterationUpdated(iterationId: string): void {
+    if (iterationId === '0') return; // Loading item
+    this.loadingIteration = true;
     if (this.workItem.id) {
       // Send out an iteration change event
       let newIteration = iterationId;
@@ -930,7 +863,11 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
           }
         });
       }
-      this.save(payload, true).subscribe((workItem:WorkItem) => {
+      this.save(payload, true).subscribe((workItem: WorkItem) => {
+        this.loadingIteration = false;
+        this.iterations.forEach(it => it.selected = it.key === iterationId);
+        this.workItem.relationships.iteration = workItem.relationships.iteration;
+        this.updateOnList();
         this.logger.log('Iteration has been updated, sending event to iteration panel to refresh counts.');
         this.broadcaster.broadcast('associate_iteration', {
           workItemId: workItem.id,
@@ -944,15 +881,21 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
       if (iterationId) {
         iteration = {
           data: {
-            attributes: {
-              name: this.findIterationById(iterationId).attributes.name
-            },
+            // Why do we need attribute for the relationship
+            // attributes: {
+            //   name: this.findIterationById(iterationId).attributes.name
+            // },
             id: iterationId,
             type: 'iteration'
           }
         }
       }
-      this.workItem.relationships.iteration = iteration;
+      // Need setTimeout for typeahead drop down't change detection to work
+      setTimeout(() => {
+        this.loadingIteration = false;
+        this.iterations.forEach(it => it.selected = it.key === iterationId);
+        this.workItem.relationships.iteration = iteration;
+      });
     }
   }
 
@@ -963,7 +906,7 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.workItem.relationships.area && this.workItem.relationships.area.data && this.workItem.relationships.area.data.id) {
       selectedAreaId = this.workItem.relationships.area.data.id;
     }
-    for (let i=0; i<areas.length; i++) {
+      for (let i=0; i<areas.length; i++) {
       result.push({
         key: areas[i].id,
         value: (areas[i].attributes.parent_path_resolved!='/'?areas[i].attributes.parent_path_resolved:'') + '/' + areas[i].attributes.name,
@@ -974,13 +917,6 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         selectedFound = true;
     };
     return result;
-  }
-
-  findAreaById(areaId: string): AreaModel {
-    for (let i=0; i<this.areas.length; i++)
-      if (this.areas[i].id === areaId)
-        return this.areas[i];
-    return null;
   }
 
   extractIterationKeyValue(iterations: IterationModel[]): TypeaheadDropdownValue[] {
@@ -1003,25 +939,45 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
     return result;
   }
 
-  findIterationById(iterationId: string): IterationModel {
-    for (let i=0; i<this.iterations.length; i++)
-      if (this.iterations[i].id === iterationId)
-        return this.iterations[i];
-    return null;
-  }
+  // findIterationById(iterationId: string): IterationModel {
+  //   for (let i=0; i<this.iterations.length; i++)
+  //     if (this.iterations[i].id === iterationId)
+  //       return this.iterations[i];
+  //   return null;
+  // }
 
   focusArea() {
     this.iterationSelectbox.close();
     this.cancelAssignment();
+    this.areas = [
+      ...this.areas,
+      {
+        key: '0',
+        value: '',
+        selected: false,
+        cssLabelClass: 'spinner spinner-sm spinner-inline'
+      }
+    ];
+    this.getAreas();
   }
 
   focusIteration() {
     this.areaSelectbox.close();
     this.cancelAssignment();
+    this.iterations = [
+      ...this.iterations,
+      {
+        key: '0',
+        value: '',
+        selected: false,
+        cssLabelClass: 'spinner spinner-sm spinner-inline'
+      }
+    ];
+    this.getIterations();
   }
 
   areaUpdated(areaId: string) {
-
+    this.loadingArea = true;
     if (this.workItem.id) {
       let payload = cloneDeep(this.workItemPayload);
       if (areaId) {
@@ -1044,22 +1000,30 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
           }
         });
       }
-      this.save(payload);
+      this.save(payload, true)
+        .subscribe((workItem: WorkItem) => {
+          this.loadingArea = false;
+          this.areas.forEach(area => area.selected = area.key === areaId);
+          this.workItem.relationships.area = workItem.relationships.area;
+          this.updateOnList();
+      });
     } else {
       let area = { };
       if (areaId) {
         // area was set to a value.
         let area = {
           data: {
-            attributes: {
-              name: this.findAreaById(areaId).attributes.name,
-            },
             id: areaId,
             type: 'area'
           }
         };
       };
-      this.workItem.relationships.area = area;
+      // Need setTimeout for typeahead drop down't change detection to work
+      setTimeout(() => {
+        this.loadingArea = false;
+        this.areas.forEach(area => area.selected = area.key === areaId);
+        this.workItem.relationships.area = area;
+      });
     }
   }
 
@@ -1077,9 +1041,9 @@ export class WorkItemDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.closeHeader();
       } else if (this.searchAssignee) {
         this.searchAssignee = false;
-      } else if (this.areaSelectbox.isOpen()) {
+      } else if (this.areaSelectbox && this.areaSelectbox.isOpen()) {
         this.areaSelectbox.close();
-      } else if (this.iterationSelectbox.isOpen()) {
+      } else if (this.iterationSelectbox && this.iterationSelectbox.isOpen()) {
         this.iterationSelectbox.close();
     } else {
         this.closeDetails();

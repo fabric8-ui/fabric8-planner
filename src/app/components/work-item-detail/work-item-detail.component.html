@@ -8,8 +8,13 @@
         <div class="detail-panel-header">
           <div class="form-group col-sm-12 mobile-bar">
             <div class="dropdown-kebab-pf detail-type-dropdown col-sm-8">
-              <span class="wi-type-icon fa {{workItem.relationships?.baseType?.data?.attributes?.icon}} fa-lg"></span>
-              {{workItem.relationships?.baseType?.data?.attributes?.name}}
+              <span *ngIf="loadingTypes; else witTypeLoaded"
+                class="spinner spinner-sm spinner-inline">
+              </span>
+              <ng-template #witTypeLoaded>
+                <span class="wi-type-icon fa {{workItem.relationships?.baseType?.data?.attributes?.icon}} fa-lg"></span>
+                {{workItem.relationships?.baseType?.data?.attributes?.name}}
+              </ng-template>
               <h3 *ngIf="workItem.id" class="detail-id" id="wi-detail-id">{{workItem.id}}</h3>
               <span *ngIf="saving" class="saving-title">
                 <span class="spinner spinner-sm spinner-inline"></span>
@@ -184,6 +189,7 @@
                 placement="bottom"
                 tooltip="{{workItem.relationships.creator.data.attributes?.fullName}}"
                 src="{{workItem.relationships.creator.data.attributes?.imageURL + '&s=20'}}"
+                onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'"
                 id="WI_details_reporter_img" />
               <div class="marginR10" style="display: inline-block;">
                   <span id="WI_details_reporter_user">
@@ -198,7 +204,14 @@
               <label class="col-sm-2 control-label" id="area_label">
                 {{workItem.relationships?.baseType?.data?.attributes?.fields['system.area']?.label || 'Label'}}
               </label>
-              <typeahead-dropdown id="area-dropdown" class="area-dropdown" #areaSelectbox noValueLabel="None" [values]="extractAreaKeyValue(areas)" (onFocus)="focusArea()" (onUpdate)="areaUpdated($event)"></typeahead-dropdown>
+              <span *ngIf="loadingArea"
+                class="spinner spinner-sm spinner-inline">
+              </span>
+              <typeahead-dropdown #areaSelectbox
+                *ngIf="!loadingArea"
+                id="area-dropdown" class="area-dropdown"
+                noValueLabel="None" [values]="areas" (onFocus)="focusArea()"
+                (onUpdate)="areaUpdated($event)"></typeahead-dropdown>
             </div>
           </div>
 
@@ -208,7 +221,14 @@
               <label class="col-sm-2 control-label" id="iteration_label">
                 {{workItem.relationships?.baseType?.data?.attributes?.fields['system.iteration']?.label || 'Label'}}
               </label>
-              <typeahead-dropdown id="iteration-dropdown" class="iteration-dropdown" #iterationSelectbox noValueLabel="None" [values]="extractIterationKeyValue(iterations)" (onFocus)="focusIteration()" (onUpdate)="iterationUpdated($event)"></typeahead-dropdown>
+              <span *ngIf="loadingIteration"
+                class="spinner spinner-sm spinner-inline">
+              </span>
+              <typeahead-dropdown
+                *ngIf="!loadingIteration"
+                id="iteration-dropdown" class="iteration-dropdown"
+                #iterationSelectbox noValueLabel="None" [values]="iterations"
+                (onFocus)="focusIteration()" (onUpdate)="iterationUpdated($event)"></typeahead-dropdown>
             </div>
           </div>
         </div>
@@ -241,15 +261,18 @@
       </fieldset>
     </form>
     <div *ngIf="workItem.id" class="work-item-section">
-      <alm-work-item-link [workItem]="workItem" [loggedIn]="loggedIn"></alm-work-item-link>
+      <alm-work-item-link
+        [workItem]="workItem"
+        [loggedIn]="loggedIn">
+      </alm-work-item-link>
       <alm-work-item-comment
         [comments]="comments"
+        [loadingComments]="loadingComments"
         [loggedIn]="loggedIn"
         [loggedInUser]="loggedInUser"
         (create)="createComment($event)"
         (update)="updateComment($event)"
-        (delete)="deleteComment($event)"
-      >
+        (delete)="deleteComment($event)">
       </alm-work-item-comment>
     </div>
   </div>
