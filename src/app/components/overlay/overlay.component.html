@@ -1,0 +1,17 @@
+<modal #overlayModal [closeOnEscape]="false">
+  <modal-header>
+    <h2>
+      <span class="pficon-error-circle-o"></span>
+      System Error
+    </h2>
+  </modal-header>
+  <modal-content>
+        {{ message }}
+  </modal-content>
+  <modal-footer>
+    <button class="btn btn-primary" type="submit" value="0"
+      (click)="reloadPage()">
+        Reload the page
+      </button>
+  </modal-footer>
+</modal>

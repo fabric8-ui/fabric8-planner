@@ -9,9 +9,9 @@ import { IMyOptions, IMyDateModel } from 'mydatepicker';
 import { Broadcaster, Notification, Notifications ,NotificationType } from 'ngx-base';
 import { Space, Spaces } from 'ngx-fabric8-wit';
 
+import { EventService } from '../../services/event.service';
 import { IterationService } from '../../services/iteration.service';
 import { IterationModel } from '../../models/iteration.model';
-
 
 @Component({
   selector: 'fab-planner-iteration-modal',
@@ -67,6 +67,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
 
   constructor(
     private notifications: Notifications,
+    private eventService: EventService,
     private iterationService: IterationService,
     private spaces: Spaces,
     private broadcaster: Broadcaster) {}
@@ -356,16 +357,11 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
                 this.createUpdateIterationDialog.close();
           },
           (e) => {
-            this.validationError = true;
-            let message = 'Iteration could not be created. Some error has occured. Reload the page.'
-                try {
-                  this.notifications.message({
-                    message: message,
-                    type: NotificationType.DANGER
-                  } as Notification);
-                } catch (e) {
-                  console.log('Error displaying notification. New iteration was not added - ', e);
-                }
+            this.eventService.showErrorModal.next({
+              status: true,
+              message: 'Error creating iteration.' + e
+            });
+            this.createUpdateIterationDialog.close();
 
           });
         } else {

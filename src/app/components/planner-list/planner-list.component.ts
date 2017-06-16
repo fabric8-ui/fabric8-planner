@@ -51,6 +51,8 @@ import { CollaboratorService } from '../../services/collaborator.service';
 
 import { TreeListComponent } from 'ngx-widgets';
 
+import { OverlayComponent } from '../overlay/overlay.component'
+
 @Component({
   encapsulation: ViewEncapsulation.None,
   // tslint:disable-next-line:use-host-property-decorator
@@ -73,6 +75,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   @ViewChild('treeListTemplate') treeListTemplate: TemplateRef<any>;
   @ViewChild('treeListItem') treeListItem: TreeListComponent;
 
+  @ViewChild('errorModal') errorModal: OverlayComponent;
+
   workItems: WorkItem[] = [];
   prevWorkItemLength: number = 0;
   workItemTypes: WorkItemType[] = [];
@@ -80,7 +84,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   workItemToMove: WorkItemListEntryComponent;
   workItemDetail: WorkItem;
   addingWorkItem = false;
-  showOverlay : Boolean ;
+  showOverlay : Boolean = false ;
   loggedIn: Boolean = false;
   contentItemHeight: number = 67;
   pageSize: number = 20;
@@ -97,6 +101,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   private allowedFilterParams: string[] = ['iteration'];
   private currentIteration: BehaviorSubject<string | null>;
   private loggedInUser: User | Object = {};
+
 
   // See: https://angular2-tree.readme.io/docs/options
   treeListOptions = {
@@ -542,6 +547,12 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
             this.treeList.updateTree();
           }
         }
+      })
+    );
+
+    this.eventListeners.push(
+      this.eventService.showErrorModal.subscribe(object => {
+        this.errorModal.showModal(object);
       })
     );
   }

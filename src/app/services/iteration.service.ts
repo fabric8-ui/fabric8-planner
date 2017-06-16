@@ -97,13 +97,12 @@ export class IterationService {
    * @return new item
    */
   createIteration(iteration: IterationModel, parentIteration: IterationModel): Observable<IterationModel> {
-    console.log('Create on iteration service.');
     let iterationsUrl;
     if (parentIteration) {
-      iterationsUrl = parentIteration.links.self + '1';
+      iterationsUrl = parentIteration.links.self;
     }
     else {
-      iterationsUrl = this._currentSpace.relationships.iterations.links.related + '1';
+      iterationsUrl = this._currentSpace.relationships.iterations.links.related;
     }
     if (this._currentSpace) {
       iteration.relationships.space.data.id = this._currentSpace.id;
