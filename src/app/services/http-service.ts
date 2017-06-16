@@ -44,10 +44,17 @@ export class HttpService extends Http {
     // this.headers.set('If-None-Match', 'somerandomEtagValue');
   }
 
+  private setHeaders(options) {
+    (<any>Object).entries(options).forEach(([key, value]) => {
+      this.headers.set(key, value);
+    });
+  }
+
   get(url: string, options = {}) {
     console.log('GET request initiated');
     console.log('URL - ', url);
     console.log('Options - ', options);
+    this.setHeaders(options);
     let retryCount = 1;
     return super.get(url, { headers: this.headers })
     .retryWhen(attempts => {
@@ -57,7 +64,7 @@ export class HttpService extends Http {
         if (error.status == 0) { // Server offline :: keep trying
           console.log('########### Now offline #############', error);
           return Observable.timer(++count * 1000);
-        } else if (error.status == 500){ // Server error :: Try 3 times then throw error
+        } else if (error.status == 500 || error.status == 401){ // Server error :: Try 3 times then throw error
           return ++count >= 3 ? Observable.throw(error) : Observable.timer(1000);
         } else {
           return Observable.throw(error);
@@ -66,12 +73,13 @@ export class HttpService extends Http {
     });
   }
 
-  post(url: string, body: any, options: RequestOptionsArgs = {}) {
+  post(url: string, body: any, options = {}) {
     options = Object.assign(options, this.options);
     console.log('POST request initiated');
     console.log('URL - ', url);
     console.log('Body - ', body);
     console.log('Options - ', options);
+    this.setHeaders(options);
     return super.post(url, body, { headers: this.headers })
     .retryWhen(attempts => {
       console.log('retryWhen callback');
@@ -80,7 +88,7 @@ export class HttpService extends Http {
         if (error.status == 0) {
           console.log('########### Now offline #############', error);
           return Observable.timer(++count * 1000);
-        } else if (error.status == 500){
+        } else if (error.status == 500 || error.status == 401){
           return ++count >= 3 ? Observable.throw(error) : Observable.timer(1000);
         } else {
           return Observable.throw(error);
@@ -89,11 +97,12 @@ export class HttpService extends Http {
     });
   }
 
-  put(url: string, body: any, options: RequestOptionsArgs = {}) {
+  put(url: string, body: any, options = {}) {
     console.log('PUT request initiated');
     console.log('URL - ', url);
     console.log('Body - ', body);
     console.log('Options - ', options);
+    this.setHeaders(options);
     return super.put(url, body, { headers: this.headers })
     .retryWhen(attempts => {
       console.log('retryWhen callback');
@@ -102,7 +111,7 @@ export class HttpService extends Http {
         if (error.status == 0) {
           console.log('########### Now offline #############', error);
           return Observable.timer(++count * 1000);
-        } else if (error.status == 500){
+        } else if (error.status == 500 || error.status == 401){
           return ++count >= 3 ? Observable.throw(error) : Observable.timer(1000);
         } else {
           return Observable.throw(error);
@@ -111,11 +120,12 @@ export class HttpService extends Http {
     });
   }
 
-  patch(url: string, body: any, options: RequestOptionsArgs = {}) {
+  patch(url: string, body: any, options = {}) {
     console.log('PATCH request initiated');
     console.log('URL - ', url);
     console.log('Body - ', body);
     console.log('Options - ', options);
+    this.setHeaders(options);
     return super.patch(url, body, { headers: this.headers })
     .retryWhen(attempts => {
       console.log('retryWhen callback');
@@ -124,7 +134,7 @@ export class HttpService extends Http {
         if (error.status == 0) {
           console.log('########### Now offline #############', error);
           return Observable.timer(++count * 1000);
-        } else if (error.status == 500){
+        } else if (error.status == 500 || error.status == 401){
           return ++count >= 3 ? Observable.throw(error) : Observable.timer(1000);
         } else {
           return Observable.throw(error);
@@ -133,10 +143,11 @@ export class HttpService extends Http {
     });
   }
 
-  delete(url: string, options: RequestOptionsArgs = {}) {
+  delete(url: string, options = {}) {
     console.log('DELETE request initiated');
     console.log('URL - ', url);
     console.log('Options - ', options);
+    this.setHeaders(options);
     return super.delete(url, { headers: this.headers })
     .retryWhen(attempts => {
       console.log('retryWhen callback');
@@ -145,7 +156,7 @@ export class HttpService extends Http {
         if (error.status == 0) {
           console.log('########### Now offline #############', error);
           return Observable.timer(++count * 1000);
-        } else if (error.status == 500){
+        } else if (error.status == 500 || error.status == 401){
           return ++count >= 3 ? Observable.throw(error) : Observable.timer(1000);
         } else {
           return Observable.throw(error);

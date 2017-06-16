@@ -196,9 +196,11 @@ export class FabPlannerAssociateIterationModalComponent {
             return item;
           });
       })
-      .subscribe((workItem) => {
+      .subscribe(workItem => {
         this.selectedIteration = null;
-        this.workItem = workItem;
+        this.workItem.relationships.iteration = workItem.relationships.iteration;
+        this.workItem.attributes['version'] = workItem.attributes['version'];
+        this.workItemService.emitEditWI(workItem);
       });
   }
 

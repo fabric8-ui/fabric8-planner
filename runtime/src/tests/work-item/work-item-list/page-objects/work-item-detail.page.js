@@ -178,15 +178,15 @@ class WorkItemDetailPage {
   }
 
   titleValidation () {
-    return element(by.css(".clearfloat.alert.alert-danger"));
+    return element(by.css(".clearfloat.title-error"));
   }
 
   titleAlert () {
-    return element(by.xpath(".//[@id='wi-title-div'][.//[contains(@class, 'alert-danger')]]"));
+    return element(by.xpath(".//[@id='wi-title-div'][.//[contains(@class, 'clearfloat.title-error')]]"));
   }
 
   titleAlertValidation () {
-    return element(by.xpath(".//*[@id='wi-title-div']//p[.//text()[contains(.,'Title is required')]]"));
+    return element(by.xpath(".//*[@id='wi-title-div']//p[.//text()[contains(.,'title is a required field')]]"));
   }
 
   /*
@@ -567,13 +567,17 @@ class WorkItemDetailPage {
   clickStartCoding  (){
     return this.startCodingElement.click();
   }
-  startCodingDiv (){
-    return element(by.id("start-coding-link"));
+  startCodingDiv  (){
+    return element(by.css(".form-control-static.start-coding"));
+  }
+  startCodingLabel() {
+    return element(by.id("coding_label"));
   }
 
   /** UI elements for Areas */
   get areaLabel (){
-    return element(by.id('area_label'));
+    // return element(by.id('area_label'));
+    return element(by.css('.detail-area-wrap > #area_label'));
   }
   AreaSelect (){
     return element(by.css('#area-dropdown .details-dropdown'));
