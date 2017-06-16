@@ -1,4 +1,5 @@
 # Editor configuration, see http://editorconfig.org
+# See also https://fabric8io.github.io/fabric8-ux/CODE-GUIDELINES.html for an extended documentation
 root = true
 
 [*]
