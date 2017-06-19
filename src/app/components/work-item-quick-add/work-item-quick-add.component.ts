@@ -221,16 +221,6 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
         .subscribe(workItem => {
           this.workItem = workItem; // saved workItem, w/ id if new
           this.workItemService.emitAddWI(this.workItem);
-          let message = 'Work item ' + workItem.attributes['system.title'] + ' created.'
-          try {
-            this.notifications.message({
-              message: message,
-              type: NotificationType.SUCCESS
-
-            } as Notification);
-          } catch (e) {
-            console.log('Error displaying notification. New work item created.')
-          }
           this.resetQuickAdd();
           this.qaSubmit.nativeElement.removeAttribute('disabled');
           this.qaTitle.nativeElement.removeAttribute('disabled');
