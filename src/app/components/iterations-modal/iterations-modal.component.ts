@@ -376,25 +376,48 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
           this.iterationService.updateIteration(this.iteration)
             .subscribe((iteration) => {
               this.onSubmit.emit(iteration);
+              let toastIterationName = this.iteration.attributes.name;
+              if (toastIterationName.length > 15) {
+                toastIterationName = toastIterationName.slice(0, 15) + '...';
+              }
+              let message = '';
               if (this.modalType == 'start') {
-                let toastIterationName = this.iteration.attributes.name;
-                if (toastIterationName.length > 15) {
-                  toastIterationName = toastIterationName.slice(0, 15) + '...';
-                }
-                let notificationData = {
-                  'notificationText': `<strong>${toastIterationName}</strong> &nbsp; has started.`,
-                  'notificationType': 'ok'
-                };
-                this.broadcaster.broadcast('toastNotification', notificationData);
+                message = 'Iteration ' + toastIterationName + ' has started.';
                 this.iterationName = this.iteration.attributes.name;
+              } else {
+                message = 'Iteration ' + toastIterationName + ' has been updated.';
+              }
+              try {
+                this.notifications.message({
+                  message: message,
+                  type: NotificationType.SUCCESS
+                } as Notification);
+              } catch (e) {
+                console.log('Error displaying notification. Iteration updated.')
               }
               this.resetValues();
               this.createUpdateIterationDialog.close();
             },
             (e) => {
-              this.spaceError = true;
-              // this.resetValues();
-              // console.log('Some error has occured', e.toString());
+              //this.spaceError = true;
+              if (this.modalType == 'start') {
+                let message = 'There is already a current iteration. You must close the current iteration before starting this one.';
+                try {
+                    this.notifications.message({
+                      message: message,
+                      type: NotificationType.WARNING
+
+                    } as Notification);
+                  } catch (e) {
+                    console.log('Error displaying notification. There is already a current iteration. You must close the current iteration before starting this one.')
+                  }
+              } else {
+                  this.eventService.showErrorModal.next({
+                    status: true,
+                    message: 'Error updating iteration.' + e
+                  });
+                  this.createUpdateIterationDialog.close();
+              }
             });
         }
       } else {
