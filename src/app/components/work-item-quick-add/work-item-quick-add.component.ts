@@ -18,9 +18,8 @@ import { Subscription } from 'rxjs/Subscription';
 import { cloneDeep } from 'lodash';
 import { Broadcaster, Logger, Notification, NotificationType, Notifications } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
-
 import { FilterService } from '../../services/filter.service';
-
+import { EventService } from '../../services/event.service';
 import { WorkItemType } from '../../models/work-item-type';
 import { WorkItem, WorkItemRelations } from '../../models/work-item';
 import { WorkItemService } from '../../services/work-item.service';
@@ -55,6 +54,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
   eventListeners: any[] = [];
 
   constructor(
+    private eventService: EventService,
     private workItemService: WorkItemService,
     private broadcaster: Broadcaster,
     private logger: Logger,
@@ -221,14 +221,29 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
         .subscribe(workItem => {
           this.workItem = workItem; // saved workItem, w/ id if new
           this.workItemService.emitAddWI(this.workItem);
+          let message = 'Work item ' + workItem.attributes['system.title'] + ' created.'
+          try {
+            this.notifications.message({
+              message: message,
+              type: NotificationType.SUCCESS
+
+            } as Notification);
+          } catch (e) {
+            console.log('Error displaying notification. New work item created.')
+          }
           this.resetQuickAdd();
           this.qaSubmit.nativeElement.removeAttribute('disabled');
           this.qaTitle.nativeElement.removeAttribute('disabled');
         },
         error => {
           this.error = error;
-          this.qaSubmit.nativeElement.removeAttribute('disabled');
-          this.qaTitle.nativeElement.removeAttribute('disabled');
+          this.resetQuickAdd();
+          this.eventService.showErrorModal.next({
+              status: true,
+              message: 'Error creating new work item.' + error
+            });
+          //this.qaSubmit.nativeElement.removeAttribute('disabled');
+          //this.qaTitle.nativeElement.removeAttribute('disabled');
       }); // TODO: Display error message
 
     } else {

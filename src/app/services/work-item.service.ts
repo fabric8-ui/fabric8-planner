@@ -636,7 +636,7 @@ export class WorkItemService {
     console.log('work item in create ', workItem);
     let payload = JSON.stringify({data: workItem});
     if (this._currentSpace) {
-      this.workItemUrl = this._currentSpace.links.self + '/workitems1';
+      this.workItemUrl = this._currentSpace.links.self + '/workitems';
       return this.http
         .post(this.workItemUrl, payload)
         .map(response => {
