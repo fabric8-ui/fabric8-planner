@@ -17,6 +17,7 @@
 .side-panel-wrap {
   width: 340px;
   min-width: 340px;
+  height: 100%;
   .side-panel-container {
     overflow-x: hidden;
     background-color: $color-pf-black-900;
@@ -71,6 +72,7 @@
       border-right-color: $color-pf-black-300;
       .contents {
         display: flex;
+        height: 100%;
         overflow: auto;
         flex: 1;
         align-items: stretch;
