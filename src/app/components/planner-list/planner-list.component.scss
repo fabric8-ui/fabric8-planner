@@ -37,7 +37,7 @@
   .work-item-list-quick-add {
     position: fixed;
     bottom: 0;
-    width: $width100;
+    width: (calc(100% - 340px));
     border-top: 1px solid;
     border-top-color: $color-pf-black-300;
   }
@@ -52,6 +52,7 @@
 .node-drop-slot.is-dragging-over { height: 66px!important; }
 .work-item-page {
   position: relative;
+  height: 100%;
   > main { border-top: 0 solid !important; }
   .dropdown {
     a { cursor: pointer; }
@@ -59,12 +60,9 @@
   .with-cursor-pointer { cursor: pointer; }
   .with-color-blue { color: $color-pf-blue-400; }
   >main {
-    display: flex;
+    height: 100%;
     border-top: 1px solid;
     border-top-color: $color-pf-black-300;
-    flex-direction: row;
-    flex: 1;
-    align-items: stretch;
     >aside {
       position: relative;
       display: flex;
