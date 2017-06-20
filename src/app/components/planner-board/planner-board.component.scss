@@ -111,13 +111,10 @@
     align-items: stretch;
     >aside {
       position: relative;
-      display: flex;
+      float: left;
       background-color: $color-pf-black-200;
       border-right: 1px solid;
       border-right-color: $color-pf-black-300;
-      align-items: stretch;
-      flex: 3;
-      flex-direction: column;
       .contents {
         display: flex;
         overflow: auto;

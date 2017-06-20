@@ -65,13 +65,10 @@
     border-top-color: $color-pf-black-300;
     >aside {
       position: relative;
-      display: flex;
+      float: left;
       background-color: $color-pf-black-200;
       border-right: 1px solid;
       border-right-color: $color-pf-black-300;
-      flex: 3;
-      flex-direction: column;
-      align-items: stretch;
       .contents {
         display: flex;
         overflow: auto;
