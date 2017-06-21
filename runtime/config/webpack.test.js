@@ -1,7 +1,7 @@
 /**
  * @author: @AngularClass
  */
-const sass = require('./sass');
+const less = require('./less');
 const helpers = require('./helpers');
 const webpack = require('webpack');
 
@@ -121,10 +121,12 @@ module.exports = {
             loader: 'css-loader'
           }, {
             loader: 'less-loader',
-            query: {
-              includePaths: sass.modules.map(val => {
-                return val.sassPath;
-              })
+            options: {
+              paths: [
+                path.resolve(__dirname, "../node_modules/patternfly/src/less"),
+                path.resolve(__dirname, "../node_modules/patternfly/node_modules")
+              ],
+              sourceMap: true
             }
           }
         ]

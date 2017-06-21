@@ -39,9 +39,6 @@
 }
 // removes extra margin when code is entered into the text field
 pre { margin: 0; }
-.btn-cancel {
-  // margin-right: 20px;
-}
 .detail-action-btn { width: 40px; }
 .markdown-test-btn-save { margin-right: 10px; }
 .detail-text-wrap {
@@ -66,7 +63,7 @@ pre { margin: 0; }
           &.active {
             a {
               border-bottom-color: @color-pf-white;
-              . Border(1px, solid, @color-pf-blue-400);
+              .Border(1px, solid, @color-pf-blue-400);
             }
           }
         }
@@ -81,10 +78,10 @@ pre { margin: 0; }
         }
       }
       .detail-text-div {
-        min-height: em(50);
-        padding-right: em(30);
+        min-height: 50px;
+        padding-right: 30px;
         background-color: @color-pf-white;
-        . Border(1px, solid, @color-pf-white);
+        .Border(1px, solid, @color-pf-white);
         &::-webkit-scrollbar {
           width: 7px;
           -webkit-appearance: none;
@@ -95,7 +92,7 @@ pre { margin: 0; }
              -moz-box-shadow: 0 0 1px rgba(255,255,255,.5);
                -o-box-shadow: 0 0 1px rgba(255,255,255,.5);
                   box-shadow: 0 0 1px rgba(255,255,255,.5);
-          . borderRadius(4px);
+          .borderRadius(4px);
         }
         &.text-editable {
           .text { padding-left: 5px; }
@@ -111,8 +108,8 @@ pre { margin: 0; }
           background-clip: content-box;
           .edit-icon {
             position: absolute;
-            right: em(28);
-            top: em(1);
+            right: 28px;
+            top: 1px;
             display: block;
             cursor: pointer;
           }
@@ -121,9 +118,9 @@ pre { margin: 0; }
     }
   }
 }
-.detail-text-action { margin-top: em(10); }
+.detail-text-action { margin-top: 10px; }
 .text-editable {
-  padding-right: em(30) !important;
+  padding-right: 30px !important;
   background-clip: content-box !important;
-  . Border(1px, solid, @color-pf-blue-400 !important);
+  .Border(1px, solid, @color-pf-blue-400);
 }

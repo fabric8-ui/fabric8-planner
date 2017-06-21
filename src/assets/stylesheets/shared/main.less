@@ -1,5 +1,5 @@
-@import 'custom-variables';
-@import 'custom-mixins';
+@import (reference) 'custom-variables.less';
+@import (reference) 'custom-mixins.less';
 body {
   font-family: Open Sans;
   font-size: 14px;
@@ -7,11 +7,6 @@ body {
 //colors
 .color-grey { color: @color-pf-black-800 !important; }
 // custom classes
-.containerPadd {
-  padding-top: em(96);
-  padding-bottom: em(66);
-}
-.containerPadd-nologin { padding-bottom: 0; }
 .truncate { .truncate; }
 .left-truncate {
   overflow: hidden;
@@ -19,12 +14,12 @@ body {
   text-overflow: clip;
   white-space: nowrap;
   background-color: @color-pf-white;
-  @extend .posRel;
+  &:extend( .posRel );
   &:before {
     position: absolute;
     z-index: 1;
-    left: -1em;
-    padding-left: 1em;
+    left: -12px;
+    padding-left: 12px;
     margin-left: 6px;
     background-color: inherit;
     content: '\02026';
@@ -35,17 +30,17 @@ body {
     float: right;
     min-width: 100%;
     overflow: visible;
-    text-indent: 0.5em;
+    text-indent: 6px;
     background-color: inherit;
     &:before {
       position: absolute;
       z-index: 200;
       left: -8px;
-      width: 1.05em;
-      height: 2em;
+      width: 12px;
+      height: 24px;
       background-color: inherit;
       content: '';
-      @extend .dib;
+      &:extend( .dib );
     }
   }
 }
@@ -64,13 +59,9 @@ body {
   .mobdn { display: none; }
   .list-view-pf {
     .list-group-item-heading {
-        // font-size: em(12);
+        // font-size: 12px;
     }
   }
 }
-@media (max-width: (@grid-float-breakpoint - 1)) {
-  .containerPadd { padding-top: em(11); }
-  .containerPadd-nologin { padding-bottom: 0; }
-}
-@import 'layout';
-@import 'overrides-for-patternfly';
+//@import (reference) 'layout.less';
+//@import (reference) 'overrides-for-patternfly.less';

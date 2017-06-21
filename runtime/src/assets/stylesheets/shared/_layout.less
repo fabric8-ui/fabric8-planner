@@ -45,22 +45,11 @@
 . padding-x;
 . margin-x;
 */
-.width-100
-{
-  width:100%;
-}
+.width-100 { width:100%; }
+.height-100 { height:100%; }
+.overflow-auto{ overflow: auto; }
 
-.height-100
-{
-  height:100%;
-}
-
-.overflow-auto{
-  overflow: auto;
-}
-
-.fill-container
-{
+.fill-container {
   position:absolute;
   top:0;
   bottom:0;
@@ -70,28 +59,24 @@
   margin:0;
   border-width:0;
 }
-
-
 @import 'layout-debug';
 
 ///////////////////////
 // Styles relating to general html document
 ///////////////////////
 
-*{
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-body
-{
+body {
   // Ensure that body element height at 'least' fills the viewport.
   // This means it can grow beyond, but wont be less
-  min-height:100vh;
+
+  display: flex;
  // . debug-stretch-to-fit-viewport;
-  position:relative;
-  margin:0;
-  padding:0;
-  display:flex;
+  position: relative;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
 }
 
 //////////////////////
@@ -143,25 +128,18 @@ body
 };
 */
 // an app component is a marker class for angular component dom elements
-.app-component
-{
+.app-component {
   //root app component
-  &.app
-  {
-    >header{
-
-    }
-    >main
-    {
-    }
-    >footer{
-      .footer
-      {
-        text-align: @textCenter;
+  &.app {
+    >header { }
+    >main { }
+    >footer {
+      .footer {
         font-size: @font-size-small;
-        border-top: 1px solid @color-pf-blue-300;
+        text-align: @textCenter;
+        border-top: 1px solid;
+        border-top-color: @color-pf-blue-300;
       }
-
     }
   }
 
@@ -185,130 +163,106 @@ body
 
 };
 
-@content-padding:0;
+@content-padding: 0;
 
-header
-{
-  padding:@content-padding;
-}
-
-footer
-{
-  padding:@content-padding;
-}
+header { padding: @content-padding; }
+footer { padding: @content-padding; }
 
 // helps to ensure that scrolling does not cross app footer or header
 // the reason for not using flex is that view will not always be a flex-container
 // This plays out in scenarios where view requires animation like slide ins/slie outs
 // These are not good for flex
-.view-container
-{
+.view-container {
   position:relative;
-  >.view
-  {
-    @extend .fill-container;
-    &.with-rows
-    {
-      padding-left:@grid-gutter-width/2;
-      padding-right:@grid-gutter-width/2;
+  >.view {
+    &:extend( .fill-container );
+    &.with-rows {
+      padding-left: (@grid-gutter-width/2);
+      padding-right: (@grid-gutter-width/2);
     }
-    >main,section,aside{
-      padding:@content-padding;
+    >main,
+    section,
+    aside {
+      padding: @content-padding;
       overflow: auto;
     }
-    >.view-content
-    {
-      position:relative;
-      padding-top:@content-padding;
+    >.view-content {
+      position: relative;
+      padding-top: @content-padding;
     }
   }
 }
 
 .dropdown {
-  a:hover {
-    text-decoration: none;
-  }
+  a:hover { text-decoration: none; }
 }
 
 // chromeless dialog suppresses all chrome in the ng2-bootstrap modal component
-.chromeless-modal
-{
-  .modal-content
-  {
-    display:flex;
-    border:solid 0 lime;
-    padding:0;
-    margin:0;
-    .modal-header{
-      display:none;
-    }
-    .modal-footer{
-      display:none;
-    }
-    .modal-body{
-      flex:1;
-      display:flex;
-      border:solid 0 orangered;
-      padding:0;
-      .chromeless-modal-content
-      {
-        flex:1;
-        display:flex;
-        border:solid 0 brown;
-        padding:0;
-
+.chromeless-modal {
+  .modal-content {
+    display: flex;
+    border: solid 0 lime;
+    padding: 0;
+    margin: 0;
+    .modal-header { display:none; }
+    .modal-footer { display:none; }
+    .modal-body {
+      flex: 1;
+      display: flex;
+      border: solid 0 orangered;
+      padding: 0;
+      .chromeless-modal-content {
+        flex: 1;
+        display: flex;
+        border: solid 0 brown;
+        padding: 0;
       }
     }
-
   }
 }
-
 // wizard
-@wizard-padding:@grid-gutter-width/2;
+@wizard-padding: @grid-gutter-width/2;
 
-.wizard-container{
-  flex:1;
-  display:flex;
-  border:solid 0 orange;
-  position:relative;
-  .wizard{
-    flex:1;
-    display:flex;
-    border:solid 0 darkorange;
-    position:relative;
-    padding:0;
-    padding-bottom:@wizard-padding;
-
-    .wizard-step{
-
-      display:none;
+.wizard-container {
+  flex: 1;
+  display: flex;
+  border: solid 0 orange;
+  position: relative;
+  .wizard {
+    flex: 1;
+    display: flex;
+    border: solid 0 darkorange;
+    position: relative;
+    padding: 0;
+    padding-bottom: @wizard-padding;
+    .wizard-step {
+      display: none;
       // at least 50% of view height
       min-height: 50vh;
-      &.active{
-        display:flex;
+      &.active {
+        display: flex;
         flex-direction: column;
       }
-      flex:1;
-      border:solid 0 olivedrab;
-      >header{
-        display:flex;
-        position:relative;
+      flex: 1;
+      border: solid 0 olivedrab;
+      >header {
+        display: flex;
+        position: relative;
         justify-content: center;
-        padding:@wizard-padding;
-        background-color: $navbar-default-bg;
+        padding: @wizard-padding;
+        background-color: @navbar-default-bg;
       }
-      >section
-      {
-        flex:1;
-        display:flex;
-        position:relative;
+      >section {
+        flex: 1;
+        display: flex;
+        position: relative;
       }
-      >footer{
-        display:flex;
-        position:relative;
-        justify-content:flex-end;
-        padding:@wizard-padding;
-        padding-bottom:0;
+      >footer {
+        display: flex;
+        position: relative;
+        justify-content: flex-end;
+        padding: @wizard-padding;
+        padding-bottom: 0;
       }
     }
   }

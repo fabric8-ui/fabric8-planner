@@ -13,7 +13,7 @@ var gulp = require('gulp'),
   exec = require('gulp-exec'),
   ngc = require('gulp-ngc'),
   changed = require('gulp-changed'),
-  //sass = require('./deploy/sass'),
+  less = require('./deploy/less'),
   runSequence = require('run-sequence'),
   argv = require('yargs').argv,
   path = require('path'),
@@ -121,7 +121,7 @@ gulp.task('post-transpile', ['transpile'], function () {
     .pipe(replace(/styleUrls: \[/g, "styles: [require("))
     .pipe(replace(/\.less']/g, ".css').toString()]"))
     .pipe(gulp.dest(function (file) {
-      return file.base; // because of Angular 2's encapsulation, it's natural to save the css where the scss-file was
+      return file.base; // because of Angular 2's encapsulation, it's natural to save the css where the less-file was
     }));
 });
 
@@ -186,7 +186,7 @@ gulp.task('watch', ['build:library', 'copy-watch-all'], function () {
   gulp.watch([appSrc + '/app/**/*.ts', '!' + appSrc + '/app/**/*.spec.ts'], ['transpile', 'post-transpile', 'copy-watch']).on('change', function (e) {
     util.log(util.colors.cyan(e.path) + ' has been changed. Compiling.');
   });
-  //gulp.watch([appSrc + '/app/**/*.scss']).on('change', function (e) {
+  //gulp.watch([appSrc + '/app/**/*.less']).on('change', function (e) {
   //  util.log(util.colors.cyan(e.path) + ' has been changed. Updating.');
   //  transpileSASS(e.path);
   //  updateWatchDist();

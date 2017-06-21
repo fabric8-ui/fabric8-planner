@@ -1,11 +1,8 @@
-@import 'bootstrap/mixins';
-@import 'patternfly/mixins';
-@import 'patternfly/mixin_overrides';
+@import (reference) 'bootstrap/mixins';
+@import (reference) ' ../../../../node_modules/patternfly/src/less/mixins';
+@import (reference) '../../../../node_modules/patternfly/src/less/mixin_overrides';
 
 // functions
-//convert px to em/rem
-.em(@px) { @em: (@px / @em-base-font-size) * 1em; }
-.rem(@px) { @rem: ((@x / @rem-base-font-size) * 1rem); }
 //custom mixins
 .truncate() {
   overflow: hidden;
