@@ -4,55 +4,50 @@
 
 // functions
 //convert px to em/rem
-@function em($px) {
-  @return ($px / $em-base-font-size) * 1em;
-}
-
-@function rem($px) {
-  @return ($px / $rem-base-font-size) * 1rem;
-}
+.em(@px) { @em: (@px / @em-base-font-size) * 1em; }
+.rem(@px) { @rem: ((@x / @rem-base-font-size) * 1rem); }
 //custom mixins
-@mixin truncate() {
+.truncate() {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-@mixin transform($transform) {
-  -webkit-transform: $transform;
-     -moz-transform: $transform;
-      -ms-transform: $transform;
-       -o-transform: $transform;
-          transform: $transform;
+.transform(@transform) {
+  -webkit-transform: @transform;
+     -moz-transform: @transform;
+      -ms-transform: @transform;
+       -o-transform: @transform;
+          transform: @transform;
 }
-@mixin transition($transition) {
-  -webkit-transition: $transition;
-     -moz-transition: $transition;
-      -ms-transition: $transition;
-       -o-transition: $transition;
-          transition: $transition;
+.transition(@transition) {
+  -webkit-transition: @transition;
+     -moz-transition: @transition;
+      -ms-transition: @transition;
+       -o-transition: @transition;
+          transition: @transition;
 }
-@mixin borderRadius($radius) {
-  -webkit-border-radius: $radius;
-     -moz-border-radius: $radius;
-       -o-border-radius: $radius;
-          border-radius: $radius;
+.borderRadius(@radius) {
+  -webkit-border-radius: @radius;
+     -moz-border-radius: @radius;
+       -o-border-radius: @radius;
+          border-radius: @radius;
 }
-@mixin Border($borderwidth, $borderStyle, $borderColor) {
-    -webkit-border-width: $borderwidth;
-       -moz-border-width: $borderwidth;
-         -o-border-width: $borderwidth;
-            border-width: $borderwidth;
-    -webkit-border-color: $borderColor;
-       -moz-border-color: $borderColor;
-         -o-border-color: $borderColor;
-            border-color: $borderColor;
-    -webkit-border-style: $borderStyle;
-       -moz-border-style: $borderStyle;
-         -o-border-style: $borderStyle;
-            border-style: $borderStyle;
+.Border(@borderwidth, @borderStyle, @borderColor) {
+    -webkit-border-width: @borderwidth;
+       -moz-border-width: @borderwidth;
+         -o-border-width: @borderwidth;
+            border-width: @borderwidth;
+    -webkit-border-color: @borderColor;
+       -moz-border-color: @borderColor;
+         -o-border-color: @borderColor;
+            border-color: @borderColor;
+    -webkit-border-style: @borderStyle;
+       -moz-border-style: @borderStyle;
+         -o-border-style: @borderStyle;
+            border-style: @borderStyle;
 }
-@mixin dib { display: inline-block; }
-@mixin fill-container {
+.dib { display: inline-block; }
+.fill-container {
   position: absolute;
   top: 0;
   right: 0;

@@ -2,7 +2,7 @@
 // Utility styles
 ///////////////////////////
 
-@mixin padding-x($count:15) {
+/*@mixin padding-x($count:15) {
   @for $i from 0 through $count {
     .padding-#{$i} {
       padding: #{$i}px !important;
@@ -42,9 +42,9 @@
   }
 }
 
-@include padding-x;
-@include margin-x;
-
+. padding-x;
+. margin-x;
+*/
 .width-100
 {
   width:100%;
@@ -87,7 +87,7 @@ body
   // Ensure that body element height at 'least' fills the viewport.
   // This means it can grow beyond, but wont be less
   min-height:100vh;
-  @include debug-stretch-to-fit-viewport;
+ // . debug-stretch-to-fit-viewport;
   position:relative;
   margin:0;
   padding:0;
@@ -98,13 +98,13 @@ body
 // flex utility styles
 //////////////////////
 
-@mixin flex-grow-x($count:12) {
+/*@mixin flex-grow-x($count:12) {
   @for $i from 1 through $count {
   .flex-grow-#{$i} { flex: $i; }
   }
 }
 // create 12 flex grow partitions
-@include flex-grow-x(12);
+. flex-grow-x(12);
 
 
 .flex-container
@@ -141,7 +141,7 @@ body
   @extend .flex-grow-1;
   @extend .flex-container;
 };
-
+*/
 // an app component is a marker class for angular component dom elements
 .app-component
 {
@@ -157,9 +157,9 @@ body
     >footer{
       .footer
       {
-        text-align: $textCenter;
-        font-size: $font-size-small;
-        border-top: 1px solid $color-pf-blue-300;
+        text-align: @textCenter;
+        font-size: @font-size-small;
+        border-top: 1px solid @color-pf-blue-300;
       }
 
     }
@@ -168,33 +168,33 @@ body
   // when app-component is the child of a bootstrap column div
   div[class^="col-"] &
   {
-    // margin-left:-$grid-gutter-width/2;
-    // margin-right:-$grid-gutter-width/2;
+    // margin-left:-@grid-gutter-width/2;
+    // margin-right:-@grid-gutter-width/2;
   }
   div[class*=" col-"] &
   {
-    // margin-left:-$grid-gutter-width/2;
-    // margin-right:-$grid-gutter-width/2;
+    // margin-left:-@grid-gutter-width/2;
+    // margin-right:-@grid-gutter-width/2;
   }
 
   // Note: making relative positioning helps positioning but creates extra margins
   // on nested components, but it offers good absolute positioning options for
   // child elements
   position:relative;
-  @include debug-app-component;
+  //. debug-app-component;
 
 };
 
-$content-padding:0;
+@content-padding:0;
 
 header
 {
-  padding:$content-padding;
+  padding:@content-padding;
 }
 
 footer
 {
-  padding:$content-padding;
+  padding:@content-padding;
 }
 
 // helps to ensure that scrolling does not cross app footer or header
@@ -209,17 +209,17 @@ footer
     @extend .fill-container;
     &.with-rows
     {
-      padding-left:$grid-gutter-width/2;
-      padding-right:$grid-gutter-width/2;
+      padding-left:@grid-gutter-width/2;
+      padding-right:@grid-gutter-width/2;
     }
     >main,section,aside{
-      padding:$content-padding;
+      padding:@content-padding;
       overflow: auto;
     }
     >.view-content
     {
       position:relative;
-      padding-top:$content-padding;
+      padding-top:@content-padding;
     }
   }
 }
@@ -264,7 +264,7 @@ footer
 }
 
 // wizard
-$wizard-padding:$grid-gutter-width/2;
+@wizard-padding:@grid-gutter-width/2;
 
 .wizard-container{
   flex:1;
@@ -277,7 +277,7 @@ $wizard-padding:$grid-gutter-width/2;
     border:solid 0 darkorange;
     position:relative;
     padding:0;
-    padding-bottom:$wizard-padding;
+    padding-bottom:@wizard-padding;
 
     .wizard-step{
 
@@ -294,7 +294,7 @@ $wizard-padding:$grid-gutter-width/2;
         display:flex;
         position:relative;
         justify-content: center;
-        padding:$wizard-padding;
+        padding:@wizard-padding;
         background-color: $navbar-default-bg;
       }
       >section
@@ -307,7 +307,7 @@ $wizard-padding:$grid-gutter-width/2;
         display:flex;
         position:relative;
         justify-content:flex-end;
-        padding:$wizard-padding;
+        padding:@wizard-padding;
         padding-bottom:0;
       }
     }

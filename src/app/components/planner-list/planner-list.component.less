@@ -1,6 +1,6 @@
 @import '../../../assets/stylesheets/base';
 
-.error { color: $color-pf-red-100; }
+.error { color: @color-pf-red-100; }
 .suppress-hover {
   &:hover { background-color: transparent; }
 }
@@ -19,13 +19,13 @@
   min-width: 340px;
   .side-panel-container {
     overflow-x: hidden;
-    background-color: $color-pf-black-900;
+    background-color: @color-pf-black-900;
   }
 }
 .work-item-list-page { flex:1;
   >.list-group { border-top-width:0 !important; }
   .detail-list-wrap {
-    width: $width100;
+    width: @width100;
     margin-bottom: 0;
     overflow-y: scroll;
     -webkit-flex: auto;
@@ -42,7 +42,7 @@
     box-shadow: none;
   }
   .card-pf-title {
-    .no-wi { font-size: $pf-icon-4x; }
+    .no-wi { font-size: @pf-icon-4x; }
   }
 }
 .node-drop-slot.is-dragging-over { height: 66px!important; }
@@ -56,20 +56,20 @@
     a { cursor: pointer; }
   }
   .with-cursor-pointer { cursor: pointer; }
-  .with-color-blue { color: $color-pf-blue-400; }
+  .with-color-blue { color: @color-pf-blue-400; }
   >main {
     display: flex;
     border-top: 1px solid;
-    border-top-color: $color-pf-black-300;
+    border-top-color: @color-pf-black-300;
     flex-direction: row;
     flex: 1;
     align-items: stretch;
     >aside {
       position: relative;
       display: flex;
-      background-color: $color-pf-black-200;
+      background-color: @color-pf-black-200;
       border-right: 1px solid;
-      border-right-color: $color-pf-black-300;
+      border-right-color: @color-pf-black-300;
       flex: 3;
       flex-direction: column;
       align-items: stretch;
@@ -88,7 +88,7 @@
       align-items: stretch;
       flex: 9;
       flex-direction: column;
-      @include Border(0px, solid, red);
+      .Border(0px, solid, red);
       .alm-blank-slate {
         display: block;
         width: 90%;
@@ -101,14 +101,14 @@
         padding-right: rem(20);
         padding-left: rem(20);
         border-bottom: 1px solid;
-        border-bottom-color: $color-pf-black-300 !important;
+        border-bottom-color: @color-pf-black-300 !important;
         .toolbar-pf { border-color: transparent;
           .toolbar-pf-actions { border-color: transparent;
             .form-group { border-right: none;
               &:first { border-left: none; }
             }
             .toolbar-pf-action-right {
-              .pficon-add-circle-o { @extend .with-color-blue;}
+              .pficon-add-circle-o { &:extend( .with-color-blue);}
             }
           }
           // ensure icons dont fold around inputs

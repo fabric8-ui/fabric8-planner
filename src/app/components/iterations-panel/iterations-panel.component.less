@@ -1,14 +1,14 @@
 @import '../../../assets/stylesheets/base';
 
-.iterations-container { background-color: $color-pf-black-900;
-  .iteration-wrapper { color: $color-pf-white;
+.iterations-container { background-color: @color-pf-black-900;
+  .iteration-wrapper { color: @color-pf-white;
     li { cursor: pointer; }
-    .badge { background-color: $color-pf-black; }
-    i { color: $color-pf-white; }
+    .badge { background-color: @color-pf-black; }
+    i { color: @color-pf-white; }
     .iteration-header { padding: em(10) em(20);
       > h4 { margin: 0; }
       .fa-icon { width: 15px; }
-      .add-btn { color: $color-pf-blue; }
+      .add-btn { color: @color-pf-blue; }
     }
     .iteration-subheader {
       -webkit-box-align: flex-start;
@@ -27,13 +27,13 @@
       > li {
         padding: em(15);
         list-style: none;
-        &:hover { background-color: $color-pf-black-700; }
+        &:hover { background-color: @color-pf-black-700; }
         &.active {
           border-left: 4px solid;
           border-left-color: transparent;
           &.selected-iteration {
             border-left: 4px solid;
-            border-left-color: $color-pf-blue;
+            border-left-color: @color-pf-blue;
           }
         }
         .iteration-count { float: right; }
@@ -54,7 +54,7 @@
       padding-left: 0;
       margin-bottom: 0;
       > li { padding: em(5) em(15) em(5) em(40);
-        &:hover { background-color: $color-pf-black-700; }
+        &:hover { background-color: @color-pf-black-700; }
         .iteration-name {
           display: inline-block;
           width: 100%;
@@ -63,11 +63,11 @@
       .badge { margin-right: em(10); }
     }
     .selected-iteration {
-      color: $color-pf-white;
-      background-color: $color-pf-black-700 !important;
+      color: @color-pf-white;
+      background-color: @color-pf-black-700 !important;
       border-left: 4px solid;
-      border-left-color: $color-pf-blue;
-      i { color: $color-pf-white !important; }
+      border-left-color: @color-pf-blue;
+      i { color: @color-pf-white !important; }
     }
     .parent-iteration {
       font-size: rem(12);

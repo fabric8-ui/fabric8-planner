@@ -1,7 +1,7 @@
 @import '../../../assets/stylesheets/base';
 
 .field-required-icon {
-  color: $color-pf-red-200;
+  color: @color-pf-red-200;
 }
 .marginR10 {
   margin-right: em(10);
@@ -12,24 +12,24 @@
     position: absolute;
     top: 0;
     right: 0;
-    background-color: $color-pf-black-400;
+    background-color: @color-pf-black-400;
     padding: em(5);
     font-weight: 700;
     cursor: pointer;
   }
   .iteration-list {
-    width: $width100;
+    width: @width100;
     max-height: em(140);
     overflow-y: auto;
     li {
       list-style: none;
       padding: em(5) em(15);
       &:hover {
-        background-color: $color-pf-black-300;
+        background-color: @color-pf-black-300;
         cursor: pointer;
       }
       &.selected {
-        background-color: $color-pf-black-300;
+        background-color: @color-pf-black-300;
       }
     }
   }
@@ -61,7 +61,7 @@
 .error-block {
   visibility: hidden;
   .help-block {
-    color: $color-pf-red-200;
+    color: @color-pf-red-200;
   }
 }
 .space-error {

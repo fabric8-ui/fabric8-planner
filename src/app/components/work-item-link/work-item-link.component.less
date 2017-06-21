@@ -9,7 +9,7 @@
   }
   .link-header-nav-list {
     border-top: 1px solid;
-    border-top-color: $color-pf-black-200;
+    border-top-color: @color-pf-black-200;
     li {
       &.toggle-icon {
         width: rem(40);
@@ -25,17 +25,17 @@
       .badge { margin-top: -3px; } // hack to align the badge
       &.active {
         .badge {
-          color: $color-pf-white;
-          background-color: $color-pf-blue-400;
+          color: @color-pf-white;
+          background-color: @color-pf-blue-400;
         }
       }
       &:hover { cursor: pointer; }
     }
   }
   .link-content {
-      background: $color-pf-white;
+      background: @color-pf-white;
       border-bottom: 1px solid;
-      border-bottom-color: $color-pf-black-200;
+      border-bottom-color: @color-pf-black-200;
       @extend .flex-container;
       @extend .in-column-direction;
       >div { padding: 0; }
@@ -48,7 +48,7 @@
         @extend .flex-grow-1;
         .add-circle-icon {
           font-size: rem(50);
-          color: $color-pf-black-500;
+          color: @color-pf-black-500;
         }
         p {
           margin-top: rem(15);
@@ -66,7 +66,7 @@
     }
     .link-item-hdr {
       padding: 0 rem(20);
-      background-color: $color-pf-black-100;
+      background-color: @color-pf-black-100;
       @extend .flex-container;
       >p { padding: rem(12) rem(20); }
       >i { padding: rem(12) rem(20); }
@@ -74,7 +74,7 @@
     .link-editor {
       padding-right: rem(40);
       padding-left: rem(40);
-      background-color: $color-pf-black-100;
+      background-color: @color-pf-black-100;
       @extend .flex-container;
       @extend .in-column-direction;
       .readonly { background: #fff; }
@@ -86,15 +86,15 @@
       }
       ul.dropdown-menu {
         li {
-          a { color: $color-pf-black-800; }
+          a { color: @color-pf-black-800; }
           &:hover, &.active {
             a,
             a:focus,
             a:hover {
               text-decoration: none;
-              color: $color-pf-white;
-              background-color: $color-pf-blue-400;
-              border-color: $color-pf-blue-400;
+              color: @color-pf-white;
+              background-color: @color-pf-blue-400;
+              border-color: @color-pf-blue-400;
             }
           }
         }
@@ -117,7 +117,7 @@
       .link-list-type-header {
         padding: 0 rem(40);
         font-weight: 700;
-        color: $color-pf-black-600;
+        color: @color-pf-black-600;
       }
       .link-list {
         padding: em(2) rem(50);
@@ -125,7 +125,7 @@
         justify-content: space-between;
         align-items: center;
         @extend .flex-container;
-        &:hover { background-color: $color-pf-black-200; }
+        &:hover { background-color: @color-pf-black-200; }
         .link-title {
           width: em(150);
           max-width: em(150);
@@ -133,14 +133,14 @@
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-        a { color: $color-pf-black-700;
-          &:hover { color: $color-pf-blue;
+        a { color: @color-pf-black-700;
+          &:hover { color: @color-pf-blue;
           }
         }
       }
     }
     .workitem-link-search-box {
-      width: $width100;
+      width: @width100;
       padding: em(2) em(5);
       outline: none;
     }
@@ -154,17 +154,17 @@
       position: absolute;
       top: 0;
       z-index: 10;
-      width: $width100;
+      width: @width100;
       max-height: em(200);
       overflow-y: auto;
       box-shadow: 0 1px 10px 0 rgba(192, 192, 192, 0.7);
       li {
         padding: em(5);
-        background-color: $color-pf-white;
-        @include Border(1px, solid, $color-pf-black-300);
+        background-color: @color-pf-white;
+        .Border(1px, solid, @color-pf-black-300);
         border-top: none;
-        &:hover { background-color: $color-pf-black-500; }
-        &.selected { background-color: $color-pf-black-200; }
+        &:hover { background-color: @color-pf-black-500; }
+        &.selected { background-color: @color-pf-black-200; }
       }
     }
   }

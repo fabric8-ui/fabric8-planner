@@ -96,7 +96,7 @@ module.exports = {
         })
       },
       {
-        test: /^(?!.*component).*\.scss$/,
+        test: /^(?!.*component).*\.less$/,
         use: extractCSS.extract({
           fallback: 'style-loader',
           use: [
@@ -108,7 +108,7 @@ module.exports = {
                 context: '/'
               }
             }, {
-              loader: 'sass-loader',
+              loader: 'less-loader',
               options: {
                 includePaths: sass.modules.map(function (val) {
                   return val.sassPath;
@@ -119,7 +119,7 @@ module.exports = {
           ],
         })
       }, {
-        test: /\.component\.scss$/,
+        test: /\.component\.less$/,
         use: [
           {
             loader: 'to-string-loader'
@@ -131,7 +131,7 @@ module.exports = {
               context: '/'
             }
           }, {
-            loader: 'sass-loader',
+            loader: 'less-loader',
             options: {
               includePaths: sass.modules.map(function (val) {
                 return val.sassPath;
@@ -315,11 +315,11 @@ module.exports = {
       //   },
       //   /**
       //    * Sass
-      //    * Reference: https://github.com/jtangelder/sass-loader
-      //    * Transforms .scss files to .css
+      //    * Reference: https://github.com/jtangelder/ssss-loader
+      //    * Transforms .less files to .css
       //    */
       //   sassLoader: {
-      //     //includePaths: [path.resolve(__dirname, "node_modules/foundation-sites/scss")]
+      //     //includePaths: [path.resolve(__dirname, "node_modules/foundation-sites/less")]
       //   }
       // }
     }),

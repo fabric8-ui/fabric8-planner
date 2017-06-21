@@ -3,10 +3,10 @@
 .quickAdd_container {
   display: -webkit-flex;
   display: flex;
-  text-align: $textLeft;
-  background: $color-pf-black-200;
+  text-align: @textLeft;
+  background: @color-pf-black-200;
   border-top: 1px solid;
-  border-top-color: (darken($color-pf-white, 20%));
+  border-top-color: (darken(@color-pf-white, 20%));
   cursor: pointer;
   align-items: center;
   .dropup {
@@ -83,24 +83,24 @@
   padding: 0;
   margin: 0;
   background: transparent;
-  // border: 2px solid $color-pf-black-300;
+  // border: 2px solid @color-pf-black-300;
   box-shadow: none;
   .addWorkItem {
     padding: em(10) em(15);
     text-align: center;
-    background: $color-pf-white;
-    @include Border(2px, solid, $color-pf-black-400);
+    background: @color-pf-white;
+    .Border(2px, solid, @color-pf-black-400);
     .workItemQuickAdd_saveBtn {
       i {
         font-size: em(18);
-        color: $color-pf-blue-400;
+        color: @color-pf-blue-400;
       }
     }
   }
   .addWorkItemBlk {
     margin: em(5) 0;
-    background:$color-pf-white;
-    @include Border(1px, solid, $color-pf-black-300);
+    background:@color-pf-white;
+    .Border(1px, solid, @color-pf-black-300);
     .board-inputs { margin-top: 40px;
       i {
         padding-top: 5px;
@@ -121,13 +121,13 @@
       position: absolute;
       top: 10px;
       right: 15px;
-      color: $color-pf-black;
+      color: @color-pf-black;
     }
-    .icon-btn { @include Border(2px, solid, $color-pf-blue-400); }
+    .icon-btn { .Border(2px, solid, @color-pf-blue-400); }
   }
 }
-.add { background-color: $color-pf-white; }
-@media (max-width: $grid-float-breakpoint){
+.add { background-color: @color-pf-white; }
+@media (max-width: @grid-float-breakpoint){
   .quickAdd_container { text-align: center;
     .addWorkItem { padding: em(10);
       i,

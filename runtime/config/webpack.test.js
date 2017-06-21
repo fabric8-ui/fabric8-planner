@@ -113,14 +113,14 @@ module.exports = {
       },
 
       {
-        test: /\.scss$/,
+        test: /\.less$/,
         loaders: [
           {
             loader: 'to-string-loader'
           }, {
             loader: 'css-loader'
           }, {
-            loader: 'sass-loader',
+            loader: 'less-loader',
             query: {
               includePaths: sass.modules.map(val => {
                 return val.sassPath;

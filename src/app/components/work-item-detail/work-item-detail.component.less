@@ -13,13 +13,13 @@
   padding: 0;
   overflow-x: hidden;
   overflow-y: scroll;
-  background: $color-pf-white;
+  background: @color-pf-white;
   border-left: 1px solid;
-  border-left-color: (darken($color-pf-white, 20%));
-  -webkit-box-shadow: -4px 0px 2px -2px $color-pf-black-300;
-     -moz-box-shadow: -4px 0px 2px -2px $color-pf-black-300;
-       -o-box-shadow: -4px 0px 2px -2px $color-pf-black-300;
-          box-shadow: -4px 0px 2px -2px $color-pf-black-300;
+  border-left-color: (darken(@color-pf-white, 20%));
+  -webkit-box-shadow: -4px 0px 2px -2px @color-pf-black-300;
+     -moz-box-shadow: -4px 0px 2px -2px @color-pf-black-300;
+       -o-box-shadow: -4px 0px 2px -2px @color-pf-black-300;
+          box-shadow: -4px 0px 2px -2px @color-pf-black-300;
   label { font-weight: 400; }
 }
 .detail-container { width: 100%;
@@ -27,9 +27,9 @@
     height: 145px;
     padding-top: 20px;
     padding-left: 10px;
-    background-color: $color-pf-black-200;
+    background-color: @color-pf-black-200;
     border-bottom: 1px solid;
-    border-bottom-color: $color-pf-black-300;
+    border-bottom-color: @color-pf-black-300;
   }
   .top-bar { margin-bottom: 0; }
   .user-avatar {
@@ -43,12 +43,12 @@
     .user-creator-icon {
       padding: em(3);
       margin-right: em(6);
-      color: $color-pf-black-500;
+      color: @color-pf-black-500;
       cursor: pointer;
-      @include Border(1px, dashed, $color-pf-black);
+      .Border(1px, dashed, @color-pf-black);
     }
   }
-  .note { color: $color-pf-black-500; }
+  .note { color: @color-pf-black-500; }
   .detail-type-dropdown {
     .saving-title {
       padding-left: .6em;
@@ -78,7 +78,7 @@
       padding-left: 2px;
       font-weight: 500;
       line-height: 1.5;
-      @include Border(1px, solid, transparent);
+      .Border(1px, solid, transparent);
     }
     .detail-title-edit-ico {
       line-height: 2;
@@ -95,14 +95,14 @@
       overflow: hidden;
       font-weight: 500;
       line-height: 1.5;
-      background-color: $color-pf-white;
+      background-color: @color-pf-white;
       resize: none;
-      @include Border(1px, solid, $color-pf-blue-400);
+      .Border(1px, solid, @color-pf-blue-400);
     }
     .title-error {
       position: absolute;
       top: 55px;
-      color: $color-pf-red;
+      color: @color-pf-red;
     }
     aside { padding: em(5) 0 0; }
     .clearfloat { clear: both; }
@@ -116,17 +116,17 @@
     }
     &:hover {
       background-clip: content-box;
-      border-color: $color-pf-blue-400;
+      border-color: @color-pf-blue-400;
       cursor: pointer;
       .detail-title-edit-ico { display: block; }
     }
-    &:focus { border-color: $color-pf-blue; }
+    &:focus { border-color: @color-pf-blue; }
   }
   .wi-state-btn {
     max-width: em(132);
     padding-top: em(20);
     padding-bottom: em(20);
-    .detail-status-dropdown { text-align: $textRight;
+    .detail-status-dropdown { text-align: @textRight;
       .dropdown-icon {
         float: left;
         margin-top: em(5);
@@ -145,10 +145,10 @@
         min-width: em(132);
         .dropdown-li {
           float: left;
-          width: $width100;
+          width: @width100;
           a {
             float: left;
-            width: $width100;
+            width: @width100;
             padding: em(2) em(10);
           }
         }
@@ -167,9 +167,9 @@
       .user-assign-icon {
         padding: em(3);
         margin-right: em(6);
-        color: $color-pf-black-500;
+        color: @color-pf-black-500;
         cursor: pointer;
-        @include Border(1px, dashed, $color-pf-black);
+        .Border(1px, dashed, @color-pf-black);
       }
       .user-assign-avatar {
         width: em(20);
@@ -179,11 +179,11 @@
       }
       .active {
         padding: em(5);
-        color: $color-pf-black;
+        color: @color-pf-black;
         border-style: solid;
       }
       .detail-assignee-name {
-        .placeholder { color: $color-pf-blue-400;
+        .placeholder { color: @color-pf-blue-400;
           &:hover { cursor: pointer; }
         }
       }
@@ -195,7 +195,7 @@
         font-weight: 700;
         text-align: left;
       }
-      [noValueLabel="none"] { color: $color-pf-blue-400; }
+      [noValueLabel="none"] { color: @color-pf-blue-400; }
     }
     .detail-iteration-wrap { height: 30px;
       .control-label {
@@ -231,53 +231,53 @@
     z-index: 10;
     min-width: em(200);
     margin-top: -5px;
-    background-color: $color-pf-white;
+    background-color: @color-pf-white;
     box-shadow: 0 6px 12px rgba(0,0,0,0.175);
-    @include borderRadius(1px);
-    @include Border(1px, solid, $color-pf-black-500);
+    .borderRadius(1px);
+    .Border(1px, solid, @color-pf-black-500);
     .user-search-icon {
       position: absolute;
       height: inherit;
       padding-left: em(5);
       line-height: em(30);
-      color: $color-pf-black-500;
+      color: @color-pf-black-500;
     }
     input {
       width: 100%;
       height: em(30);
       padding-left: em(20);
       border: none;
-      border-bottom: 1px solid $color-pf-blue-400;
+      border-bottom: 1px solid @color-pf-blue-400;
       outline: none;
-      box-shadow: 0 0px 6px $color-pf-blue-400;
+      box-shadow: 0 0px 6px @color-pf-blue-400;
     }
     .item-ul {
       margin-bottom: 0;
       list-style: none;
-      background: $color-pf-white;
+      background: @color-pf-white;
       .item-li {
         float: left;
-        width: $width100;
+        width: @width100;
         padding: em(5);
         cursor: pointer;
-        &:hover { background-color: $color-pf-black-300; }
+        &:hover { background-color: @color-pf-black-300; }
       }
       .only-first-item {
         span { font-weight: 600; }
       }
       .first-item {
         border-bottom: 1px dashed;
-        border-bottom-color: $color-pf-black-500;
+        border-bottom-color: @color-pf-black-500;
         span { font-weight: 600; }
       }
-      .selected { background-color: $color-pf-black-300; }
+      .selected { background-color: @color-pf-black-300; }
       .action-li {
         display: flex;
         padding: em(5);
         margin-left: -15px;
         justify-content: space-between;
         .action-item {
-          color: $color-pf-black-500;
+          color: @color-pf-black-500;
           cursor: pointer;
         }
       }
@@ -286,24 +286,24 @@
       max-height: em(150);
       overflow-y: scroll;
       border-bottom: 1px solid;
-      border-bottom-color: $color-pf-black-500;
+      border-bottom-color: @color-pf-black-500;
     }
   }
 }
-@media (max-width: $grid-float-breakpoint){
+@media (max-width: @grid-float-breakpoint){
   /*Toggle the details panel's width and left margin*/
   .detail-container {
     .top-bar {
       padding: em(10) em(20);
-      color: $color-pf-white;
-      background-color: $color-pf-black;
+      color: @color-pf-white;
+      background-color: @color-pf-black;
     }
     .detail-type-dropdown { position: relative; }
     .wi-state-btn{ padding-top: 0; }
   }
   .detail-panel {
     top: 0;
-    width: $width100;
+    width: @width100;
     padding: 0;
   }
   .user-search {
@@ -311,22 +311,22 @@
     top: 0;
     left: 0;
     z-index: 9;
-    width: $width100;
+    width: @width100;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
     .list-container {
       top: em(144);
       left: 50%;
       width: 80%;
-      @include transform(translateX(-50%));
+      .transform(translateX(-50%));
       .user-list { max-height: em(250); }
     }
   }
 }
-.user-avatar { @include user-avatar; }
+.user-avatar { .user-avatar; }
 .detail-action-btn {
   margin-top: 20px;
-  @include detail-action-btn;
+  .detail-action-btn;
   height: 35px;
 }
-.none-assigned { color: $color-pf-blue; }
+.none-assigned { color: @color-pf-blue; }

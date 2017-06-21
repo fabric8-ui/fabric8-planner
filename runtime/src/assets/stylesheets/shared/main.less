@@ -7,7 +7,7 @@ body {
 
 //colors
 .color-grey {
-    color: $color-pf-black-800 !important;
+    color: @color-pf-black-800 !important;
 }
 
 // custom classes
@@ -19,17 +19,15 @@ body {
     padding-bottom: 0;
 }
 
-.truncate {
-    @include truncate;
-}
+.truncate { .truncate; }
 
 .left-truncate {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     text-overflow: clip;
-    @extend .posRel;
-    background-color: $color-pf-white;
+    &:extend( .posRel );
+    background-color: @color-pf-white;
     &:before{
       content: '\02026';
       position: absolute;
@@ -50,7 +48,7 @@ body {
       &:before {
         content: '';
         position: absolute;
-        @extend .dib;
+        &:extend( .dib );
         width: 1.05em;
         height: 2em;
         background-color: inherit;
@@ -79,14 +77,14 @@ body {
 }
 
 .textCenter {
-    text-align: $textCenter;
+    text-align: @textCenter;
 }
 
 .posRel {
   position: relative;
 }
 
-@media (max-width: $grid-float-breakpoint) {
+@media (max-width: @grid-float-breakpoint) {
     .mobdn {
         display: none;
     }
@@ -97,7 +95,7 @@ body {
     }
 }
 
-@media (max-width: ($grid-float-breakpoint - 1)) {
+@media (max-width: (@grid-float-breakpoint - 1)) {
     .containerPadd {
         padding-top: em(11);
     }

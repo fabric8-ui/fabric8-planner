@@ -5,11 +5,11 @@
 // functions
 //convert px to em/rem
 @function em($px) {
-  @return ($px / $em-base-font-size) * 1em;
+  @return ($px / @em-base-font-size) * 1em;
 }
 
 @function rem($px) {
-  @return ($px / $rem-base-font-size) * 1rem;
+  @return ($px / @rem-base-font-size) * 1rem;
 }
 
 //custom mixins
@@ -20,45 +20,45 @@
 }
 
 
-@mixin transform($transform) {
-  -webkit-transform: $transform;
-  -moz-transform: $transform;
-  -ms-transform: $transform;
-  -o-transform: $transform;
-  transform: $transform;
+.transform(@transform) {
+  -webkit-transform: @transform;
+  -moz-transform: @transform;
+  -ms-transform: @transform;
+  -o-transform: @transform;
+  transform: @transform;
 }
 
-@mixin transition($transition) {
-  -webkit-transition: $transition;
-  -moz-transition: $transition;
-  -ms-transition: $transition;
-  -o-transition: $transition;
-  transition: $transition;
+.transition(@transition) {
+  -webkit-transition: @transition;
+  -moz-transition: @transition;
+  -ms-transition: @transition;
+  -o-transition: @transition;
+  transition: @transition;
 }
 
-@mixin borderRadius($radius) {
-  border-radius: $radius;
-  -o-border-radius: $radius;
-  -moz-border-radius: $radius;
-  -webkit-border-radius: $radius;
+.borderRadius(@radius) {
+  border-radius: @radius;
+  -o-border-radius: @radius;
+  -moz-border-radius: @radius;
+  -webkit-border-radius: @radius;
 }
 
-@mixin Border($borderwidth, $borderStyle, $borderColor) {
-    border-width: $borderwidth;
-    border-color: $borderColor;
-    border-style: $borderStyle;
-    -o-border-width: $borderwidth;
-    -o-border-color: $borderColor;
-    -o-border-style: $borderStyle;
-    -webkit-border-width: $borderwidth;
-    -webkit-border-color: $borderColor;
-    -webkit-border-style: $borderStyle;
-    -moz-border-width: $borderwidth;
-    -moz-border-color: $borderColor;
-    -moz-border-style: $borderStyle;
+.Border(@borderwidth, @borderStyle, @borderColor) {
+    border-width: @borderwidth;
+    border-color: @borderColor;
+    border-style: @borderStyle;
+    -o-border-width: @borderwidth;
+    -o-border-color: @borderColor;
+    -o-border-style: @borderStyle;
+    -webkit-border-width: @borderwidth;
+    -webkit-border-color: @borderColor;
+    -webkit-border-style: @borderStyle;
+    -moz-border-width: @borderwidth;
+    -moz-border-color: @borderColor;
+    -moz-border-style: @borderStyle;
 }
 
-@mixin multiline-truncate($line-height, $line-count, $bg-color) {
+@mixin multiline-truncate($line-height, $line-count, @bg-color) {
     overflow: hidden;
     position: relative;
     line-height: $line-height;
@@ -79,7 +79,7 @@
         width: 1em;
         height: 3em;
         margin-top: 0;
-        background: $bg-color;
+        background: @bg-color;
     }
 }
 
@@ -87,7 +87,7 @@
     display: inline-block;
 }
 
-@mixin fill-container {
+.fill-container {
     position: absolute;
     margin: 0;
     padding: 0;
