@@ -80,6 +80,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
             // the first entry is the default entry for now
             this.selectedType = this.availableTypes[0];
           }
+          console.log('init = ', this.selectedType)
         });
       } else {
         this.showQuickAddBtn = false;
@@ -146,6 +147,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
                 type: currentFilters[f].id+'s'
               }
             } as any;
+            //update the selected filter
+            this.selectedType = this.availableTypes.find(item => item.id===currentFilters[f].value);
             break;
           case 'assignee':
             this.workItem.relationships.assignees = {
