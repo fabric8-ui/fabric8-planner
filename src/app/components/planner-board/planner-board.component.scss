@@ -4,26 +4,33 @@
 
 .boardWrapper {
   position: relative;
+  height: 100%;
+  overflow-y: scroll;
+  border-top: 1px solid;
+  border-top-color: $color-pf-black-300;
   .board {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    padding-top: rem(10);
-    padding-bottom: rem(10);
+    padding-top: 10px;
+    padding-bottom: 10px;
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
     user-select: none;
     .board-lane {
       display: inline-block;
-      width: rem(300);
+      width: 300px;
       height: 100%;
-      margin-right: rem(5);
-      margin-left: rem(5);
+      margin-right: 5px;
+      margin-left: 5px;
       vertical-align: top;
       white-space: normal;
+      .boardQuickAddContainer {
+        margin-bottom: 5px;
+      }
       .board-lane-column {
         height: 100%;
         padding: 0;
@@ -31,49 +38,21 @@
         @include Border(1px, solid, $color-pf-black-300);
         .boardlaneWrapper{
           width: 100%;
-          height: calc( 100% - 2.5rem );
-          padding-right: rem(15);
-          padding-left: rem(15);
+          height: calc( 100% - 25px );
+          padding-right: 15px;
+          padding-left: 15px;
           overflow: auto;
-          .board-card {
-            padding: rem(15);
-            margin: rem(5) 0;
-            @include Border(2px, solid, $color-pf-black-400);
-            @extend .flex-container;
-            @extend .in-column-direction;
-            @extend .flex-grow-1;
-            &.active { border-color: $color-pf-blue-400;
-              &.gu-transit {
-                border-color: #bbb;
-                opacity: .1;
-              }
-            }
-            >div {
-              p { margin: 0; }
-              .wi-type-icon {
-                padding-right: em(6);
-                padding-left: em(6);
-                font-size: em(12);
-              }
-              .user-avatar { padding-right: em(5); }
-            }//div ended
-            .row-wrapper {
-              display: flex;
-              justify-content: space-between;
-            }
-          }//boardcard ended
         }//boardlaneWrapper ended
         .lane-header {
           width: 100%;
-          padding-top: em(7);
-          padding-bottom: em(3);
+          padding-top: 7px;
+          padding-bottom: 3px;
           text-align: center;
           background-color: $color-pf-black-250;
-          flex: 0 0 auto;
           .issueCount {
-            padding-right: em(8);
-            padding-left: em(8);
-            margin-left: em(5);
+            padding-right: 8px;
+            padding-left: 8px;
+            margin-left: 5px;
             font-weight: 500;
             background-color: $color-pf-white;
           }// issue-count ended
@@ -86,14 +65,12 @@
 .side-panel-wrap {
   width: 340px;
   min-width: 340px;
+  height: 100%;
   background-color: $color-pf-black-900;
   .side-panel-container { background-color: $color-pf-black-900; }
 }
 .work-item-page {
   position: relative;
-  display: flex;
-  flex: 1;
-  flex-direction: column;
   > main { border-top: 0 solid !important; }
   .container-modal {
     position: absolute;
@@ -135,15 +112,13 @@
     align-items: stretch;
     >aside {
       position: relative;
-      display: flex;
+      float: left;
       background-color: $color-pf-black-200;
       border-right: 1px solid;
       border-right-color: $color-pf-black-300;
-      align-items: stretch;
-      flex: 3;
-      flex-direction: column;
       .contents {
         display: flex;
+        height: 100%;
         overflow: auto;
         flex: 1;
         align-items: stretch;
@@ -152,14 +127,15 @@
     >section {
       position: relative;
       display: flex;
+      height: 100%;
       overflow-x: hidden!important;
       align-items: stretch;
       flex: 9;
       flex-direction: column;
       @include Border(0, solid, red);
       >header {
-        padding-right: rem(20);
-        padding-left: rem(20);
+        padding-right: 20px;
+        padding-left: 20px;
         border-bottom: 1px solid;
         border-bottom-color: $color-pf-black-300 !important;
         .toolbar-pf { border-color: transparent;
@@ -178,7 +154,7 @@
           .wi-input-filter-dropdown {
             position: relative;
             .wi-input-filter-dropdown-list {
-              top: 2.5rem;
+              top: 25px;
               width: 100%;
               padding: .25rem;
             }
@@ -210,25 +186,3 @@
 // .active-lane {
 //   @include Border(2px, solid, $color-pf-blue-300!important);
 // }
-
-.not-assigned-user-icon {
-  width: 30px;
-  height: 30px;
-  @include not-assigned-user-icon;
-}
-
-.user-avatar {
-  @include user-avatar;
-  img {
-    width: 30px;
-    height: 30px;
-  }
-}
-
-.gu-mirror {
-  padding: em(15);
-  .row-wrapper {
-    display: flex;
-    justify-content: space-between;
-  }
-}

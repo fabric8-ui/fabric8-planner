@@ -196,20 +196,21 @@ export class FabPlannerAssociateIterationModalComponent {
             return item;
           });
       })
-      .subscribe((workItem) => {
+      .subscribe(workItem => {
         this.selectedIteration = null;
-        this.workItem = workItem;
+        this.workItem.relationships.iteration = workItem.relationships.iteration;
+        this.workItem.attributes['version'] = workItem.attributes['version'];
+        this.workItemService.emitEditWI(workItem);
       });
   }
 
   open(event: any) {
-    event.stopPropagation();
     this.getIterations();
     this.iterationAssociationModal.open();
   }
 
   actionOnOpen() {
-    if (this.workItem.relationships.iteration) {
+    if (this.workItem.relationships.iteration.data) {
       this.selectedIterationName = (this.workItem.relationships.iteration.data.attributes.resolved_parent_path +
         '/' +
         this.workItem.relationships.iteration.data.attributes.name).replace('//', '/');

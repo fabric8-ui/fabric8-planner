@@ -16,11 +16,11 @@
         [areas]="areas"
         [loggedInUser]="loggedInUser"></toolbar-panel>
       <div class="contents posRel">
-        <div id="board_topWorkItems" class="flex-container flex-grow-1 in-column-direction boardWrapper">
+        <div id="board_topWorkItems" class="width-100 boardWrapper">
           <div class="board" *ngIf="readyToInit" (touchmove)="onTouchstart($event);">
             <!-- board columns -->
             <div class="board-lane" *ngFor='let lane of lanes'>
-              <section class="flex-container in-column-direction board-lane-column" [attr.data-state]="lane.option">
+              <section class="width-100 pull-left board-lane-column" [attr.data-state]="lane.option">
                 <div class="lane-header">
                   <span class="dib">{{lane.option}}</span>
                   <span class="issueCount dib" >{{lane.workItems | arrayCount}}</span>
@@ -33,50 +33,18 @@
                   (fetchMore)='fetchMoreWiItems(lane)' >
 
                   <div *ngIf="lane.option == 'new'">
-                    <div *ngIf="loggedIn" class="boardQuickAddContainer flex-container in-column-direction">
+                    <div *ngIf="loggedIn" class="boardQuickAddContainer width-100 pull-left">
                       <alm-work-item-quick-add [forcedType]="currentBoardType" [wilistview]="'wi-card-view'" (close)="close($event)" (workItemCreate)="onCreateWorkItem($event)"></alm-work-item-quick-add>
                     </div>
                   </div>
                   <div [dragula]='"first-bag"' class="card-wrapper">
-                    <div  class="board-card card-pf card-pf-view card-pf-view-select card-pf-view-single-select"
-                          [class.active]="isSelected(item)" *ngFor='let item of lane.workItems'
-                          [attr.data-id]="item.id" (mousedown)="getWI(item)" (touchstart)="getWI(item)"
-                          [routerLink]="['./detail/' + item.id]" [queryParams]="existingQueryParams" id={{item.number}}>
-                      <div class="row-wrapper">
-                        <div>
-                          <span class="wi-type-icon fa {{item.relationships?.baseType?.data?.attributes?.icon}}"></span>
-                          <span> {{item.number}} </span>
-                        </div>
-                        <span class="dropdown-kebab-pf" dropdown>
-                          <button class="btn btn-link color-grey" type="button" aria-haspopup="true" aria-expanded="true" (click)="kebabClick($event)" dropdownToggle>
-                            <span class="fa fa-ellipsis-v"></span>
-                          </button>
-                          <ul class="dropdown-menu-right" aria-labelledby="dropdownKebabRight" dropdownMenu>
-                            <li><a class="workItemList_Iteration" (click)="associateIterationModal.open($event)">Associate with Iteration...</a></li>
-                            <li role="presentation" class="divider"></li>
-                            <li><a class="workItemList_Open" [routerLink]="['./detail/' + item.id]" [queryParams]="existingQueryParams">Open</a></li>
-                            <li><a class="workItemList_Backlog" (click)="onMoveToBacklog($event)">Move to Backlog</a></li>
-                          </ul>
-                        </span>
-                      </div>
-                      <div class="row-wrapper">
-                        <div class="margin-right-5">
-                          <p [routerLink]="['./detail/' + item.id]" [queryParams]="existingQueryParams">{{ item.attributes['system.title'] | truncate : 87 }}</p>
-                        </div>
-                        <div class="user-avatar">
-                          <img
-                            *ngFor="let wItem of item.relationships.assignees.data"
-                            placement="top"
-                            tooltip="{{wItem?.attributes?.fullName}}"
-                            src="{{wItem?.attributes?.imageURL + '&s=20'}}"
-                            onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'" />
-                          <span *ngIf="!item.relationships?.assignees?.data?.length" class="pficon-user not-assigned-user-icon" tooltip="unassigned" placement="top"></span>
-                        </div>
-                      </div>
-                      <fab-planner-associate-iteration-modal
-                        [workItem]="item"
-                        #associateIterationModal>
-                      </fab-planner-associate-iteration-modal>
+                    <div *ngFor='let item of lane.cardValue'
+                         (mousedown)="getWI(item.id, lane)" (touchstart)="getWI(item.id, lane)"
+                      [attr.data-id]="item.id" id={{item.id}}>
+                      <card
+                        [cardValue]='item'
+                        (menuClickEvent)="cardMenuClick($event, item.id, lane)">
+                      </card>
                     </div>
                   </div>
                 </div>
@@ -94,10 +62,14 @@
   [takeFromInput]="true"
   [wiTypes]="workItemTypes">
 </detail-add-type-selector>
+<fab-planner-associate-iteration-modal
+    [workItem]="workItem"
+    #associateIterationModal>
+</fab-planner-associate-iteration-modal>
 
 <div *ngIf="showDialog">
-	<alm-dialog
-		(pfDialogClick)="onButtonClick($event)"
-		[dialog]='dialog'
+  <alm-dialog
+    (pfDialogClick)="onButtonClick($event)"
+    [dialog]='dialog'
   ></alm-dialog>
 </div>

@@ -10,6 +10,7 @@ import {
 import { ModalModule } from 'ngx-modal';
 import { DragulaModule } from 'ng2-dragula';
 import { DropdownModule } from 'ng2-bootstrap';
+import { EventService } from './../../services/event.service';
 import { TreeModule } from 'angular2-tree-component';
 import { TooltipModule } from 'ng2-bootstrap';
 import { TruncateModule } from 'ng2-truncate';
@@ -24,6 +25,8 @@ import {
 import { AuthenticationService } from 'ngx-login-client';
 
 import { HttpService } from '../../services/http-service';
+
+import { CardComponent } from './../card/card.component';
 
 import {
   FabPlannerAssociateIterationModalModule
@@ -45,6 +48,7 @@ let providers = [];
 
 if (process.env.ENV == 'inmemory') {
   providers = [
+    EventService,
     GlobalSettings,
     WorkItemService,
     Broadcaster,
@@ -56,6 +60,7 @@ if (process.env.ENV == 'inmemory') {
   ];
 } else {
   providers = [
+    EventService,
     GlobalSettings,
     WorkItemService,
     Broadcaster,
@@ -96,7 +101,8 @@ if (process.env.ENV == 'inmemory') {
     WorkItemQuickAddModule
   ],
   declarations: [
-    PlannerBoardComponent
+    PlannerBoardComponent,
+    CardComponent
   ],
   providers: providers,
   exports: [ PlannerBoardComponent ]

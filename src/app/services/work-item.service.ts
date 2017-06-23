@@ -1,5 +1,4 @@
 import { Injectable, Component, Inject } from '@angular/core';
-import { Headers } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 import { Subscription } from 'rxjs/Subscription';
@@ -48,7 +47,7 @@ export class WorkItemService {
   private baseSearchUrl: string = null;
   private renderUrl: string = null;
 
-  private headers = new Headers({'Content-Type': 'application/json'});
+  private headers = {};
   private availableStates: DropdownOption[] = [];
   public workItemTypes: WorkItemType[] = [];
 
@@ -67,6 +66,7 @@ export class WorkItemService {
   private selfId;
 
   public addWIObservable: Subject<WorkItem> = new Subject();
+  public editWIObservable: Subject<WorkItem> = new Subject();
 
   constructor(private http: HttpService,
     private broadcaster: Broadcaster,
@@ -79,9 +79,6 @@ export class WorkItemService {
     private spaces: Spaces,
     @Inject(WIT_API_URL) private baseApiUrl: string) {
     this.spaces.current.subscribe(val => this._currentSpace = val);
-    if (this.auth.getToken() != null) {
-      this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
-    }
     this.selfId = this.createId();
     this.logger.log('Launching WorkItemService instance id ' + this.selfId);
   }
@@ -123,7 +120,7 @@ export class WorkItemService {
       this.logger.log('Requesting children for work item ' + parent.id);
       let url = parent.relationships.children.links.related;
       return this.http
-        .get(url, { headers: this.headers })
+        .get(url)
         .map(response => {
           let wItems: WorkItem[];
           wItems = response.json().data as WorkItem[];
@@ -223,13 +220,6 @@ export class WorkItemService {
       return item;
     });
     return resolvedWorkItems;
-  }
-
-
-  // Reset work item big list
-  resetWorkItemList() {
-    this.workItems = [];
-    this.workItemIdIndexMap = {};
   }
 
   isListLoaded() {
@@ -361,14 +351,13 @@ export class WorkItemService {
   }
 
   resolveAssignees(assignees: any): Observable<User[]> {
-    if (Object.keys(assignees).length) {
+    if (Object.keys(assignees).length && assignees.data.length) {
       let observableBatch = assignees.data.map((assignee) => {
         return this.http.get(assignee.links.self)
-                .map((res) => res.json().data)
-                .catch((error: Error | any) => {
-                  this.notifyError('Resolving assignees of work item failed.', error);
-                  return Observable.throw(new Error(error.message));
-                });
+          .map((res) => res.json().data)
+          .catch((error: Error | any) => {
+            return Observable.throw(new Error(error.message));
+          });
       });
       return Observable.forkJoin(observableBatch);
     } else {
@@ -379,6 +368,20 @@ export class WorkItemService {
   resolveCreator2(creator): Observable<User>{
     if (Object.keys(creator).length) {
       let creatorLink = creator.data.links.self;
+      return this.http.get(creatorLink)
+        .map(creator => creator.json().data)
+        .catch((error: Error | any) => {
+          this.notifyError('Getting work item creator failed.', error);
+          return Observable.throw(new Error(error.message));
+        });
+    } else {
+      return Observable.of(creator);
+    }
+  }
+
+  resolveCommentCreator(creator): Observable<User>{
+    if (Object.keys(creator).length) {
+      let creatorLink = creator.links.related;
       return this.http.get(creatorLink)
         .map(creator => creator.json().data)
         .catch((error: Error | any) => {
@@ -538,7 +541,7 @@ export class WorkItemService {
    */
   resolveComments(url: string): Observable<any> {
       return this.http
-        .get(url, { headers: this.headers })
+        .get(url)
         .map(response => {
           return { data: response.json().data, meta: response.json().meta, links: response.json().links};
         }).catch((error: Error | any) => {
@@ -556,7 +559,7 @@ export class WorkItemService {
    */
   resolveLinks(url: string): Observable<any> {
     return this.http
-      .get(url, { headers: this.headers })
+      .get(url)
       .map(response => [response.json().data as Link[], response.json().included])
       .catch((error: Error | any) => {
         this.notifyError('Getting linked items data failed.', error);
@@ -661,7 +664,7 @@ export class WorkItemService {
    */
   delete(workItem: WorkItem): Observable<void> {
     return this.http
-      .delete(workItem.links.self, { headers: this.headers, body: '' })
+      .delete(workItem.links.self)
       .map(() => {
         this.broadcaster.broadcast('delete_workitem', workItem);
       }).catch((error: Error | any) => {
@@ -683,9 +686,8 @@ export class WorkItemService {
     if (this._currentSpace) {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
       return this.http
-        .post(this.workItemUrl, payload, { headers: this.headers })
+        .post(this.workItemUrl, payload)
         .map(response => {
-          this.broadcaster.broadcast('create_workitem', response.json().data as WorkItem);
           return response.json().data as WorkItem;
         }).catch((error: Error | any) => {
           this.notifyError('Creating work item failed.', error);
@@ -707,6 +709,16 @@ export class WorkItemService {
   }
 
   /**
+   * Usage: This method emit a new work item created event
+   * The list view and board view listens to this event
+   * and updates the view based on applied filters.
+   */
+
+  emitEditWI(workItem: WorkItem) {
+    this.editWIObservable.next(workItem);
+  }
+
+  /**
    * Usage: This method update an existing item
    * updates the item in the big list
    * resolve the users for the item
@@ -715,7 +727,7 @@ export class WorkItemService {
    */
   update(workItem: WorkItem): Observable<WorkItem> {
     return this.http
-      .patch(workItem.links.self, JSON.stringify({data: workItem}), { headers: this.headers })
+      .patch(workItem.links.self, JSON.stringify({data: workItem}))
       .map(response => {
         return response.json().data;
       }).catch((error: Error | any) => {
@@ -734,7 +746,7 @@ export class WorkItemService {
     let c = new CommentPost();
     c.data = comment;
     return this.http
-      .post(url, c, { headers: this.headers })
+      .post(url, c)
       .map(response => {
         return response.json().data as Comment;
       }).catch((error: Error | any) => {
@@ -746,7 +758,7 @@ export class WorkItemService {
   updateComment(comment: Comment): Observable<Comment> {
     let endpoint = comment.links.self;
     return this.http
-      .patch(endpoint, { 'data': comment }, { headers: this.headers })
+      .patch(endpoint, { 'data': comment })
       .map(response => {
         let comment: Comment = response.json().data as Comment;
         let theUser: User = this.userService.getSavedLoggedInUser();
@@ -760,7 +772,7 @@ export class WorkItemService {
 
   deleteComment(comment: Comment): Observable<any> {
     let endpoint = comment.links.self;
-    return this.http.delete(endpoint, { headers: this.headers })
+    return this.http.delete(endpoint)
       .catch((error: Error | any) => {
           this.notifyError('Deleting comment failed.', error);
           return Observable.throw(new Error(error.message));
@@ -768,7 +780,7 @@ export class WorkItemService {
   }
 
   getForwardLinkTypes(workItem: WorkItem): Observable<any> {
-    return this.http.get(workItem.links.targetLinkTypes, {headers: this.headers})
+    return this.http.get(workItem.links.targetLinkTypes)
       .catch((error: Error | any) => {
         this.notifyError('Getting link meta info failed (forward).', error);
         return Observable.throw(new Error(error.message));
@@ -776,7 +788,7 @@ export class WorkItemService {
   }
 
   getBackwardLinkTypes(workItem: WorkItem): Observable<any> {
-    return this.http.get(workItem.links.sourceLinkTypes, {headers: this.headers})
+    return this.http.get(workItem.links.sourceLinkTypes)
       .catch((error: Error | any) => {
         this.notifyError('Getting link meta info failed (backward).', error);
         return Observable.throw(new Error(error.message));
@@ -941,7 +953,7 @@ export class WorkItemService {
       this.linksUrl = this.baseApiUrl + 'workitemlinks';
       // this.linksUrl = currentSpace.links.self + '/workitemlinks';
       return this.http
-        .post(this.linksUrl, JSON.stringify(link), {headers: this.headers})
+        .post(this.linksUrl, JSON.stringify(link))
         .map(response => [response.json().data as Link, response.json().included]);
         // .catch ((e) => {
         //   if (e.status === 401) {
@@ -970,7 +982,7 @@ export class WorkItemService {
       // this.linksUrl = currentSpace.links.self + '/workitemlinks';
       const url = `${this.linksUrl}/${link.id}`;
       return this.http
-        .delete(url, {headers: this.headers})
+        .delete(url)
         .map(response => {} );
         // .catch ((e) => {
         //   if (e.status === 401) {
@@ -1049,7 +1061,7 @@ export class WorkItemService {
     if (this._currentSpace) {
       let url = `${this._currentSpace.links.self}/workitems/reorder`;
       return this.http
-        .patch(url, JSON.stringify({data: arr, position: {direction: direction, id: prevWiId}}), { headers: this.headers })
+        .patch(url, JSON.stringify({data: arr, position: {direction: direction, id: prevWiId}}))
         .map(response => {
           let updatedWorkItem: WorkItem = response.json().data[0] as WorkItem;
           return updatedWorkItem;
@@ -1082,7 +1094,7 @@ export class WorkItemService {
       this.renderUrl = this.baseApiUrl + 'render';
       // this.renderUrl = currentSpace.links.self + '/render';
       return this.http
-        .post(this.renderUrl, JSON.stringify(params), { headers: this.headers })
+        .post(this.renderUrl, JSON.stringify(params))
         .map(response => response.json().data.attributes.renderedContent)
         // .catch ((e) => {
         //   if (e.status === 401) {

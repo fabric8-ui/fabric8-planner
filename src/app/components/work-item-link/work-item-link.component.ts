@@ -1,3 +1,4 @@
+import { EventService } from './../../services/event.service';
 import { Component, DoCheck, OnInit, Input, OnChanges, SimpleChanges, ViewChild, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Http } from '@angular/http';
@@ -47,6 +48,7 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDest
     private router: Router,
     private route: ActivatedRoute,
     private broadcaster: Broadcaster,
+    private eventService: EventService,
     http: Http
   ){}
 
@@ -151,8 +153,7 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDest
       .subscribe(([link, includes]) => {
         this.workItemService.addLinkToWorkItem(link, includes, this.workItem);
         this.resetSearchData();
-        // the hierarchy of work items has potentially changed (parent-child relationships may have changed)
-        this.broadcaster.broadcast('update_work_item_hierarchy');
+        this.eventService.workItemListReloadOnLink.next(true);
       },
       (error: any) => console.log(error));
   }
@@ -164,8 +165,7 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDest
       .deleteLink(link, currentWorkItem.id)
       .subscribe(() => {
         this.workItemService.removeLinkFromWorkItem(link, currentWorkItem);
-        // the hierarchy of work items has potentially changed (parent-child relationships may have changed)
-        this.broadcaster.broadcast('update_work_item_hierarchy');
+        this.eventService.workItemListReloadOnLink.next(true);
       },
       (error: any) => console.log(error));
   }
@@ -260,8 +260,9 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDest
         }
         if (i < lis.length) {
           let selectedId = lis[i].dataset.wiid;
+          let selectedNumber = lis[i].dataset.winumber;
           let selectedTitle = lis[i].dataset.wititle;
-          this.selectSearchResult(selectedId, selectedTitle);
+          this.selectSearchResult(selectedId, selectedNumber, selectedTitle);
         }
     } else { // Normal case - search on type
       if (term.trim() != "") {
@@ -293,9 +294,9 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDest
     this.searchNotAllowedIds = [];
   }
 
-  selectSearchResult(id: string, title: string){
+  selectSearchResult(id: string, number: number, title: string){
     this.selectedWorkItemId = id;
-    this.selectedValue = id + ' - ' + title;
+    this.selectedValue = number + ' - ' + title;
     this.searchWorkItems = [];
   }
 

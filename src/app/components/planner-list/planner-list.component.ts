@@ -1,3 +1,4 @@
+import { EventService } from './../../services/event.service';
 import { AreaModel } from '../../models/area.model';
 import { AreaService } from '../../services/area.service';
 import { FilterService } from '../../services/filter.service';
@@ -24,6 +25,9 @@ import {
 } from '@angular/core';
 import {
   Router,
+  Event as NavigationEvent,
+  NavigationStart,
+  NavigationEnd,
   ActivatedRoute
 } from '@angular/router';
 
@@ -50,7 +54,7 @@ import { TreeListComponent } from 'ngx-widgets';
   encapsulation: ViewEncapsulation.None,
   // tslint:disable-next-line:use-host-property-decorator
   host: {
-    'class': 'app-component height-100 flex-container in-column-direction flex-grow-1'
+    'class': 'app-component width-100 height-100'
   },
   selector: 'alm-work-item-list',
   templateUrl: './planner-list.component.html',
@@ -77,7 +81,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   addingWorkItem = false;
   showOverlay : Boolean ;
   loggedIn: Boolean = false;
-  showWorkItemDetails: boolean = false;
   contentItemHeight: number = 67;
   pageSize: number = 20;
   filters: any[] = [];
@@ -111,6 +114,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
     private collaboratorService: CollaboratorService,
+    private eventService: EventService,
     private router: Router,
     private user: UserService,
     private workItemService: WorkItemService,
@@ -166,20 +170,50 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
 
   initWiItems(event: any): void {
     this.pageSize = event.pageSize;
+
+    // Space subscription should only listen to changes
+    // till the page is changed to something else.
+    // Unsubscribe in ngOnDestroy acts way after the new page inits
+    // So using takeUntill to watch over the routes in case of any change
+    const takeUntilObserver = this.router.events
+    .filter((event) => event instanceof NavigationStart)
+    .filter((event: NavigationStart) => event.url.indexOf('plan/board') > -1 || event.url.indexOf('plan') == -1)
+
     this.spaceSubscription =
+      // On any of these event inside combineLatest
+      // We load the work items
       Observable.combineLatest(
-        this.spaces.current, this.filterService.filterChange, this.currentIteration)
-        .subscribe(([space, activeFilter, iteration]) => {
-          if (space) {
-            console.log('[WorkItemListComponent] New Space selected: ' + space.attributes.name);
-            this.workItemService.resetWorkItemList();
-            this.loadWorkItems();
-          } else {
-            console.log('[WorkItemListComponent] Space deselected');
-            this.workItems = [];
-            this.workItemService.resetWorkItemList();
-          }
-        });
+        this.spaces.current,
+        this.filterService.filterChange,
+        this.currentIteration,
+        this.eventService.showHierarchyListSubject,
+        // only emits workItemReload when hierarchy view is on
+        this.eventService.workItemListReloadOnLink.filter(() => this.showHierarchyList)
+      )
+      .takeUntil(takeUntilObserver)
+      .subscribe(([
+        space,
+        activeFilter,
+        iteration,
+        showHierarchyList,
+        workItemListReload
+      ]) => {
+        if (showHierarchyList) {
+          this.logger.log('Switching to hierarchy list mode.');
+        } else {
+          this.logger.log('Switching to flat list mode.');
+        }
+
+        this.showHierarchyList = showHierarchyList;
+
+        if (space) {
+          console.log('[WorkItemListComponent] New Space selected: ' + space.attributes.name);
+          this.loadWorkItems();
+        } else {
+          console.log('[WorkItemListComponent] Space deselected');
+          this.workItems = [];
+        }
+      });
   }
 
 
@@ -187,19 +221,18 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     if (this.wiSubscriber) {
       this.wiSubscriber.unsubscribe();
     }
+    const t1 = performance.now();
     this.wiSubscriber = Observable.combineLatest(
       this.iterationService.getIterations(),
-      this.collaboratorService.getCollaborators(),
+      // this.collaboratorService.getCollaborators(),
       this.workItemService.getWorkItemTypes(),
       this.areaService.getAreas(),
       this.userService.getUser().catch(err => Observable.of({})),
-    ).do((items) => {
-      const iterations = items[0];
-      this.allUsers = items[1];
-      this.iterations = items[0];
-      this.workItemTypes = items[2];
-      this.areas = items[3];
-      this.loggedInUser = items[4];
+    ).take(1).do((items) => {
+      const iterations = this.iterations = items[0];
+      this.workItemTypes = items[1];
+      this.areas = items[2];
+      this.loggedInUser = items[3];
 
       // If there is an iteration filter on the URL
       const queryParams = this.route.snapshot.queryParams;
@@ -233,16 +266,17 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       }
       this.logger.log('Requesting work items with filters: ' + JSON.stringify(appliedFilters));
       return Observable.forkJoin(
-        Observable.of(items[0]),
-        Observable.of(items[1]),
-        Observable.of(items[2]),
+        Observable.of(this.iterations),
+        Observable.of(this.workItemTypes),
         this.workItemService.getWorkItems(
           this.pageSize,
           appliedFilters
         )
       )
     })
-    .subscribe(([iterations, users, wiTypes, workItemResp]) => {
+    .subscribe(([iterations, wiTypes, workItemResp]) => {
+      const t2 = performance.now();
+      console.log('Performance :: Fetching the initial list - '  + (t2 - t1) + ' milliseconds.');
       this.logger.log('Got work item list.');
       this.logger.log(workItemResp.workItems);
       const workItems = workItemResp.workItems;
@@ -250,31 +284,62 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.workItems = this.workItemService.resolveWorkItems(
         workItems,
         this.iterations,
-        this.allUsers,
+        [], // We don't want to static resolve user at this point
         this.workItemTypes
       );
+
+      // Resolve assignees
+      const t3 = performance.now();
+      this.workItems.forEach((item, index) => {
+        this.workItemService.resolveAssignees(item.relationships.assignees).take(1)
+          .subscribe(assignees => {
+            item.relationships.assignees.data = assignees;
+            if (index == this.workItems.length - 1) {
+              const t4 = performance.now();
+              console.log('Performance :: Resolved all the users - '  + (t4 - t3) + ' milliseconds.');
+            }
+          })
+      });
     },
     (err) => {
-      console.log('Error in Work Item list',err);
+      console.log('Error in Work Item list', err);
     });
   }
 
   fetchMoreWiItems(): void {
+    const t1 = performance.now();
     this.workItemService
       .getMoreWorkItems(this.nextLink)
       .subscribe((newWiItemResp) => {
+        const t2 = performance.now();
         const workItems = newWiItemResp.workItems;
         this.nextLink = newWiItemResp.nextLink;
+        const wiLength = this.workItems.length;
         this.workItems = [
           ...this.workItems,
           // Returns an array of resolved work items
           ...this.workItemService.resolveWorkItems(
             workItems,
             this.iterations,
-            this.allUsers,
+            [],
             this.workItemTypes
           )
         ];
+        console.log('Performance :: Fetching more list items - '  + (t2 - t1) + ' milliseconds.');
+
+        // Resolve assignees
+        const t3 = performance.now();
+        for (let i = wiLength; i < this.workItems.length; i++) {
+          this.workItemService.resolveAssignees(this.workItems[i].relationships.assignees).take(1)
+            .subscribe(assignees => {
+              this.workItems[i].relationships.assignees.data = assignees
+              if (i == this.workItems.length - 1) {
+                const t4 = performance.now();
+                console.log('Performance :: Resolved all the users - '  + (t4 - t3) + ' milliseconds.');
+              }
+            })
+        }
+
         this.treeList.updateTree();
       },
       (e) => console.log(e));
@@ -295,28 +360,13 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     }
   }
 
-  onSelect(entryComponent: WorkItemListEntryComponent): void {
-    let workItem: WorkItem = entryComponent.getWorkItem();
-    // de-select prior selected element (if any)
-    if (this.selectedWorkItemEntryComponent && this.selectedWorkItemEntryComponent != entryComponent) {
-      this.selectedWorkItemEntryComponent.deselect();
-    }
-    // select new component
-    entryComponent.select();
-    this.selectedWorkItemEntryComponent = entryComponent;
-  }
-
-  onDetail(entryComponent: WorkItemListEntryComponent): void {
-    this.workItemDetail = entryComponent.getWorkItem();
-    this.onSelect(entryComponent);
-    this.showWorkItemDetails = true;
-  }
+  onDetail(entryComponent: WorkItemListEntryComponent): void { }
 
   onCreateWorkItem(workItem) {
     let resolveItem = this.workItemService.resolveWorkItems(
       [workItem],
       this.iterations,
-      this.allUsers,
+      [],
       this.workItemTypes
     );
     this.workItems = [...resolveItem, ...this.workItems];
@@ -408,26 +458,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     );
 
     this.eventListeners.push(
-      this.broadcaster.on<string>('switched_show_wi_hierarchy_mode')
-        .subscribe(message => {
-          this.logger.log('Switching to hierarchy list mode.');
-          this.showHierarchyList = true;
-          this.workItemService.resetWorkItemList();
-          this.loadWorkItems();
-      })
-    );
-
-    this.eventListeners.push(
-      this.broadcaster.on<string>('switched_show_wi_flat_mode')
-        .subscribe(message => {
-          this.logger.log('Switching to flat list mode.');
-          this.showHierarchyList = false;
-          this.workItemService.resetWorkItemList();
-          this.loadWorkItems();
-      })
-    );
-
-    this.eventListeners.push(
       this.broadcaster.on<string>('move_item')
         .subscribe((moveto: string) => {
           switch (moveto){
@@ -450,39 +480,9 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     );
 
     this.eventListeners.push(
-      this.broadcaster.on<void>('update_work_item_hierarchy')
-        .subscribe(() => {
-          // hierarchy has potentially changed, reload all data
-          this.loadWorkItems();
-          this.workItemService.resetWorkItemList();
-        })
-    );
-
-    this.eventListeners.push(
-      this.broadcaster.on<string>('updateWorkItem')
-        .subscribe((workItem: string) => {
-          let updatedItem = JSON.parse(workItem) as WorkItem;
-          let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
-          if (index > -1) {
-            this.workItems[index] = updatedItem;
-            this.treeList.updateTree();
-          }
-        })
-    );
-
-    this.eventListeners.push(
-      this.broadcaster.on<string>('addWorkItem')
-        .subscribe((workItem: string) => {
-          let newItem = JSON.parse(workItem) as WorkItem;
-          this.workItems.splice(0, 0, newItem);
-          this.treeList.updateTree();
-        })
-      );
-
-    this.eventListeners.push(
       this.broadcaster.on<string>('detail_close')
       .subscribe(()=>{
-        this.selectedWorkItemEntryComponent.deselect();
+        // this.selectedWorkItemEntryComponent.deselect();
       })
     );
 
@@ -501,11 +501,46 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         }
       })
     );
-
     this.eventListeners.push(
       this.workItemService.addWIObservable.subscribe(item => {
-        //move the update list logic
-      }));
+        //Check if the work item meets the applied filters
+        if(this.filterService.doesMatchCurrentFilter(item)){
+          console.log('Added WI matches the applied filters');
+          this.workItems.splice(0, 0, item);
+          this.treeList.updateTree();
+        } else {
+          console.log('Added WI does not match the applied filters');
+          this.treeList.updateTree();
+        }
+      })
+    );
+
+    this.eventListeners.push(
+      this.workItemService.editWIObservable.subscribe(updatedItem => {
+        let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
+        if(this.filterService.doesMatchCurrentFilter(updatedItem)){
+          console.log('Updated WI matches the applied filters')
+          if (index > -1) {
+            this.workItems[index] = updatedItem;
+          } else {
+            //Scenario: work item detail panel is open.
+            //Change a value so that it does not match the applied filter and gets removed from the list
+            //The panel is still open - set back the value(s) so that the work item matches the applied
+            //filters
+            //add the WI at the top of the list
+            this.workItems.splice(0, 0, updatedItem);
+          }
+          this.treeList.updateTree();
+        } else {
+          //Remove the work item from the current displayed list
+          if (index > -1) {
+            this.workItems.splice(index, 1);
+            console.log('Updated WI does not match the applied filters')
+            this.treeList.updateTree();
+          }
+        }
+      })
+    );
   }
 
   onDragStart() {
@@ -540,5 +575,9 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
             this.workItems.find((item) => item.id === workItem.id).attributes['version'] = workItem.attributes['version'];
           });
     }
+  }
+
+  onSelect() {
+
   }
 }
