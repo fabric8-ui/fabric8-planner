@@ -80,7 +80,6 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
             // the first entry is the default entry for now
             this.selectedType = this.availableTypes[0];
           }
-          console.log('init = ', this.selectedType)
         });
       } else {
         this.showQuickAddBtn = false;
@@ -151,14 +150,12 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
             this.selectedType = this.availableTypes.find(item => item.id===currentFilters[f].value);
             break;
           case 'assignee':
-            console.log('assignee is top ', currentFilters[f].value);
             this.workItem.relationships.assignees = {
               data: [{
                 id: currentFilters[f].value,
                 type: 'identities'
               }]
             } as any;
-            console.log('assignee is ', currentFilters[f].value);
           break;
         }
       }
@@ -221,22 +218,10 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
         })
         .subscribe(workItem => {
           this.workItem = workItem; // saved workItem, w/ id if new
-          this.logger.log(`created and returned this workitem:` + JSON.stringify(workItem));
-          this.logger.log('Emit =' + JSON.stringify(this.workItem));
           this.workItemService.emitAddWI(this.workItem);
           this.resetQuickAdd();
           this.qaSubmit.nativeElement.removeAttribute('disabled');
           this.qaTitle.nativeElement.removeAttribute('disabled');
-          //Notify with area + iteration + assignee details
-          let successMessage = 'New work item ' + workItem.attributes['system.title'] + ' added.'
-          try {
-            this.notifications.message({
-              message: successMessage,
-              type: NotificationType.SUCCESS
-            } as Notification);
-          } catch (e) {
-            console.log('Error displaying notification. New work item added.')
-          }
         },
         error => {
           this.error = error;

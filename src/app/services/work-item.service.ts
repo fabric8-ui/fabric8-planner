@@ -706,7 +706,6 @@ export class WorkItemService {
    */
 
   emitAddWI(workItem: WorkItem) {
-    console.log('emitAddWI =', workItem);
     this.addWIObservable.next(workItem);
   }
 
