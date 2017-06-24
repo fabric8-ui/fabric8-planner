@@ -503,6 +503,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     );
     this.eventListeners.push(
       this.workItemService.addWIObservable.subscribe(item => {
+        console.log('listener work item', item);
         //Check if the work item meets the applied filters
         if(this.filterService.doesMatchCurrentFilter(item)){
           console.log('Added WI matches the applied filters');

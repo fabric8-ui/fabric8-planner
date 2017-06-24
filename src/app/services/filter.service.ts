@@ -91,6 +91,7 @@ export class FilterService {
    * @returns Boolean
    */
   doesMatchCurrentFilter(workItem): Boolean {
+    console.log('doesMatchCurrentFilter', workItem);
     let activeFilters = cloneDeep(this.activeFilters);
     //Remove the parentexists filter
     let index = activeFilters.findIndex(item => {
@@ -99,12 +100,14 @@ export class FilterService {
     if(index > -1 ) {
       activeFilters.splice(index,1);
     }
+    console.log('activeFilters', activeFilters);
     //If filters have been applied
     if (activeFilters.length) {
       let matchFilterCount = 0;
       //Loop through active filters
       for (let i = 0; i < activeFilters.length; i++) {
         let filterValue = activeFilters[i].value;
+        Object.keys(workItem.relationships).forEach(item => console.log(item, 'data data', workItem.relationships[item]));
         //Check for a match under each active filter
         var res = Object.keys(workItem.relationships)
           .find((j) =>
