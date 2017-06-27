@@ -69,15 +69,6 @@ export class SchemaMockGenerator {
               'name': 'system',
               'version': 38
             }
-          },
-          {
-            'id': 'wilt-cat-1',
-            'type': 'workitemlinkcategories',
-            'attributes': {
-              'description': 'The user category is reserved for link types that can to be manipulated by the user.',
-              'name': 'user',
-              'version': 38
-            }
           }
         ],
         'meta': {
