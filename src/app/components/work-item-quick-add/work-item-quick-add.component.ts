@@ -147,7 +147,9 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
               }
             } as any;
             //update the selected filter
-            this.selectedType = this.availableTypes.find(item => item.id===currentFilters[f].value);
+            if(this.availableTypes != null) {
+              this.selectedType = this.availableTypes.find(item => item.id===currentFilters[f].value);
+            }
             break;
           case 'assignee':
             this.workItem.relationships.assignees = {
