@@ -5,6 +5,7 @@
  */
 
 var gulp = require('gulp'),
+  gless = require('gulp-less'),
   sassCompiler = require('gulp-sass'),
   del = require('del'),
   replace = require('gulp-string-replace'),
@@ -66,6 +67,17 @@ function transpileSASS(src, debug) {
     }));
 }
 
+function transpileLESS(src, debug) {
+  var opts = {
+    // paths: [ path.join(__dirname, 'less', 'includes') ],
+  }
+  return gulp.src(src)
+    .pipe(gless(opts))
+    .pipe(gulp.dest(function (file) {
+      return libraryDist + file.base.slice(__dirname.length + 'src/'.length);
+    }));
+}
+
 /*
  * TASKS
  */
@@ -118,11 +130,15 @@ gulp.task('post-transpile', ['transpile'], function () {
 });
 
 // Transpile and minify sass, storing results in libraryDist.
-gulp.task('transpile-sass', function () {
-  if (argv['sass-src']) {
-    return transpileSASS(argv['sass-src'], true);
+// gulp.task('transpile-sass', function () {
+gulp.task('transpile-less', function () {
+  // if (argv['sass-src']) {
+  if (argv['less-src']) {
+    // return transpileSASS(argv['sass-src'], true);
+    return transpileLESS(argv['less-src'], true);
   } else {
-    return transpileSASS(appSrc + '/app/**/*.scss');
+    // return transpileSASS(appSrc + '/app/**/*.scss');
+    return transpileLESS(appSrc + '/app/**/*.less');
   }
 });
 
@@ -152,7 +168,8 @@ gulp.task('build:library',
   [
     'transpile',
     'post-transpile',
-    'transpile-sass',
+    // 'transpile-sass',
+    'transpile-less',
     'copy-html',
     'copy-static-assets'
   ]);
@@ -178,9 +195,9 @@ gulp.task('watch', ['build:library', 'copy-watch-all'], function () {
   gulp.watch([appSrc + '/app/**/*.ts', '!' + appSrc + '/app/**/*.spec.ts'], ['transpile', 'post-transpile', 'copy-watch']).on('change', function (e) {
     util.log(util.colors.cyan(e.path) + ' has been changed. Compiling.');
   });
-  gulp.watch([appSrc + '/app/**/*.scss']).on('change', function (e) {
+  gulp.watch([appSrc + '/app/**/*.less']).on('change', function (e) {
     util.log(util.colors.cyan(e.path) + ' has been changed. Updating.');
-    transpileSASS(e.path);
+    transpileLESS(e.path);
     updateWatchDist();
   });
   gulp.watch([appSrc + '/app/**/*.html']).on('change', function (e) {
