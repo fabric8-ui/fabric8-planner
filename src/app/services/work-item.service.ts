@@ -753,11 +753,11 @@ export class WorkItemService {
    * @return Promise of LinkType[]
    */
   getLinkTypes(workItem: WorkItem): Observable<Object> {
-    return Observable.forkJoin(this.getAllLinkTypes(workItem))
-        .map(items => {
+    return this.getAllLinkTypes(workItem)
+        .map(item => {
           let linkTypes: Object = {};
-          linkTypes['forwardLinks'] = items[0].json().data;
-          linkTypes['backwardLinks'] = items[1].json().data;
+          linkTypes['forwardLinks'] = item.json().data;
+          linkTypes['backwardLinks'] = item.json().data;
           return linkTypes;
         })
         .map((linkTypes: any) => { return this.formatLinkTypes(linkTypes); })
