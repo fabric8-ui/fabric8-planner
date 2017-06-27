@@ -247,6 +247,8 @@ export class MockHttp extends HttpService {
           } else {
             return this.createResponse(url.toString(), 200, 'ok', { data: this.mockDataService.getAllAreas() });
           }
+        case '/workitemlinktypes':
+          return this.createResponse(url.toString(), 200, 'ok', this.mockDataService.getWorkItemLinkTypes());
         default:
           console.log('######## URL Not found ########');
           console.log(url.toString());

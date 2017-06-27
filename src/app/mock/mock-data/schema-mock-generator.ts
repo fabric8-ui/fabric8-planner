@@ -56,18 +56,6 @@ export class SchemaMockGenerator {
                   'type': 'workitemlinkcategories'
                 }
               },
-              'source_type': {
-                'data': {
-                  'id': 'planneritem',
-                  'type': 'workitemtypes'
-                }
-              },
-              'target_type': {
-                'data': {
-                  'id': 'planneritem',
-                  'type': 'workitemtypes'
-                }
-              }
             },
             'type': 'workitemlinktypes'
           }
