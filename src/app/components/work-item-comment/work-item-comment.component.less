@@ -1,7 +1,7 @@
-@import '../../../assets/stylesheets/base';
+@import '../../../assets/stylesheets/_base';
 
 .comment-content {
-  li { text-align: @textCenter;
+  li { text-align: center;
     &.toggle-icon {
       display: inline-block;
       width: 40px;
@@ -41,7 +41,7 @@
 .comments-outer-wrapper {
   .comments-wrap {
     float: left;
-    width: @width100;
+    width: 100%;
     padding: 20px 20px 20px 40px;
     border-bottom: 1px solid;
     border-bottom-color: @color-pf-black-200;
@@ -57,7 +57,7 @@
         margin-bottom: 5px;
         strong {
           display: inline-block;
-          width: @width100;
+          width: 100%;
         }
       }
       .createTimeBlock {

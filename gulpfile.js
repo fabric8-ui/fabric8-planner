@@ -5,7 +5,7 @@
  */
 
 var gulp = require('gulp'),
-  lessCompiler = require('gulp-less'),
+  sassCompiler = require('gulp-sass'),
   del = require('del'),
   replace = require('gulp-string-replace'),
   sourcemaps = require('gulp-sourcemaps'),
@@ -13,7 +13,7 @@ var gulp = require('gulp'),
   exec = require('gulp-exec'),
   ngc = require('gulp-ngc'),
   changed = require('gulp-changed'),
-  less = require('./deploy/less'),
+  sass = require('./deploy/sass'),
   runSequence = require('run-sequence'),
   argv = require('yargs').argv,
   path = require('path'),
@@ -43,37 +43,29 @@ function updateWatchDist() {
     .pipe(changed(watchDist))
     .pipe(gulp.dest(watchDist));
 }
-//
-gulp.task('less', function () {
-  return gulp.src('./less/**/*.less')
-    .pipe(less({
-      paths: [ path.join(__dirname, 'less', 'includes') ]
-    }))
-    .pipe(gulp.dest('./public/css'));
-});
 
-// transpiles a given LESS source set to CSS, storing results to libraryDist.
-/*function transpileLESS(src, debug) {
+// transpiles a given SASS source set to CSS, storing results to libraryDist.
+function transpileSASS(src, debug) {
   var opts = {
     outputStyle: 'compressed',
-    includePaths: lessCompiler.modules.map(function (val) {
-      return val.lessPath;
+    includePaths: sass.modules.map(function (val) {
+      return val.sassPath;
     })
   };
   if (debug) {
     opts.outputStyle = 'expanded';
     opts.sourceComments = true;
-    console.log('Compiling', src, 'in debug mode using LESS options:', opts);
+    console.log('Compiling', src, 'in debug mode using SASS options:', opts);
   }
   return gulp.src(src)
     .pipe(sourcemaps.init())
-    .pipe(lessCompiler(opts).on('error', lessCompiler.logError)) // this will prevent our future watch-task from crashing on less-errors
+    .pipe(sassCompiler(opts).on('error', sassCompiler.logError)) // this will prevent our future watch-task from crashing on sass-errors
     .pipe(sourcemaps.write())
     .pipe(gulp.dest(function (file) {
       return libraryDist + file.base.slice(__dirname.length + 'src/'.length); // save directly to dist
     }));
 }
-*/
+
 /*
  * TASKS
  */
@@ -119,20 +111,20 @@ gulp.task('post-transpile', ['transpile'], function () {
     .pipe(replace(/templateUrl:\s/g, "template: require("))
     .pipe(replace(/\.html',/g, ".html'),"))
     .pipe(replace(/styleUrls: \[/g, "styles: [require("))
-    .pipe(replace(/\.less']/g, ".css').toString()]"))
+    .pipe(replace(/\.scss']/g, ".css').toString()]"))
     .pipe(gulp.dest(function (file) {
-      return file.base; // because of Angular 2's encapsulation, it's natural to save the css where the less-file was
+      return file.base; // because of Angular 2's encapsulation, it's natural to save the css where the scss-file was
     }));
 });
 
 // Transpile and minify sass, storing results in libraryDist.
-// gulp.task('transpile-less', function () {
-//  if (argv['less-src']) {
-//    return transpileLESS(argv['less-src'], true);
-//  } else {
-//    return transpileLESS(appSrc + '/app/**/*.less');
-//  }
-//});
+gulp.task('transpile-sass', function () {
+  if (argv['sass-src']) {
+    return transpileSASS(argv['sass-src'], true);
+  } else {
+    return transpileSASS(appSrc + '/app/**/*.scss');
+  }
+});
 
 // transpiles the ts sources to js using the tsconfig.
 gulp.task('transpile', function () {
@@ -160,7 +152,7 @@ gulp.task('build:library',
   [
     'transpile',
     'post-transpile',
-    //'transpile-less',
+    'transpile-sass',
     'copy-html',
     'copy-static-assets'
   ]);
@@ -186,11 +178,11 @@ gulp.task('watch', ['build:library', 'copy-watch-all'], function () {
   gulp.watch([appSrc + '/app/**/*.ts', '!' + appSrc + '/app/**/*.spec.ts'], ['transpile', 'post-transpile', 'copy-watch']).on('change', function (e) {
     util.log(util.colors.cyan(e.path) + ' has been changed. Compiling.');
   });
-  //gulp.watch([appSrc + '/app/**/*.less']).on('change', function (e) {
-  //  util.log(util.colors.cyan(e.path) + ' has been changed. Updating.');
-  //  transpileSASS(e.path);
-  //  updateWatchDist();
-  //});
+  gulp.watch([appSrc + '/app/**/*.scss']).on('change', function (e) {
+    util.log(util.colors.cyan(e.path) + ' has been changed. Updating.');
+    transpileSASS(e.path);
+    updateWatchDist();
+  });
   gulp.watch([appSrc + '/app/**/*.html']).on('change', function (e) {
     util.log(util.colors.cyan(e.path) + ' has been changed. Updating.');
     copyToDist(e.path);

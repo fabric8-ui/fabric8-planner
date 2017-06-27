@@ -1,14 +1,16 @@
+@import (reference) './../../../node_modules/patternfly/src/less/variables';
+
 .user-avatar {
   width: 25px;
   height: 25px;
   img {
-    width: @width100;
+    width: 100%;
     height: 100%;
   }
 }
 .not-assigned-user-icon {
   padding: 1px;
-  font-size:20px;
+  font-size: 20px;
   border: 1px solid;
   border-color: @color-pf-black-600;
 }
@@ -16,7 +18,7 @@
 .detail-action-btn {
 //   font-size: 14px;
   width: 42px;
-  text-align: @textCenter;
+  text-align: center;
   padding: 0 !important;
   margin-left: 5px;
   cursor: pointer;

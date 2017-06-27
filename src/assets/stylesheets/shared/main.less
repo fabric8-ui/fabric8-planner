@@ -1,5 +1,6 @@
-@import (reference) 'custom-variables.less';
-@import (reference) 'custom-mixins.less';
+@import "./../../../../node_modules/bootstrap/less/bootstrap.less";
+@import (reference) '_custom-variables.less';
+@import (reference) '_custom-mixins.less';
 body {
   font-family: Open Sans;
   font-size: 14px;
@@ -52,7 +53,7 @@ body {
 .dn { display: none; }
 .dib { display: inline-block; }
 .db { display: block; }
-.textCenter { text-align: @textCenter; }
+.textCenter { text-align: center; }
 .posRel { position: relative; }
 
 @media (max-width: @grid-float-breakpoint) {
