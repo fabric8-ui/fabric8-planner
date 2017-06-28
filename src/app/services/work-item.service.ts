@@ -51,10 +51,6 @@ export class WorkItemService {
   private availableStates: DropdownOption[] = [];
   public workItemTypes: WorkItemType[] = [];
 
-  // FIXME: this is the live list of work items, held in this instance of
-  // workItemService. This prevents us from displaying two different lists of WIs.
-  // This might have to change in the future.
-  private workItems: WorkItem[] = [];
   private nextLink: string = null;
   private initialWorkItemFetchDone = false;
   private userIdMap = {};
@@ -222,10 +218,6 @@ export class WorkItemService {
     return resolvedWorkItems;
   }
 
-  isListLoaded() {
-    return !!this.workItems.length;
-  }
-
   getNextLink(): string {
     return this.nextLink;
   }
@@ -250,9 +242,6 @@ export class WorkItemService {
 
   /**
    * Usage: This method gives a single work item by ID.
-   * If the item is locally available then it just resolves the comments
-   * else it fetches that item from the cloud and then resolves the comments
-   * then update the big list of work WorkItem
    *
    * @param: number - id
    */
@@ -289,35 +278,6 @@ export class WorkItemService {
     }
     return true;
   }
-
-  /**
-   * Usage: to update the big list of workItem with new data
-   * Existing item will be updated only with attributes
-   * New item will be added to the list
-   */
-  updateWorkItemBigList(wItems: WorkItem[]): void {
-    wItems.forEach((wItem) => {
-      if (wItem.id in this.workItemIdIndexMap) {
-        this.workItems[this.workItemIdIndexMap[wItem.id]].attributes =
-          cloneDeep(wItem.attributes);
-      } else {
-        this.workItems
-          .splice(this.workItems.length, this.workItems.length, wItem);
-      }
-    });
-    // Re-build the map once done updating the list
-    this.buildWorkItemIdIndexMap();
-  }
-
-  /**
-   * Usage: Build the workItem ID-Index map for the big list
-   */
-  buildWorkItemIdIndexMap() {
-    this.workItemIdIndexMap = {};
-    this.workItems.forEach((wItem, index) =>
-      this.workItemIdIndexMap[wItem.id] = index);
-  }
-
 
   /**
    * Usage: To resolve the users in eact WorkItem
@@ -524,15 +484,6 @@ export class WorkItemService {
   }
 
   /**
-   * This is to fetch locally fetched work items
-   * this will eventually be deprecated once work item
-   * linking is re-worked
-   */
-  getLocallySavedWorkItems(): Observable<any> {
-    return Observable.of(this.workItems);
-  }
-
-  /**
    * Usage: This method is to resolve the comments for a work item
    * This method is only called when a single item is fetched for the
    * details page.
@@ -682,6 +633,7 @@ export class WorkItemService {
     * @param: WorkItem - workItem (Item to be created)
     */
   create(workItem: WorkItem): Observable<WorkItem> {
+    console.log('work item in create ', workItem);
     let payload = JSON.stringify({data: workItem});
     if (this._currentSpace) {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
@@ -779,18 +731,17 @@ export class WorkItemService {
       });
   }
 
-  getForwardLinkTypes(workItem: WorkItem): Observable<any> {
-    return this.http.get(workItem.links.targetLinkTypes)
+  /**
+   * Usage: This function fetches all the work item link types
+   * Store it in an instance variable
+   *
+   * @return Promise of LinkType[]
+   */
+  getAllLinkTypes(workItem: WorkItem): Observable<any> {
+    let workItemLinkTypesUrl = this._currentSpace.links.self + '/workitemlinktypes';
+    return this.http.get(workItemLinkTypesUrl)
       .catch((error: Error | any) => {
         this.notifyError('Getting link meta info failed (forward).', error);
-        return Observable.throw(new Error(error.message));
-      });
-  }
-
-  getBackwardLinkTypes(workItem: WorkItem): Observable<any> {
-    return this.http.get(workItem.links.sourceLinkTypes)
-      .catch((error: Error | any) => {
-        this.notifyError('Getting link meta info failed (backward).', error);
         return Observable.throw(new Error(error.message));
       });
   }
@@ -802,23 +753,18 @@ export class WorkItemService {
    * @return Promise of LinkType[]
    */
   getLinkTypes(workItem: WorkItem): Observable<Object> {
-    return Observable.forkJoin(
-      this.getForwardLinkTypes(workItem),
-      this.getBackwardLinkTypes(workItem)
-    )
-    .map(items => {
-      let linkTypes: Object = {};
-      linkTypes['forwardLinks'] = items[0].json().data;
-      linkTypes['backwardLinks'] = items[1].json().data;
-      return linkTypes;
-    })
-    .map((linkTypes: any) => {
-      return this.formatLinkTypes(linkTypes);
-    })
-    .catch((err) => {
-      console.log(err);
-      return Observable.of({});
-    });
+    return this.getAllLinkTypes(workItem)
+        .map(item => {
+          let linkTypes: Object = {};
+          linkTypes['forwardLinks'] = item.json().data;
+          linkTypes['backwardLinks'] = item.json().data;
+          return linkTypes;
+        })
+        .map((linkTypes: any) => { return this.formatLinkTypes(linkTypes); })
+        .catch((err) => {
+          console.log(err);
+          return Observable.of({});
+        });
   }
 
   formatLinkTypes(linkTypes: any): any {
@@ -827,16 +773,14 @@ export class WorkItemService {
       opLinkTypes.push({
         name: linkType.attributes['forward_name'],
         linkId: linkType.id,
-        linkType: 'forward',
-        wiType: linkType.relationships.target_type.data.id
+        linkType: 'forward'
       });
     });
     linkTypes.backwardLinks.forEach((linkType: LinkType) => {
       opLinkTypes.push({
         name: linkType.attributes['reverse_name'],
         linkId: linkType.id,
-        linkType: 'reverse',
-        wiType: linkType.relationships.source_type.data.id
+        linkType: 'reverse'
       });
     });
     return opLinkTypes;
@@ -994,12 +938,12 @@ export class WorkItemService {
     }
   }
 
-  searchLinkWorkItem(term: string, workItemType: string): Observable<WorkItem[]> {
+  searchLinkWorkItem(term: string): Observable<WorkItem[]> {
     if (this._currentSpace) {
       // FIXME: make the URL great again (when we know the right API URL for this)!
       // search within selected space
-      let searchUrl = this.baseApiUrl + 'search?spaceID=' + this._currentSpace.id + '&q=' + term + ' type:' + workItemType;
-      //let searchUrl = currentSpace.links.self + 'search?q=' + term + ' type:' + workItemType;
+      let searchUrl = this.baseApiUrl + 'search?spaceID=' + this._currentSpace.id + '&q=' + term;
+      //let searchUrl = currentSpace.links.self + 'search?q=' + term;
       return this.http
           .get(searchUrl)
           .map((response) => response.json().data as WorkItem[])
@@ -1013,34 +957,6 @@ export class WorkItemService {
     } else {
       return Observable.of<WorkItem[]>( [] as WorkItem[] );
     }
-  }
-
-  /**
-   * It return object of adjacent work item id
-   * {
-   *  prevItemId: previous work item id
-   *  nextItemId: next work item id
-   * }
-   *
-   * @param workItemId: string
-   */
-  getAdjacentWorkItemsIdById(workItemId: string): any {
-    let wiIndex = this.workItemIdIndexMap[workItemId];
-    let prevItemId = '';
-    let nextItemId = '';
-    if (wiIndex > 0){
-      prevItemId = this.workItems[wiIndex - 1].id;
-    }
-
-    if (wiIndex < this.workItems.length - 1) {
-      nextItemId = this.workItems[wiIndex + 1].id;
-    }
-
-    let adjacentWorkItem = {
-      prevItemId: prevItemId,
-      nextItemId: nextItemId
-    };
-    return adjacentWorkItem;
   }
 
   /**
