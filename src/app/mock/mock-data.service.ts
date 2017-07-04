@@ -190,7 +190,15 @@ export class MockDataService {
       }
     };
     localWorkItem.relationships = {
-          'assignees': { },
+          'assignees': localWorkItem.relationships.assignees ? {
+            'data': [{
+              'id': localWorkItem.relationships.assignees.data[0].id,
+              'links': {
+                'self': 'http://mock.service/api/user/' + localWorkItem.relationships.assignees.data[0].id
+              },
+              'type': 'identities'
+            }]
+          } : { },
           'iteration': localWorkItem.relationships.iteration ? {
             'data': {
               'id': localWorkItem.relationships.iteration.data.id,
