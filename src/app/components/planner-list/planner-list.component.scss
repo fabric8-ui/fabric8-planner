@@ -1,5 +1,11 @@
 @import '../../../assets/stylesheets/base';
-
+/* CSS3 calc() function to perform calculations */
+/* this is temporary until Less conversion is completed */
+@mixin calc($property, $expression) { 
+  #{$property}: -webkit-calc(#{$expression}); 
+  #{$property}: -moz-calc(#{$expression});
+  #{$property}: calc(#{$expression}); 
+}
 .error { color: $color-pf-red-100; }
 .suppress-hover {
   &:hover { background-color: transparent; }
@@ -17,25 +23,30 @@
 .side-panel-wrap {
   width: 340px;
   min-width: 340px;
+  height: 100%;
   .side-panel-container {
     overflow-x: hidden;
     background-color: $color-pf-black-900;
   }
 }
-.work-item-list-page { flex:1;
+.work-item-list-page {
+  width: $width100;
+  float: left;
   >.list-group { border-top-width:0 !important; }
   .detail-list-wrap {
     width: $width100;
-    margin-bottom: 0;
+    height: (calc(100% - 70px)); // to avoid overflown scroll height should be there
+    margin-bottom: 70px;
     overflow-y: scroll;
-    -webkit-flex: auto;
-        -ms-flex: auto;
-            flex: auto;
+    border-top: 1px solid;
+    border-top-color: $color-pf-black-300;
   }
   .work-item-list-quick-add {
-    -webkit-flex: none;
-        -ms-flex: none;
-            flex: none;
+    position: fixed;
+    bottom: 0;
+    width: (calc(100% - 340px));
+    border-top: 1px solid;
+    border-top-color: $color-pf-black-300;
   }
   .card-pf {
     border: 0;
@@ -48,9 +59,7 @@
 .node-drop-slot.is-dragging-over { height: 66px!important; }
 .work-item-page {
   position: relative;
-  display: flex;
-  flex: 1;
-  flex-direction: column;
+  @include calc(height, "100vh - 79px");
   > main { border-top: 0 solid !important; }
   .dropdown {
     a { cursor: pointer; }
@@ -58,23 +67,18 @@
   .with-cursor-pointer { cursor: pointer; }
   .with-color-blue { color: $color-pf-blue-400; }
   >main {
-    display: flex;
+    height: 100%;
     border-top: 1px solid;
     border-top-color: $color-pf-black-300;
-    flex-direction: row;
-    flex: 1;
-    align-items: stretch;
     >aside {
       position: relative;
-      display: flex;
+      float: left;
       background-color: $color-pf-black-200;
       border-right: 1px solid;
       border-right-color: $color-pf-black-300;
-      flex: 3;
-      flex-direction: column;
-      align-items: stretch;
       .contents {
         display: flex;
+        height: 100%;
         overflow: auto;
         flex: 1;
         align-items: stretch;
@@ -84,6 +88,7 @@
     >section {
       position: relative;
       display: flex;
+      height: 100%;
       overflow-x: hidden!important;
       align-items: stretch;
       flex: 9;
@@ -98,8 +103,8 @@
       }
       .alm-blank-slate:hover { box-shadow: 0 1px 6px rgba(3,3,3,.175); }
       > header {
-        padding-right: rem(20);
-        padding-left: rem(20);
+        padding-right: 20px;
+        padding-left: 20px;
         border-bottom: 1px solid;
         border-bottom-color: $color-pf-black-300 !important;
         .toolbar-pf { border-color: transparent;

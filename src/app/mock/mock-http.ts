@@ -127,7 +127,7 @@ export class MockHttp extends HttpService {
         body: body
       });
       var res = new Response(responseOptions);
-      return Observable.of(res);
+      return Observable.of(res).delay(100);
     }
 
     /*
@@ -247,13 +247,10 @@ export class MockHttp extends HttpService {
           } else {
             return this.createResponse(url.toString(), 200, 'ok', { data: this.mockDataService.getAllAreas() });
           }
-        case '/source-link-types':
-          return this.createResponse(url.toString(), 200, 'ok', this.mockDataService.getWorkItemLinkTypes() );
-        case '/target-link-types':
-          return this.createResponse(url.toString(), 200, 'ok', this.mockDataService.getWorkItemLinkTypes() );
+        case '/workitemlinktypes':
+          return this.createResponse(url.toString(), 200, 'ok', this.mockDataService.getWorkItemLinkTypes());
         default:
-          console.log('######## URL Not found ########');
-          console.log(url.toString());
+          console.log('######## URL Not found ########', url.toString());
           return this.createResponse(url.toString(), 404, 'npt found', {} );
       }
     };

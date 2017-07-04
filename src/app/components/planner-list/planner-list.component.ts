@@ -46,6 +46,7 @@ import { WorkItem } from '../../models/work-item';
 import { WorkItemType }               from '../../models/work-item-type';
 import { WorkItemListEntryComponent } from '../work-item-list-entry/work-item-list-entry.component';
 import { WorkItemService }            from '../../services/work-item.service';
+import { WorkItemDataService } from './../../services/work-item-data.service';
 import { CollaboratorService } from '../../services/collaborator.service';
 
 import { TreeListComponent } from 'ngx-widgets';
@@ -54,7 +55,7 @@ import { TreeListComponent } from 'ngx-widgets';
   encapsulation: ViewEncapsulation.None,
   // tslint:disable-next-line:use-host-property-decorator
   host: {
-    'class': 'app-component height-100 flex-container in-column-direction flex-grow-1'
+    'class': 'app-component width-100 height-100'
   },
   selector: 'alm-work-item-list',
   templateUrl: './planner-list.component.html',
@@ -118,6 +119,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     private router: Router,
     private user: UserService,
     private workItemService: WorkItemService,
+    private workItemDataService: WorkItemDataService,
     private logger: Logger,
     private userService: UserService,
     private route: ActivatedRoute,
@@ -287,7 +289,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         [], // We don't want to static resolve user at this point
         this.workItemTypes
       );
-
+      this.workItemDataService.setItems(this.workItems);
       // Resolve assignees
       const t3 = performance.now();
       this.workItems.forEach((item, index) => {
@@ -325,6 +327,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
             this.workItemTypes
           )
         ];
+        this.workItemDataService.setItems(this.workItems);
         console.log('Performance :: Fetching more list items - '  + (t2 - t1) + ' milliseconds.');
 
         // Resolve assignees
@@ -550,12 +553,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   // Event listener for WI drop.
   onDragEnd(workItemId: string) {
     // rearrange is happening inside ng2-dnd library
-
-    // Build the ID-index map after rearrange.
-    this.workItemService.buildWorkItemIdIndexMap();
-
-    // save the order of work item.
-    // this.workItemService.reOrderWorkItem(workItemId);
   }
 
   onMoveNode($event) {
