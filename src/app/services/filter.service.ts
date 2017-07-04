@@ -1,3 +1,4 @@
+import { WorkItem } from './../models/work-item';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { cloneDeep } from 'lodash';
@@ -13,7 +14,15 @@ export class FilterService {
   public filters: FilterModel[] = [];
   public activeFilters = [];
   public filterChange = new Subject();
+  public filterObservable: Subject<any> = new Subject();
   private headers = new Headers({'Content-Type': 'application/json'});
+
+  private filtertoWorkItemMap = {
+    'assignee': ['relationships', 'assignees', 'data', ['id']],
+    'area': ['relationships', 'area', 'data', 'id'],
+    'workitemtype': ['relationships', 'baseType', 'data', 'id'],
+    'iteration': ['relationships', 'iteration', 'data', 'id']
+  }
 
   constructor(
     private http: HttpService,
@@ -33,6 +42,8 @@ export class FilterService {
         value: value
       });
     }
+    //Emit filter update event
+    this.filterObservable.next();
   }
 
   getFilterValue(id): any {
@@ -84,37 +95,40 @@ export class FilterService {
 
   /**
    * Usage: to check if the workitem matches with current applied filter or not.
+   * TODO: Make this function better and smarter
+   * NOTE: To add a new filter you have to do nothing here, just update the filtertoWorkItemMap
    * @param WorkItem - workItem
-   * @returns Boolean
+   * @returns boolean
    */
-  doesMatchCurrentFilter(workItem): Boolean {
-    let activeFilters = cloneDeep(this.activeFilters);
-    //Remove the parentexists filter
-    let index = activeFilters.findIndex(item => {
-      return item.paramKey == 'filter[parentexists]'
-    })
-    if(index > -1 ) {
-      activeFilters.splice(index,1);
-    }
-    //If filters have been applied
-    if (activeFilters.length) {
-      let matchFilterCount = 0;
-      //Loop through active filters
-      for (let i = 0; i < activeFilters.length; i++) {
-        let filterValue = activeFilters[i].value;
-        //Check for a match under each active filter
-        var res = Object.keys(workItem.relationships)
-          .find((j) =>
-            workItem.relationships[j].data ? workItem.relationships[j].data.id === filterValue : false);
-        if (res) matchFilterCount++; //If a match is found - increase the count
-        else return false; //If no match return false - no need to go through all the filters
+  doesMatchCurrentFilter(workItem: WorkItem): boolean {
+    return this.activeFilters.every(filter => {
+      if (filter.id && Object.keys(this.filtertoWorkItemMap).indexOf(filter.id) > -1) {
+        let currentAttr = workItem;
+        return this.filtertoWorkItemMap[filter.id].every((attr, map_index) => {
+          if (Array.isArray(attr)) {
+            if (Array.isArray(currentAttr)) {
+              let innerAttr = currentAttr;
+              return currentAttr.some(item => {
+                return item[attr[0]] == filter.value;
+              })
+            } else {
+              return false;
+            }
+          }
+          else if (currentAttr[attr]) {
+            currentAttr = currentAttr[attr];
+            if (map_index === this.filtertoWorkItemMap[filter.id].length - 1 && currentAttr != filter.value) {
+              return false;
+            } else {
+              return true;
+            }
+          } else {
+            return false;
+          }
+        });
       }
-      //If all filters match - count needs to be equal to active filter length
-      if (matchFilterCount === activeFilters.length) return true;
-    } else {
-      //No filters have been applied so the new work item can be displayed
       return true;
-    }
+    })
   }
 
 }
