@@ -259,27 +259,6 @@ export class WorkItemService {
   }
 
   /**
-   * Usage: to check if the workitem match with current filter or not.
-   * @param WorkItem - workItem
-   * @returns Boolean
-   */
-  doesMatchCurrentFilter(workItem: WorkItem): Boolean {
-    if (this.prevFilters.length) {
-      for (let i = 0; i < this.prevFilters.length; i++) {
-        // In case of assignee filter
-        if (this.prevFilters[i].id === 1 && this.prevFilters[i].active) {
-          if (!workItem.relationships.assignees.data // If un-assigned
-              || workItem.relationships.assignees.data.findIndex(item => item.id == this.prevFilters[i].value) === -1 // If assignee is not current
-          ) {
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  }
-
-  /**
    * Usage: To resolve the users in eact WorkItem
    * For now it resolves assignne and creator
    */
@@ -323,6 +302,17 @@ export class WorkItemService {
     } else {
       return Observable.of([]);
     }
+  }
+
+  getUsersByURLs(userURLs: string[]): Observable<User[]> {
+    let observableBatch = userURLs.map((url) => {
+        return this.http.get(url)
+          .map((res) => res.json().data)
+          .catch((error: Error | any) => {
+            return Observable.throw(new Error(error.message));
+          });
+      });
+      return Observable.forkJoin(observableBatch);
   }
 
   resolveCreator2(creator): Observable<User>{
