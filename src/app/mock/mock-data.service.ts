@@ -191,8 +191,32 @@ export class MockDataService {
     };
     localWorkItem.relationships = {
           'assignees': { },
-          'iteration': { 'data': { 'id': 'iteration-id1', 'links': { 'self': 'http://mock.service/api/iterations/iteration-id1' }, 'type': 'iterations' } },
-          'area': {
+          'iteration': localWorkItem.relationships.iteration ? {
+            'data': {
+              'id': localWorkItem.relationships.iteration.data.id,
+              'links': {
+                'self': 'http://mock.service/api/iterations/' + localWorkItem.relationships.iteration.data.id
+              },
+              'type': 'iterations'
+            }
+          } : {
+            'data': {
+              'id': 'iteration-id1',
+              'links': {
+                'self': 'http://mock.service/api/iterations/root-iteration-id'
+              },
+              'type': 'iterations'
+            }
+          },
+          'area': localWorkItem.relationships.area ? {
+            'data': {
+              'id': localWorkItem.relationships.area.data.id,
+              'links': {
+                'self': 'http://mock.service/api/areas/' + localWorkItem.relationships.area.data.id
+              },
+              'type': 'iterations'
+            }
+          } : {
             'data': {
               'id': 'rootarea',
               'links': {
