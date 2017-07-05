@@ -1,0 +1,84 @@
+@import (reference) './../../../../node_modules/patternfly/node_modules/bootstrap/less/mixins';
+@import (reference) './../../../../node_modules/patternfly/src/less/mixins';
+// @import (reference) 'patternfly/mixin_overrides';
+
+// functions
+//custom mixins
+.truncate() {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.transform(@transform) {
+  -webkit-transform: @transform;
+  -moz-transform: @transform;
+  -ms-transform: @transform;
+  -o-transform: @transform;
+  transform: @transform;
+}
+
+.transition(@transition) {
+  -webkit-transition: @transition;
+  -moz-transition: @transition;
+  -ms-transition: @transition;
+  -o-transition: @transition;
+  transition: @transition;
+}
+
+.borderRadius(@radius) {
+  border-radius: @radius;
+  -o-border-radius: @radius;
+  -moz-border-radius: @radius;
+  -webkit-border-radius: @radius;
+}
+.Border(@borderwidth, @borderStyle, @borderColor) {
+  border-width: @borderwidth;
+  border-color: @borderColor;
+  border-style: @borderStyle;
+  -o-border-width: @borderwidth;
+  -o-border-color: @borderColor;
+  -o-border-style: @borderStyle;
+  -webkit-border-width: @borderwidth;
+  -webkit-border-color: @borderColor;
+  -webkit-border-style: @borderStyle;
+  -moz-border-width: @borderwidth;
+  -moz-border-color: @borderColor;
+  -moz-border-style: @borderStyle;
+}
+.multiline-truncate(@line-height, @line-count, @bg-color) {
+  overflow: hidden;
+  position: relative;
+  line-height: @line-height;
+  max-height: @line-height * @line-count;
+  text-align: justify;
+  margin-right: -10px;
+  padding-right: 10px;
+  &:before {
+    content: '\2026';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+  &:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    width: 10px;
+    height: 30px;
+    margin-top: 0;
+    background: @bg-color;
+  }
+}
+.dib { display: inline-block; }
+.fill-container {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-width: 0;
+}

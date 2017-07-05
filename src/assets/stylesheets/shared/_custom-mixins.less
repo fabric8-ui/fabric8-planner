@@ -1,0 +1,56 @@
+@import (reference) './../../../../node_modules/patternfly/node_modules/bootstrap/less/mixins';
+@import (reference) './../../../../node_modules/patternfly/src/less/mixins';
+// @import (reference) '../../../../node_modules/patternfly/src/less/mixin_overrides';
+
+// functions
+//custom mixins
+.truncate() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.transform(@transform) {
+  -webkit-transform: @transform;
+     -moz-transform: @transform;
+      -ms-transform: @transform;
+       -o-transform: @transform;
+          transform: @transform;
+}
+.transition(@transition) {
+  -webkit-transition: @transition;
+     -moz-transition: @transition;
+      -ms-transition: @transition;
+       -o-transition: @transition;
+          transition: @transition;
+}
+.borderRadius(@radius) {
+  -webkit-border-radius: @radius;
+     -moz-border-radius: @radius;
+       -o-border-radius: @radius;
+          border-radius: @radius;
+}
+.Border(@borderwidth, @borderStyle, @borderColor) {
+    -webkit-border-width: @borderwidth;
+       -moz-border-width: @borderwidth;
+         -o-border-width: @borderwidth;
+            border-width: @borderwidth;
+    -webkit-border-color: @borderColor;
+       -moz-border-color: @borderColor;
+         -o-border-color: @borderColor;
+            border-color: @borderColor;
+    -webkit-border-style: @borderStyle;
+       -moz-border-style: @borderStyle;
+         -o-border-style: @borderStyle;
+            border-style: @borderStyle;
+}
+.dib { display: inline-block; }
+.fill-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+}

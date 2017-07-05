@@ -92,7 +92,7 @@ fabric8-ui, you should:
 
 Step 1: Run `npm run watch:library` in the source directory::
 This will build fabric8-planner as a library and then set up a watch task to
-rebuild any ts, html and scss files you change.
+rebuild any ts, html and less files you change.
 
 Step 2: Run `npm link <path to fabric8-planner>/dist-watch`::
 In the webapp into which you are embedding. This will create a symlink from
@@ -127,16 +127,16 @@ Using an external Runtime (option 1) run:
 The paths for the runtimes can be configured using commandline arguments. See
 `scripts/run-planner.sh` for further documentation.
 
-== CSS and SASS
+== CSS and LESS
 
 fabric8-planner uses SASS for it's stylesheets. It also uses the Angular emulation
 of the shadow dom, so you will normally want to place your styles in the
-`.component.scss` file next to the html and the typescript.
+`.component.less` file next to the html and the typescript.
 
 If you find yourself wanting to create a shared style that multiple components will
 use, then we recommend adding it as a mixin to
-`src/assets/stylesheets/_planner-mixins.scss`. The mixins are imported in to every
-`.component.scss` file. You can then create a real class by doing something like
+`src/assets/stylesheets/_planner-mixins.less`. The mixins are imported in to every
+`.component.less` file. You can then create a real class by doing something like
 
     .my-class {
       @include my-class;

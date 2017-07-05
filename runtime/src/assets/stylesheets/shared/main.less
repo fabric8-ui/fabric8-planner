@@ -1,0 +1,67 @@
+@import (reference) '_custom-variables.less';
+@import (reference) '_custom-mixins.less';
+body {
+  font-family: Open Sans;
+  font-size: 14px;
+}
+//colors
+.color-grey { color: @color-pf-black-800 !important; }
+.truncate { .truncate; }
+.left-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-overflow: clip;
+  &:extend( .posRel );
+  background-color: @color-pf-white;
+  &:before{
+    content: '\02026';
+    position: absolute;
+    z-index: 1;
+    left: -12px;
+    background-color: inherit;
+    padding-left: 12px;
+    margin-left: 6px;
+  }
+  span {
+    min-width: 100%;
+    position: relative;
+    display: inline-block;
+    float: right;
+    overflow: visible;
+    background-color: inherit;
+    text-indent: 6px;
+    &:before {
+      content: '';
+      position: absolute;
+      &:extend( .dib );
+      width: 12px;
+      height: 24px;
+      background-color: inherit;
+      z-index: 200;
+      left: -8px;
+    }
+  }
+}
+.truncate-ellipsis {
+    display: table;
+    table-layout: fixed;
+    white-space: nowrap;
+}
+.dn { display: none; }
+.dib { display: inline-block; }
+.db { display: block; }
+.textCenter { text-align: center; }
+.posRel { position: relative; }
+
+@media (max-width: @grid-float-breakpoint) {
+  .mobdn { display: none; }
+  .list-view-pf {
+    .list-group-item-heading {
+      // font-size: 12px;
+    }
+  }
+}
+
+//@import 'layout';
+//@import 'overrides-for-patternfly';
