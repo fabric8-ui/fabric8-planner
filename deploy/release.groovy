@@ -56,14 +56,6 @@ def cd (b){
         sh 'npm run build'
     }
 
-    stage('unit test'){
-        sh 'npm run test:unit'
-    }
-
-    stage('func test'){
-        sh './scripts/run-functests.sh'
-    }
-
     stage('release'){
         def published = npmRelease{
             branch = b
