@@ -36,6 +36,7 @@ import { IterationModel } from '../../models/iteration.model';
 import { WorkItem } from '../../models/work-item';
 import { WorkItemType } from '../../models/work-item-type';
 import { WorkItemService } from '../../services/work-item.service';
+import { WorkItemDataService } from './../../services/work-item-data.service';
 import { CollaboratorService } from '../../services/collaborator.service';
 
 @Component({
@@ -89,6 +90,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     private notifications: Notifications,
     private router: Router,
     private workItemService: WorkItemService,
+    private workItemDataService: WorkItemDataService,
     private dragulaService: DragulaService,
     private iterationService: IterationService,
     private userService: UserService,
@@ -157,15 +159,14 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   initStuff() {
     Observable.combineLatest(
       this.iterationService.getIterations(),
-      this.collaboratorService.getCollaborators(),
+      // this.collaboratorService.getCollaborators(),
       this.workItemService.getWorkItemTypes(),
       this.areaService.getAreas(),
-      this.userService.getUser(),
+      this.userService.getUser().catch(err => Observable.of({} as User)),
       this.currentIteration,
       this.currentWIType
     )
-    .subscribe(([iterations, users, wiTypes, areas, loggedInUser, currentIteration, currentWIType]) => {
-      this.allUsers = users;
+    .subscribe(([iterations, wiTypes, areas, loggedInUser, currentIteration, currentWIType]) => {
       this.iterations = iterations;
       this.workItemTypes = wiTypes;
       this.readyToInit = true;
@@ -215,22 +216,19 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     .map(workItemResp => {
       let workItems = workItemResp.workItems;
       let cardValue: CardValue[] = [];
+      this.workItemDataService.setItems(workItems);
       lane.workItems = this.workItemService.resolveWorkItems(
         workItems,
         this.iterations,
-        this.allUsers,
+        [],
         this.workItemTypes
       );
-
       lane.cardValue = lane.workItems.map(item => {
         return {
-            id: item.id,
+            id: item.attributes['system.number'],
             type: item.relationships.baseType.data.attributes['icon'],
             title: item.attributes['system.title'],
-            avatar: (() => {
-              if(item.relationships.assignees.data.length > 0)
-                return item.relationships.assignees.data[0].attributes['imageURL'];
-              else return '';})(),
+            avatar: '',
             hasLink: true,
             link: "./detail/"+item.id,
             menuItem: [{
@@ -260,13 +258,13 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     workItems = this.workItemService.resolveWorkItems(
       workItems,
       this.iterations,
-      this.allUsers,
+      [],
       this.workItemTypes
     );
     for(let i=0; i<workItems.length; i++) {
       lane = this.lanes.find((lane) => lane.option === workItems[i].attributes['system.state']);
       cardValues.push({
-        id: workItems[i].id,
+        id: workItems[i].attributes['system.number'],
         type: workItems[i].relationships.baseType.data.attributes['icon'],
         title: workItems[i].attributes['system.title'],
         avatar: (() => {
@@ -297,7 +295,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   updateCardItem(workItem: WorkItem) {
     this.workItemService.resolveType(workItem);
     let lane = this.lanes.find((lane) => lane.option === workItem.attributes['system.state']);
-    let cardItem = lane.cardValue.find((item) => item.id === workItem.id);
+    let cardItem = lane.cardValue.find((item) => item.id === workItem.attributes['system.number']);
     cardItem.title = workItem.attributes['system.title'];
     cardItem.type = workItem.relationships.baseType.data.attributes['icon'];
     this.workItemService.resolveAssignees(workItem.relationships.assignees)
@@ -421,18 +419,82 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   fetchMoreWiItems(lane) {
     console.log('More for ' + lane.option);
     if (lane.nextLink) {
+      let resolveFromIndex = lane.workItems.length;
       this.workItemService.getMoreWorkItems(lane.nextLink)
-        .subscribe((workItemResp) => {
+        .map((workItemResp) => {
           lane.workItems = [
             ...lane.workItems,
             ...this.workItemService.resolveWorkItems(
               workItemResp.workItems,
               this.iterations,
-              this.allUsers,
+              [],
               this.workItemTypes
           )];
+          lane.cardValue = [
+            ...lane.cardValue,
+            ...workItemResp.workItems.map(item => {
+              return {
+                id: item.attributes['system.number'],
+                type: item.relationships.baseType.data.attributes['icon'],
+                title: item.attributes['system.title'],
+                avatar: '',
+                hasLink: true,
+                link: "./detail/"+item.id,
+                menuItem: [{
+                  id: 'card_associate_iteration',
+                  value: 'Associate with iteration...'
+                },
+                {
+                  id: 'card_open',
+                  value: 'Open',
+                  link: "./detail/"+item.id
+                },
+                {
+                  id: 'card_move_to_backlog',
+                  value: 'Move to backlog'
+                }]
+              }
+            })
+          ];
           lane.nextLink = workItemResp.nextLink;
-        });
+          return resolveFromIndex;
+        })
+        .map(indexFrom => {
+          let itemsToTakeCare = cloneDeep(lane.workItems);
+          let usersToFetch = [];
+          itemsToTakeCare.splice(0, indexFrom);
+          itemsToTakeCare
+            .filter((item: WorkItem) => {
+              return item.relationships.assignees.data &&
+                item.relationships.assignees.data.length;
+            })
+            .forEach((item:WorkItem) => {
+              item.relationships.assignees.data.forEach((user) => {
+                if (usersToFetch.indexOf(user.links.self) === -1) {
+                  usersToFetch.push(user.links.self);
+                }
+              })
+            });
+          return usersToFetch;
+        })
+        .flatMap((usersToFetch) => {
+          return this.workItemService.getUsersByURLs(usersToFetch);
+        })
+        .do((users) => {
+          for (let w_index = resolveFromIndex; w_index < lane.workItems.length; w_index++) {
+            // Resolve assignee here
+            if (Object.keys(lane.workItems[w_index].relationships.assignees).length
+              && lane.workItems[w_index].relationships.assignees.data.length) {
+              lane.workItems[w_index].relationships.assignees.data.forEach((assignee, a_index) => {
+                lane.workItems[w_index].relationships.assignees.data[a_index] =
+                  users.find(u => u.id === assignee.id);
+                lane.cardValue[w_index].avatar =
+                  lane.workItems[w_index].relationships.assignees.data[a_index].attributes['imageURL'];
+              });
+            }
+          }
+        })
+        .subscribe();
     } else {
       console.log('No More for ' + lane.option);
     }
@@ -442,7 +504,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     let resolveItem = this.workItemService.resolveWorkItems(
       [workItem],
       this.iterations,
-      this.allUsers,
+      [],
       this.workItemTypes
     );
 
@@ -498,12 +560,12 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     let [el, source] = args;
   }
 
-  getWI(workItemId: string, lane: any) {
+  getWI(workItemNumber: string, lane: any) {
     //let lane = this.lanes.find((lane) => lane.option === workItem.attributes['system.state']);
-    let _workItem = lane.workItems.find((item) => item.id === workItemId);
-    let _cardItem = lane.cardValue.find((item) => item.id === workItemId);
-    this.workItem = _workItem;
-    this.cardItem = _cardItem;
+    let _workItem = lane.workItems.find((item) => item.attributes['system.number'] === workItemNumber);
+    let _cardItem = lane.cardValue.find((item) => item.id === workItemNumber);
+    this.workItem = cloneDeep(_workItem);
+    this.cardItem = cloneDeep(_cardItem);
   }
 
   isSelected(wi: WorkItem){
@@ -598,14 +660,14 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     let oldLane = this.lanes.find((lane) => lane.option === oldState);
     let newLane = this.lanes.find((lane) => lane.option === newState);
     let index = oldLane.workItems.findIndex((item) => item.id === workItem.id);
-    let _index = oldLane.cardValue.findIndex((item) => item.id === workItem.id);
+    let _index = oldLane.cardValue.findIndex((item) => item.id === workItem.attributes['system.number']);
 
     oldLane.workItems.splice(index, 1);
     oldLane.cardValue.splice(_index, 1);
 
     if (prevIdEl !== null) {
-      let newIndex = newLane.workItems.findIndex((item) => item.id === prevIdEl);
-      let _newIndex = newLane.cardValue.findIndex((item) => item.id === prevIdEl);
+      let newIndex = newLane.workItems.findIndex((item) => item.attributes['system.number'] == prevIdEl);
+      let _newIndex = newLane.cardValue.findIndex((item) => item.id == prevIdEl);
       if (newIndex > -1 && _newIndex > -1) {
         newIndex += 1;
         _newIndex += 1;
@@ -633,7 +695,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       this.workItemService.editWIObservable.subscribe(updatedItem => {
         let lane = this.lanes.find(lane => lane.option === updatedItem.attributes['system.state']);
         let index = lane.workItems.findIndex((item) => item.id == updatedItem.id);
-        let cardItem = lane.cardValue.find((item) => item.id == updatedItem.id);
+        let cardItem = lane.cardValue.find((item) => item.id == updatedItem.attributes['system.number']);
         if (this.filterService.doesMatchCurrentFilter(updatedItem)) {
           if(index > -1) {
             lane.workItems[index] = updatedItem;
@@ -658,15 +720,46 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
           this.lanes.map(lane => this.getWorkItems(this.pageSize, lane))
         )
         .take(1)
-        .subscribe(finalLanes => {
+        .map(finalLanes => {
+          let usersToFetch = [];
           this.lanes.forEach((lane, index) => {
-            // FIXEME: Need to find a better way to do it
-            setTimeout(() => {
-              this.lanes[index].cardValue = cloneDeep(finalLanes[index].cardValue);
-              this.lanes[index].workItems = cloneDeep(finalLanes[index].workItems);
-            }, 10 * index);
+            this.lanes[index].cardValue = cloneDeep(finalLanes[index].cardValue);
+            this.lanes[index].workItems = cloneDeep(finalLanes[index].workItems);
+            this.lanes[index].nextLink = finalLanes[index].nextLink;
+            this.lanes[index].workItems
+              .filter((item: WorkItem) => {
+                return item.relationships.assignees.data &&
+                  item.relationships.assignees.data.length;
+              })
+              .forEach((item:WorkItem) => {
+                item.relationships.assignees.data.forEach((user) => {
+                  if (usersToFetch.indexOf(user.links.self) === -1) {
+                    usersToFetch.push(user.links.self);
+                  }
+                })
+              });
+          });
+          return usersToFetch;
+        })
+        .flatMap((usersToFetch) => {
+          return this.workItemService.getUsersByURLs(usersToFetch);
+        })
+        .do(users => {
+          this.lanes.forEach((lane, l_index) => {
+            this.lanes[l_index].workItems.forEach((item, w_index) => {
+              // Resolve assignee here
+              if (Object.keys(item.relationships.assignees).length && item.relationships.assignees.data.length) {
+                item.relationships.assignees.data.forEach((assignee, a_index) => {
+                  this.lanes[l_index].workItems[w_index].relationships.assignees.data[a_index] =
+                    users.find(u => u.id === assignee.id);
+                  this.lanes[l_index].cardValue[w_index].avatar =
+                    this.lanes[l_index].workItems[w_index].relationships.assignees.data[a_index].attributes['imageURL'];
+                });
+              }
+            })
           })
         })
+        .subscribe();
       })
     );
 
