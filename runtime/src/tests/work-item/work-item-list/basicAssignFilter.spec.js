@@ -27,18 +27,82 @@ describe('Basic filter workitems by assignee Test', function () {
   var page;
   var until = protractor.ExpectedConditions;
   var EXAMPLE_USER_0 = "example 0";
-  var WORK_ITEM_TITLE = "Quick Add WI in Current Context"
-  var AREA_0_TITLE = "Area 0"
-  var WORK_ITEM_TYPE = "Experience"
+  var EXAMPLE_USER_0_VERIFY = "Example User 0";
+  var WORK_ITEM_TITLE = "Quick Add WI in Current Context";
+  var AREA_0_TITLE = "Area 0";
+  var WORK_ITEM_TYPE = "Experience";
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
     page = new WorkItemListPage(true);
     testSupport.setTestSpace(page);
-    browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find first work item');   
+    //browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find first work item');   
   });
 
-  it ('should add workitems in the context of current filters', function() {
+    it ('should add workitems in the context of current Assignee filter', function() {
+    /*Set filter by Assignee*/
+    page.clickWorkItemFilterFieldsPulldown();
+    page.clickFilterByAssignee();
+    page.clickWorkItemFilterPulldownDefault();
+    page.clickFilterAssignToMe();
+
+    browser.wait(until.presenceOf(page.currentActiveFilter), constants.WAIT, 'Failed to find active filter');  
+    expect (page.allWorkItems.count()).toBe(0).then(function(){
+      page.clickWorkItemQuickAdd();
+      page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
+      page.clickQuickAddSave().then(function() {
+        page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
+          var detailPage = page.clickWorkItemTitle(page.workItemByTitle(WORK_ITEM_TITLE), text);
+          expect(detailPage.details_assigned_user().getText()).toContain(EXAMPLE_USER_0_VERIFY);
+          detailPage.clickWorkItemDetailCloseButton();
+        })
+      })
+    })
+  });
+
+    it ('should add workitems in the context of current Area filter', function() {
+    /*Set filter by Area*/
+    page.clickWorkItemFilterFieldsPulldown();
+    page.clickFilterByArea();
+    page.clickWorkItemFilterPulldownEdited();
+    page.clickFilterAssignArea();
+
+    browser.wait(until.presenceOf(page.currentActiveFilter), constants.WAIT, 'Failed to find active filter');  
+    expect (page.allWorkItems.count()).not.toBe(0).then(function(){
+      page.clickWorkItemQuickAdd();
+      page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
+      page.clickQuickAddSave().then(function() {
+        page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
+          var detailPage = page.clickWorkItemTitle(page.workItemByTitle(WORK_ITEM_TITLE), text);
+          expect(detailPage.AreaSelect().getText()).toContain(AREA_0_TITLE);
+          detailPage.clickWorkItemDetailCloseButton();
+        })
+      })
+    })
+  });
+
+    it ('should add workitems in the context of current Workitem Type filter', function() {
+    /*Set filter by Workitem Type*/
+    page.clickWorkItemFilterFieldsPulldown();
+    page.clickFilterByWorkitemType();
+    page.clickWorkItemFilterPulldownEdited();
+    page.clickFilterAssignWIType();
+
+    browser.wait(until.presenceOf(page.currentActiveFilter), constants.WAIT, 'Failed to find active filter');  
+    expect (page.allWorkItems.count()).toBe(0).then(function(){
+      page.clickWorkItemQuickAdd();
+      page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
+      page.clickQuickAddSave().then(function() {
+        page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
+          var detailPage = page.clickWorkItemTitle(page.workItemByTitle(WORK_ITEM_TITLE), text);
+          expect(detailPage.workItemType().getText()).toContain(WORK_ITEM_TYPE);
+          detailPage.clickWorkItemDetailCloseButton();
+        })
+      })
+    })
+  });
+
+  it ('should add workitems in the context of current Assignee+Area+WiType filters', function() {
     /*Set filter by Assignee*/
     page.clickWorkItemFilterFieldsPulldown();
     page.clickFilterByAssignee();
@@ -64,10 +128,9 @@ describe('Basic filter workitems by assignee Test', function () {
       page.clickQuickAddSave().then(function() {
         page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
           var detailPage = page.clickWorkItemTitle(page.workItemByTitle(WORK_ITEM_TITLE), text);
-          browser.wait(until.elementToBeClickable(detailPage.workItemDetailAssigneeIcon), constants.WAIT, 'Failed to find Assignee Icon');
-          expect(detailPage.details_assigned_user().getText()).toContain(EXAMPLE_USER_0);
-          expect(detailPage.AreaSelect().getText()).toBe(AREA_0_TITLE);
-          expect(detailPage.workItemType().getText()).toBe(WORK_ITEM_TYPE);
+          expect(detailPage.details_assigned_user().getText()).toContain(EXAMPLE_USER_0_VERIFY);
+          expect(detailPage.AreaSelect().getText()).toContain(AREA_0_TITLE);
+          expect(detailPage.workItemType().getText()).toContain(WORK_ITEM_TYPE);
           detailPage.clickWorkItemDetailCloseButton();
         })
       })
