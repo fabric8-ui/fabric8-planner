@@ -1,11 +1,7 @@
 <div class="board-card card-pf card-pf-view card-pf-view-select card-pf-view-single-select" [routerLink]="cardValue.hasLink?cardValue?.link:null"
      [routerLinkActive]="cardValue.hasLink?['active']:['']" [queryParams]="cardValue.hasLink?existingQueryParams:null">
   <div class="row-wrapper">
-    <div>
-      <span class="wi-type-icon fa {{cardValue.type}}"></span>
-      <span> {{cardValue?.id}} </span>
-    </div>
-    <span class="dropdown-kebab-pf" dropdown>
+    <span class="dropdown-kebab-pf pull-right" dropdown>
       <button class="btn btn-link color-grey" type="button" aria-haspopup="true" aria-expanded="true" (click)="kebabClick($event)" dropdownToggle>
         <span class="fa fa-ellipsis-v"></span>
       </button>
@@ -18,11 +14,12 @@
         </li>
       </ul>
     </span>
+    <div class="padding-right-15 margin-right-10">
+      <span class="wi-type-icon fa {{cardValue.type}}"></span>
+      <span> {{cardValue?.id}} </span>
+    </div>
   </div>
   <div class="row-wrapper">
-    <div class="margin-right-5">
-      {{ cardValue.title }}
-    </div>
     <div class="user-avatar">
       <img
         *ngIf="cardValue.avatar!==''"
@@ -31,6 +28,9 @@
         src="{{cardValue.avatar + '&s=20'}}"
         onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'" />
       <span *ngIf="cardValue.avatar==''" class="pficon-user not-assigned-user-icon" tooltip="unassigned" placement="top"></span>
+    </div>
+    <div class="padding-right-15 margin-right-15">
+      {{ cardValue.title }}
     </div>
   </div>
 </div>
