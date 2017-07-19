@@ -98,20 +98,32 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     private areaService: AreaService,
     private filterService: FilterService,
     private route: ActivatedRoute) {
+      let bag: any = this.dragulaService.find('wi-bag');
       this.dragulaEventListeners.push(
         this.dragulaService.drag.subscribe((value) => {
           this.onDrag(value.slice(1));
         }),
-        this.dragulaService.drop.subscribe((value) => {
-          this.onDrop(value.slice(1));
-        }),
-        this.dragulaService.over.subscribe((value) => {
-          this.onOver(value.slice(1));
-        }),
+        this.dragulaService.drop
+        .map(value => value.slice(1))
+        .filter(value => {
+          return !value[1].classList.contains('iteration-container') &&
+                 !value[1].classList.contains('iteration-header');
+        }).subscribe((args) => this.onDrop(args)),
+
+        this.dragulaService.over
+        .map(value => value.slice(1))
+        .filter(value => {
+          return value[1].classList.contains('card-wrapper');
+        })
+        .subscribe((args) => this.onOver(args)),
+
          this.dragulaService.out.subscribe((value) => {
           this.onOut(value.slice(1));
         })
       );
+      if(bag !== undefined) {
+        this.dragulaService.destroy('wi-bag');
+      }
     }
 
   ngOnInit() {
@@ -181,7 +193,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
             currentIteration;
         })
         if (filterIteration) {
-           this.filterService.setFilterValues('iteration', filterIteration.id)
+           this.filterService.setFilterValues('iteration', filterIteration.id);
         }
       } else {
         this.filterService.clearFilters(['iteration']);
@@ -243,7 +255,12 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
             {
               id: 'card_move_to_backlog',
               value: 'Move to backlog'
-            }]
+            }],
+            extraData: {
+              selfLink: item.links.self,
+              version: item.attributes['version'],
+              UUID: item.id
+            }
         }
       });
       lane.nextLink = workItemResp.nextLink;
@@ -285,7 +302,12 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         {
           id: 'card_move_to_backlog',
           value: 'Move to backlog'
-        }]
+        }],
+        extraData: {
+          selfLink: workItems[i].links.self,
+          version: workItems[i].attributes['version'],
+          UUID: workItems[i].id
+        }
       });
       lane.cardValue = [...cardValues, ...lane.cardValue];
     }
@@ -298,6 +320,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     let cardItem = lane.cardValue.find((item) => item.id === workItem.attributes['system.number']);
     cardItem.title = workItem.attributes['system.title'];
     cardItem.type = workItem.relationships.baseType.data.attributes['icon'];
+    cardItem.extraData['version'] = workItem.attributes['version'];
     this.workItemService.resolveAssignees(workItem.relationships.assignees)
       .subscribe(assignees => {
         workItem.relationships.assignees.data = assignees;
@@ -560,6 +583,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
 
   onDrag(args: any) {
     let [el, source] = args;
+    console.log('board component on drag');
   }
 
   getWI(workItemNumber: string, lane: any) {
@@ -575,6 +599,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   }
 
   onDrop(args) {
+    console.log('board component on drop', args);
     let [el, target, source, sibling] = args;
     target.parentElement.parentElement.classList.remove('active-lane');
     let state = target.parentElement.parentElement.getAttribute('data-state');
@@ -588,11 +613,11 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     this.changeLane(this.workItem.attributes['system.state'], state, this.workItem, prevElId);
     if (el.previousElementSibling) {
       adjElm = el.previousElementSibling;
-      this.changeState(state, el.getAttribute('data-id'), adjElm.getAttribute('data-id'), 'below');
+      this.changeState(state, el.getAttribute('data-id'), adjElm.getAttribute('data-UUID'), 'below');
     }
     else if(el.nextElementSibling) {
       adjElm = el.nextElementSibling;
-      this.changeState(state, el.getAttribute('data-id'), adjElm.getAttribute('data-id'), 'above');
+      this.changeState(state, el.getAttribute('data-id'), adjElm.getAttribute('data-UUID'), 'above');
     }
     else {
       this.changeState(state, el.getAttribute('data-id'), null, 'above');
@@ -607,6 +632,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       laneSection[i].classList.remove('active-lane');
     }
     containerClassList.add('active-lane');
+    el.classList.remove('dn');
   }
 
   onOut(args) {
@@ -630,6 +656,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         .subscribe((workItem) => {
           let wItem = lane.workItems.find((item) => item.id === workItem.id);
           wItem.attributes['version'] = workItem.attributes['version'];
+          this.updateCardItem(workItem);
+          this.workItemDataService.setItem(workItem);
           if (wItem.relationships.iteration) {
             // Item closed for an iteration
             if (wItem.attributes['system.state'] !== 'closed' && prevState === 'closed') {
@@ -650,8 +678,10 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
           if (adjElmId !== null) {
             this.workItemService.reOrderWorkItem(wItem, adjElmId, direction)
                 .subscribe((workitem) => {
-                  lane.workItems.find((item) => item.id === workItem.id).attributes['version'] = workitem.attributes['version'];
-                  lane.workItems.find((item) => item.id === workItem.id).attributes['system.order'] = workitem.attributes['system.order'];
+                  this.workItemDataService.setItem(workItem);
+                  lane.workItems.find(item => item.id === workItem.id).attributes['version'] = workitem.attributes['version'];
+                  lane.workItems.find(item => item.id === workItem.id).attributes['system.order'] = workitem.attributes['system.order'];
+                  this.updateCardItem(workitem);
                 });
           }
       });
@@ -772,6 +802,39 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
           this.onCreateWorkItem(item);
         }
       })
+    );
+
+    this.eventListeners.push(
+      this.iterationService.dropWIObservable
+        .flatMap(data => {
+          if (data.error) {
+            return this.workItemDataService.getItem(data.workItem.id);
+          }
+          return Observable.of(data.workItem);
+        })
+        .map((WI: WorkItem) => {
+          let lane = this.lanes.find((lane) => lane.option === WI.attributes['system.state']);
+          let index = lane.workItems.findIndex((item) => item.id == WI.id);
+          return [index, lane, WI];
+        })
+        .filter(([index, lane, WI]) => {
+          return index > -1;
+        })
+        .map(([index, lane, WI]) => {
+          let workItem = cloneDeep(lane.workItems.splice(index, 1)[0]);
+          let cardItem = cloneDeep(lane.cardValue.splice(index, 1)[0]);
+          workItem.attributes['version'] = WI.attributes['version'];
+          workItem.relationships.iteration = WI.relationships.iteration;
+          cardItem.extraData['version'] = WI.attributes['version'];
+          return [lane, index, cardItem, workItem];
+        })
+        .delay(0)
+        .subscribe(([lane, index, cardItem, workItem]) => {
+          if(this.filterService.doesMatchCurrentFilter(workItem)) {
+            lane.cardValue.splice(index, 0, cardItem);
+            lane.workItems.splice(index, 0, workItem);
+          }
+        })
     );
   }
 
