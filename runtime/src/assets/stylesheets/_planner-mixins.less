@@ -1,0 +1,26 @@
+@import (reference) './../../../node_modules/patternfly/node_modules/bootstrap/less/variables';
+@import (reference) './../../../node_modules/patternfly/src/less/variables';
+@import (reference) './_base';
+
+.user-avatar {
+  width: 25px;
+  height: 25px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+.not-assigned-user-icon {
+  padding: 1px;
+  font-size: 20px;
+  .Border(1px, solid, @color-pf-black-600);
+}
+
+// action buttons for editing title, description, comment
+.detail-action-btn {
+  width: 42px;
+  padding: 0 !important;
+  margin-left: 5px;
+  text-align: center;
+  cursor: pointer;
+}

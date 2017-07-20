@@ -21,7 +21,7 @@ import { WorkItem } from '../../models/work-item';
   },
   selector: 'fab-planner-iteration',
   templateUrl: './iterations-panel.component.html',
-  styleUrls: ['./iterations-panel.component.scss']
+  styleUrls: ['./iterations-panel.component.less']
 })
 export class IterationComponent implements OnInit, OnDestroy, OnChanges {
 
@@ -319,6 +319,10 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
           console.log('Error in displaying notification. Error in work item association with iteration.');
         }
       })
+  }
+
+  kebabMenuClick(event: Event) {
+    event.stopPropagation();
   }
 
   listenToEvents() {
