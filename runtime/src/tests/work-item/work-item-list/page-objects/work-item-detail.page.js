@@ -214,6 +214,12 @@ class WorkItemDetailPage {
     return element(by.css(".pull-left.dropdown-kebab-pf.detail-type-dropdown")).click();
   }
 
+  workItemType () {
+    // return element(by.css(".pull-left.dropdown-kebab-pf.detail-type-dropdown"));
+    return element(by.xpath(".//div[@class='dropdown-kebab-pf detail-type-dropdown col-sm-8']"));
+    
+  }
+
   userstroyIcon () {
     return element(by.xpath('//*[@id="workItemList_OuterWrap_0"]/div/div[1]/div[1]/span[2]'));
    }
@@ -581,6 +587,7 @@ class WorkItemDetailPage {
   }
   AreaSelect (){
     return element(by.css('#area-dropdown .details-dropdown'));
+    //#area-dropdown > div.typeahead-dropdown.combobox-container > span.pointer.details-dropdown
   }
   clickAreaSelect (){
     return this.AreaSelect().click();

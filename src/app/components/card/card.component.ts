@@ -12,7 +12,8 @@ export class CardValue {
   hasLink: Boolean;
   avatar?: string;
   link?: string;
-  menuItem?: any;
+  menuItem?: Array<object>;
+  extraData?: object;
 }
 
 @Component({

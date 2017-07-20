@@ -4,29 +4,31 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 
 import { CollapseModule } from 'ng2-bootstrap';
-import { DropdownModule } from 'ng2-bootstrap';
+import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 import {
   WidgetsModule
 } from 'ngx-widgets';
 
+import { DragulaModule } from 'ng2-dragula';
 import { FabPlannerIterationModalComponent } from '../iterations-modal/iterations-modal.component';
 import { MyDatePickerModule } from 'mydatepicker';
 import { IterationComponent } from './iterations-panel.component';
 import { IterationService } from '../../services/iteration.service';
 import { ModalModule } from 'ngx-modal';
-import { TooltipModule } from 'ng2-bootstrap';
+import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { TruncateModule } from 'ng2-truncate';
 
 @NgModule({
   imports: [
+    BsDropdownModule.forRoot(),
     CollapseModule,
     CommonModule,
-    DropdownModule,
+    DragulaModule,
     FormsModule,
     MyDatePickerModule,
     ModalModule,
-    TooltipModule,
+    TooltipModule.forRoot(),
     TruncateModule,
     WidgetsModule,
     RouterModule
@@ -36,6 +38,6 @@ import { TruncateModule } from 'ng2-truncate';
     IterationComponent
   ],
   exports: [IterationComponent],
-  providers: [IterationService]
+  providers: [BsDropdownConfig, IterationService, TooltipConfig]
 })
 export class IterationModule { }
