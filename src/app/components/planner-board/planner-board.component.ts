@@ -41,12 +41,9 @@ import { CollaboratorService } from '../../services/collaborator.service';
 
 @Component({
   // tslint:disable-next-line:use-host-property-decorator
-  host: {
-     'class': 'app-component width-100 height-100'
-  },
   selector: 'alm-board',
   templateUrl: './planner-board.component.html',
-  styleUrls: ['./planner-board.component.scss']
+  styleUrls: ['./planner-board.component.less']
 })
 
 export class PlannerBoardComponent implements OnInit, OnDestroy {

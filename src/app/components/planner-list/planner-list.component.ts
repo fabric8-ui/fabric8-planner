@@ -55,11 +55,11 @@ import { TreeListComponent } from 'ngx-widgets';
   encapsulation: ViewEncapsulation.None,
   // tslint:disable-next-line:use-host-property-decorator
   host: {
-    'class': 'app-component width-100 height-100'
+    'class': ''
   },
   selector: 'alm-work-item-list',
   templateUrl: './planner-list.component.html',
-  styleUrls: ['./planner-list.component.scss']
+  styleUrls: ['./planner-list.component.less']
 })
 export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnDestroy {
 
