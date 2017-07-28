@@ -761,6 +761,83 @@ export class SchemaMockGenerator {
                }
             }
          }
+      },
+      {
+         'id' : '6d603ab4-7c5e-4c5f-bba8-a3ba9d370985',
+         'type' : 'workitemtypes',
+         'attributes' : {
+            'version' : 0,
+            'description' : 'Description for Papercut',
+            'name' : 'Papercut',
+            'icon': 'fa-scissors',
+            'fields' : {
+               'system.creator' : {
+                 'label': 'Creator',
+                  'required' : true,
+                  'type' : {
+                     'kind' : 'user'
+                  }
+               },
+               'system.title' : {
+                  'required' : true,
+                  'type' : {
+                     'kind' : 'string'
+                  }
+               },
+               'system.area' : {
+                  'required' : false,
+                  'type' : {
+                     'kind' : 'area'
+                  }
+               },
+               'system.remote_item_id' : {
+                  'required' : false,
+                  'type' : {
+                     'kind' : 'string'
+                  }
+               },
+               'system.created_at' : {
+                  'required' : false,
+                  'type' : {
+                     'kind' : 'instant'
+                  }
+               },
+               'system.assignees' : {
+                 'label': 'Assignee',
+                  'type' : {
+                     'componentType' : 'user',
+                     'kind' : 'list'
+                  },
+                  'required' : false
+               },
+               'system.description' : {
+                  'required' : false,
+                  'type' : {
+                     'kind' : 'markup'
+                  }
+               },
+               'system.iteration' : {
+                  'type' : {
+                     'kind' : 'iteration'
+                  },
+                  'required' : false
+               },
+               'system.state' : {
+                  'required' : true,
+                  'type' : {
+                     'values' : [
+                        'new',
+                        'open',
+                        'in progress',
+                        'resolved',
+                        'closed'
+                     ],
+                     'baseType' : 'string',
+                     'kind' : 'enum'
+                  }
+               }
+            }
+         }
       }
       ];
       return this.workItemTypes;
