@@ -1,9 +1,19 @@
 @import '../../../assets/stylesheets/_base';
 .filter {
   color: @color-pf-white;
-  .first-level {
-    padding: 10px 20px;
+  a {
+    color: @color-pf-white;
+    text-decoration: none;
+    padding: 20px 20px;
+    font-size: 15px;
+    line-height: 15px;
+    display: inline-block;
+    width: 100%;
   }
 }
 
-
+.selected {
+  background-color: @color-pf-black-700 !important;
+  border-left: 4px solid;
+  border-left-color: @color-pf-blue;
+}

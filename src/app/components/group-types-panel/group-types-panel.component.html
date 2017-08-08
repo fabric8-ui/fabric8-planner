@@ -1,8 +1,8 @@
-<!-- future iteration -->
 <div class="filter" *ngFor="let item of groupTypes">
-  <div class="first-level" (click)='setGroupType(item)' id='{{item.group}}'>
-    <h3>
+  <a [routerLink]="[]"
+    [queryParams]="{q: fnBuildQueryParam(item)}"
+    [routerLinkActive]="'selected'"
+    id="{{item.group}}">
       {{ item.name }}
-    </h3>
-  </div>
+  </a>
 </div>

@@ -8,6 +8,7 @@ import { Broadcaster, Logger } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
 import { Space, Spaces } from 'ngx-fabric8-wit';
 
+import { FilterService } from '../../services/filter.service';
 import { GroupTypesService } from '../../services/group-types.service';
 import { GroupTypesModel } from '../../models/group-types.model';
 import { IterationModel } from '../../models/iteration.model';
@@ -31,11 +32,14 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
   private groupTypes: GroupTypesModel[];
   private selectedgroupType: GroupTypesModel;
   private allowedChildWits: WorkItemType;
+  eventListeners: any[] = [];
+  private spaceId;
 
   constructor(
     private log: Logger,
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
+    private filterService: FilterService,
     private groupTypesService: GroupTypesService,
     private iterationService: IterationService,
     private route: ActivatedRoute,
@@ -47,9 +51,9 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
     this.spaceSubscription = this.spaces.current.subscribe(space => {
       if (space) {
         console.log('[Guided Work Item Types] New Space selected: ' + space.attributes.name);
+        this.spaceId = space.id;
         this.groupTypesService.getGroupTypes()
         .subscribe(response => {
-          console.log('response = ', response);
           this.groupTypes = response;
         });
       } else {
@@ -63,19 +67,26 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
     this.spaceSubscription.unsubscribe();
   }
 
-  //Set the
-  setContext(groupType) {
-    //allowedChildWits
-    //For a group type, we need to allow the highest level WITs
-    //For portfolio, we need to show level 0 WITS and NOT level 1
+  fnBuildQueryParam(wit) {
+    //this.filterService.queryBuilder({}, '$IN',)
+    const wi_key = 'workitemtype';
+    const wi_compare = this.filterService.in_notation;
+    const wi_value = wit.wit_collection;
 
-
+    //Query for type
+    const type_query = this.filterService.queryBuilder(wi_key, wi_compare, wi_value);
+    //Query for space
+    const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, this.spaceId);
+    //Join type and space query
+    const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query );
+    const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+    this.setGroupType(wit);
+    //second_join gives json object
+    return this.filterService.jsonToQuery(second_join);
+    //reverse function jsonToQuery(second_join);
   }
 
   setGroupType(groupType) {
-    alert('Work in progress.');
     this.selectedgroupType = groupType;
-    this.setContext(groupType);
-    //this.groupTypesService.setCurrentGroupType(groupType);
   }
 }
