@@ -82,7 +82,6 @@ export class HttpService extends Http {
     this.setHeaders(options);
     return super.post(url, body, { headers: this.headers })
     .retryWhen(attempts => {
-      console.log('retryWhen callback');
       let count = 0;
       return attempts.flatMap(error => {
         if (error.status == 0) {

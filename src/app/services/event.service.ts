@@ -11,6 +11,11 @@ export class EventService {
   public showHierarchyListSubject = new BehaviorSubject<boolean>(true); // By default the list mode is true
   public workItemListReloadOnLink = new BehaviorSubject<boolean>(true); // The value is always true, this is just to trigger the list update
 
+  public showErrorModal = new BehaviorSubject<object>({
+    status: false,
+    message: ''
+  });
+
   constructor() {}
 
 }

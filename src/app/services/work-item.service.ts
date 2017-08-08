@@ -654,7 +654,7 @@ export class WorkItemService {
         .map(response => {
           return response.json().data as WorkItem;
         }).catch((error: Error | any) => {
-          this.notifyError('Creating work item failed.', error);
+          console.log('Creating work item failed.', error);
           return Observable.throw(new Error(error.message));
         });
     } else {

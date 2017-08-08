@@ -41,6 +41,7 @@ import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-a
 import { WorkItemService } from '../../services/work-item.service';
 import { MockHttp } from '../../mock/mock-http';
 import { HttpService } from '../../services/http-service';
+import { OverlayComponent } from '../overlay/overlay.component';
 
 let providers = [];
 
@@ -103,6 +104,7 @@ if (process.env.ENV == 'inmemory') {
     WorkItemDetailAddTypeSelectorModule
   ],
   declarations: [
+    OverlayComponent,
     PlannerListComponent,
     WorkItemListEntryComponent
   ],

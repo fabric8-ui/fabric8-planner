@@ -34,7 +34,7 @@ import {
 import { TreeNode } from 'angular2-tree-component';
 
 import { cloneDeep } from 'lodash';
-import { Broadcaster, Logger } from 'ngx-base';
+import { Broadcaster, Logger, Notification, Notifications ,NotificationType } from 'ngx-base';
 import {
   AuthenticationService,
   User,
@@ -51,6 +51,8 @@ import { WorkItemDataService } from './../../services/work-item-data.service';
 import { CollaboratorService } from '../../services/collaborator.service';
 
 import { TreeListComponent } from 'ngx-widgets';
+
+import { OverlayComponent } from '../overlay/overlay.component'
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -74,6 +76,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   @ViewChild('treeListTemplate') treeListTemplate: TemplateRef<any>;
   @ViewChild('treeListItem') treeListItem: TreeListComponent;
 
+  @ViewChild('errorModal') errorModal: OverlayComponent;
+
   workItems: WorkItem[] = [];
   prevWorkItemLength: number = 0;
   workItemTypes: WorkItemType[] = [];
@@ -81,7 +85,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   workItemToMove: WorkItemListEntryComponent;
   workItemDetail: WorkItem;
   addingWorkItem = false;
-  showOverlay : Boolean ;
+  showOverlay : Boolean = false ;
   loggedIn: Boolean = false;
   contentItemHeight: number = 67;
   pageSize: number = 20;
@@ -101,6 +105,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   private originalList: WorkItem[] = [];
   private currentSpace: Space;
 
+
   // See: https://angular2-tree.readme.io/docs/options
   treeListOptions = {
     allowDrag: false,
@@ -119,6 +124,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     private broadcaster: Broadcaster,
     private collaboratorService: CollaboratorService,
     private eventService: EventService,
+    private notifications: Notifications,
     private router: Router,
     private groupTypesService: GroupTypesService,
     private user: UserService,
@@ -529,10 +535,31 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         //Check if the work item meets the applied filters
         if(this.filterService.doesMatchCurrentFilter(item)){
           console.log('Added WI matches the applied filters');
+          let message = 'Work item ' + item.attributes['system.title'] + ' added.'
+          try {
+            this.notifications.message({
+              message: message,
+              type: NotificationType.SUCCESS
+
+            } as Notification);
+          } catch (e) {
+            console.log('Error displaying notification. Work item updated.')
+          }
           this.workItems.splice(0, 0, item);
           this.treeList.updateTree();
         } else {
           console.log('Added WI does not match the applied filters');
+          //Notify user that the added WI will not be seen
+          let message = item.attributes['system.title'] + ' created. It does not match the filter criteria and is not displayed in this list. To view the work item, click on Backlog.'
+          try {
+            this.notifications.message({
+              message: message,
+              type: NotificationType.WARNING
+
+            } as Notification);
+          } catch (e) {
+            console.log('Error displaying notification. New iteration added.')
+          }
           this.treeList.updateTree();
         }
       })
@@ -553,15 +580,41 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
             //add the WI at the top of the list
             this.workItems.splice(0, 0, updatedItem);
           }
+          let message = updatedItem.attributes['system.title'] + ' updated.'
+            try {
+              this.notifications.message({
+                message: message,
+                type: NotificationType.SUCCESS
+
+              } as Notification);
+            } catch (e) {
+              console.log('Error displaying notification. Work item updated.')
+            }
           this.treeList.updateTree();
         } else {
           //Remove the work item from the current displayed list
           if (index > -1) {
             this.workItems.splice(index, 1);
             console.log('Updated WI does not match the applied filters')
+            let message = updatedItem.attributes['system.title'] + ' updated. It does not match the filter criteria and is not displayed in this list. To view the work item, click on Backlog.'
+            try {
+              this.notifications.message({
+                message: message,
+                type: NotificationType.WARNING
+
+              } as Notification);
+            } catch (e) {
+              console.log('Error displaying notification. Work item updated.')
+            }
             this.treeList.updateTree();
           }
         }
+      })
+    );
+
+    this.eventListeners.push(
+      this.eventService.showErrorModal.subscribe(object => {
+        this.errorModal.showModal(object);
       })
     );
   }

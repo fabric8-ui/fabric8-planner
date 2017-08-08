@@ -25,7 +25,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { cloneDeep, trimEnd, merge, remove } from 'lodash';
 import { Space, Spaces } from 'ngx-fabric8-wit';
-import { Broadcaster, Logger } from 'ngx-base';
+import { Broadcaster, Logger, Notification, Notifications, NotificationType } from 'ngx-base';
 import {
   AuthenticationService,
   User,
@@ -35,6 +35,7 @@ import {
 import { AreaModel } from '../../models/area.model';
 import { AreaService } from '../../services/area.service';
 import { Comment } from './../../models/comment';
+import { EventService } from '../../services/event.service';
 import { IterationModel } from '../../models/iteration.model';
 import { IterationService } from '../../services/iteration.service';
 import { WorkItemTypeControlService } from '../../services/work-item-type-control.service';
@@ -133,6 +134,8 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
     private areaService: AreaService,
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
+    private eventService: EventService,
+    private notifications: Notifications,
     private workItemService: WorkItemService,
     private workItemDataService: WorkItemDataService,
     private route: ActivatedRoute,
@@ -592,11 +595,10 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
         })
         .take(1)
         .catch((error: Error | any) => {
-          this.savingError = true;
-          this.errorMessage = 'Something went wrong. Try again.'
-          if (error && error.status && error.statusText) {
-            this.errorMessage = error.status + ' : ' + error.statusText+ '. Try again.';
-          }
+          this.eventService.showErrorModal.next({
+            status: true,
+            message: 'Error updating work item.' + error
+          });
           return Observable.throw(error);
         });
     } else {
@@ -622,11 +624,10 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
         })
         .catch((error: Error | any) => {
           this.saving = false;
-          this.savingError = true;
-          this.errorMessage = 'Something went wrong. Try again.'
-          if (error && error.status && error.statusText) {
-            this.errorMessage = error.status + ' : ' + error.statusText+ '. Try again.';
-          }
+          this.eventService.showErrorModal.next({
+            status: true,
+            message: 'Error creating work item.' + error
+          });
           return Observable.throw(error);
         });
       }
