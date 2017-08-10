@@ -52,7 +52,7 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
       if (space) {
         console.log('[Guided Work Item Types] New Space selected: ' + space.attributes.name);
         this.spaceId = space.id;
-        this.groupTypesService.getGroupTypes()
+        this.groupTypesService.getFlatGroupList()
         .subscribe(response => {
           this.groupTypes = response;
         });
@@ -86,7 +86,22 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
     //reverse function jsonToQuery(second_join);
   }
 
-  setGroupType(groupType) {
+
+  setGroupType(groupType: GroupTypesModel) {
     this.selectedgroupType = groupType;
+  }
+
+  setGuidedTypeWI(groupType: GroupTypesModel) {
+    let gType;
+    let gt;
+    this.groupTypesService.getGroupTypes()
+      .subscribe(response => {
+        gType = response;
+      });
+    gt = groupType;
+    if(groupType.group == 'portfolio') {
+      gt = gType.find(groupType => groupType.group == 'portfolio' && groupType.level[1] == 0);
+    }
+    this.groupTypesService.setCurrentGroupType(gt);
   }
 }

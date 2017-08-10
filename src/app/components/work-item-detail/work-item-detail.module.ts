@@ -17,9 +17,9 @@ import { AlmUserName } from '../../pipes/alm-user-name.pipe';
 import {
   AlmEditableModule,
   AlmIconModule,
-  WidgetsModule
+  WidgetsModule,
+  MarkdownModule
 } from 'ngx-widgets';
-
 import { ModalModule } from 'ngx-modal';
 
 import { AreaService } from '../../services/area.service';
@@ -57,8 +57,9 @@ if (process.env.ENV == 'inmemory') {
     TooltipModule.forRoot(),
     Ng2CompleterModule,
     ReactiveFormsModule,
+    MarkdownModule,
     MyDatePickerModule,
-    RouterModule,
+    RouterModule
   ],
   declarations: [
     AlmUserName,

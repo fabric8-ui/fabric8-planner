@@ -367,6 +367,8 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
     this.workItem = new WorkItem();
     this.workItem.id = null;
     this.workItem.attributes = new Map<string, string | number>();
+    this.workItem.attributes['system.description'] = '';
+    this.workItem.attributes['system.description.rendered'] = '';
     this.workItem.relationships = new WorkItemRelations();
     this.workItem.type = 'workitems';
     this.workItem.relationships = {
@@ -433,19 +435,21 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   }
 
   descUpdate(event: any): void {
-    this.descText = event;
-    this.workItem.attributes['system.description'] = {
-      markup: 'Markdown',
-      content: this.descText.trim()
-    };
+    const rawText = event.rawText;
+    const callBack = event.callBack;
+    this.descText = rawText;
+    this.workItem.attributes['system.description'] = this.descText.trim();
+    this.workItem.attributes['system.description.markup'] = 'Markdown';
     if (this.workItem.id) {
       let payload = cloneDeep(this.workItemPayload);
-      payload.attributes['system.description'] = {
-        markup: 'Markdown',
-        content: this.descText.trim()
-      };
+      payload.attributes['system.description'] = this.descText.trim();
+      payload.attributes['system.description.markup'] = 'Markdown';
       this.save(payload, true)
         .subscribe(workItem => {
+          callBack(
+            workItem.attributes['system.description'],
+            workItem.attributes['system.description.rendered']
+          )
           this.workItem.attributes['system.description.rendered'] =
           workItem.attributes['system.description.rendered'];
           this.workItem.attributes['system.description'] =
@@ -455,6 +459,18 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
     } else {
       this.save();
     }
+  }
+
+  showPreview(event: any): void {
+    const rawText = event.rawText;
+    const callBack = event.callBack;
+    this.workItemService.renderMarkDown(rawText)
+      .subscribe(renderedHtml => {
+        callBack(
+          rawText,
+          renderedHtml
+        );
+      })
   }
 
   // called when a dynamic field is updated.

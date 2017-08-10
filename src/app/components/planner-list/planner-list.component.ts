@@ -594,7 +594,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     }
   }
 
-  onSelect() {
-
+  onSelect($event) {
+    this.workItemService.emitSelectedWI($event.workItem);
+    this.groupTypesService.getAllowedChildWits($event.workItem);
   }
 }
