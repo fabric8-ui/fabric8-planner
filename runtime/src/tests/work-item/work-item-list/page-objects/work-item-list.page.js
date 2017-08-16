@@ -755,7 +755,7 @@ class WorkItemListPage {
     return this.Portfolio.click();
   }
   get Requirements (){
-    return element(by.id('portfolio'));
+    return element(by.id('requirements'));
   }
   clickRequirements  (){
     return this.Requirements.click();
