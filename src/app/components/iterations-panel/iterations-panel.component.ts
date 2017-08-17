@@ -1,3 +1,4 @@
+import { FilterService } from './../../services/filter.service';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
@@ -9,6 +10,7 @@ import { AuthenticationService } from 'ngx-login-client';
 import { Space, Spaces } from 'ngx-fabric8-wit';
 import { DragulaService } from 'ng2-dragula';
 
+import { GroupTypesService } from '../../services/group-types.service';
 import { IterationService } from '../../services/iteration.service';
 import { WorkItemDataService } from './../../services/work-item-data.service';
 import { WorkItemService }   from '../../services/work-item.service';
@@ -53,6 +55,8 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
     private dragulaService: DragulaService,
+    private filterService: FilterService,
+    private groupTypesService: GroupTypesService,
     private iterationService: IterationService,
     private notifications: Notifications,
     private route: ActivatedRoute,
@@ -139,6 +143,25 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     this.eventListeners.forEach(subscriber => subscriber.unsubscribe());
   }
 
+  constructURL(iterationId: string) {
+    //return this.filterService.constructQueryURL('', {iteration_id: iterationId});
+    //this.filterService.queryBuilder({}, '$IN',)
+    const it_key = 'iteration';
+    const it_compare = this.filterService.equal_notation;
+    const it_value = iterationId;
+    //Query for type
+    const it_query = this.filterService.queryBuilder(it_key, it_compare, it_value);
+    //Query for space
+    //const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, this.spaceId);
+   //Join type and space query
+   const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, it_query );
+   //const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+   //second_join gives json object
+   return this.filterService.jsonToQuery(first_join);
+   //reverse function jsonToQuery(second_join);
+    //return '';
+  }
+
   getAndfilterIterations() {
     if (this.takeFromInput) {
       // do not display the root iteration on the iteration panel.
@@ -212,7 +235,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     } else {
       //This is to view the backlog
       this.selectedIteration = null;
-      this.isBacklogSelected = true;
+      //this.isBacklogSelected = true;
       //Collapse the other iteration sets
       this.isCollapsedCurrentIteration = true;
       this.isCollapsedFutureIteration = true;
@@ -363,14 +386,6 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
       this.broadcaster.on<WorkItem>('create_workitem')
         .subscribe((data: WorkItem) => {
           this.updateItemCounts();
-      })
-    );
-
-    this.eventListeners.push(
-      this.route.queryParams.subscribe(params => {
-        if (Object.keys(params).indexOf('iteration') > -1) {
-          this.currentSelectedIteration = params['iteration'];
-        }
       })
     );
   }

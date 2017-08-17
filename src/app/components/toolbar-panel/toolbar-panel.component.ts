@@ -260,8 +260,10 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
     this.filterService.clearFilters(this.allowedFilterKeys);
 
     // Prepare query params
+    let queryObj = {};
     this.toolbarConfig.filterConfig.appliedFilters.forEach((filter) => {
       params[filter.field.id] = filter.query.value;
+      queryObj[filter.field.id] = filter.query.value;
       // Set this filter in filter service
       this.filterService.setFilterValues(filter.field.id, filter.query.id);
     });

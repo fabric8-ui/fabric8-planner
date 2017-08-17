@@ -1,9 +1,12 @@
 <a [routerLink]="[]" [queryParams]="{}" class="iteration-title">
   <div class="side-panel-header" [class.backlog-selected]="backlogSelected">
     <span class="badge pull-right">{{numberOfItemsInBacklog}}</span>
-    <h3 class="padding-right-15">Backlog</h3>
+    <h3 class="padding-right-15">All</h3>
   </div>
 </a>
+<div class="width-100 pull-left">
+  <group-types></group-types>
+</div>
 <div class="width-100 pull-left">
   <fab-planner-iteration [takeFromInput]="true" [iterations]="iterations" class="fab-planner-iteration"></fab-planner-iteration>
 </div>

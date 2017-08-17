@@ -1,0 +1,8 @@
+<div class="filter" *ngFor="let item of groupTypes">
+  <a [routerLink]="[]"
+    [queryParams]="{q: fnBuildQueryParam(item)}"
+    [routerLinkActive]="'selected'"
+    id="{{item.group}}" (click)="setGuidedTypeWI(item);">
+      {{ item.name }}
+  </a>
+</div>

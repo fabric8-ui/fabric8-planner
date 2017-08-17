@@ -63,6 +63,7 @@ export class WorkItemService {
 
   public addWIObservable: Subject<WorkItem> = new Subject();
   public editWIObservable: Subject<WorkItem> = new Subject();
+  public selectedWIObservable: Subject<WorkItem> = new Subject();
 
   constructor(private http: HttpService,
     private broadcaster: Broadcaster,
@@ -141,7 +142,7 @@ export class WorkItemService {
     }
   }
 
-  getWorkItems(pageSize: number = 20, filters: any[] = []): Observable<{workItems: WorkItem[], nextLink: string, totalCount: number | null}> {
+  getWorkItems(pageSize: number = 20, filters: any[] = []): Observable<{workItems: WorkItem[], nextLink: string, totalCount?: number | null}> {
     if (this._currentSpace) {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
       let url = this.workItemUrl + '?page[limit]=' + pageSize;
@@ -163,6 +164,28 @@ export class WorkItemService {
       return Observable.of<{workItems: WorkItem[], nextLink: string | null}>( {workItems: [] as WorkItem[], nextLink: null} );
     }
   }
+
+  // TODO Filter temp
+  getWorkItems2(pageSize: number = 20, filters: object): Observable<{workItems: WorkItem[], nextLink: string, totalCount?: number | null}> {
+    if (this._currentSpace) {
+      this.workItemUrl = this._currentSpace.links.self.split('spaces')[0] + 'search';
+      let url = this.workItemUrl + '?page[limit]=' + pageSize + '&' + Object.keys(filters).map(k => 'filter['+k+']='+JSON.stringify(filters[k])).join('&');
+      return this.http.get(url)
+        .map((resp) => {
+          return {
+            workItems: resp.json().data as WorkItem[],
+            nextLink: resp.json().links.next,
+            totalCount: resp.json().meta ? resp.json().meta.totalCount : 0
+          };
+        }).catch((error: Error | any) => {
+          this.notifyError('Getting work items failed.', error);
+          return Observable.throw(new Error(error.message));
+        });
+    } else {
+      return Observable.of<{workItems: WorkItem[], nextLink: string | null}>( {workItems: [] as WorkItem[], nextLink: null} );
+    }
+  }
+
 
   /**
    * This function is called from next page onwards in the scroll
@@ -247,7 +270,7 @@ export class WorkItemService {
    */
   getWorkItemById(id: string): Observable<WorkItem> {
     if (this._currentSpace) {
-      return this.http.get(this._currentSpace.links.self + '/workitems/' + id)
+      return this.http.get(this._currentSpace.links.self.split('/spaces/')[0] + '/workitems/' + id)
         .map(item => item.json().data)
         .catch((error: Error | any) => {
           this.notifyError('Getting work item data failed.', error);
@@ -658,6 +681,13 @@ export class WorkItemService {
 
   emitEditWI(workItem: WorkItem) {
     this.editWIObservable.next(workItem);
+  }
+
+  /**
+   * Usage: This method emit a event when WI get seleceted.
+   */
+  emitSelectedWI(workItem: WorkItem) {
+    this.selectedWIObservable.next(workItem);
   }
 
   /**

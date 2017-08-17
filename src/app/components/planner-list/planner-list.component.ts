@@ -44,6 +44,7 @@ import { Space, Spaces } from 'ngx-fabric8-wit';
 
 import { WorkItem } from '../../models/work-item';
 import { WorkItemType }               from '../../models/work-item-type';
+import { GroupTypesService } from '../../services/group-types.service';
 import { WorkItemListEntryComponent } from '../work-item-list-entry/work-item-list-entry.component';
 import { WorkItemService }            from '../../services/work-item.service';
 import { WorkItemDataService } from './../../services/work-item-data.service';
@@ -97,6 +98,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   private allowedFilterParams: string[] = ['iteration'];
   private currentIteration: BehaviorSubject<string | null>;
   private loggedInUser: User | Object = {};
+  private originalList: WorkItem[] = [];
+  private currentSpace: Space;
 
   // See: https://angular2-tree.readme.io/docs/options
   treeListOptions = {
@@ -117,6 +120,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     private collaboratorService: CollaboratorService,
     private eventService: EventService,
     private router: Router,
+    private groupTypesService: GroupTypesService,
     private user: UserService,
     private workItemService: WorkItemService,
     private workItemDataService: WorkItemDataService,
@@ -187,7 +191,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       Observable.combineLatest(
         this.spaces.current,
         this.filterService.filterChange,
-        this.currentIteration,
+        //this.currentIteration,
+        this.route.queryParams,
         this.eventService.showHierarchyListSubject,
         // only emits workItemReload when hierarchy view is on
         this.eventService.workItemListReloadOnLink.filter(() => this.showHierarchyList)
@@ -196,7 +201,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       .subscribe(([
         space,
         activeFilter,
-        iteration,
+        //iteration,
+        queryParams,
         showHierarchyList,
         workItemListReload
       ]) => {
@@ -210,6 +216,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
 
         if (space) {
           console.log('[WorkItemListComponent] New Space selected: ' + space.attributes.name);
+          this.currentSpace = space;
           this.loadWorkItems();
         } else {
           console.log('[WorkItemListComponent] Space deselected');
@@ -237,18 +244,18 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.loggedInUser = items[3];
 
       // If there is an iteration filter on the URL
-      const queryParams = this.route.snapshot.queryParams;
-      if (Object.keys(queryParams).indexOf('iteration') > -1) {
-        const iteration = iterations.find(it => {
-          return it.attributes.resolved_parent_path + '/' + it.attributes.name
-            === queryParams['iteration'];
-        })
-        if (iteration) {
-          this.filterService.setFilterValues('iteration', iteration.id);
-        }
-      } else {
-        this.filterService.clearFilters(['iteration']);
-      }
+      // const queryParams = this.route.snapshot.queryParams;
+      // if (Object.keys(queryParams).indexOf('iteration') > -1) {
+      //   const iteration = iterations.find(it => {
+      //     return it.attributes.resolved_parent_path + '/' + it.attributes.name
+      //       === queryParams['iteration'];
+      //   })
+      //   if (iteration) {
+      //     this.filterService.setFilterValues('iteration', iteration.id);
+      //   }
+      // } else {
+      //   this.filterService.clearFilters(['iteration']);
+      // }
     })
     .switchMap((items) => {
       let appliedFilters = this.filterService.getAppliedFilters();
@@ -261,18 +268,46 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       // KNOWN ISSUE: if the tree is expanded when switching the mode, the user will experience
       // some weird issues. Problem is there seems to be no way of force-collapsing the tree yet.
       // TODO: collapse the tree here so it does not give weird effects when switching modes
-      if (this.showHierarchyList) {
-        // we want to display the hierarchy, so filter out all items that are childs (have no parent)
-        // to do this, we need to append a filter: /spaces/{id}/workitems?filter[parentexists]=false
-        appliedFilters.push({ paramKey: 'filter[parentexists]', value: 'false' });
-      }
+      // if (this.showHierarchyList) {
+      //   // we want to display the hierarchy, so filter out all items that are childs (have no parent)
+      //   // to do this, we need to append a filter: /spaces/{id}/workitems?filter[parentexists]=false
+      //   appliedFilters.push({ id: 'parentexists', paramKey: 'filter[parentexists]', value: 'false' });
+      // }
       this.logger.log('Requesting work items with filters: ' + JSON.stringify(appliedFilters));
+
+      // TODO Filter temp
+      // Take all the applied filters and prepare an object to make the query string
+      let newFilterObj = {};
+      appliedFilters.forEach(item => {
+        newFilterObj[item.id] = item.value;
+      })
+      newFilterObj['space'] = this.currentSpace.id;
+      let payload = {
+        parentexists: !!!this.showHierarchyList
+      };
+      if ( this.route.snapshot.queryParams['q'] ) {
+        let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
+        let filterQuery = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
+        let exp = this.filterService.queryJoiner(existingQuery, this.filterService.and_notation, filterQuery);
+        Object.assign(payload,{
+          expression:exp
+        });
+      } else {
+        Object.assign(payload,{
+          expression: this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj))
+        });
+      }
       return Observable.forkJoin(
         Observable.of(this.iterations),
         Observable.of(this.workItemTypes),
-        this.workItemService.getWorkItems(
+        // TODO implement search API mock for inmemory
+        process.env.ENV == 'inmemory' ? this.workItemService.getWorkItems(
           this.pageSize,
           appliedFilters
+        ) :
+        this.workItemService.getWorkItems2(
+          this.pageSize,
+          payload
         )
       )
     })
@@ -302,6 +337,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
             }
           })
       });
+      this.originalList = cloneDeep(this.workItems);
     },
     (err) => {
       console.log('Error in Work Item list', err);
@@ -488,22 +524,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         // this.selectedWorkItemEntryComponent.deselect();
       })
     );
-
-    this.eventListeners.push(
-      this.route.queryParams.subscribe((params) => {
-        if (Object.keys(params).indexOf('iteration') > -1) {
-          if (params['iteration'] !== this.currentIteration.getValue()) {
-            this.currentIteration.next(params['iteration']);
-          }
-        }
-        // If no iteration in the URL
-        // and curent iteration value is not null
-        // this means iteration has just got removed
-        else if (this.currentIteration.getValue() !== null) {
-          this.currentIteration.next(null);
-        }
-      })
-    );
     this.eventListeners.push(
       this.workItemService.addWIObservable.subscribe(item => {
         //Check if the work item meets the applied filters
@@ -574,7 +594,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     }
   }
 
-  onSelect() {
-
+  onSelect($event) {
+    this.workItemService.emitSelectedWI($event.workItem);
+    this.groupTypesService.getAllowedChildWits($event.workItem);
   }
 }
