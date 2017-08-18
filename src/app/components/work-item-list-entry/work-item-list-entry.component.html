@@ -39,9 +39,6 @@
 
 	<!-- action area -->
 	<div class="list-view-pf-actions" (click)="kebabClick($event)">
-    <span class="fa fa-columns fa-lg pointer margin-right-10"
-      [routerLink]="['./detail/' + workItem.id]">
-    </span>
 		<div *ngIf="loggedIn" class="pull-right dropdown-kebab-pf dropdown" dropdown>
 			<button class="btn btn-link workItemList_dropdownKebabBtn dropdown-toggle" type="button" id="dropdownKebabRight" aria-haspopup="true" aria-expanded="true" dropdownToggle>
 				<span class="fa fa-ellipsis-v"></span>
