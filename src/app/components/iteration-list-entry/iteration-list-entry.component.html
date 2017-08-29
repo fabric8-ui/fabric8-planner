@@ -1,0 +1,56 @@
+<div class="iteration-entry"
+  [routerLinkActive]="'selected'"
+  [attr.data-id]="iteration.id"
+  [dragula]="'wi-bag'">
+  <div class="iteration-subheader">
+    <div *ngIf="loggedIn"
+      class="dropdown-kebab-pf pull-right dropdown" dropdown [autoClose]="true" #kebabMenu>
+      <button class="btn btn-link dropdown-toggle"
+        type="button"
+        aria-haspopup="true"
+        aria-expanded="true"
+        dropdownToggle>
+        <i class="fa fa-ellipsis-v"></i>
+      </button>
+      <ul class="dropdown-menu-right dropdown-menu"
+        *dropdownMenu>
+        <li>
+          <a class="pointer" (click)="onEdit($event)">
+            Edit
+          </a>
+        </li>
+        <li>
+          <a class="pointer" (click)="onClose($event)">
+            Close
+          </a>
+        </li>
+        <li>
+          <a class="pointer" (click)="onCreateChild($event)">
+            Create child
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="truncate padding-right-15"
+      [routerLink]="[]"
+      [queryParams]="{q: constructURL(iteration.id)}">
+      <span class="iteration-name truncate">
+        {{iteration.attributes.name | truncate : 45 }}
+      </span>
+    </div>
+    <div class="iteration-status">
+        <span>
+            {{iteration.attributes.startAt ? (iteration.attributes.startAt | date:longDate) : 'No date set'}}
+            -
+            {{iteration.attributes.endAt ? (iteration.attributes.endAt | date:longDate) : 'No date set'}}
+        </span>
+        <span class="iteration-count pull-right">
+            {{iteration.relationships?.workitems?.meta?.closed}}
+            /{{iteration.relationships?.workitems?.meta?.total}}
+            completed
+        </span>
+
+    </div>
+  </div>
+</div>
+
