@@ -20,6 +20,7 @@ import { WorkItem } from '../models/work-item';
 @Injectable()
 export class IterationService {
   public iterations: IterationModel[] = [];
+  private transformedIterations = [];
   private headers = new Headers({'Content-Type': 'application/json'});
   private _currentSpace;
 
@@ -78,7 +79,14 @@ export class IterationService {
           return response.json().data as IterationModel[];
         })
         .map((data) => {
-          this.iterations = data;
+          this.iterations = data.map(iteration => {
+            let childIterations = this.checkForChildIterations(iteration, data);
+            if(childIterations.length > 0) {
+              iteration.hasChildren = true;
+              iteration.children = childIterations;
+            }
+            return iteration;
+          });
           return this.iterations;
         })
         .catch ((error: Error | any) => {
@@ -222,5 +230,22 @@ export class IterationService {
 
   emitDropWI(workItem: WorkItem, err: boolean = false) {
     this.dropWIObservable.next({workItem: workItem, error: err});
+  }
+
+  checkForChildIterations(parent: IterationModel, iterations): IterationModel[] {
+    let children = iterations.filter(i => {
+      //check only for direct parent
+      let path_arr = i.attributes.parent_path.split('/');
+      let id = path_arr[path_arr.length-1];
+      return (id === parent.id);
+    });
+    return children;
+  }
+
+  getTopLevelIterations(iterations): IterationModel[] {
+    let topLevelIterations = iterations.filter(iteration =>
+      ((iteration.attributes.parent_path.split('/')).length - 1) === 1
+    )
+    return topLevelIterations;
   }
 }
