@@ -230,7 +230,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
       //Check if the new iteration has a parent
       if (!this.iterationService.isTopLevelIteration(iteration)) {
         let parent = this.iterationService.getDirectParent(iteration, this.allIterations);
-        let parentIndex = this.allIterations.findIndex(i => i.id === parent.id)
+        let parentIndex = this.allIterations.findIndex(i => i.id === parent.id);
         if(!this.allIterations[parentIndex].children) {
           this.allIterations[parentIndex].children = [];
           this.allIterations[parentIndex].hasChildren = true;
