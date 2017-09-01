@@ -87,6 +87,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
     this.iteration  = {
       // id: '',
       attributes: {
+        user_active: false,
         name: '',
         description: '',
         state: 'new',
@@ -207,7 +208,6 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
       this.submitBtnTxt = 'Close';
       this.modalTitle = 'Close Iteration';
     }
-
     this.createUpdateIterationDialog.open();
   }
 
@@ -356,6 +356,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
             this.iteration.attributes.state = 'start';
           } else if (this.modalType == 'close') {
             this.iteration.attributes.state = 'close';
+            this.iteration.attributes.user_active = false;
           } else {
             // Not include state if it's just an update
             delete this.iteration.attributes.state;
@@ -392,7 +393,6 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
         this.validationError = true;
         this.validationString = 'This field is required.';
       }
-     console.log(this.iteration);
   }
 
   removeError() {
@@ -400,6 +400,6 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   }
 
   onChecked(event) {
-    // console.log(event, '###### catching Event ######');
+    this.iteration.attributes.user_active = event;
   }
 }

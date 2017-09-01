@@ -45,21 +45,15 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   loggedIn: Boolean = true;
   editEnabled: Boolean = false;
   isBacklogSelected: Boolean = true;
-  //isCollapsedIteration: Boolean = false;
-  //isCollapsedCurrentIteration: Boolean = false;
-  //isCollapsedFutureIteration: Boolean = true;
-  //isCollapsedPastIteration: Boolean = true;
   barchatValue: number = 70;
   selectedIteration: IterationModel;
   allIterations: IterationModel[] = [];
-  //futureIterations: IterationModel[] = [];
-  //currentIterations: IterationModel[] = [];
-  //closedIterations: IterationModel[] = [];
   eventListeners: any[] = [];
   currentSelectedIteration: string = '';
   dragulaEventListeners: any[] = [];
   masterIterations;
   treeIterations;
+  activeIterations:IterationModel[] = [];
 
   private spaceSubscription: Subscription = null;
 
@@ -135,10 +129,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
         console.log('[IterationComponent] Space deselected.');
         this.editEnabled = false;
         this.allIterations = [];
-        console.log('....1 ', this.allIterations.length);
-        // this.futureIterations = [];
-        // this.currentIterations = [];
-        // this.closedIterations = [];
+        this.activeIterations = [];
       }
     });
   }
@@ -152,7 +143,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
           this.allIterations.push(this.iterations[i]);
         }
       }
-      //this.clusterIterations();
+      this.clusterIterations();
       this.treeIterations = this.iterationService.getTopLevelIterations(this.allIterations);
       console.log('this.treeIterations = ', this.treeIterations);
     }
@@ -175,12 +166,21 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     const it_query = this.filterService.queryBuilder(it_key, it_compare, it_value);
     //Query for space
     //const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, this.spaceId);
-   //Join type and space query
-   const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, it_query );
-   //const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
-   //second_join gives json object
-   return this.filterService.jsonToQuery(first_join);
-   //reverse function jsonToQuery(second_join);
+    //Join type and space query
+    const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, it_query );
+
+    //Iterations should only show allowed work item types
+    const wi_key = 'workitemtype';
+    const wi_compare = this.filterService.in_notation;
+    const wi_value = this.collection;
+
+    //Query for type
+    const type_query = this.filterService.queryBuilder(wi_key, wi_compare, wi_value);
+    const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+    //const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+    //second_join gives json object
+    return this.filterService.jsonToQuery(second_join);
+    //reverse function jsonToQuery(second_join);
     //return '';
   }
 
@@ -193,7 +193,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
           this.allIterations.push(this.iterations[i]);
         }
       }
-      //this.clusterIterations();
+      this.clusterIterations();
     } else {
       this.iterationService.getIterations()
         .subscribe((iterations) => {
@@ -205,7 +205,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
               this.allIterations.push(iterations[i]);
             }
           }
-          //this.clusterIterations();
+          this.clusterIterations();
         },
         (e) => {
           console.log('Some error has occured', e);
@@ -214,17 +214,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   clusterIterations() {
-    // this.futureIterations = this.allIterations.filter((iteration) => iteration.attributes.state === 'new');
-    // this.currentIterations = this.allIterations.filter((iteration) => iteration.attributes.state === 'start');
-    // this.closedIterations = this.allIterations.filter((iteration) => iteration.attributes.state === 'close');
-
-    // if (this.futureIterations.find(it => this.resolvedName(it) == this.currentSelectedIteration)) {
-    //   this.isCollapsedPastIteration = true;
-    //   this.isCollapsedFutureIteration = false;
-    // } else if (this.closedIterations.find(it => this.resolvedName(it) == this.currentSelectedIteration)) {
-    //   this.isCollapsedFutureIteration = true;
-    //   this.isCollapsedPastIteration = false;
-    // }
+    this.activeIterations = this.allIterations.filter((iteration) => iteration.attributes.active_status === true);
   }
 
   resolvedName(iteration: IterationModel) {
@@ -237,7 +227,24 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
       this.allIterations[index] = iteration;
     } else {
       this.allIterations.splice(this.allIterations.length, 0, iteration);
+      //Check if the new iteration has a parent
+      if (!this.iterationService.isTopLevelIteration(iteration)) {
+        let parent = this.iterationService.getDirectParent(iteration, this.allIterations);
+        let parentIndex = this.allIterations.findIndex(i => i.id === parent.id);
+        if(!this.allIterations[parentIndex].children) {
+          this.allIterations[parentIndex].children = [];
+          this.allIterations[parentIndex].hasChildren = true;
+        }
+        this.allIterations[parentIndex].children.push(iteration);
+      }
+      let childIterations = this.iterationService.checkForChildIterations(iteration, this.allIterations);
+      if(childIterations.length > 0) {
+        this.allIterations[this.allIterations.length].hasChildren = true;
+        this.allIterations[this.allIterations.length].children = childIterations;
+      }
     }
+    this.treeIterations = this.iterationService.getTopLevelIterations(this.allIterations);
+    this.treeList.updateTree();
     this.clusterIterations();
   }
 
@@ -258,11 +265,6 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     } else {
       //This is to view the backlog
       this.selectedIteration = null;
-      //this.isBacklogSelected = true;
-      //Collapse the other iteration sets
-      // this.isCollapsedCurrentIteration = true;
-      // this.isCollapsedFutureIteration = true;
-      // this.isCollapsedPastIteration = true;
       filters.push({
         paramKey: 'filter[iteration]',
         active: false,

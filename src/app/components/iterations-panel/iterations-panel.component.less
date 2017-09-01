@@ -1,7 +1,8 @@
 @import '../../../assets/stylesheets/_base';
 .add-iteration {
-  margin-top: -58px;
+  margin-top: -24px;
   float: right;
+  padding-right: 10px;
   .add-btn {
     color: @color-pf-blue;
     font-size: 13px;
@@ -15,6 +16,9 @@
 }
 
 .iterations {
+  .iteration-header {
+    padding-left: 20px;
+  }
   .node-drop-slot,
   .list-group-item {
     padding: 0 !important;
@@ -34,7 +38,54 @@
         float: left;
       }
     }
+    .list-group-item {
+      padding-left: 20px;
+    }
+    .on-hover-background {
+      background-color: @color-pf-black-700;
+    }
   }
+  .iteration-expanded-div {
+    padding-left: 0;
+    margin-bottom: 0;
+    .dropdown-kebab-pf {
+      .btn-link {
+        color: @color-pf-white;
+      }
+    }
+    > li {
+      padding: 15px;
+      list-style: none;
+      &:hover { background-color: @color-pf-black-700; }
+      &.active {
+        border-left: 4px solid;
+        border-left-color: transparent;
+        &.selected-iteration {
+          border-left: 4px solid;
+          border-left-color: @color-pf-blue;
+          background-color: @color-pf-black-700;
+        }
+      }
+      .iteration-count { float: right; }
+      .iteration-status {
+        padding-top: 20px;
+        padding-bottom: 15px;
+      }
+      .iteration-description {
+        &:after,
+        &:before {
+          background: transparent !important;
+          content: none !important;
+        }
+      }
+    }
+  }
+}
+.not-current-iteration {
+  .truncate {
+    padding-right: 60px;
+  }
+}
 /*.tree-item-selected {
     .tree-list-item {
       background-color: @color-pf-black-700;
@@ -47,6 +98,3 @@
       }
     }
   }*/
-}
-
-

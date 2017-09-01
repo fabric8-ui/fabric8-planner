@@ -9,6 +9,8 @@ export class IterationModel {
 }
 
 export class IterationAttributes {
+  user_active?: boolean;
+  active_status?: boolean;
   endAt?: string;
   startAt?: string;
   name: string;

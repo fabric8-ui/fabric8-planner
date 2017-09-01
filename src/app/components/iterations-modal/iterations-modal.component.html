@@ -65,8 +65,8 @@
         </div>
       </div>
       <div *ngIf="modalType=='create' || modalType=='update' || modalType=='createChild'">
-        <label class="f8-active-label">Active: </label>
-        <switch (onChecked)="onChecked($event)" [isChecked]="false"></switch>
+        <label class="f8-active-label">Force Active: </label>
+        <switch (onChecked)="onChecked($event)" [isChecked]="iteration.attributes.user_active" id="active-switch"></switch>
       </div>
       <div *ngIf="modalType=='close'"
         class="form-group datepicker-container">
