@@ -54,25 +54,38 @@ describe('Type group tests', function () {
    make a full sentence in BDD style. */
 
   it('Portfolio link is displayed on the side panel', function() {
-    expect(page.Portfolio().isPresent()).toBe(true);
+    expect(page.getPortfolio().isPresent()).toBe(true);
   });
 
   it('Portfolio link is clickable', function() {
-    expect(page.clickPortfolio().elementToBeClickable()).toBe(true);
+    let clickEvent = page.clickPortfolio();
+    expect(clickEvent).toBeDefined();
   });
 
-  it('Clicking on portfolio should only display the portfolio level work item', function() {
-    page.clickPortfolio();
-    //expect list to display only portfolio work items
+  // it('Clicking on portfolio should only display the portfolio level work item', function() {
+  //   //page.clickPortfolio();
+  //   //expect list to display only portfolio work items
 
-  });
+  // });
 
   it('Requirements link is displayed on the side panel', function() {
-    expect(page.Requirements().isPresent()).toBe(true);
+    expect(page.getRequirements().isPresent()).toBe(true);
   });
 
   it('Requirements link is clickable', function() {
-    expect(page.clickRequirements().elementToBeClickable()).toBe(true);
+    let clickEvent = page.clickRequirements();
+    expect(clickEvent).toBeDefined();
   });
+
+  // it('Clicking on requirements should only display the reqirement level work item', function() {
+  //   //page.clickPortfolio();
+  //   //expect list to display only portfolio work items
+
+  // });
+
+  it('Execution link is displayed on the side panel', function() {
+    expect(page.getRequirements().isPresent()).toBe(true);
+  });
+
 
 });
