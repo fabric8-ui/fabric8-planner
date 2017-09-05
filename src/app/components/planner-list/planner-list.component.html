@@ -7,7 +7,7 @@
       <toolbar-panel
         context="listview"
         [wiTypes]="workItemTypes"
-        (showDetailEvent)="typeSelectPanel.openPanel()"
+        (onCreateNewWorkItemSelected)="typeSelectPanel.openPanel()"
         [currentBoardType]="currentBoardType"
         [areas]="areas"
         [loggedInUser]="loggedInUser"></toolbar-panel>
@@ -45,6 +45,7 @@
                         (selectEvent)="onSelect($event)"
                         (toggleEvent)="onToggle($event)"
                         (detailEvent)="onDetail($event)"
+                        (previewEvent)="onPreview($event)"
                         (moveTopEvent)="onMoveToTop($event)"
                         (moveBottomEvent)="onMoveToBottom($event)">
                     </alm-work-item-list-entry>
@@ -79,7 +80,8 @@
                 (workItemCreate)="onCreateWorkItem($event)"></alm-work-item-quick-add>
           </div>
         </div>
-        <router-outlet></router-outlet>
+        <!-- <router-outlet></router-outlet> -->
+        <work-item-preview #detailPreview></work-item-preview>
     </section>
   </main>
 </div>

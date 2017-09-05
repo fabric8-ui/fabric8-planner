@@ -1,3 +1,4 @@
+
 import { RouterModule } from '@angular/router';
 import { NgModule }     from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -12,7 +13,7 @@ import { MyDatePickerModule } from 'mydatepicker';
 
 import { MockHttp } from '../../mock/mock-http';
 
-import { AlmUserName } from '../../pipes/alm-user-name.pipe';
+import { AlmUserNameModule } from '../../pipes/alm-user-name.module';
 
 import {
   AlmEditableModule,
@@ -25,14 +26,10 @@ import { ModalModule } from 'ngx-modal';
 import { AreaService } from '../../services/area.service';
 import { WorkItemDetailComponent } from './work-item-detail.component';
 import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component';
-import { TypeaheadDropdown } from '../typeahead-dropdown/typeahead-dropdown.component';
+import { TypeaheadDropDownModule } from '../typeahead-dropdown/typeahead-dropdown.module';
 import { MarkdownControlComponent } from '../markdown-control/markdown-control.component';
-import { WorkItemLinkComponent } from '../work-item-link/work-item-link.component';
-import { WorkItemCommentComponent } from '../work-item-comment/work-item-comment.component';
-import {
-  WorkItemLinkFilterByTypeName,
-  WorkItemLinkTypeFilterByTypeName
-} from '../../pipes/work-item-link-filters.pipe';
+import { WorkItemLinkModule } from '../work-item-link/work-item-link.module';
+import { WorkItemCommentModule } from '../work-item-comment/work-item-comment.module';
 import { WorkItemTypeControlService } from '../../services/work-item-type-control.service';
 
 let providers = [];
@@ -45,6 +42,7 @@ if (process.env.ENV == 'inmemory') {
 
 @NgModule({
   imports: [
+    AlmUserNameModule,
     BsDropdownModule.forRoot(),
     HttpModule,
     WidgetsModule,
@@ -55,24 +53,21 @@ if (process.env.ENV == 'inmemory') {
     CollapseModule,
     FormsModule,
     TooltipModule.forRoot(),
+    TypeaheadDropDownModule,
     Ng2CompleterModule,
     ReactiveFormsModule,
     MarkdownModule,
     MyDatePickerModule,
-    RouterModule
+    RouterModule,
+    WorkItemLinkModule,
+    WorkItemCommentModule
   ],
   declarations: [
-    AlmUserName,
-    WorkItemCommentComponent,
     WorkItemDetailComponent,
     DynamicFieldComponent,
     MarkdownControlComponent,
-    TypeaheadDropdown,
-    WorkItemLinkComponent,
-    WorkItemLinkFilterByTypeName,
-    WorkItemLinkTypeFilterByTypeName
   ],
-  exports: [WorkItemDetailComponent, AlmUserName],
+  exports: [WorkItemDetailComponent],
   providers: providers
 })
 export class WorkItemDetailModule { }
