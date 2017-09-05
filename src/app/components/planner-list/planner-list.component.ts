@@ -43,14 +43,15 @@ import {
 import { Space, Spaces } from 'ngx-fabric8-wit';
 
 import { WorkItem } from '../../models/work-item';
+import { WorkItemDetailComponent } from './../work-item-detail/work-item-detail.component';
 import { WorkItemType }               from '../../models/work-item-type';
 import { GroupTypesService } from '../../services/group-types.service';
 import { WorkItemListEntryComponent } from '../work-item-list-entry/work-item-list-entry.component';
 import { WorkItemService }            from '../../services/work-item.service';
 import { WorkItemDataService } from './../../services/work-item-data.service';
 import { CollaboratorService } from '../../services/collaborator.service';
-
 import { TreeListComponent } from 'ngx-widgets';
+import { UrlService } from './../../services/url.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -73,6 +74,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   @ViewChild('treeListLoadTemplate') treeListLoadTemplate: TemplateRef<any>;
   @ViewChild('treeListTemplate') treeListTemplate: TemplateRef<any>;
   @ViewChild('treeListItem') treeListItem: TreeListComponent;
+  @ViewChild('detailPreview') detailPreview: WorkItemDetailComponent;
 
   workItems: WorkItem[] = [];
   prevWorkItemLength: number = 0;
@@ -115,22 +117,23 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   };
 
   constructor(
+    private areaService: AreaService,
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
     private collaboratorService: CollaboratorService,
     private eventService: EventService,
-    private router: Router,
+    private filterService: FilterService,
     private groupTypesService: GroupTypesService,
+    private iterationService: IterationService,
+    private logger: Logger,
     private user: UserService,
     private workItemService: WorkItemService,
     private workItemDataService: WorkItemDataService,
-    private logger: Logger,
-    private userService: UserService,
     private route: ActivatedRoute,
+    private router: Router,
     private spaces: Spaces,
-    private iterationService: IterationService,
-    private filterService: FilterService,
-    private areaService: AreaService) {}
+    private userService: UserService,
+    private urlService: UrlService) {}
 
   ngOnInit(): void {
     // If there is an iteration on the URL
@@ -401,6 +404,10 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
 
   onDetail(entryComponent: WorkItemListEntryComponent): void { }
 
+  onPreview(workItem: WorkItem): void {
+    this.detailPreview.openPreview(workItem);
+  }
+
   onCreateWorkItem(workItem) {
     let resolveItem = this.workItemService.resolveWorkItems(
       [workItem],
@@ -563,6 +570,24 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
           }
         }
       })
+    );
+
+    this.eventListeners.push(
+      this.router.events
+        .filter(event => event instanceof NavigationStart)
+        .subscribe(
+          (event: any) => {
+            if (event.url.indexOf('/plan/detail/') > -1) {
+                // It's going to the detail page
+                let url = location.pathname;
+                let query = location.href.split('?');
+                if (query.length == 2) {
+                  url = url + '?' + query[1];
+                }
+                this.urlService.recordLastListOrBoard(url);
+              }
+          }
+        )
     );
   }
 

@@ -8,7 +8,7 @@
         <div class="f8-quick-preview__header">
           <span
             class="pficon pficon-close pull-right f8-quick-preview--close"
-            (click)="closeDetails()">
+            (click)="closePreview()">
           </span>
           <div class="form-group width-100 pull-left mobile-bar padding-h-10 padding-v-5 margin-0">
             <span *ngIf="workItem.id" class="detail-created-date pull-right">
@@ -65,8 +65,12 @@
                 </ul>
               </div>
               <a class="pull-right">
-                <span class="dib margin-right-3">View full details</span>
-                <span class="pficon pficon-arrow"></span>
+                <span class="dib margin-right-3">
+                  <a [routerLink]="[constructUrl(workItem)]" [queryParams]="queryParams">
+                    View full details
+                  </a>
+                </span>
+                <span class="fa fa-list-alt"></span>
               </a>
             </div>
             <div class="width-100 pull-left wi-detail-title-blk">
@@ -117,8 +121,6 @@
             </div>
           </div>
         </div>
-
-
 
         <div class="width-100 pull-left padding-10 item-action-block">
           <!-- Assignee -->

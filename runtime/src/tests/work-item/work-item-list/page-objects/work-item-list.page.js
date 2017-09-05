@@ -177,7 +177,7 @@ class WorkItemListPage {
   parentIterationDropDown (){
     return element(by.id('parent-iteration'));
   }
- 
+
   clickIterationById(text){
     return element(by.id(text)).click();
   }
@@ -461,7 +461,7 @@ class WorkItemListPage {
   /* Adding a new workitem through the dialog */
   get detailedDialogButton () {
     /* Changed from element(by.css(".with-cursor-pointer")) - as there were multiple matches */
-    return element(by.css(".pficon-add-circle-o.margin-top-4"));
+    return element(by.css(".add-button"));
  }
 
   clickDetailedDialogButton () {
@@ -601,7 +601,7 @@ class WorkItemListPage {
   clickWorkItemKebabMoveToBottomButton (parentElement) {
     return this.workItemKebabMoveToBottomButton (parentElement).click();
   }
-  
+
   iterationAddButton  (){
     return element(by.id('add-iteration-icon'));
   }
@@ -630,7 +630,7 @@ class WorkItemListPage {
   }
 
   clickExpandCurrentIterationIcon () {
-    return this.expandCurrentIterationIcon.click(); 
+    return this.expandCurrentIterationIcon.click();
   }
 
   get expandFutureIterationIcon () {
@@ -638,7 +638,7 @@ class WorkItemListPage {
   }
 
   clickExpandFutureIterationIcon () {
-    return this.expandFutureIterationIcon.click(); 
+    return this.expandFutureIterationIcon.click();
   }
 
   get expandPastIterationIcon () {
@@ -646,7 +646,7 @@ class WorkItemListPage {
   }
 
   clickExpandPastIterationIcon () {
-    return this.expandPastIterationIcon.click(); 
+    return this.expandPastIterationIcon.click();
   }
 
   get futureIterations () {
@@ -681,7 +681,7 @@ class WorkItemListPage {
   get lastPastIteration () {
     return element.all(by.xpath (".//text()[contains(.,'Past Iterations')]/../../../ul/li")).last();
   }
-  
+
   firstCurrentIteration () {
     return element.all(by.xpath (".//text()[contains(.,'Current Iterations')]/../../../../../ul/li")).first();
   }
