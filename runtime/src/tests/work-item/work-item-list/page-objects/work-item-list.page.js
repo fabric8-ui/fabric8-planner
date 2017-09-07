@@ -42,7 +42,7 @@ class WorkItemListPage {
     browser.get("http://localhost:8088/?token_json="+url);
   }
    else {
-     browser.get("http://localhost:8088/");
+     browser.get("https://openshift.io/rgarg-osiotest1/rgarg-osiotest1-sep4space1/plan");
    }
  };
 
@@ -59,7 +59,7 @@ class WorkItemListPage {
  }
 
  workItemByURLId (workItemId) {
-   browser.get("http://localhost:8088/work-item/list/detail/"+ workItemId);
+   browser.get("https://openshift.io/rgarg-osiotest1/rgarg-osiotest1-sep4space1/plan/detail/"+ workItemId);
     var theDetailPage = new WorkItemDetailPage (workItemId);
  }
  clickCodeMenuTab () {
