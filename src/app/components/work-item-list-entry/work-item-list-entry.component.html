@@ -19,12 +19,17 @@
     <div class="list-view-pf-body">
       <div class="list-view-pf-description">
         <div class="workItemList_title_wrap truncate-ellipsis col-xs-12 row">
-            <p class="workItemList_title col-md-12 col-sm-12 col-xs-12 truncate"
-              (click)="onDetailPreview($event)">
-              {{workItem.attributes['system.title']}}
-            </p>
-            <a [routerLink]="[constructUrl(workItem)]"
+            <p class="workItemList_title col-md-6 col-sm-6 col-xs-6"
+               (click)="onDetailPreview($event)">
+              <span class="truncate title-wrapper">
+                {{workItem.attributes['system.title']}}
+              </span>
+              <a [routerLink]="[constructUrl(workItem)]"
               class="fa fa-list-alt action-icon"></a>
+            </p>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+              <f8-label></f8-label>
+            </div>
         </div>
         <div class="list-group-item-text workItemList_description dn">
           {{workItem.attributes['system.description'] ? workItem.attributes['system.description'] : "No description available for this work item."}}
