@@ -414,6 +414,10 @@ class WorkItemDetailPage {
     return element(by.id('comment_time_'+index)).getText();
   }
   commentEdit(index) {
+    browser.actions().mouseMove(element(by.css('#comment_body_' + index))).perform();
+    browser.wait(until.elementToBeClickable(
+      element(by.css('#comment_body_' + index + ' .edit-icon'))),
+      constants.WAIT, 'Failed to find comment edit button');
     return element(by.css('#comment_body_' + index + ' .edit-icon'));
   }
   commentBody(index){
@@ -515,7 +519,7 @@ class WorkItemDetailPage {
     return element(by.id('wi-link'));
   }
   linkItemHeaderCaret (){
-    return element(by.id('caret-right'));
+    return element(by.css('f8-toggle-caret-right'));
   }
   linkItemDetailedDiv (){
     return element(by.css('.link-list-wrap'));
