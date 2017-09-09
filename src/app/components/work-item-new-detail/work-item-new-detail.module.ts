@@ -1,3 +1,4 @@
+import { LabelSelectorModule } from './../label-selector/label-selector.module';
 import { UrlService } from './../../services/url.service';
 import { AuthenticationService } from 'ngx-login-client';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -74,6 +75,7 @@ if (process.env.ENV == 'inmemory') {
     HttpModule,
     CommonModule,
     FormsModule,
+    LabelSelectorModule,
     MarkdownModule,
     ReactiveFormsModule,
     RouterModule,
