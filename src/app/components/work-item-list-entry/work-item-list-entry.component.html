@@ -14,29 +14,27 @@
     [checked]="checkedWI"
     (click)="toggleEntry($event)" />
 	</div>
-	<!-- info area -->
+  <!-- info area -->
   <div class="list-view-pf-main-info">
     <div class="list-view-pf-left type f8-wi__list-witype">
-      <span  class="color-grey pull-left" almIcon
-        [iconType]="workItem.attributes['system.state']"></span>
-      <span class="color-grey pull-left fa
-        {{workItem.relationships?.baseType?.data?.attributes?.icon}}"></span>
+      <span almIcon [iconType]="workItem.attributes['system.state']" class="color-grey pull-left"></span>
+      <span class="color-grey pull-left fa {{workItem.relationships?.baseType?.data?.attributes?.icon}}"></span>
       <span class="pull-left"> {{workItem.attributes['system.number']}} </span>
     </div>
     <div class="list-view-pf-body">
       <div class="list-view-pf-description">
         <div class="f8-wi__list-title truncate-ellipsis col-xs-12 row">
-          <p class="workItemList_title col-md-6 col-sm-6 col-xs-6"
-              (click)="onDetailPreview($event)">
-            <span class="truncate title-wrapper">
-              {{workItem.attributes['system.title']}}
-            </span>
-            <a [routerLink]="[constructUrl(workItem)]"
+            <p class="workItemList_title col-md-6 col-sm-6 col-xs-6"
+               (click)="onDetailPreview($event)">
+              <span class="truncate title-wrapper">
+                {{workItem.attributes['system.title']}}
+              </span>
+              <a [routerLink]="[constructUrl(workItem)]"
               class="fa fa-list-alt f8-action-icon"></a>
-          </p>
-          <div class="col-md-6 col-sm-6 col-xs-6">
-            <f8-label [truncateAfter]='4' (onLabelClick)="labelClick($event)" (onRemoveLabel)="removeLabel($event)"></f8-label>
-          </div>
+            </p>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+              <f8-label [truncateAfter]='4' (onLabelClick)="labelClick($event)" (onRemoveLabel)="removeLabel($event)"></f8-label>
+            </div>
         </div>
         <div class="list-group-item-text hide f8-wi__list-desc">
           {{workItem.attributes['system.description'] ? workItem.attributes['system.description'] : "No description available for this work item."}}
