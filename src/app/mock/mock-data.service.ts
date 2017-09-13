@@ -155,6 +155,8 @@ export class MockDataService {
         var newComment = {
               'attributes': {
                 'body': entity.data.attributes.body,
+                'body.rendered': entity.data.attributes.body,
+                'markup': 'Markdown',
                 'created-at': '2000-01-01T09:00:00.000000Z'
               },
               'id': newId,
@@ -179,10 +181,16 @@ export class MockDataService {
     }
     var localWorkItem = this.makeCopy(entity.data);
     localWorkItem.id = this.createId();
-    Object.assign(localWorkItem.attributes, {'system.number': localWorkItem.id});
+    Object.assign(localWorkItem.attributes,
+      {
+        'system.number': localWorkItem.id,
+        'system.description': localWorkItem.attributes['system.description'] ? localWorkItem.attributes['system.description'] : '',
+        'system.description.rendered': localWorkItem.attributes['system.description'] ? localWorkItem.attributes['system.description'] : '',
+      }
+    );
     localWorkItem.links = {
-          'self': 'http://mock.service/api/workitems/id' + localWorkItem.id,
-        };
+      'self': 'http://mock.service/api/workitems/id' + localWorkItem.id,
+    };
     this.workItemComments['id' + localWorkItem.id] = {
       'data': [],
       'meta': {

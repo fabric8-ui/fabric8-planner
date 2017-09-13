@@ -63,6 +63,7 @@ export class WorkItemService {
 
   public addWIObservable: Subject<WorkItem> = new Subject();
   public editWIObservable: Subject<WorkItem> = new Subject();
+  public selectedWIObservable: Subject<WorkItem> = new Subject();
 
   constructor(private http: HttpService,
     private broadcaster: Broadcaster,
@@ -141,7 +142,7 @@ export class WorkItemService {
     }
   }
 
-  getWorkItems(pageSize: number = 20, filters: any[] = []): Observable<{workItems: WorkItem[], nextLink: string, totalCount: number | null}> {
+  getWorkItems(pageSize: number = 20, filters: any[] = []): Observable<{workItems: WorkItem[], nextLink: string, totalCount?: number | null}> {
     if (this._currentSpace) {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
       let url = this.workItemUrl + '?page[limit]=' + pageSize;
@@ -163,6 +164,28 @@ export class WorkItemService {
       return Observable.of<{workItems: WorkItem[], nextLink: string | null}>( {workItems: [] as WorkItem[], nextLink: null} );
     }
   }
+
+  // TODO Filter temp
+  getWorkItems2(pageSize: number = 20, filters: object): Observable<{workItems: WorkItem[], nextLink: string, totalCount?: number | null}> {
+    if (this._currentSpace) {
+      this.workItemUrl = this._currentSpace.links.self.split('spaces')[0] + 'search';
+      let url = this.workItemUrl + '?page[limit]=' + pageSize + '&' + Object.keys(filters).map(k => 'filter['+k+']='+JSON.stringify(filters[k])).join('&');
+      return this.http.get(url)
+        .map((resp) => {
+          return {
+            workItems: resp.json().data as WorkItem[],
+            nextLink: resp.json().links.next,
+            totalCount: resp.json().meta ? resp.json().meta.totalCount : 0
+          };
+        }).catch((error: Error | any) => {
+          this.notifyError('Getting work items failed.', error);
+          return Observable.throw(new Error(error.message));
+        });
+    } else {
+      return Observable.of<{workItems: WorkItem[], nextLink: string | null}>( {workItems: [] as WorkItem[], nextLink: null} );
+    }
+  }
+
 
   /**
    * This function is called from next page onwards in the scroll
@@ -241,18 +264,35 @@ export class WorkItemService {
   */
 
   /**
-   * Usage: This method gives a single work item by ID.
+   * Usage: This method gives a single work item by display number.
    *
-   * @param: number - id
+   * @param id : string - number
+   * @param owner : string
+   * @param space : string
    */
-  getWorkItemById(id: string): Observable<WorkItem> {
+  getWorkItemByNumber(id: string, owner: string = '', space: string = ''): Observable<WorkItem> {
     if (this._currentSpace) {
-      return this.http.get(this._currentSpace.links.self.split('/spaces/')[0] + '/workitems/' + id)
+      if (owner && space) {
+        return this.http.get(
+          this._currentSpace.links.self.split('/spaces/')[0] +
+          '/namedspaces' +
+          '/' + owner +
+          '/' + space +
+          '/workitems/' + id
+        )
         .map(item => item.json().data)
         .catch((error: Error | any) => {
           this.notifyError('Getting work item data failed.', error);
           return Observable.throw(new Error(error.message));
         });
+      } else {
+        return this.http.get(this._currentSpace.links.self.split('/spaces/')[0] + '/workitems/' + id)
+          .map(item => item.json().data)
+          .catch((error: Error | any) => {
+            this.notifyError('Getting work item data failed.', error);
+            return Observable.throw(new Error(error.message));
+          });
+      }
     } else {
       return Observable.of<WorkItem>( new WorkItem() );
     }
@@ -661,6 +701,13 @@ export class WorkItemService {
   }
 
   /**
+   * Usage: This method emit a event when WI get seleceted.
+   */
+  emitSelectedWI(workItem: WorkItem) {
+    this.selectedWIObservable.next(workItem);
+  }
+
+  /**
    * Usage: This method update an existing item
    * updates the item in the big list
    * resolve the users for the item
@@ -804,11 +851,13 @@ export class WorkItemService {
         source: {
           title: wItem.attributes['system.title'],
           id: wItem.id,
+          number: wItem.attributes['system.number'],
           state: wItem.attributes['system.state']
         },
         target: {
           title: targetWItem.attributes['system.title'],
           id: targetWItem.id,
+          number: targetWItem.attributes['system.number'],
           state: targetWItem.attributes['system.state']
         },
         linkType: linkType.attributes.forward_name
@@ -823,11 +872,13 @@ export class WorkItemService {
         target: {
           title: wItem.attributes['system.title'],
           id: wItem.id,
+          number: wItem.attributes['system.number'],
           state: wItem.attributes['system.state']
         },
         source: {
           title: sourceWItem.attributes['system.title'],
           id: sourceWItem.id,
+          number: sourceWItem.attributes['system.number'],
           state: sourceWItem.attributes['system.state']
         },
         linkType: linkType.attributes.reverse_name

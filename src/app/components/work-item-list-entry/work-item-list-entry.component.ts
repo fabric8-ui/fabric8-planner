@@ -11,6 +11,7 @@ import {
 import { Broadcaster, Logger, Notification, NotificationType, Notifications } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
 import { Dialog } from 'ngx-widgets';
+import { GroupTypesService } from '../../services/group-types.service';
 
 import { IterationService } from '../../services/iteration.service';
 import { WorkItem }        from '../../models/work-item';
@@ -52,6 +53,7 @@ export class WorkItemListEntryComponent implements OnInit, OnDestroy {
   @Output() toggleEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
   @Output() selectEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
   @Output() detailEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
+  @Output() previewEvent: EventEmitter<WorkItem> = new EventEmitter<WorkItem>();
   @Output() moveTopEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
   @Output() moveBottomEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
 
@@ -65,6 +67,7 @@ export class WorkItemListEntryComponent implements OnInit, OnDestroy {
 
   constructor(private auth: AuthenticationService,
               private broadcaster: Broadcaster,
+              private groupTypesService: GroupTypesService,
               private route: ActivatedRoute,
               private iterationService: IterationService,
               private notifications: Notifications,
@@ -79,6 +82,11 @@ export class WorkItemListEntryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.eventListeners.forEach(subscriber => subscriber.unsubscribe());
+  }
+
+  constructUrl(workItem: WorkItem) {
+    return this.router.url.split('plan')[0] + 'plan/detail/' +
+      workItem.attributes['system.number'];
   }
 
   getWorkItem(): WorkItem {
@@ -164,6 +172,11 @@ export class WorkItemListEntryComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     this.detailEvent.emit(this);
     this.router.navigateByUrl(this.router.url.split('detail')[0] + '/detail/' + this.workItem.id, { relativeTo: this.route });
+  }
+
+  onDetailPreview(event: MouseEvent): void {
+    event.stopPropagation();
+    this.previewEvent.emit(this.workItem);
   }
 
   onMoveToTop(event: MouseEvent): void {

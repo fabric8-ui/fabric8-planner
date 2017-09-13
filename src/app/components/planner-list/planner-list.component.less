@@ -1,80 +1,20 @@
 @import (reference) '../../../assets/stylesheets/_base';
+@import '../../../assets/stylesheets/_planner-layout';
 
-.work-item-page {
-  position: relative;
-  height: ~"calc(e('100vh - 60px'))";
-  >main {
-    height: 100%;
-    overflow: hidden;
-    >aside {
-      &.side-panel-wrap {
-        width: 340px;
-        height: 100%;
-        float: left;
-        overflow-x: hidden;
-        background-color: @color-pf-black-900;
-      }
-    }
-    >section {
-      height: 100%;
-      padding-left: 340px;
-      //toolbar styles
-      > header {
-        padding-right: 20px;
-        padding-left: 20px;
-        border-bottom: 1px solid;
-        border-bottom-color: @color-pf-black-300 !important;
-        .toolbar-pf { border-color: transparent;
-          .toolbar-pf-actions { border-color: transparent;
-            .form-group { border-right: 0;
-              &:first { border-left: 0; }
-            }
-            .toolbar-pf-action-right {
-              .pficon-add-circle-o { color: @color-pf-blue-400;}
-            }
-          }
-          // ensure icons dont fold around inputs
-          .wi-input-filter-dropdown { position: relative;
-            .wi-input-filter-dropdown-list {
-              top: 25px;
-              width: 100%;
-              padding: 2px;
-            }
-            >div { position: relative;
-              //HACK:prevents caret icon from folding to a new line
-              >input {  margin-right: -20px; }
-              //HACK:positions the caret in right margin are of input
-              >.caret::before {
-                z-index: 2;
-                display: inline-block;
-                width: 15px;
-                height: 15px;
-                line-height: 15px;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-.work-item-list-page {
+.f8-wi-list {
+  float: left;
   width: 100%;
   height: 100%;
-  float: left;
-  .detail-list-wrap {
+  &-wrap {
     width: 100%;
-    height: ~"calc(e('100% - 120px'))"; // to avoid overflown scroll height should be there
+    height: ~"calc(e('100% - 120px'))";
+    // to avoid overflown scroll height should be there
     overflow-y: scroll;
     border-top: 1px solid;
     border-top-color: @color-pf-black-300;
-    >.list-group { border-top-width: 0 !important; }
-  }
-  .work-item-list-quick-add {
-    position: fixed;
-    bottom: 0;
-    width: ~"calc(e('100% - 340px'))";
+    >.list-group {
+      border-top-width: 0 !important;
+    }
   }
   .card-pf {
     border: 0;
@@ -83,28 +23,41 @@
       .no-wi { font-size: @pf-icon-4x; }
     }
   }
-  .alm-blank-slate {
-    display: block;
-    width: 90%;
-    color: #363636;
-    text-decoration: none;
-    cursor: pointer;
-    &:hover { box-shadow: 0 1px 6px rgba(3, 3, 3, .175); }
+  &__quick-add {
+    position: fixed;
+    bottom: 0;
+    width: 75%;
   }
 }
-
+.f8-blank-state {
+  display: block;
+  width: 90%;
+  color: #363636;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    box-shadow: 0 1px 6px rgba(3, 3, 3, .175);
+  }
+}
+//tree-list, drag and drop css
 .error { color: @color-pf-red-100; }
 .suppress-hover {
   &:hover { background-color: transparent; }
 }
 .tree-list {
-  .node-drop-slot.is-dragging-over { height: 70px; }
+  .node-drop-slot.is-dragging-over {
+    height: 70px;
+  }
 }
 .expanderdisabled {
-  .toggle-children { display: none !important; }
+  .toggle-children {
+    display: none !important;
+  }
 }
 .tree-list-item {
   display: inline-flex;
   align-items: inherit;
 }
-.node-drop-slot.is-dragging-over { height: 66px!important; }
+.node-drop-slot.is-dragging-over {
+  height: 66px!important;
+}

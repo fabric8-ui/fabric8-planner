@@ -4,7 +4,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { Broadcaster, Logger } from 'ngx-base';
 
+import { GroupTypesService } from '../../services/group-types.service';
 import { WorkItem } from '../../models/work-item';
+import { WorkItemType } from '../../models/work-item-type';
 import { WorkItemService } from '../../services/work-item.service';
 import { IterationService } from '../../services/iteration.service';
 
@@ -19,11 +21,13 @@ export class SidepanelComponent implements OnInit, OnDestroy {
 
   rootIteration: IterationModel = null;
   backlogSelected: boolean = true;
+  typeGroupSelected: boolean = true;
   numberOfItemsInBacklog: number = 0;
   eventListeners: any[] = [];
 
   constructor(
     private log: Logger,
+    private groupTypesService: GroupTypesService,
     private workItemService: WorkItemService,
     private iterationService: IterationService,
     private router: Router,
@@ -74,7 +78,7 @@ export class SidepanelComponent implements OnInit, OnDestroy {
       }),
 
       this.route.queryParams.subscribe(params => {
-        if (Object.keys(params).indexOf('iteration') > -1) {
+        if (Object.keys(params).indexOf('q') > -1) {
           this.backlogSelected = false;
         } else {
           this.backlogSelected = true;
