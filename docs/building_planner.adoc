@@ -125,7 +125,7 @@ to load it up with mock data.
 
 To *integrate planner with Fabric8 UI environment*, the steps are quite similar as before, but instead of the runtime, we're going to link and use Planner library into Fabric8 UI (or any other external app needing to embed planner).
 
-. Build the fabric8-planner as a library and set up a watch task to rebuild any TS, HTML and SCSS files you change. In the *_fabric8-planner_* root directory, run:
+. Build the fabric8-planner as a library and set up a watch task to rebuild any TS, HTML and LESS files you change. In the *_fabric8-planner_* root directory, run:
 +
 [sh]
 ----
