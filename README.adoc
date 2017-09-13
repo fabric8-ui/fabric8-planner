@@ -82,6 +82,14 @@ The following table lists some of the most useful or frequently used scripts and
 |Continuous Build
 |`$ npm run watch:library`
 |Runs the build in watch mode, watches for changes and rebuilds source
+|Any changes to `.less` files will cause a re-build. Errors to `.less` files will be printed out in a string format, which file errors appears on, as well as what the error is.
+
+|Stylelint
+|`$ npm run stylelint`
+|This will run the `gulp stylelint` task, which outputs errors in a verbose format, giving an outline of the total number errors, warnings and of each type.
+|
+|`$ gulp lint-less`
+|This will run only the gulp task that lints the `.less` files. This is one of the various parts that make up the `npm run build:library` script, but gives the developer a quick way to check the `.less` files, without installing Stylelint globally and running commands through it's CLI.
 |===
 
 == Documentation
