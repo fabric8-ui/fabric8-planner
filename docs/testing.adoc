@@ -21,12 +21,12 @@ $ gulp test:unit
 * To run all the functional tests, in the *_runtime_* directory, run:
 +
 ----
-$ npm run test:func
+$ npm run test:func targetURL
 ----
 * To run only the *smoke* functional tests, in the *_runtime_* directory, run:
 +
 ----
-npm run test:funcsmoke
+npm run test:funcsmoke targetURL
 ----
 
 === Building for Functional Tests or Standalone Production

@@ -29,10 +29,12 @@ class WorkItemBoardPage {
       refresh_token: 'somerandomtoken',
       token_type: "bearer"
     }));
-    browser.get("http://localhost:8088/plan/board?token_json="+url);
+    browser.get(browser.params.target.url + "/plan/board?token_json="+url);
+//    browser.get("http://localhost:8088/plan/board?token_json="+url);
     }
    else {
-     browser.get("http://localhost:8088/plan/board");
+     browser.get(browser.params.target.url + "/plan/board");
+//     browser.get("http://localhost:8088/plan/board");
    }
  };
 
