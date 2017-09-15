@@ -8,8 +8,10 @@
   &__panel {
     &-hdr {
       width: 100%;
+      display: inline-block;
       padding: 20px;
-      padding-right: 15px;
+      border-left: 4px solid;
+      border-left-color: transparent;
     }
     .node-drop-slot,
     .list-group-item {
@@ -62,6 +64,7 @@
       }
       > li {
         padding: 15px;
+        padding-left: 45px;
         list-style: none;
         &.active {
           border-left: 4px solid;
@@ -78,9 +81,30 @@
         }
       }
     }
+    &-parent {
+      float: right;
+      span {
+        font-size: 12px;
+      }
+    }
   }
-  &-count { float: right; }
+  &-name {
+    font-size: 12px;
+  }
+  &-status {
+    float: left;
+    width: 100%;
+    color: @color-pf-black-600;
+    font-size: 12px;
+  }
+  &-count {
+    float: right;
+    color: @color-pf-black-600;
+    font-size: 12px;
+  }
   &-desc {
+    margin: 0;
+    font-size: 12px;
     &:after,
     &:before {
       background: transparent !important;

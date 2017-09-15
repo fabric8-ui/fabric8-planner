@@ -18,35 +18,31 @@ import {
 
 @Component({
   selector: 'alm-planner-layout',
+  templateUrl: './planner-layout.component.html',
   styleUrls: ['./planner-layout.component.less'],
   animations:
   [
     trigger('slideInOut', [
       state('in', style({
-        transform: 'translateX(0px)',
         width: '50px'
 
       })),
       state('out', style({
-        transform: 'translateX(0px)',
         width: '320px'
       })),
       transition('in <=> out', animate('300ms ease-in-out'))
     ]),
     trigger('slideInOutContent', [
       state('out', style({
-        transform: 'translateX(0px)',
         marginLeft: '50px'
 
       })),
       state('in', style({
-        transform: 'translateX(0px)',
         marginLeft: '320px'
       })),
       transition('in <=> out', animate('300ms ease-in-out'))
     ]),
-  ],
-  templateUrl: './planner-layout.component.html'
+  ]
 })
 
 export class PlannerLayoutComponent implements OnInit, AfterViewInit {
@@ -59,7 +55,7 @@ export class PlannerLayoutComponent implements OnInit, AfterViewInit {
   @Output() sidePanelStateChange = new EventEmitter<string>();
 
   contentHide: Boolean = false;
-  sidePanelState: string = 'in';
+  sidePanelState: string = 'out';
 
   constructor(
   ) { }
