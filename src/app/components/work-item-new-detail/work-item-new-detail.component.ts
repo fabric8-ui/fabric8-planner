@@ -1,3 +1,4 @@
+import { LabelModel } from './../../models/label.model';
 import { Broadcaster } from 'ngx-base';
 import { WorkItemTypeControlService } from './../../services/work-item-type-control.service';
 import { FormGroup } from '@angular/forms';
@@ -5,6 +6,7 @@ import { Comment } from './../../models/comment';
 import { IterationService } from './../../services/iteration.service';
 import { AreaModel } from './../../models/area.model';
 import { IterationModel } from './../../models/iteration.model';
+import { LabelService } from './../../services/label.service';
 import { TypeaheadDropdown, TypeaheadDropdownValue } from '../typeahead-dropdown/typeahead-dropdown.component';
 import { AreaService } from './../../services/area.service';
 import { Observable } from 'rxjs';
@@ -62,6 +64,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
   searchAssignee: Boolean = false;
   headerEditable: Boolean = false;
   descText: any = '';
+  labels: LabelModel[] = [];
 
   constructor(
     private areaService: AreaService,
@@ -69,6 +72,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
     private broadcaster: Broadcaster,
     private collaboratorService: CollaboratorService,
     private iterationService: IterationService,
+    private labelService: LabelService,
     private route: ActivatedRoute,
     private router: Router,
     private spaces: Spaces,
@@ -192,7 +196,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
           const t2 = performance.now();
           console.log('Performance :: Details page first paint - '  + (t2 - t1) + ' milliseconds.');
         })
-        .do (workItem => console.log('Work item fethced: ', cloneDeep(workItem)))
+        .do (workItem => console.log('Work item fetched: ', cloneDeep(workItem)))
         .take(1)
         .switchMap(() => {
           return Observable.combineLatest(
@@ -202,12 +206,12 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
             this.resolveArea(),
             this.resolveIteration(),
             this.resolveLinks(),
-            this.resolveComments()
+            this.resolveComments(),
+            this.resolveLabels()
           )
         })
         .subscribe(() => {
           // this.closeUserRestFields();
-
           this.workItemPayload = {
             id: this.workItem.id,
             number: this.workItem.number,
@@ -219,7 +223,6 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
             },
             type: this.workItem.type
           };
-
           // init dynamic form
           if (this.workItem.relationships.baseType.data.attributes) {
             this.dynamicFormGroup = this.workItemTypeControlService.toFormGroup(this.workItem);
@@ -227,7 +230,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
           }
         },
         err => {
-          //console.log(err);
+          console.log('#### - 4', err);
           //setTimeout(() => this.itemSubscription.unsubscribe());
           // this.closeDetails();
         })
@@ -324,6 +327,30 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
         this.comments = this.workItem.relationships.comments.data;
         this.loadingComments = false;
       })
+  }
+
+  resolveLabels(): Observable<any> {
+    return this.labelService.getLabels()
+      .do(labels => {
+        this.labels = labels;
+        if (this.workItem.relationships.labels.data) {
+          this.workItem.relationships.labels.data =
+          this.workItem.relationships.labels.data.map(label => {
+            return this.labels.find(l => l.id === label.id);
+          });
+        } else {
+          this.workItem.relationships.labels = {
+            data: []
+          }
+        }
+      })
+  }
+
+  onLabelSelectorOpen(event) {
+    if (!this.workItem.id) {
+      this.labelService.getLabels()
+        .subscribe(labels => this.labels = labels);
+    }
   }
 
   getAllUsers(): Observable<any> {
@@ -637,6 +664,34 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
     this.searchAssignee = false;
   }
 
+  updateLabels(selectedLabels: LabelModel[]) {
+    if(this.workItem.id) {
+      let payload = cloneDeep(this.workItemPayload);
+      payload = Object.assign(payload, {
+        relationships : {
+          labels: {
+            data: selectedLabels.map(label => {
+              return {
+                id: label.id,
+                type: label.type
+              }
+            })
+          }
+        }
+      });
+      this.save(payload, true)
+        .subscribe(workItem => {
+          this.workItem.relationships.labels = {
+            data: selectedLabels
+          };
+        })
+    } else {
+      this.workItem.relationships.labels = {
+        data : selectedLabels
+      };
+    }
+  }
+
   cancelAssignment(): void {
     this.searchAssignee = false;
   }
@@ -665,6 +720,15 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
       (error) => {
           console.log(error);
       });
+  }
+
+  removeLable(event) {
+    let labels = cloneDeep(this.workItem.relationships.labels.data);
+    let index = labels.indexOf(labels.find(l => l.id === event.id));
+    if(index > -1) {
+      labels.splice(index, 1);
+      this.updateLabels(labels);
+    }
   }
 
   updateComment(comment) {

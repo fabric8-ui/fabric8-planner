@@ -1,3 +1,4 @@
+import { LabelSelectorModule } from './../label-selector/label-selector.module';
 
 import { RouterModule } from '@angular/router';
 import { NgModule }     from '@angular/core';
@@ -27,6 +28,7 @@ import { AreaService } from '../../services/area.service';
 import { WorkItemDetailComponent } from './work-item-detail.component';
 import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component';
 import { TypeaheadDropDownModule } from '../typeahead-dropdown/typeahead-dropdown.module';
+import { LabelsModule } from '../labels/labels.module';
 import { MarkdownControlComponent } from '../markdown-control/markdown-control.component';
 import { WorkItemLinkModule } from '../work-item-link/work-item-link.module';
 import { WorkItemCommentModule } from '../work-item-comment/work-item-comment.module';
@@ -48,10 +50,12 @@ if (process.env.ENV == 'inmemory') {
     WidgetsModule,
     AlmIconModule,
     AlmEditableModule,
+    LabelSelectorModule,
     ModalModule,
     CommonModule,
     CollapseModule,
     FormsModule,
+    LabelsModule,
     TooltipModule.forRoot(),
     TypeaheadDropDownModule,
     Ng2CompleterModule,
