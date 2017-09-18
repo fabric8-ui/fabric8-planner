@@ -1,7 +1,7 @@
 describe('Splash page', function() {
 
   beforeEach(function() {
-      browser.get(browser.params.target.url + "/');
+      browser.get(browser.params.target.url + "/");
 //      browser.get('http://localhost:8088/');
   });
 
