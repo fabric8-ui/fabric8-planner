@@ -132,6 +132,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   loadingTypes: boolean = false;
   loadingIteration: boolean = false;
   loadingArea: boolean = false;
+  loadingLabels: boolean = false;
   labels: LabelModel[] = [];
 
   constructor(
@@ -204,6 +205,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
           this.loadingTypes = true;
           this.loadingIteration = true;
           this.loadingArea = true;
+          this.loadingLabels = true;
         })
         .switchMap(() => this.workItemService.getWorkItemByNumber(id))
         .do(workItem => {
@@ -359,6 +361,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   resolveLabels(): Observable<any> {
     return this.labelService.getLabels()
       .do(labels => {
+        this.loadingLabels = false;
         this.labels = cloneDeep(labels);
         if (this.workItem.relationships.labels.data) {
           this.workItem.relationships.labels.data =
@@ -587,6 +590,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
 
   updateLabels(selectedLabels: LabelModel[]) {
     if(this.workItem.id) {
+      this.loadingLabels = true;
       let payload = cloneDeep(this.workItemPayload);
       payload = Object.assign(payload, {
         relationships : {
@@ -602,6 +606,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
       });
       this.save(payload, true)
         .subscribe(workItem => {
+          this.loadingLabels = false;
           this.workItem.relationships.labels = {
             data: selectedLabels
           };
