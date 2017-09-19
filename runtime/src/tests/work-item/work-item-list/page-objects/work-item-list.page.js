@@ -608,7 +608,7 @@ class WorkItemListPage {
 
   /* Iterations Page object model */
   clickIterationKebab (index){
-    return element(by.xpath ("(.//button[@class='btn btn-link dropdown-toggle']/i[@class='fa fa-ellipsis-v'])["+ index +"]")).click();
+    return element(by.xpath("(//div[@class='f8-itr-entry']//button[@class='btn btn-link dropdown-toggle'])["+index+"]")).click();
   }
   clickEditIterationKebab (){
     return element(by.linkText ("Edit")).click();
@@ -665,6 +665,9 @@ class WorkItemListPage {
     return element(by.css('.iteration-count')).getText();
   }
 
+  getIterationByName(name){
+    return element(by.xpath(".//text()[contains(.,'" + name + "')]/../../../.."));
+  }
 
   get lastFutureIteration () {
     return element.all(by.xpath (".//text()[contains(.,'Future Iterations')]/../../../../ul/li")).last();
@@ -694,12 +697,17 @@ class WorkItemListPage {
     return element(by.css(".f8-itr__add")).click();
   }
 
-  get iterationTitle  (){
-    return element(by.css(".f8-itr-name")).click();
+  get iterationTitleFromList  (){
+    return element(by.css('.f8-itr-name'));
   }
+
+  get iterationTitleFromModal  (){
+    return element(by.id("iteration-name"));
+  }
+
   setIterationTitle  (newTitleString,append){
-    if (!append) { this.iterationTitle.clear(newTitleString) };
-    return this.iterationTitle.sendKeys(newTitleString);
+    if (!append) { this.iterationTitleFromModal.clear(newTitleString) };
+    return this.iterationTitleFromModal.sendKeys(newTitleString);
   }
   get iterationDescription  (){
     return element(by.id("iteration-description")).click();
@@ -736,8 +744,12 @@ class WorkItemListPage {
     return element(by.id('iteration-select-dropdown'));
   }
 
+  get forceActiveLabel(){
+    return element(by.css('.f8-active-label'));
+  }
+
   get activeIterationButton () {
-    return  element(by.id("active-switch"));
+    return element(by.css("#active-switch > label"));
   }
 
   clickActiveIterationButton () {
@@ -745,7 +757,7 @@ class WorkItemListPage {
   }
 
   activeIterationButtonStatus (){
-    return this.activeIterationButton.isSelected();
+    return this.activeIterationButton.element(by.css('input')).isSelected();
   }
 
   getPortfolio() {

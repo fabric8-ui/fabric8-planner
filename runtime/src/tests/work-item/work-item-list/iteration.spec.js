@@ -25,6 +25,14 @@ describe('Iteration CRUD tests :: ', function () {
   }
 
   var until = protractor.ExpectedConditions;
+  var expectedForceActiveLabel = 'Force Active:';
+  var newIterationTitle = 'New Iteration';
+  var newIterationDescription = 'New Iteration Description';
+  var newActiveIterationIndex = 6;      // Based on mock data
+  var defaultActiveIterationIndex = 2;  // Based on mock data
+  var rootIterationID = '1';
+  var updateIterationTitle = 'Update Iteration';
+  var updateIterationDescription = 'Update Iteration Description';
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
@@ -48,32 +56,89 @@ describe('Iteration CRUD tests :: ', function () {
   });
 
   /* Verify setting the fields in a new iteration*/
- it('Verify setting the Iteration title and description fields', function() {
-
+  it('Verify setting the Iteration title and description fields', function() {
     /* Create a new iteration */ 
     page.clickIterationAddButton();
-    page.setIterationTitle('Newest Iteration',false);
-    page.setIterationDescription('Newest Iteration',false);
+    page.setIterationTitle(newIterationTitle, false);
+    page.clickParentIterationDropDown();
+    page.selectParentIterationById(rootIterationID);
+    page.setIterationDescription(newIterationDescription, false);
+
+    page.clickCreateIteration();
+    /* Verify that the new iteration was successfully added */
+    browser.wait(until.presenceOf(page.getIterationByName(newIterationTitle)), constants.WAIT, 'Failed to find iteration with title: ' + newIterationTitle);
+  });
+
+  it('Verify force active button label exists', function() {
+    page.clickIterationAddButton();
+    expect(page.forceActiveLabel.getText()).toBe(expectedForceActiveLabel);
+  });
+
+  it('Verify force active button exists', function(){
+    page.clickIterationAddButton();
+    expect(page.activeIterationButton.isPresent()).toBe(true);
+  });
+
+  it('Verify force active button is clickable', function() {
+    page.clickIterationAddButton();
+    page.activeIterationButtonStatus().then(function(status){
+      let old_status = status;
+      page.clickActiveIterationButton();
+      page.activeIterationButtonStatus().then(function(new_status) {
+        // Verify old state is not equal to new state
+        expect(old_status).toBe(!new_status);
+     });
+    });
+  })
+
+  it('Verify force active button default state is false', function(){
+    page.clickIterationAddButton();
+    expect(page.activeIterationButtonStatus()).toBe(false);
+  })
+
+  it('Verify force active button state(true) is preserved', function(){
+    page.clickIterationAddButton();
+    page.setIterationTitle(newIterationTitle, false);
+    page.setIterationDescription(newIterationDescription, false);
+    page.clickParentIterationDropDown();
+    page.selectParentIterationById(rootIterationID);
+
+    // Enable active iteration
+    page.clickActiveIterationButton();
+    // Save iteration
     page.clickCreateIteration();
 
-    /* Verify the new iteration is present */
-    page.clickExpandFutureIterationIcon();
-    browser.wait(until.presenceOf(page.lastFutureIteration), constants.WAIT, 'Failed to find theLastIteration');
-   
-    /* Verify that the new iteration was successfully added */ 
-    expect(page.lastFutureIteration.getText()).toContain('Newest Iteration');
-  }); 
+    // Reopen the same iteration
+    page.clickIterationKebab(newActiveIterationIndex);
+    page.clickEditIterationKebab();
+
+    // Force active iteration button should be in true state
+    expect(page.activeIterationButtonStatus()).toBe(true);
+  })
+
+  it('Verify force active button state(false) is preserved', function(){
+    page.clickIterationKebab(defaultActiveIterationIndex);
+    page.clickEditIterationKebab();
+
+    // Disable active iteration
+    page.clickActiveIterationButton();
+    page.clickCreateIteration();
+
+    page.clickIterationKebab(defaultActiveIterationIndex);
+    page.clickEditIterationKebab();
+
+    // Force active iteration button should be in false state
+    expect(page.activeIterationButtonStatus()).toBe(false);
+  });
 
   /* Query and edit an interation */
-it('Query/Edit iteration', function() {
-      page.clickExpandFutureIterationIcon();
-      page.clickIterationKebab("1");
-      page.clickEditIterationKebab();
-      page.setIterationTitle('Update Iteration',false);
-      page.setIterationDescription('Update Iteration',false);
-      page.clickCreateIteration();
-      browser.wait(until.presenceOf(page.firstFutureIteration), constants.WAIT, 'Failed to find thefirstIteration');
-      expect(page.firstFutureIteration.getText()).toContain('Update Iteration');
+  it('Query/Edit iteration', function() {
+    page.clickIterationKebab(defaultActiveIterationIndex);
+    page.clickEditIterationKebab();
+    page.setIterationTitle(updateIterationTitle, false);
+    page.setIterationDescription(updateIterationDescription, false);
+    page.clickCreateIteration();
+    browser.wait(until.presenceOf(page.getIterationByName(updateIterationTitle)), constants.WAIT, 'Failed to find iteration with name: ' + updateIterationTitle);
   });
 
  it('Associate Workitem from detail page', function() {
