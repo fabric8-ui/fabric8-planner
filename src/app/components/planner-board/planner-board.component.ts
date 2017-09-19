@@ -16,7 +16,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import { Response } from '@angular/http';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationStart } from '@angular/router';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { cloneDeep, trimEnd } from 'lodash';
 
@@ -33,11 +33,14 @@ import { Dialog } from 'ngx-widgets';
 
 import { CardValue } from './../card/card.component';
 import { IterationModel } from '../../models/iteration.model';
+import { UrlService } from './../../services/url.service';
 import { WorkItem } from '../../models/work-item';
 import { WorkItemType } from '../../models/work-item-type';
 import { WorkItemService } from '../../services/work-item.service';
 import { WorkItemDataService } from './../../services/work-item-data.service';
 import { CollaboratorService } from '../../services/collaborator.service';
+import { LabelService } from '../../services/label.service';
+import { LabelModel } from '../../models/label.model';
 
 @Component({
   // tslint:disable-next-line:use-host-property-decorator
@@ -79,6 +82,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   private existingQueryParams: Object = {};
   private wiSubscription = null;
   lane: any;
+  private labels: LabelModel[] = [];
 
   constructor(
     private auth: AuthenticationService,
@@ -90,7 +94,9 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     private workItemDataService: WorkItemDataService,
     private dragulaService: DragulaService,
     private iterationService: IterationService,
+    private labelService: LabelService,
     private userService: UserService,
+    private urlService: UrlService,
     private spaces: Spaces,
     private areaService: AreaService,
     private filterService: FilterService,
@@ -103,14 +109,14 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         this.dragulaService.drop
         .map(value => value.slice(1))
         .filter(value => {
-          return !value[1].classList.contains('iteration-container') &&
+          return !value[1].classList.contains('f8-itr') &&
                  !value[1].classList.contains('iteration-header');
         }).subscribe((args) => this.onDrop(args)),
 
         this.dragulaService.over
         .map(value => value.slice(1))
         .filter(value => {
-          return value[1].classList.contains('card-wrapper');
+          return value[1].classList.contains('f8-board__card');
         })
         .subscribe((args) => this.onOver(args)),
 
@@ -171,16 +177,18 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       // this.collaboratorService.getCollaborators(),
       this.workItemService.getWorkItemTypes(),
       this.areaService.getAreas(),
+      this.labelService.getLabels(),
       this.userService.getUser().catch(err => Observable.of({} as User)),
       this.currentIteration,
       this.currentWIType
     )
-    .subscribe(([iterations, wiTypes, areas, loggedInUser, currentIteration, currentWIType]) => {
+    .subscribe(([iterations, wiTypes, areas, labels, loggedInUser, currentIteration, currentWIType]) => {
       this.iterations = iterations;
       this.workItemTypes = wiTypes;
       this.readyToInit = true;
       this.areas = areas;
       this.loggedInUser = loggedInUser;
+      this.labels = labels;
       // Resolve iteration filter on the first load of board view
       // If there is an existing iteration query params already
       // Set the filter service with iteration filter
@@ -230,7 +238,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         workItems,
         this.iterations,
         [],
-        this.workItemTypes
+        this.workItemTypes,
+        this.labels
       );
       lane.cardValue = lane.workItems.map(item => {
         return {
@@ -239,7 +248,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
             title: item.attributes['system.title'],
             avatar: '',
             hasLink: true,
-            link: "./detail/"+item.id,
+            link: "./../detail/"+item.attributes['system.number'],
             menuItem: [{
               id: 'card_associate_iteration',
               value: 'Associate with iteration...'
@@ -247,7 +256,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
             {
               id: 'card_open',
               value: 'Open',
-              link: "./detail/"+item.id
+              link: "./../detail/"+item.attributes['system.number']
             },
             {
               id: 'card_move_to_backlog',
@@ -256,7 +265,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
             extraData: {
               selfLink: item.links.self,
               version: item.attributes['version'],
-              UUID: item.id
+              UUID: item.id,
+              labels: item.relationships.labels.data
             }
         }
       });
@@ -273,7 +283,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       workItems,
       this.iterations,
       [],
-      this.workItemTypes
+      this.workItemTypes,
+      this.labels
     );
     for(let i=0; i<workItems.length; i++) {
       lane = this.lanes.find((lane) => lane.option === workItems[i].attributes['system.state']);
@@ -303,7 +314,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         extraData: {
           selfLink: workItems[i].links.self,
           version: workItems[i].attributes['version'],
-          UUID: workItems[i].id
+          UUID: workItems[i].id,
+          labels: workItems[i].relationships.labels.data
         }
       });
       lane.cardValue = [...cardValues, ...lane.cardValue];
@@ -449,7 +461,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
               workItemResp.workItems,
               this.iterations,
               [],
-              this.workItemTypes
+              this.workItemTypes,
+              this.labels
           )];
           lane.cardValue = [
             ...lane.cardValue,
@@ -477,7 +490,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
                 extraData: {
                   selfLink: item.links.self,
                   version: item.attributes['version'],
-                  UUID: item.id
+                  UUID: item.id,
+                  labels: item.relationships.labels.data
                 }
               }
             })
@@ -531,7 +545,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       [workItem],
       this.iterations,
       [],
-      this.workItemTypes
+      this.workItemTypes,
+      this.labels
     );
 
     let lane = this.lanes.find((lane) => lane.option === workItem.attributes['system.state']);
@@ -633,7 +648,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       laneSection[i].classList.remove('active-lane');
     }
     containerClassList.add('active-lane');
-    el.classList.remove('dn');
+    el.classList.remove('hide');
   }
 
   onOut(args) {
@@ -836,6 +851,24 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
             lane.workItems.splice(index, 0, workItem);
           }
         })
+    );
+
+    this.eventListeners.push(
+      this.router.events
+        .filter(event => event instanceof NavigationStart)
+        .subscribe(
+          (event: any) => {
+            if (event.url.indexOf('/plan/detail/') > -1) {
+                // It's going to the detail page
+                let url = location.pathname;
+                let query = location.href.split('?');
+                if (query.length == 2) {
+                  url = url + '?' + query[1];
+                }
+                this.urlService.recordLastListOrBoard(url);
+              }
+          }
+        )
     );
   }
 

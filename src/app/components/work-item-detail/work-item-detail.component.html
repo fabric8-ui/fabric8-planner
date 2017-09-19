@@ -8,7 +8,7 @@
         <div class="f8-quick-preview__header">
           <span
             class="pficon pficon-close pull-right f8-quick-preview--close"
-            (click)="closeDetails()">
+            (click)="closePreview()">
           </span>
           <div class="form-group width-100 pull-left mobile-bar padding-h-10 padding-v-5 margin-0">
             <span *ngIf="workItem.id" class="detail-created-date pull-right">
@@ -65,8 +65,12 @@
                 </ul>
               </div>
               <a class="pull-right">
-                <span class="dib margin-right-3">View full details</span>
-                <span class="pficon pficon-arrow"></span>
+                <span class="dib margin-right-3">
+                  <a [routerLink]="[constructUrl(workItem)]" [queryParams]="queryParams">
+                    View full details
+                  </a>
+                </span>
+                <span class="fa fa-list-alt"></span>
               </a>
             </div>
             <div class="width-100 pull-left wi-detail-title-blk">
@@ -118,8 +122,6 @@
           </div>
         </div>
 
-
-
         <div class="width-100 pull-left padding-10 item-action-block">
           <!-- Assignee -->
           <div class="form-group">
@@ -155,7 +157,7 @@
                         <input id="userAssigneeSearchInput" #userSearch (keyup)="filterUser($event)"
                           autocomplete="off" />
                         <ul class="item-ul no-padding user-list" #userList>
-                          <li *ngIf="!usersLoaded" class="textCenter"><i class="fa fa-spinner fa-pulse"></i></li>
+                          <li *ngIf="!usersLoaded" class="text-center"><i class="fa fa-spinner fa-pulse"></i></li>
                           <li
                             class="item-li"
                             [class.first-item] = "filteredUsers && filteredUsers.length"
@@ -166,7 +168,6 @@
                               <!-- <span class="pull-left fa fa-user user-assign-icon active"></span> -->
                               <img
                                 class="pull-left user-assign-avatar"
-                                src="{{loggedInUser.attributes?.fullName}}"
                                 src="{{loggedInUser.attributes?.imageURL + '&s=20'}}"
                                 onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'"/>
                               <span [innerHTML]="loggedInUser.attributes?.fullName + ' (me)'"></span>
@@ -179,7 +180,6 @@
                               <!-- <span class="pull-left fa fa-user user-assign-icon active"></span> -->
                               <img
                                 class="pull-left user-assign-avatar"
-                                src="{{user.attributes?.fullName}}"
                                 src="{{user.attributes?.imageURL + '&s=20'}}"
                                 onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'"/>
                               <span [innerHTML]="user.attributes?.fullName | almSearchHighlight: userSearch.value"></span>
@@ -258,6 +258,29 @@
                   #iterationSelectbox noValueLabel="None" [values]="iterations"
                   (onFocus)="focusIteration()" (onUpdate)="iterationUpdated($event)">
                 </typeahead-dropdown>
+              </div>
+            </div>
+          </div>
+          <!--Lables-->
+          <div class="form-group">
+            <div class="width-100 pull-left detail-label-wrap">
+              <label class="col-xs-4 col-sm-4 col-md-4 control-label">
+                {{workItem.relationships?.baseType?.data?.attributes?.fields['system.label']?.label || 'Label'}}
+              </label>
+              <div class="col-xs-8 col-sm-8 col-md-8 padding-left-0">
+                <f8-label [labels]="workItem.relationships?.labels?.data ?
+                  workItem.relationships?.labels?.data : []" (onRemoveLabel)="removeLable($event)"
+                  [allowDelete]="true"></f8-label>
+                <div class="label-selector-wrapper">
+                  <label-selector
+                    id="labelSelector"
+                    #labelSelector
+                    [allLabels]="labels"
+                    [selectedLabels]="workItem.relationships?.labels?.data ?
+                      workItem.relationships?.labels?.data : []"
+                    (onSelectLable)="updateLabels($event)">
+                  </label-selector>
+                </div>
               </div>
             </div>
           </div>

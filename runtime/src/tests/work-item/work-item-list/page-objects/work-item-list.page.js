@@ -94,7 +94,7 @@ class WorkItemListPage {
 /* Page elements - bottom of the page - work item quick add */
 
  get workItemQuickAddTitle () {
-   return element(by.id("exampleInput"));
+   return element(by.css(".f8-quickadd-input"));
   }
 
  typeQuickAddWorkItemTitle (keys) {
@@ -103,7 +103,7 @@ class WorkItemListPage {
  }
 
  get workItemQuickAddDesc () {
-   return element(by.id("exampleDesc"));
+   return element(by.css(".f8-quickadd-desc"));
  }
 
  typeQuickAddWorkItemDesc (keys) {
@@ -151,8 +151,8 @@ class WorkItemListPage {
     return parentElement.element(by.css('.workItemList_Delete'));
   }
   workItemKebabAssocateIterationButton (parentElement) {
-    browser.wait(until.presenceOf(parentElement.element(by.css('.workItemList_Iteration'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
-    return parentElement.element(by.css('.workItemList_Iteration'));
+    browser.wait(until.presenceOf(parentElement.element(by.css('.f8-wi__list-iteration'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
+    return parentElement.element(by.css('.f8-wi__list-iteration'));
   }
   clickWorkItemKebabAssociateIterationButton (parentElement) {
     return this.workItemKebabAssocateIterationButton (parentElement).click();
@@ -177,7 +177,7 @@ class WorkItemListPage {
   parentIterationDropDown (){
     return element(by.id('parent-iteration'));
   }
- 
+
   clickIterationById(text){
     return element(by.id(text)).click();
   }
@@ -219,11 +219,11 @@ class WorkItemListPage {
   }
 
   get openButton () {
-    return element(by.css(".workItemQuickAdd_saveBtn"));
+    return element(by.css(".f8-quickadd__addwi-savebtn"));
   }
 
   quickAddbuttonById () {
-    return element(by.id("workItemQuickAdd_container"));
+    return element(by.css("f8-quickadd-container"));
   }
 
   clickWorkItemQuickAdd () {
@@ -232,7 +232,7 @@ class WorkItemListPage {
   }
 
   get saveButton () {
-    return  element(by.css(".workItemQuickAdd_Add"));
+    return  element(by.css(".f8-quickadd__wiblk-btn-add"));
   }
 
   clickQuickAddSave () {
@@ -241,7 +241,7 @@ class WorkItemListPage {
   }
 
   get cancelButton () {
-    return element(by.css(".closeQuickAdd"));
+    return element(by.css(".f8-quickadd__wiblk-btn-close"));
   }
 
   clickQuickAddCancel () {
@@ -271,11 +271,11 @@ class WorkItemListPage {
 
   /* Title element relative to a workitem */
   workItemTitle (workItemElement) {
-    return workItemElement.element(by.css(".workItemList_title")).getText();
+    return workItemElement.element(by.css(".f8-wi__list-title")).element(by.css("p")).getText();
   }
 
   clickWorkItemTitle (workItemElement, idText) {
-    workItemElement.element(by.css(".workItemList_title")).click();
+    workItemElement.element(by.css(".f8-wi__list-title")).element(by.css("p")).click();
     var theDetailPage = new WorkItemDetailPage (idText);
     var until = protractor.ExpectedConditions;
     //browser.wait(until.presenceOf(theDetailPage.workItemDetailPageTitle), constants.WAIT, 'Detail page title taking too long to appear in the DOM');
@@ -285,12 +285,12 @@ class WorkItemListPage {
 
   /* Description element relative to a workitem */
   workItemDescription (workItemElement) {
-    return workItemElement.element(by.css(".workItemList_description")).getText();
+    return workItemElement.element(by.css(".f8-wi__list-desc")).getText();
   }
 
   /* Icon element relative to a workitem */
   workItemIcon (workItemElement) {
-    return workItemElement.element(by.css(".type.workItemList_workItemType")).getText();
+    return workItemElement.element(by.css(".type.f8-wi__list-witype")).getText();
   }
 
   workItemByIndex (itemNumber) {
@@ -312,15 +312,15 @@ class WorkItemListPage {
   }
 
   workItemViewId (parentElement) {
-    return parentElement.element(By.css( ".list-view-pf-left.type.workItemList_workItemType" ));
+    return parentElement.element(By.css( ".list-view-pf-left.type.f8-wi__list-witype" ));
   }
 
   workItemViewTitle (parentElement) {
-    return parentElement.element(By.css( ".list-group-item-heading.workItemList_title" ));
+    return parentElement.element(By.css( ".list-group-item-heading.f8-wi__list-title" ));
   }
 
   workItemViewDescription (parentElement) {
-    return parentElement.element(By.css( ".list-group-item-text.workItemList_description" ));
+    return parentElement.element(By.css( ".list-group-item-text.f8-wi__list-desc" ));
   }
 
   /*
@@ -461,7 +461,7 @@ class WorkItemListPage {
   /* Adding a new workitem through the dialog */
   get detailedDialogButton () {
     /* Changed from element(by.css(".with-cursor-pointer")) - as there were multiple matches */
-    return element(by.css(".pficon-add-circle-o.margin-top-4"));
+    return element(by.css(".add-button"));
  }
 
   clickDetailedDialogButton () {
@@ -586,8 +586,8 @@ class WorkItemListPage {
   }
   /* Access the Kebab 'move to top' element relative to its parent workitem */
   workItemKebabMoveToTopButton (parentElement) {
-    browser.wait(until.presenceOf(parentElement.element(by.css('.workItemList_MoveTop'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
-    return parentElement.element(by.css('.workItemList_MoveTop'));
+    browser.wait(until.presenceOf(parentElement.element(by.css('.f8-wi__list-movetop'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
+    return parentElement.element(by.css('.f8-wi__list-movetop'));
   }
   clickWorkItemKebabMoveToTopButton (parentElement) {
     return this.workItemKebabMoveToTopButton (parentElement).click();
@@ -595,13 +595,13 @@ class WorkItemListPage {
 
   /* Access the Kebab 'move to bottom' element relative to its parent workitem */
   workItemKebabMoveToBottomButton (parentElement) {
-    browser.wait(until.presenceOf(parentElement.element(by.css('.workItemList_MoveBottom'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
-    return parentElement.element(by.css('.workItemList_MoveBottom'));
+    browser.wait(until.presenceOf(parentElement.element(by.css('.f8-wi__list-movebtm'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
+    return parentElement.element(by.css('.f8-wi__list-movebtm'));
   }
   clickWorkItemKebabMoveToBottomButton (parentElement) {
     return this.workItemKebabMoveToBottomButton (parentElement).click();
   }
-  
+
   iterationAddButton  (){
     return element(by.id('add-iteration-icon'));
   }
@@ -630,7 +630,7 @@ class WorkItemListPage {
   }
 
   clickExpandCurrentIterationIcon () {
-    return this.expandCurrentIterationIcon.click(); 
+    return this.expandCurrentIterationIcon.click();
   }
 
   get expandFutureIterationIcon () {
@@ -638,7 +638,7 @@ class WorkItemListPage {
   }
 
   clickExpandFutureIterationIcon () {
-    return this.expandFutureIterationIcon.click(); 
+    return this.expandFutureIterationIcon.click();
   }
 
   get expandPastIterationIcon () {
@@ -646,7 +646,7 @@ class WorkItemListPage {
   }
 
   clickExpandPastIterationIcon () {
-    return this.expandPastIterationIcon.click(); 
+    return this.expandPastIterationIcon.click();
   }
 
   get futureIterations () {
@@ -681,7 +681,7 @@ class WorkItemListPage {
   get lastPastIteration () {
     return element.all(by.xpath (".//text()[contains(.,'Past Iterations')]/../../../ul/li")).last();
   }
-  
+
   firstCurrentIteration () {
     return element.all(by.xpath (".//text()[contains(.,'Current Iterations')]/../../../../../ul/li")).first();
   }
@@ -691,11 +691,11 @@ class WorkItemListPage {
   }
 
   clickIterationCreateLabel  (){
-    return element(by.id("add-iteration")).click();
+    return element(by.css(".f8-itr__add")).click();
   }
 
   get iterationTitle  (){
-    return element(by.id("iteration-name")).click();
+    return element(by.css(".f8-itr-name")).click();
   }
   setIterationTitle  (newTitleString,append){
     if (!append) { this.iterationTitle.clear(newTitleString) };
@@ -748,17 +748,24 @@ class WorkItemListPage {
     return this.activeIterationButton.isSelected();
   }
 
-  get Portfolio (){
+  getPortfolio() {
     return element(by.id('portfolio'));
   }
-  clickPortfolio  (){
-    return this.Portfolio.click();
+
+  clickPortfolio() {
+    return this.getPortfolio().click();
   }
-  get Requirements (){
-    return element(by.id('portfolio'));
+
+  getRequirements() {
+    return element(by.id('requirements'));
   }
-  clickRequirements  (){
-    return this.Requirements.click();
+
+  clickRequirements() {
+    return this.getRequirements().click();
+  }
+
+  getExecution() {
+    return element(by.id('execution'));
   }
 }
 

@@ -1,92 +1,96 @@
-@import '../../../assets/stylesheets/_base';
+@import (reference) '../../../assets/stylesheets/_base';
 
-.iterations-container {
+.f8-itr {
   background-color: @color-pf-black-900;
-  .iteration-wrapper {
+  &-wrapper {
     color: @color-pf-white;
-    li { cursor: pointer; }
-    .badge { background-color: @color-pf-black; }
-    i { color: @color-pf-white; }
-    .iteration-header { padding: 10px 20px;
-      > h4 { margin: 0; }
-      .fa-icon { width: 15px; }
-      .add-btn { color: @color-pf-blue; }
+  }
+  &__panel {
+    &-hdr {
+      width: 100%;
+      padding: 20px;
+      padding-right: 15px;
     }
-    .iteration-subheader {
-      display: block;
-      .dropdown-kebab-pf { margin-left: 10px; }
-      .iteration-name {
+    .node-drop-slot,
+    .list-group-item {
+      padding: 0 !important;
+      margin:  0 !important;
+      background-color: @color-pf-black-900;
+      &:hover {
+        background-color: @color-pf-black-700;
+      }
+      .tree-list-item {
         display: inline-block;
         width: 100%;
+        padding: 0;
+        background-color: @color-pf-black-900;
+        &:hover {
+          background-color: @color-pf-black-700;
+        }
+        span {
+          float: left;
+        }
+        .toggle-children-wrapper {
+          width: 25px;
+          padding-top: 5px;
+          padding-left: 10px;
+        }
+      }
+      .on-hover-background {
+        background-color: @color-pf-black-700;
       }
     }
-    /* Iterations expanded div styling */
-    .iteration-expanded-div {
+    .tree-children {
+        .tree-list-item {
+          .toggle-children-wrapper {
+            padding-left: ((@grid-gutter-width/3) * 2.5);
+          }
+          .f8-itr-entry {
+            padding-left: ((@grid-gutter-width/3)) * 4;
+          }
+        }
+    }
+  }
+  &__List {
+    &--expanded {
       padding-left: 0;
       margin-bottom: 0;
+      .dropdown-kebab-pf {
+        .btn-link {
+          color: @color-pf-white;
+        }
+      }
       > li {
         padding: 15px;
         list-style: none;
-        &:hover { background-color: @color-pf-black-700; }
         &.active {
           border-left: 4px solid;
           border-left-color: transparent;
-          &.selected-iteration {
+          background-color: @color-pf-black-700;
+          &.io-itr--selected {
             border-left: 4px solid;
             border-left-color: @color-pf-blue;
+            background-color: @color-pf-black-700;
           }
         }
-        .iteration-count { float: right; }
-        .iteration-status {
-          padding-top: 20px;
-          padding-bottom: 15px;
-        }
-        .iteration-description {
-          &:after,
-          &:before {
-            background: transparent !important;
-            content: none !important;
-          }
+        &:hover {
+          background-color: @color-pf-black-800 ;
         }
       }
-    }
-    .not-current-iteration {
-      padding-left: 0;
-      margin-bottom: 0;
-      > li {
-        padding-top: 5px;
-        padding-right: 15px;
-        padding-bottom: 5px;
-        padding-left: 40px;
-        &:hover { background-color: @color-pf-black-700; }
-        .iteration-name {
-          display: inline-block;
-          width: 100%;
-        }
-      }
-      .badge { margin-right: 10px; }
-    }
-    .selected-iteration {
-      color: @color-pf-white;
-      background-color: @color-pf-black-700 !important;
-      border-left: 4px solid;
-      border-left-color: @color-pf-blue;
-      i { color: @color-pf-white !important; }
-    }
-    .parent-iteration {
-      font-size: 12px;
-      font-style: italic;
-    }
-    .dn {
-      display: none;
-    }
-    .on-hover-background {
-      background-color: @color-pf-black-700;
     }
   }
-}
-.not-current-iteration {
-  .truncate {
-    padding-right: 60px;
+  &-count { float: right; }
+  &-desc {
+    &:after,
+    &:before {
+      background: transparent !important;
+      content: none !important;
+    }
+  }
+  &__add {
+    &-btn {
+      color: @color-pf-blue;
+      font-size: 13px;
+    }
   }
 }

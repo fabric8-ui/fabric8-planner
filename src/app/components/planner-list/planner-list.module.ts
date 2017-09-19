@@ -30,9 +30,11 @@ import {
 } from '../work-item-iteration-modal/work-item-iteration-modal.module';
 import { GroupTypesModule } from '../group-types-panel/group-types-panel.module';
 import { IterationModule } from '../iterations-panel/iterations-panel.module';
+import { LabelsModule } from '../labels/labels.module';
 import { PlannerListRoutingModule } from './planner-list-routing.module';
 import { SidepanelModule } from '../side-panel/side-panel.module';
 import { ToolbarPanelModule } from '../toolbar-panel/toolbar-panel.module';
+import { UrlService } from './../../services/url.service';
 import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.module';
 import { WorkItemDetailAddTypeSelectorModule } from '../work-item-create/work-item-create.module';
 import { PlannerListComponent } from './planner-list.component';
@@ -41,6 +43,7 @@ import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-a
 import { WorkItemService } from '../../services/work-item.service';
 import { MockHttp } from '../../mock/mock-http';
 import { HttpService } from '../../services/http-service';
+import { LabelService } from '../../services/label.service';
 
 let providers = [];
 
@@ -57,7 +60,9 @@ if (process.env.ENV == 'inmemory') {
       provide: HttpService,
       useClass: MockHttp
     },
-    TooltipConfig
+    LabelService,
+    TooltipConfig,
+    UrlService
   ];
 } else {
   providers = [
@@ -75,7 +80,9 @@ if (process.env.ENV == 'inmemory') {
       },
       deps: [XHRBackend, RequestOptions, AuthenticationService]
     },
-    TooltipConfig
+    LabelService,
+    TooltipConfig,
+    UrlService
   ];
 }
 
@@ -90,6 +97,7 @@ if (process.env.ENV == 'inmemory') {
     InfiniteScrollModule,
     GroupTypesModule,
     IterationModule,
+    LabelsModule,
     ModalModule,
     PlannerListRoutingModule,
     SidepanelModule,

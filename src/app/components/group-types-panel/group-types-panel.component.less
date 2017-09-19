@@ -1,14 +1,17 @@
-@import '../../../assets/stylesheets/_base';
-.filter {
-  color: @color-pf-white;
-  a {
-    color: @color-pf-white;
-    text-decoration: none;
-    padding: 20px 20px;
-    font-size: 15px;
-    line-height: 15px;
+@import (reference) '../../../assets/stylesheets/shared/_variables';
+
+.f8-group-filter {
+  &__type {
     display: inline-block;
     width: 100%;
+    padding: 20px;
+    font-size: 15px;
+    line-height: 15px;
+    color: @color-pf-white;
+    text-decoration: none;
+  }
+  h3 {
+    padding: 20px;
   }
 }
 

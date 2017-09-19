@@ -4,7 +4,9 @@ import {
   Input,
   Output,
   EventEmitter,
-  OnDestroy
+  SimpleChanges,
+  OnDestroy,
+  OnChanges
 } from '@angular/core';
 import { User } from 'ngx-login-client';
 
@@ -14,11 +16,10 @@ import { User } from 'ngx-login-client';
   styleUrls: ['./switch.component.less']
 })
 export class SwitchComponent {
-  @Input () isChecked: Boolean;
+  @Input() isChecked: Boolean;
   @Output() onChecked = new EventEmitter();
 
   toggleSwitch(event) {
-    // console.log(event, '####### toogleSwitch');
     this.onChecked.emit(event);
   }
 }

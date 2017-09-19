@@ -209,7 +209,7 @@ export class WorkItemService {
   }
 
 
-  resolveWorkItems(workItems, iterations, users, wiTypes): WorkItem[] {
+  resolveWorkItems(workItems, iterations, users, wiTypes, labels): WorkItem[] {
     let resolvedWorkItems = workItems.map((item) => {
       // put the hasChildren on the root level for the tree
       if (item.relationships.children && item.relationships.children.meta)
@@ -231,6 +231,11 @@ export class WorkItemService {
         item.relationships.iteration.data = iterations.find((it) => it.id === iteration.id) || iteration;
       }
 
+      // Resolve labels
+      let WIlabels = item.relationships.labels.data ? cloneDeep(item.relationships.labels.data) : [];
+      item.relationships.labels.data = WIlabels.map(label => {
+        return labels.find(l => l.id === label.id);
+      })
       // Resolve work item types
       let wiType = cloneDeep(item.relationships.baseType.data);
       if (wiType) {
@@ -264,18 +269,35 @@ export class WorkItemService {
   */
 
   /**
-   * Usage: This method gives a single work item by ID.
+   * Usage: This method gives a single work item by display number.
    *
-   * @param: number - id
+   * @param id : string - number
+   * @param owner : string
+   * @param space : string
    */
-  getWorkItemById(id: string): Observable<WorkItem> {
+  getWorkItemByNumber(id: string, owner: string = '', space: string = ''): Observable<WorkItem> {
     if (this._currentSpace) {
-      return this.http.get(this._currentSpace.links.self.split('/spaces/')[0] + '/workitems/' + id)
+      if (owner && space) {
+        return this.http.get(
+          this._currentSpace.links.self.split('/spaces/')[0] +
+          '/namedspaces' +
+          '/' + owner +
+          '/' + space +
+          '/workitems/' + id
+        )
         .map(item => item.json().data)
         .catch((error: Error | any) => {
           this.notifyError('Getting work item data failed.', error);
           return Observable.throw(new Error(error.message));
         });
+      } else {
+        return this.http.get(this._currentSpace.links.self.split('/spaces/')[0] + '/workitems/' + id)
+          .map(item => item.json().data)
+          .catch((error: Error | any) => {
+            this.notifyError('Getting work item data failed.', error);
+            return Observable.throw(new Error(error.message));
+          });
+      }
     } else {
       return Observable.of<WorkItem>( new WorkItem() );
     }
@@ -834,11 +856,13 @@ export class WorkItemService {
         source: {
           title: wItem.attributes['system.title'],
           id: wItem.id,
+          number: wItem.attributes['system.number'],
           state: wItem.attributes['system.state']
         },
         target: {
           title: targetWItem.attributes['system.title'],
           id: targetWItem.id,
+          number: targetWItem.attributes['system.number'],
           state: targetWItem.attributes['system.state']
         },
         linkType: linkType.attributes.forward_name
@@ -853,11 +877,13 @@ export class WorkItemService {
         target: {
           title: wItem.attributes['system.title'],
           id: wItem.id,
+          number: wItem.attributes['system.number'],
           state: wItem.attributes['system.state']
         },
         source: {
           title: sourceWItem.attributes['system.title'],
           id: sourceWItem.id,
+          number: sourceWItem.attributes['system.number'],
           state: sourceWItem.attributes['system.state']
         },
         linkType: linkType.attributes.reverse_name

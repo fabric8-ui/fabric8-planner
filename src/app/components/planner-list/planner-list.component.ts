@@ -43,14 +43,17 @@ import {
 import { Space, Spaces } from 'ngx-fabric8-wit';
 
 import { WorkItem } from '../../models/work-item';
+import { WorkItemDetailComponent } from './../work-item-detail/work-item-detail.component';
 import { WorkItemType }               from '../../models/work-item-type';
 import { GroupTypesService } from '../../services/group-types.service';
 import { WorkItemListEntryComponent } from '../work-item-list-entry/work-item-list-entry.component';
 import { WorkItemService }            from '../../services/work-item.service';
 import { WorkItemDataService } from './../../services/work-item-data.service';
 import { CollaboratorService } from '../../services/collaborator.service';
-
+import { LabelService } from '../../services/label.service';
+import { LabelModel } from '../../models/label.model';
 import { TreeListComponent } from 'ngx-widgets';
+import { UrlService } from './../../services/url.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -73,6 +76,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   @ViewChild('treeListLoadTemplate') treeListLoadTemplate: TemplateRef<any>;
   @ViewChild('treeListTemplate') treeListTemplate: TemplateRef<any>;
   @ViewChild('treeListItem') treeListItem: TreeListComponent;
+  @ViewChild('detailPreview') detailPreview: WorkItemDetailComponent;
 
   workItems: WorkItem[] = [];
   prevWorkItemLength: number = 0;
@@ -100,6 +104,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   private loggedInUser: User | Object = {};
   private originalList: WorkItem[] = [];
   private currentSpace: Space;
+  private labels: LabelModel[] = [];
 
   // See: https://angular2-tree.readme.io/docs/options
   treeListOptions = {
@@ -115,22 +120,24 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   };
 
   constructor(
+    private labelService: LabelService,
+    private areaService: AreaService,
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
     private collaboratorService: CollaboratorService,
     private eventService: EventService,
-    private router: Router,
+    private filterService: FilterService,
     private groupTypesService: GroupTypesService,
+    private iterationService: IterationService,
+    private logger: Logger,
     private user: UserService,
     private workItemService: WorkItemService,
     private workItemDataService: WorkItemDataService,
-    private logger: Logger,
-    private userService: UserService,
     private route: ActivatedRoute,
+    private router: Router,
     private spaces: Spaces,
-    private iterationService: IterationService,
-    private filterService: FilterService,
-    private areaService: AreaService) {}
+    private userService: UserService,
+    private urlService: UrlService) {}
 
   ngOnInit(): void {
     // If there is an iteration on the URL
@@ -182,8 +189,12 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     // Unsubscribe in ngOnDestroy acts way after the new page inits
     // So using takeUntill to watch over the routes in case of any change
     const takeUntilObserver = this.router.events
-    .filter((event) => event instanceof NavigationStart)
-    .filter((event: NavigationStart) => event.url.indexOf('plan/board') > -1 || event.url.indexOf('plan') == -1)
+      .filter((event) => event instanceof NavigationStart)
+      .filter((event: NavigationStart) =>
+        event.url.indexOf('plan/board') > -1 ||
+        event.url.indexOf('plan/detail') > -1 ||
+        event.url.indexOf('plan') == -1
+      );
 
     this.spaceSubscription =
       // On any of these event inside combineLatest
@@ -237,12 +248,13 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.workItemService.getWorkItemTypes(),
       this.areaService.getAreas(),
       this.userService.getUser().catch(err => Observable.of({})),
+      this.labelService.getLabels()
     ).take(1).do((items) => {
       const iterations = this.iterations = items[0];
       this.workItemTypes = items[1];
       this.areas = items[2];
       this.loggedInUser = items[3];
-
+      this.labels = items[4];
       // If there is an iteration filter on the URL
       // const queryParams = this.route.snapshot.queryParams;
       // if (Object.keys(queryParams).indexOf('iteration') > -1) {
@@ -322,7 +334,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         workItems,
         this.iterations,
         [], // We don't want to static resolve user at this point
-        this.workItemTypes
+        this.workItemTypes,
+        this.labels
       );
       this.workItemDataService.setItems(this.workItems);
       // Resolve assignees
@@ -360,7 +373,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
             workItems,
             this.iterations,
             [],
-            this.workItemTypes
+            this.workItemTypes,
+            this.labels
           )
         ];
         this.workItemDataService.setItems(this.workItems);
@@ -401,12 +415,17 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
 
   onDetail(entryComponent: WorkItemListEntryComponent): void { }
 
+  onPreview(workItem: WorkItem): void {
+    this.detailPreview.openPreview(workItem);
+  }
+
   onCreateWorkItem(workItem) {
     let resolveItem = this.workItemService.resolveWorkItems(
       [workItem],
       this.iterations,
       [],
-      this.workItemTypes
+      this.workItemTypes,
+      this.labels
     );
     this.workItems = [...resolveItem, ...this.workItems];
   }
@@ -563,6 +582,24 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
           }
         }
       })
+    );
+
+    this.eventListeners.push(
+      this.router.events
+        .filter(event => event instanceof NavigationStart)
+        .subscribe(
+          (event: any) => {
+            if (event.url.indexOf('/plan/detail/') > -1) {
+                // It's going to the detail page
+                let url = location.pathname;
+                let query = location.href.split('?');
+                if (query.length == 2) {
+                  url = url + '?' + query[1];
+                }
+                this.urlService.recordLastListOrBoard(url);
+              }
+          }
+        )
     );
   }
 
