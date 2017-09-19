@@ -37,6 +37,7 @@ import { AreaService } from '../../services/area.service';
 import { Comment } from './../../models/comment';
 import { IterationModel } from '../../models/iteration.model';
 import { IterationService } from '../../services/iteration.service';
+import { LabelSelectorComponent } from './../label-selector/label-selector.component';
 import { WorkItemTypeControlService } from '../../services/work-item-type-control.service';
 import { MarkdownControlComponent } from '../markdown-control/markdown-control.component';
 import { TypeaheadDropdown, TypeaheadDropdownValue } from '../typeahead-dropdown/typeahead-dropdown.component';
@@ -45,7 +46,9 @@ import { WorkItem, WorkItemRelations } from '../../models/work-item';
 import { WorkItemService } from '../../services/work-item.service';
 import { WorkItemDataService } from './../../services/work-item-data.service';
 import { WorkItemType } from '../../models/work-item-type';
-import { CollaboratorService } from '../../services/collaborator.service'
+import { CollaboratorService } from '../../services/collaborator.service';
+import { LabelService } from '../../services/label.service';
+import { LabelModel } from '../../models/label.model';
 
 @Component({
   selector: 'work-item-preview',
@@ -73,6 +76,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   @ViewChild('dropdownButton') dropdownButton: any;
   @ViewChild('areaSelectbox') areaSelectbox: TypeaheadDropdown;
   @ViewChild('iterationSelectbox') iterationSelectbox: TypeaheadDropdown;
+  @ViewChild('labelSelector') labelSelector: LabelSelectorComponent;
 
   workItem: WorkItem;
   workItemTypes: WorkItemType[];
@@ -128,11 +132,13 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   loadingTypes: boolean = false;
   loadingIteration: boolean = false;
   loadingArea: boolean = false;
+  labels: LabelModel[] = [];
 
   constructor(
     private areaService: AreaService,
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
+    private labelService: LabelService,
     private workItemService: WorkItemService,
     private workItemDataService: WorkItemDataService,
     private route: ActivatedRoute,
@@ -171,6 +177,9 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   }
 
   loadWorkItem(id: string): void {
+    if (this.labelSelector) {
+      this.labelSelector.closeDropdown();
+    }
     const t1 = performance.now();
     this.eventListeners.push(
       this.workItemDataService.getItem(id)
@@ -222,7 +231,8 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
             this.resolveArea(),
             this.resolveIteration(),
             this.resolveLinks(),
-            this.resolveComments()
+            this.resolveComments(),
+            this.resolveLabels()
           )
         })
         .subscribe(() => {
@@ -343,6 +353,23 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
         });
         this.comments = this.workItem.relationships.comments.data;
         this.loadingComments = false;
+      })
+  }
+
+  resolveLabels(): Observable<any> {
+    return this.labelService.getLabels()
+      .do(labels => {
+        this.labels = cloneDeep(labels);
+        if (this.workItem.relationships.labels.data) {
+          this.workItem.relationships.labels.data =
+          this.workItem.relationships.labels.data.map(label => {
+            return this.labels.find(l => l.id === label.id);
+          });
+        } else {
+          this.workItem.relationships.labels = {
+            data: []
+          }
+        }
       })
   }
 
@@ -579,6 +606,35 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
     }
   }
 
+  updateLabels(selectedLabels: LabelModel[]) {
+    if(this.workItem.id) {
+      let payload = cloneDeep(this.workItemPayload);
+      payload = Object.assign(payload, {
+        relationships : {
+          labels: {
+            data: selectedLabels.map(label => {
+              return {
+                id: label.id,
+                type: label.type
+              }
+            })
+          }
+        }
+      });
+      this.save(payload, true)
+        .subscribe(workItem => {
+          this.workItem.relationships.labels = {
+            data: selectedLabels
+          };
+          this.updateOnList();
+        })
+    } else {
+      this.workItem.relationships.labels = {
+        data : selectedLabels
+      };
+    }
+  }
+
   save(payload?: WorkItem, returnObservable: boolean = false): Observable<WorkItem> {
     let retObservable: Observable<WorkItem>;
     if (this.workItem.id) {
@@ -656,16 +712,25 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
 
   deleteComment(comment) {
     this.workItemService
-        .deleteComment(comment)
-        .subscribe(response => {
-            if (response.status === 200) {
-                remove(this.workItem.relationships.comments.data, cursor => {
-                    if (!!comment) {
-                        return cursor.id == comment.id;
-                    }
-                });
+      .deleteComment(comment)
+      .subscribe(response => {
+        if (response.status === 200) {
+          remove(this.workItem.relationships.comments.data, cursor => {
+            if (!!comment) {
+              return cursor.id == comment.id;
             }
-        }, err => console.log(err));
+          });
+        }
+      }, err => console.log(err));
+  }
+
+  removeLable(event) {
+    let labels = cloneDeep(this.workItem.relationships.labels.data);
+    let index = labels.indexOf(labels.find(l => l.id === event.id));
+    if(index > -1) {
+      labels.splice(index, 1);
+      this.updateLabels(labels);
+    }
   }
 
   closeDetails(): void {

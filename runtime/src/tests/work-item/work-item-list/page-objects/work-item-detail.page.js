@@ -433,6 +433,10 @@ class WorkItemDetailPage {
     return element(by.id('comment_save_btn'+index)).click();
   }
   clickCloseComment(index){
+    browser.actions().mouseMove(element(by.css('#comment_body_' + index + ' .fa-close'))).perform();
+    browser.wait(
+      until.elementToBeClickable(element(by.css('#comment_body_' + index + ' .fa-close')))
+    );
     return element(by.css('#comment_body_' + index + ' .fa-close')).click();
   }
   editComments(comment,index, append){
@@ -939,7 +943,11 @@ class WorkItemDetailPage {
     return element(By.css('.clearfloat.title-error'));
   }
 
-
+  scrollToBottom() {
+    return browser.executeScript(
+      'document.getElementsByClassName(\'f8-quick-preview\')[0].scrollTop = document.getElementsByClassName(\'f8-quick-preview\')[0].scrollHeight'
+    )
+  }
 
 }
 
