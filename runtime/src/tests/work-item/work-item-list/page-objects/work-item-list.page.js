@@ -179,10 +179,11 @@ class WorkItemListPage {
   }
 
   clickIterationById(text){
-    return element(by.id(text)).click();
+    return this.IterationById(text).click();
   }
-  IterationsById(text){
-    return element(by.id(text));
+
+  IterationById(text){
+    return element(by.id('iteration-' + text));
   }
   clickParentIterationDropDown(){
     return this.parentIterationDropDown().click();
@@ -194,12 +195,13 @@ class WorkItemListPage {
   }
 
   selectParentIterationById  (ids){
-    return element(by.id("iteration-id"+ids)).click();
+    return this.parentIterationById(ids).click();
   }
 
   parentIterationById  (ids){
-    return element(by.id("iteration-id"+ids));
+    return element(by.id("iteration-"+ids));
   }
+
   get workItemPopUpDeleteConfirmButton () {
     return element(by.buttonText('Confirm'));
   }
@@ -619,6 +621,9 @@ class WorkItemListPage {
   clickCloseIterationKebab (){
     return element(by.linkText ("Close")).click();
   }
+  clickCloseIterationConfirmation() {
+    return element(by.id('create-iteration-button')).click();
+  }
   clickChildIterationKebab (){
     return element(by.linkText ("Create child")).click();
   }
@@ -665,7 +670,7 @@ class WorkItemListPage {
     return element(by.css('.iteration-count')).getText();
   }
 
-  getIterationByName(name){
+  IterationByName(name){
     return element(by.xpath(".//text()[contains(.,'" + name + "')]/../../../.."));
   }
 
@@ -710,11 +715,11 @@ class WorkItemListPage {
     return this.iterationTitleFromModal.sendKeys(newTitleString);
   }
   get iterationDescription  (){
-    return element(by.id("iteration-description")).click();
+    return element(by.id("iteration-description"));
   }
   setIterationDescription  (newString,append){
-     if (!append) { this.iterationDescription.clear(newString) };
-    return this.iterationDescription.sendKeys(newString);
+     if (!append) { this.iterationDescription.click().clear(newString) };
+    return this.iterationDescription.click().sendKeys(newString);
   }
   get createItreationButton (){
     return element(by.id('create-iteration-button'));
@@ -757,7 +762,7 @@ class WorkItemListPage {
   }
 
   activeIterationButtonStatus (){
-    return this.activeIterationButton.element(by.css('input')).isSelected();
+    return this.activeIterationButton.element(by.css('input')).getAttribute('checked');
   }
 
   getPortfolio() {
