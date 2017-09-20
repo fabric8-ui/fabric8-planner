@@ -24,7 +24,7 @@
       .tree-list-item {
         display: inline-block;
         width: 100%;
-        padding: 0;
+        padding: 0 !important;
         background-color: @color-pf-black-900;
         &:hover {
           background-color: @color-pf-black-700;
@@ -35,7 +35,7 @@
         .toggle-children-wrapper {
           width: 25px;
           padding-top: 5px;
-          padding-left: 10px;
+          padding-left: 30px;
         }
       }
       .on-hover-background {
@@ -45,10 +45,10 @@
     .tree-children {
         .tree-list-item {
           .toggle-children-wrapper {
-            padding-left: ((@grid-gutter-width/3) * 2.5);
+            padding-left: ((@grid-gutter-width/3) * 4);
           }
           .f8-itr-entry {
-            padding-left: ((@grid-gutter-width/3)) * 4;
+            padding-left: ((@grid-gutter-width/3)) * 5.5;
           }
         }
     }
