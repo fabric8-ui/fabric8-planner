@@ -943,8 +943,15 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         }
       });
   }
+
   togglePanelState(event: any): void {
-    this.sidePanelOpen = event === 'out';
+    if (event === 'out') {
+      setTimeout(() => {
+        this.sidePanelOpen = true;
+      }, 100)
+    } else {
+      this.sidePanelOpen = false;
+    }
   }
 
   togglePanel() {

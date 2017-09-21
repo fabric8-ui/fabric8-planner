@@ -30,7 +30,7 @@ import {
       state('out', style({
         width: '320px'
       })),
-      transition('in <=> out', animate('width 600ms ease-in-out'))
+      transition('in <=> out', animate('400ms ease-in-out'))
     ]),
     trigger('slideInOutContent', [
       state('out', style({
@@ -40,7 +40,7 @@ import {
       state('in', style({
         marginLeft: '320px'
       })),
-      transition('in <=> out', animate('marginLeft 600ms ease-in-out'))
+      transition('in <=> out', animate('400ms ease-in-out'))
     ]),
   ]
 })

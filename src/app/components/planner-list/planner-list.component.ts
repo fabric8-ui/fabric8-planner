@@ -714,7 +714,13 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     this.groupTypesService.getAllowedChildWits($event.workItem);
   }
   togglePanelState(event: any): void {
-    this.sidePanelOpen = event === 'out';
+    if (event === 'out') {
+      setTimeout(() => {
+        this.sidePanelOpen = true;
+      }, 100)
+    } else {
+      this.sidePanelOpen = false;
+    }
   }
 
   togglePanel() {
