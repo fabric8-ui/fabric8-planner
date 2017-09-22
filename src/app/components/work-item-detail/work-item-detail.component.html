@@ -240,7 +240,7 @@
                   [labels]="workItem.relationships?.labels?.data ?
                     workItem.relationships?.labels?.data : []" (onRemoveLabel)="removeLable($event)"
                   [allowDelete]="true"></f8-label>
-                <div class="label-selector-wrapper" *ngIf="loggedIn" >
+                <div class="label-selector-wrapper" *ngIf="loggedIn && !loadingLabels" >
                   <label-selector
                     id="labelSelector"
                     #labelSelector
