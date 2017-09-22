@@ -178,15 +178,12 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   }
 
   loadWorkItem(id: string): void {
-    if (this.labelSelector) {
-      this.labelSelector.closeDropdown();
-    }
     const t1 = performance.now();
     this.eventListeners.push(
       this.workItemDataService.getItem(id)
         .do(workItem => {
           if (workItem) {
-            this.workItem = workItem;
+            this.workItem = cloneDeep(workItem);
             this.titleText = this.workItem.attributes['system.title'];
             this.descText = this.workItem.attributes['system.description'] || '';
             // Open the panel once work item is ready
