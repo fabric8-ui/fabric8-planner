@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 
 import { Broadcaster, Logger } from 'ngx-base';
+import { cloneDeep } from 'lodash';
 import {
   AuthenticationService,
 } from 'ngx-login-client';
@@ -39,6 +40,7 @@ export class FabPlannerAssociateIterationModalComponent {
   selectedIterationName: any = '';
   enableAssociateButton: Boolean = false;
   modalTitle: string = "Associate with Iteration";
+  workItemPayload: WorkItem;
 
   constructor(
     private auth: AuthenticationService,
@@ -174,21 +176,26 @@ export class FabPlannerAssociateIterationModalComponent {
       }]);
     }
 
-    this.workItem.relationships.iteration = {
-      data: {
-        id: this.selectedIteration.id,
-        type: 'iteration'
+    let payload = cloneDeep(this.workItemPayload);
+    payload = Object.assign(payload, {
+      relationships: {
+        iteration: {
+          data: {
+            id: this.selectedIteration.id,
+            type: 'iteration'
+          }
+        }
       }
-    };
-    this.save();
+    });
+    this.save(payload);
     this.selectedIteration = null;
     this.iterationAssociationModal.close();
     this.enableAssociateButton = false;
   }
 
-  save(): void {
+  save(payload: WorkItem): void {
     this.workItemService
-      .update(this.workItem)
+      .update(payload)
       .switchMap(item => {
         return this.iterationService.getIteration(item.relationships.iteration)
           .map(iteration => {
@@ -200,17 +207,28 @@ export class FabPlannerAssociateIterationModalComponent {
         this.selectedIteration = null;
         this.workItem.relationships.iteration = workItem.relationships.iteration;
         this.workItem.attributes['version'] = workItem.attributes['version'];
-        this.workItemService.emitEditWI(workItem);
+        this.workItemService.emitEditWI(this.workItem);
       });
   }
 
   open(event: any) {
     this.getIterations();
+    this.workItemPayload = {
+      id: this.workItem.id,
+      number: this.workItem.number,
+      attributes: {
+        version: this.workItem.attributes['version']
+      },
+      links: {
+        self: this.workItem.links.self
+      },
+      type: this.workItem.type
+    };
     this.iterationAssociationModal.open();
   }
 
   actionOnOpen() {
-    if (this.workItem.relationships.iteration.data) {
+    if (this.workItem.relationships.iteration.data){
       this.selectedIterationName = (this.workItem.relationships.iteration.data.attributes.resolved_parent_path +
         '/' +
         this.workItem.relationships.iteration.data.attributes.name).replace('//', '/');
