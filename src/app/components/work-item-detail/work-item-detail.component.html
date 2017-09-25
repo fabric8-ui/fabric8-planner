@@ -78,8 +78,8 @@
                 class="posRel"
                 *ngIf="!headerEditable" (click)='openHeader()'
                 id="title-click-div">
-                <h2 *ngIf="!loggedIn" id="wi-detail-title-ne" class="detail-title truncate margin-top-15 form-control-static">{{ workItem.attributes['system.title'] }}</h2>
-                <h2 *ngIf="loggedIn && workItem.id" id="wi-detail-title-click" class="detail-title truncate margin-top-15">{{ workItem.attributes['system.title'] }}</h2>
+                <h2 *ngIf="!loggedIn" id="wi-detail-title-ne" class="detail-title truncate margin-top-15 form-control-static" [innerHTML]="workItem.attributes['system.title']"></h2>
+                <h2 *ngIf="loggedIn && workItem.id" id="wi-detail-title-click" class="detail-title truncate margin-top-15" [innerHTML]="workItem.attributes['system.title']"></h2>
                 <span *ngIf="loggedIn && workItem.id"
                   class="pficon-edit detail-title-edit-ico"
                   id="workItemTitle_btn_edit"></span>
@@ -93,7 +93,7 @@
                     (keydown.enter)="preventDef($event)"
                     id="wi-detail-title"
                     class="detail-title-edit col-xs-9 col-sm-9 col-md-9 margin-bottom-2 margin-top-1"
-                    [innerText]="workItem.attributes['system.title'] | almTrim"
+                    [innerHTML]="workItem.attributes['system.title'] | almTrim"
                     #title >
                   </h2>
                    <aside class="col-xs-3 col-sm-3 col-md-3 padding-0">
