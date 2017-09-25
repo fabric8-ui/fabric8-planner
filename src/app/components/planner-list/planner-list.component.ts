@@ -113,7 +113,14 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   treeListOptions = {
     allowDrag: false,
     getChildren: (node: TreeNode): any => {
-      return this.workItemService.getChildren(node.data);
+      return this.workItemService.getChildren(node.data)
+        .then(workitems => this.workItemService.resolveWorkItems(
+          workitems,
+          this.iterations,
+          [], // We don't want to static resolve user at this point
+          this.workItemTypes,
+          this.labels
+        ));
     },
     levelPadding: 30,
     allowDrop: (element, to) => {
