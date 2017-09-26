@@ -95,11 +95,11 @@ class WorkItemDetailPage {
   }
 
   get workItemTitleSaveIcon () {
-    return element(by.id("workItemTitle_btn_save"));
+    return element(by.id("inlineinput_btn_save"));
   }
 
   workItemTitleSaveIconById () {
-    return element(by.id("workItemTitle_btn_save"));
+    return element(by.id("inlineinput_btn_save"));
   }
 
   clickWorkItemTitleSaveIcon () {
@@ -107,7 +107,7 @@ class WorkItemDetailPage {
   }
 
   get workItemTitleCancelIcon () {
-    return element(by.id("workItemTitle_btn_cancel"));
+    return element(by.id("inlineinput_btn_cancel"));
   }
 
   clickWorkItemTitleCancelIcon () {
