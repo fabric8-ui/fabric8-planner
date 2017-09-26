@@ -59,16 +59,18 @@
               </ul>
             </div>
             <div class="truncate padding-right-15">
-                <span class="f8-itr-name truncate"
-                  tooltip="{{iteration.attributes.name}}"
-                  placement="top" id="{{iteration.attributes.name}}">
-                  {{iteration.attributes.name | truncate : 45 }}
-                </span>
-              <div class="f8-itr__List-parent parent-iteration left-truncate">
-                <span tooltip="{{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name }}"
-                  placement="top" id="{{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name }}">
-                  {{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name | truncate : -50 }}
-                </span>
+              <span class="f8-itr-name truncate"
+                tooltip="{{iteration.attributes.name}}"
+                placement="top" id="{{iteration.attributes.name}}">
+                {{iteration.attributes.name | truncate : 45 }}
+              </span>
+              <div class="f8-itr__List-parent parent-iteration">
+                <div class="left-truncate">
+                  <span tooltip="{{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name }}"
+                    placement="top" id="{{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name }}">
+                    {{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name | truncate : -50 }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
