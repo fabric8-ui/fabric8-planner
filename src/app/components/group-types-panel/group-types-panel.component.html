@@ -7,7 +7,7 @@
     [routerLinkActive]="'selected'"
     (click)="setGuidedTypeWI(item);"
     *ngIf="item.group != 'execution'">
-      <span class="fa fa-list-ul pull-left margin-right-10"
+      <span class="pull-left margin-right-10 {{item.icon}}"
         tooltip="{{sidePanelOpen ? '' : 'Group Type'}}"
         placement="right"></span>
       <span class=""

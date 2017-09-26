@@ -20,7 +20,7 @@
         [class.hide]="!sidePanelOpen">
         <li class="active f8-itr__container"
           *ngFor="let iteration of activeIterations"
-          [routerLinkActive]="'io-itr--selected'"
+          [routerLinkActive]="'f8-itr--selected'"
           [routerLink]="[]" [attr.data-id]="iteration.id"
           [queryParams]="{q: constructURL(iteration.id)}"
           [dragula]="'wi-bag'">
@@ -64,7 +64,7 @@
                   placement="top" id="{{iteration.attributes.name}}">
                   {{iteration.attributes.name | truncate : 45 }}
                 </span>
-              <div class="f8-itr__List-parent parent-iteration">
+              <div class="f8-itr__List-parent parent-iteration left-truncate">
                 <span tooltip="{{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name }}"
                   placement="top" id="{{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name }}">
                   {{iteration.attributes.resolved_parent_path + '/' + iteration.attributes.name | truncate : -50 }}
@@ -83,18 +83,13 @@
                 tooltip="{{((iteration.relationships?.workitems?.meta?.closed / iteration.relationships?.workitems?.meta?.total) * 100) + '%'}}">
             </div>
           </div>
-          <div class="io-itr-status">
-            <div>
-              <span>
-                <span *ngIf="iteration.attributes.startAt">
-                  {{iteration.attributes.startAt | date:longDate}} - {{iteration.attributes.endAt | date:longDate}}(UTC)
-                </span>
-                &nbsp;
-              </span>
-              <span class="f8-itr-count">
-                {{iteration.relationships?.workitems?.meta?.closed}} / {{iteration.relationships?.workitems?.meta?.total}}
-              </span>
-            </div>
+          <div class="f8-itr-status">
+            <span *ngIf="iteration.attributes.startAt">
+              {{iteration.attributes.startAt | date:longDate}} - {{iteration.attributes.endAt | date:longDate}}(UTC)
+            </span>
+            <span class="f8-itr-count">
+              {{iteration.relationships?.workitems?.meta?.closed}} / {{iteration.relationships?.workitems?.meta?.total}}
+            </span>
           </div>
           <p class="f8-itr-desc">{{ iteration.attributes?.description }}</p>
         </li>
