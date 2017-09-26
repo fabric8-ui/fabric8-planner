@@ -18,7 +18,7 @@
       <ul class="f8-itr__List--expanded"
         [class.show]="sidePanelOpen"
         [class.hide]="!sidePanelOpen">
-        <li class="active f8-itr__container"
+        <li class="active f8-itr__container pull-left"
           *ngFor="let iteration of activeIterations"
           [routerLinkActive]="'f8-itr--selected'"
           [routerLink]="[]" [attr.data-id]="iteration.id"
