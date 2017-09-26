@@ -215,7 +215,6 @@ export class FabPlannerAssociateIterationModalComponent {
     this.getIterations();
     this.workItemPayload = {
       id: this.workItem.id,
-      number: this.workItem.number,
       attributes: {
         version: this.workItem.attributes['version']
       },
@@ -228,7 +227,7 @@ export class FabPlannerAssociateIterationModalComponent {
   }
 
   actionOnOpen() {
-    if (this.workItem.relationships.iteration.data){
+    if (this.workItem.relationships.iteration.data) {
       this.selectedIterationName = (this.workItem.relationships.iteration.data.attributes.resolved_parent_path +
         '/' +
         this.workItem.relationships.iteration.data.attributes.name).replace('//', '/');
