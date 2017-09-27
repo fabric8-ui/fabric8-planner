@@ -3,7 +3,9 @@ import {
   ViewChild,
   Output,
   EventEmitter,
-  Input
+  Input,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 
 import { Broadcaster, Logger } from 'ngx-base';
@@ -23,7 +25,7 @@ import { IterationService }  from '../../services/iteration.service';
   templateUrl: './work-item-iteration-modal.component.html',
   styleUrls: ['./work-item-iteration-modal.component.less']
 })
-export class FabPlannerAssociateIterationModalComponent {
+export class FabPlannerAssociateIterationModalComponent implements OnChanges {
 
   @Input() workItem: WorkItem;
   @ViewChild('dropdownButton') dropdownButton: any;
@@ -49,6 +51,21 @@ export class FabPlannerAssociateIterationModalComponent {
     private logger: Logger,
     private iterationService: IterationService,
   ) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes.workItem) {
+      this.workItemPayload = {
+        id: this.workItem.id,
+        attributes: {
+          version: this.workItem.attributes['version']
+        },
+        links: {
+          self: this.workItem.links.self
+        },
+        type: this.workItem.type
+      };
+    }
+  }
 
   getIterations() {
     this.iterationService.getIterations()
@@ -213,16 +230,6 @@ export class FabPlannerAssociateIterationModalComponent {
 
   open(event: any) {
     this.getIterations();
-    this.workItemPayload = {
-      id: this.workItem.id,
-      attributes: {
-        version: this.workItem.attributes['version']
-      },
-      links: {
-        self: this.workItem.links.self
-      },
-      type: this.workItem.type
-    };
     this.iterationAssociationModal.open();
   }
 
