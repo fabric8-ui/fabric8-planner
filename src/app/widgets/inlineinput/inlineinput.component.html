@@ -9,22 +9,20 @@
   [attr.placeholder]="placeholder"
   [class.active]="editing"
   [value]="inpvalue"
-  class="input-field">
+  class="input-field inlineinput-textarea">
 </textarea>
 
 <div
-  id="inlineinput_btn_save"
   *ngIf="editing"
   (click)="saveClick()"
-  class="fl btn btn-primary action-btn btn-save"
+  class="fl btn btn-primary action-btn btn-save inlineinput-btn-save"
   [class.disabled]="saving">
   <i class="fa fa-check"></i>
 </div>
 <div
-  id="inlineinput_btn_cancel"
   *ngIf="editing"
   (click)="closeClick()"
-  class="fl btn btn-primary action-btn">
+  class="fl btn btn-primary action-btn inlineinput-btn-cancel">
   <i class="fa fa-close"></i>
 </div>
 
