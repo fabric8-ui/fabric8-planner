@@ -1,20 +1,18 @@
-<a class="f8-sidepanel-title"
+<a class="f8-sidepanel__title"
   [routerLink]="[]"
-  [queryParams]="{}">
-  <div class="f8-sidepanel__header"
-    [class.backlog--selected]="backlogSelected">
+  [queryParams]="{}"
+  [class.backlog--selected]="backlogSelected">
     <span class="badge pull-right"
       [class.show]="sidePanelOpen"
       [class.hide]="!sidePanelOpen">
         {{numberOfItemsInBacklog}}
       </span>
     <span class="pull-left fa fa-th margin-right-10 padding-top-5"
-      tooltip="All"
+      tooltip="{{sidePanelOpen ? '' : 'All'}}"
       placement="right"></span>
     <h3 class="margin-0 padding-top-5"
       [class.show]="sidePanelOpen"
       [class.hide]="!sidePanelOpen">All</h3>
-  </div>
 </a>
 <div class="width-100 pull-left">
   <group-types [iterations]="iterations"

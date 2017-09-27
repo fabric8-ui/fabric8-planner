@@ -4,13 +4,7 @@
  * a.iteration-title utility class introduced to address #1874
  * Use this class to disable default undelining of anchors on hover
  */
-.f8-sidepanel-title{
-  &:hover {
-    text-decoration: none;
-  }
-}
-
-.f8-sidepanel__header {
+.f8-sidepanel__title {
   width: 100%;
   float: left;
   padding: 20px 15px;
@@ -22,7 +16,11 @@
   .badge {
     background-color: @color-pf-black;
   }
-  &:hover { background-color: @color-pf-black-700; }
+  &:hover {
+    color: @color-pf-white;
+    background-color: @color-pf-black-700;
+    text-decoration: none;
+  }
   &.backlog--selected {
     color: @color-pf-white;
     background-color: @color-pf-black-700;
