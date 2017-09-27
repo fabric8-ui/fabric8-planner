@@ -64,6 +64,7 @@
         }
       }
       > li {
+        width: 100%;
         padding: 15px;
         padding-left: 45px;
         list-style: none;
@@ -78,20 +79,27 @@
           }
         }
         &:hover {
-          background-color: @color-pf-black-800 ;
+          background-color: @color-pf-black-800;
+          .left-truncate {
+            &:before {
+              background-color: @color-pf-black-800;
+            }
+          }
         }
       }
     }
     &-parent {
       float: right;
+      width: 55%;
       padding-top: 3px;
       .left-truncate {
         padding-left: 12px;
         color: @color-pf-white;
-        background-color: transparent;
+        background-color: initial;
         &::before {
           color: @color-pf-white;
           line-height: 1.3;
+          background-color: @color-pf-black-700;
         }
         span {
           font-size: 12px;
