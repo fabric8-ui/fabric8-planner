@@ -57,17 +57,9 @@ export class PlannerLayoutComponent implements OnInit, AfterViewInit {
   contentHide: Boolean = false;
   sidePanelState: string = 'out';
 
-  constructor(
-  ) { }
+  constructor() { }
 
   ngOnInit(): void {
-  }
-
-  ngAfterViewInit() {
-  }
-
-  test() {
-    console.log('kasjlkasdhalksdhalsh');
   }
 
   getCurrentState() {
