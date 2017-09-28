@@ -222,6 +222,20 @@ export class IterationService {
     }
   }
 
+  getIterationById(iterationId: string): Observable<IterationModel> {
+    return this.getIterations().first()
+      .map((resultIterations) => {
+        for (let i=0; i<resultIterations.length; i++) {
+          if (resultIterations[i].id===iterationId) {
+            return resultIterations[i];
+          }
+        }
+      })
+      .catch( err => {
+        return Observable.empty();
+      });
+  }
+
   getWorkItemCountInIteration(iteration: any): Observable<number> {
     return this.getIteration({ data: iteration }).first().map((resultIteration:IterationModel) => {
       return resultIteration.relationships.workitems.meta.total;

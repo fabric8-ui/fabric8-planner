@@ -54,6 +54,7 @@ import { LabelService } from '../../services/label.service';
 import { LabelModel } from '../../models/label.model';
 import { TreeListComponent } from 'ngx-widgets';
 import { UrlService } from './../../services/url.service';
+import { WorkItemDetailAddTypeSelectorComponent } from './../work-item-create/work-item-create.component';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -69,6 +70,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
 
   @ViewChildren('activeFilters', {read: ElementRef}) activeFiltersRef: QueryList<ElementRef>;
   @ViewChild('activeFiltersDiv') activeFiltersDiv: any;
+  @ViewChild('typeSelectPanel') typeSelectPanel: WorkItemDetailAddTypeSelectorComponent;
 
   @ViewChild('listContainer') listContainer: any;
   @ViewChild('treeList') treeList: TreeListComponent;
@@ -235,7 +237,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         }
       });
   }
-
 
   loadWorkItems(): void {
     if (this.wiSubscriber) {
@@ -502,6 +503,24 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         this.workItems.splice( currentIndex, 1 );
         this.treeList.updateTree();
       });
+    }
+  }
+
+  // This opens the create new work item dialog. It parses the query string
+  // first to get iterationId and areaId for pre-selection in the new work item
+  // dialog. Note that this only works for the current capabilities of the query
+  // toolbar for now. If we extend that, we also need to extend this method.
+  onCreateFromContext() {
+    console.log('Activated create work item from an empty list view.');
+    let query = this.route.snapshot.queryParams['q'];
+    if (query) {
+      let contextIteration = this.filterService.getConditionFromQuery(query, "iteration");
+      let contextArea = this.filterService.getConditionFromQuery(query, "area");
+      this.typeSelectPanel.openPanel(contextIteration, contextArea);
+    } else {
+      console.log('No current query for add from empty list');
+      // use standard non-context create dialog
+      this.typeSelectPanel.openPanel();
     }
   }
 
