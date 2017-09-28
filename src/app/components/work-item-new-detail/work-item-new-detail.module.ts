@@ -1,3 +1,5 @@
+import { LabelService } from './../../services/label.service';
+import { LabelSelectorModule } from './../label-selector/label-selector.module';
 import { UrlService } from './../../services/url.service';
 import { AuthenticationService } from 'ngx-login-client';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -19,6 +21,7 @@ import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 
 import { MockHttp } from './../../mock/mock-http';
 
+import { LabelsModule } from '../labels/labels.module';
 import { WorkItemNewDetailComponent } from './work-item-new-detail.component';
 import { WorkItemNewDetailRoutingModule } from './work-item-new-detail-routing.module';
 import { WorkItemCommentModule } from '../work-item-comment/work-item-comment.module';
@@ -39,6 +42,7 @@ if (process.env.ENV == 'inmemory') {
     AreaService,
     BsDropdownConfig,
     IterationService,
+    LabelService,
     TooltipConfig,
     UrlService,
     WorkItemDataService,
@@ -58,6 +62,7 @@ if (process.env.ENV == 'inmemory') {
     AreaService,
     BsDropdownConfig,
     IterationService,
+    LabelService,
     TooltipConfig,
     UrlService,
     WorkItemDataService,
@@ -74,6 +79,8 @@ if (process.env.ENV == 'inmemory') {
     HttpModule,
     CommonModule,
     FormsModule,
+    LabelsModule,
+    LabelSelectorModule,
     MarkdownModule,
     ReactiveFormsModule,
     RouterModule,

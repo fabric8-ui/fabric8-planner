@@ -50,6 +50,8 @@ import { WorkItemListEntryComponent } from '../work-item-list-entry/work-item-li
 import { WorkItemService }            from '../../services/work-item.service';
 import { WorkItemDataService } from './../../services/work-item-data.service';
 import { CollaboratorService } from '../../services/collaborator.service';
+import { LabelService } from '../../services/label.service';
+import { LabelModel } from '../../models/label.model';
 import { TreeListComponent } from 'ngx-widgets';
 import { UrlService } from './../../services/url.service';
 
@@ -102,6 +104,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   private loggedInUser: User | Object = {};
   private originalList: WorkItem[] = [];
   private currentSpace: Space;
+  private labels: LabelModel[] = [];
 
   // See: https://angular2-tree.readme.io/docs/options
   treeListOptions = {
@@ -117,6 +120,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   };
 
   constructor(
+    private labelService: LabelService,
     private areaService: AreaService,
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
@@ -244,12 +248,13 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.workItemService.getWorkItemTypes(),
       this.areaService.getAreas(),
       this.userService.getUser().catch(err => Observable.of({})),
+      this.labelService.getLabels()
     ).take(1).do((items) => {
       const iterations = this.iterations = items[0];
       this.workItemTypes = items[1];
       this.areas = items[2];
       this.loggedInUser = items[3];
-
+      this.labels = items[4];
       // If there is an iteration filter on the URL
       // const queryParams = this.route.snapshot.queryParams;
       // if (Object.keys(queryParams).indexOf('iteration') > -1) {
@@ -329,7 +334,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         workItems,
         this.iterations,
         [], // We don't want to static resolve user at this point
-        this.workItemTypes
+        this.workItemTypes,
+        this.labels
       );
       this.workItemDataService.setItems(this.workItems);
       // Resolve assignees
@@ -367,7 +373,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
             workItems,
             this.iterations,
             [],
-            this.workItemTypes
+            this.workItemTypes,
+            this.labels
           )
         ];
         this.workItemDataService.setItems(this.workItems);
@@ -417,7 +424,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       [workItem],
       this.iterations,
       [],
-      this.workItemTypes
+      this.workItemTypes,
+      this.labels
     );
     this.workItems = [...resolveItem, ...this.workItems];
   }
@@ -536,7 +544,15 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       })
     );
     this.eventListeners.push(
-      this.workItemService.addWIObservable.subscribe(item => {
+      this.workItemService.addWIObservable
+      .map(item => this.workItemService.resolveWorkItems(
+        [item],
+        this.iterations,
+        [],
+        this.workItemTypes,
+        this.labels
+      )[0])
+      .subscribe(item => {
         //Check if the work item meets the applied filters
         if(this.filterService.doesMatchCurrentFilter(item)){
           console.log('Added WI matches the applied filters');
@@ -553,7 +569,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.workItemService.editWIObservable.subscribe(updatedItem => {
         let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
         if(this.filterService.doesMatchCurrentFilter(updatedItem)){
-          console.log('Updated WI matches the applied filters')
+          console.log('Updated WI matches the applied filters');
           if (index > -1) {
             this.workItems[index] = updatedItem;
           } else {

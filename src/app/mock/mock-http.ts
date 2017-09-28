@@ -250,9 +250,11 @@ export class MockHttp extends HttpService {
           }
         case '/workitemlinktypes':
           return this.createResponse(url.toString(), 200, 'ok', this.mockDataService.getWorkItemLinkTypes());
+        case '/labels':
+          return this.createResponse(url.toString(), 200, 'ok', {data: this.mockDataService.getAllLabels()});
         default:
           console.log('######## URL Not found ########', url.toString());
-          return this.createResponse(url.toString(), 404, 'npt found', {} );
+          return this.createResponse(url.toString(), 404, 'not found', {} );
       }
     };
 
@@ -288,6 +290,8 @@ export class MockHttp extends HttpService {
         return this.createResponse(url.toString(), 200, 'ok', { data: this.mockDataService.getRedneredText(JSON.parse(body).data) });
       } else if (path.path === '/login/refresh') {
         return this.createResponse(url.toString(), 200, 'ok', { token: { access_token: 'someaccesstoken', refresh_token: 'someaccesstoken' }} );
+      } else if (path.path ===  '/labels') {
+        return this.createResponse(url.toString(), 200, 'ok', { data: this.mockDataService.createLabel(body) } );
       } else {
         return this.createResponse(url.toString(), 500, 'POST to unknown resource: ' + path.path, {});
       }

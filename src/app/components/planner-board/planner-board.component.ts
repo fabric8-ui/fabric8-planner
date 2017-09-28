@@ -39,6 +39,8 @@ import { WorkItemType } from '../../models/work-item-type';
 import { WorkItemService } from '../../services/work-item.service';
 import { WorkItemDataService } from './../../services/work-item-data.service';
 import { CollaboratorService } from '../../services/collaborator.service';
+import { LabelService } from '../../services/label.service';
+import { LabelModel } from '../../models/label.model';
 
 @Component({
   // tslint:disable-next-line:use-host-property-decorator
@@ -80,6 +82,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   private existingQueryParams: Object = {};
   private wiSubscription = null;
   lane: any;
+  private labels: LabelModel[] = [];
 
   constructor(
     private auth: AuthenticationService,
@@ -91,6 +94,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     private workItemDataService: WorkItemDataService,
     private dragulaService: DragulaService,
     private iterationService: IterationService,
+    private labelService: LabelService,
     private userService: UserService,
     private urlService: UrlService,
     private spaces: Spaces,
@@ -173,16 +177,18 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       // this.collaboratorService.getCollaborators(),
       this.workItemService.getWorkItemTypes(),
       this.areaService.getAreas(),
+      this.labelService.getLabels(),
       this.userService.getUser().catch(err => Observable.of({} as User)),
       this.currentIteration,
       this.currentWIType
     )
-    .subscribe(([iterations, wiTypes, areas, loggedInUser, currentIteration, currentWIType]) => {
+    .subscribe(([iterations, wiTypes, areas, labels, loggedInUser, currentIteration, currentWIType]) => {
       this.iterations = iterations;
       this.workItemTypes = wiTypes;
       this.readyToInit = true;
       this.areas = areas;
       this.loggedInUser = loggedInUser;
+      this.labels = labels;
       // Resolve iteration filter on the first load of board view
       // If there is an existing iteration query params already
       // Set the filter service with iteration filter
@@ -232,7 +238,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         workItems,
         this.iterations,
         [],
-        this.workItemTypes
+        this.workItemTypes,
+        this.labels
       );
       lane.cardValue = lane.workItems.map(item => {
         return {
@@ -258,7 +265,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
             extraData: {
               selfLink: item.links.self,
               version: item.attributes['version'],
-              UUID: item.id
+              UUID: item.id,
+              labels: item.relationships.labels.data
             }
         }
       });
@@ -275,7 +283,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       workItems,
       this.iterations,
       [],
-      this.workItemTypes
+      this.workItemTypes,
+      this.labels
     );
     for(let i=0; i<workItems.length; i++) {
       lane = this.lanes.find((lane) => lane.option === workItems[i].attributes['system.state']);
@@ -305,7 +314,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         extraData: {
           selfLink: workItems[i].links.self,
           version: workItems[i].attributes['version'],
-          UUID: workItems[i].id
+          UUID: workItems[i].id,
+          labels: workItems[i].relationships.labels.data
         }
       });
       lane.cardValue = [...cardValues, ...lane.cardValue];
@@ -451,7 +461,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
               workItemResp.workItems,
               this.iterations,
               [],
-              this.workItemTypes
+              this.workItemTypes,
+              this.labels
           )];
           lane.cardValue = [
             ...lane.cardValue,
@@ -479,7 +490,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
                 extraData: {
                   selfLink: item.links.self,
                   version: item.attributes['version'],
-                  UUID: item.id
+                  UUID: item.id,
+                  labels: item.relationships.labels.data
                 }
               }
             })
@@ -533,7 +545,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       [workItem],
       this.iterations,
       [],
-      this.workItemTypes
+      this.workItemTypes,
+      this.labels
     );
 
     let lane = this.lanes.find((lane) => lane.option === workItem.attributes['system.state']);
