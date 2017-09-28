@@ -1,9 +1,11 @@
 <div class="container-fluid f8-wi-container">
+  <div class="lock-overlay" *ngIf="uiLockedAll"><i class="fa fa-spinner fa-pulse fa-3x fa-fw spinner"><span class="sr-only">Loading...</span></i></div>    
   <main class="row">
     <aside class="f8-sidepanel">
+      <div class="lock-overlay" *ngIf="uiLockedSidebar"><i class="fa fa-spinner fa-pulse fa-3x fa-fw spinner"><span class="sr-only">Loading...</span></i></div>
       <side-panel [iterations]="iterations"></side-panel>
     </aside>
-    <section>
+    <section class="planner-list-content">
       <toolbar-panel
         context="listview"
         [wiTypes]="workItemTypes"
@@ -11,13 +13,14 @@
         [currentBoardType]="currentBoardType"
         [areas]="areas"
         [loggedInUser]="loggedInUser"></toolbar-panel>
-        <div class="f8-wi-list">
+      <div class="f8-wi-list">
           <div #listContainer
               almInfiniteScroll
               class="f8-wi-list-wrap"
               [eachElementHeightInPx]='contentItemHeight'
               (initItems)='initWiItems($event)'
               (fetchMore)='fetchMoreWiItems()'>
+            <div class="lock-overlay" *ngIf="uiLockedList"><i class="fa fa-spinner fa-pulse fa-3x fa-fw spinner"><span class="sr-only">Loading...</span></i></div>
             <alm-tree-list #treeList
                 [listTemplate]="treeListTemplate"
                 [loadTemplate]="treeListLoadTemplate"
