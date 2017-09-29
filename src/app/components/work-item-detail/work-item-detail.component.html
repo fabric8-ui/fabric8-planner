@@ -76,6 +76,7 @@
             <div class="width-100 pull-left wi-detail-title-blk margin-top-15" id="title-click-div">
               <div id="wi-title-div">
                   <f8-inlineinput
+                    [disabled]="loggedIn ? false : true"
                     [value]="workItem.attributes['system.title']"
                     [onLineClickEdit]="true"
                     (onSave)="saveTitle($event)"
