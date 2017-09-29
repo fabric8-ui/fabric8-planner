@@ -106,7 +106,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   private currentSpace: Space;
   private labels: LabelModel[] = [];
   private uiLockedAll = false;
-  private uiLockedList = false;
+  private uiLockedList = true;
   private uiLockedSidebar = false;
   
   // See: https://angular2-tree.readme.io/docs/options
