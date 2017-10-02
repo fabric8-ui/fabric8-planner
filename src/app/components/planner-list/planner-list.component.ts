@@ -343,6 +343,10 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.workItemDataService.setItems(this.workItems);
       // Resolve assignees
       const t3 = performance.now();
+      if (!this.workItems || this.workItems.length==0) {
+        // if there are no work items, unlock the ui here
+        this.uiLockedList = false;        
+      }
       this.workItems.forEach((item, index) => {
         this.workItemService.resolveAssignees(item.relationships.assignees).take(1)
           .subscribe(assignees => {
