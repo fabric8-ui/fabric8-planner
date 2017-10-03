@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component,
   EventEmitter,
   Input,
@@ -45,7 +44,7 @@ import {
   ]
 })
 
-export class PlannerLayoutComponent implements OnInit, AfterViewInit {
+export class PlannerLayoutComponent implements OnInit {
 
   @Input() itemName: string;
   @Input() itemIcon: string;
