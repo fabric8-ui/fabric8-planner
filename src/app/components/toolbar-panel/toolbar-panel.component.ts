@@ -149,7 +149,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         'creator',
         'area',
         'label',
-        'workitemtype'
+        'workitemtype',
+        'title'
       ]
     } else {
       this.allowedFilterKeys= [
@@ -158,7 +159,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         'area',
         'label',
         'workitemtype',
-        'state'
+        'state',
+        'title'
       ]
     }
   }
@@ -174,7 +176,17 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     // listen for changes on the available filters.
     this.eventListeners.push(
       this.filterService.getFilters()
-        .subscribe(filters => this.setFilterTypes(filters))
+      .map(filter => {
+        return [...filter, {
+          attributes:{
+            description: "Filter by title",
+            query: "filter[title]={id}",
+            title: "Title",
+            type: "title"
+          },
+          type:"filters"}];
+      })
+      .subscribe(filters => this.setFilterTypes(filters))
     );
 
     // TODO : should be replaced by ngrx/store implementation
@@ -244,7 +256,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           id: type,
           title: filter.attributes.title,
           placeholder: filter.attributes.description,
-          type: type === 'assignee' || 'label' ? 'typeahead' : 'select',
+          type: type === 'assignee' || 'label' || 'title' ? 'typeahead' : 'select',
           queries: []
         };
       })
@@ -461,6 +473,21 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         },
         getvalue: (label) => label.attributes.name
+      },
+      title: {
+        datasource: this.workItemService.getWorkItems().map(wi => wi.workItems),
+        datamap: (workitems) => {
+          return {
+            queries: workitems.map(workitem => {
+              return {
+                id: workitem.id,
+                value: workitem.attributes['system.title']
+              }
+            }),
+            primaryQueries: []
+          }
+        },
+        getvalue: (workitem) => workitem.attributes['system.title']
       }
     }
   }
