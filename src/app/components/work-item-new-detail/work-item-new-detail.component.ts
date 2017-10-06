@@ -64,6 +64,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
   loadingTypes: boolean = false;
   loadingIteration: boolean = false;
   loadingArea: boolean = false;
+  loadingLabels: boolean = false;
   loggedInUser: User;
   loggedIn: boolean = false;
   users: User[] = [];
@@ -195,6 +196,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
           this.loadingTypes = true;
           this.loadingIteration = true;
           this.loadingArea = true;
+          this.loadingLabels = true;
         })
         .switchMap(() => this.workItemService.getWorkItemByNumber(id, owner, space))
         .do(workItem => {
@@ -339,6 +341,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
   resolveLabels(): Observable<any> {
     return this.labelService.getLabels()
       .do(labels => {
+        this.loadingLabels = false;
         this.labels = labels;
         if (this.workItem.relationships.labels.data) {
           this.workItem.relationships.labels.data =
@@ -673,6 +676,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
 
   updateLabels(selectedLabels: LabelModel[]) {
     if(this.workItem.id) {
+      this.loadingLabels = true;
       let payload = cloneDeep(this.workItemPayload);
       payload = Object.assign(payload, {
         relationships : {
@@ -691,6 +695,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
           this.workItem.relationships.labels = {
             data: selectedLabels
           };
+          this.loadingLabels = false;
         })
     } else {
       this.workItem.relationships.labels = {
@@ -974,6 +979,23 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
       this.router.navigate(['..']);
     } else {
       this.router.navigateByUrl(this.urlService.getLastListOrBoard());
+    }
+  }
+
+  onLabelClick(label) {
+    if (this.urlService.getLastListOrBoard() === '') {
+      let params = {
+        label: label.attributes.name
+      }
+      // Prepare navigation extra with query params
+      let navigationExtras: NavigationExtras = {
+        queryParams: params
+      };
+      this.router.navigate(['..'], navigationExtras);
+    } else {
+      let url = this.urlService.getLastListOrBoard().split('?')[0]
+        + '?label=' + label.attributes.name;
+      this.router.navigateByUrl(url);
     }
   }
 }

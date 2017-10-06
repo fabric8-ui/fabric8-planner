@@ -18,7 +18,7 @@
   <div class="list-view-pf-main-info">
     <div class="list-view-pf-left type f8-wi__list-witype">
       <span almIcon [iconType]="workItem.attributes['system.state']" class="color-grey pull-left"></span>
-      <span class="color-grey pull-left fa {{workItem.relationships?.baseType?.data?.attributes?.icon}}"></span>
+      <span class="color-grey pull-left fa {{workItem.relationships?.baseType?.data?.attributes?.icon}}" title="{{workItem.relationships?.baseType?.data?.attributes?.name}}"></span>
       <span class="pull-left"> {{workItem.attributes['system.number']}} </span>
     </div>
     <div class="list-view-pf-body">
@@ -36,7 +36,8 @@
               <f8-label [labels]="workItem.relationships?.labels?.data ?
                 workItem.relationships?.labels?.data : []"
                 [truncateAfter]='4'
-                [allowDelete]="false"></f8-label>
+                [allowDelete]="false"
+                (onLabelClick)="labelClick($event)"></f8-label>
             </div>
         </div>
         <div class="list-group-item-text hide f8-wi__list-desc">

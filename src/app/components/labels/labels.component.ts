@@ -8,6 +8,9 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
+import { FilterService } from '../../services/filter.service';
+import { Space, Spaces } from 'ngx-fabric8-wit';
 import { User } from 'ngx-login-client';
 import { LabelModel } from './../../models/label.model';
 
@@ -27,8 +30,22 @@ export class LabelsComponent implements OnInit, OnChanges {
 
   private labels: LabelModel[] = [];
   private showMore: boolean = false;
+  private spaceSubscription: Subscription = null;
+  private spaceId;
+
+  constructor(
+    private filterService: FilterService,
+    private spaces: Spaces
+  ) {}
 
   ngOnInit() {
+    this.spaceSubscription = this.spaces.current.subscribe(space => {
+      if (space) {
+        this.spaceId = space.id;
+      } else {
+        console.log('[Guided Work Item Types] Space deselected.');
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
