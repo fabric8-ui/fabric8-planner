@@ -179,7 +179,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       .map(filter => {
         return [...filter, {
           attributes:{
-            description: "Filter by title",
+            description: "Enter work item title",
+            key: "title",
             query: "filter[title]={id}",
             title: "Title",
             type: "title"
@@ -233,10 +234,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setFilterTypes(filters: FilterModel[]) {
     filters = filters.filter(f => this.allowedFilterKeys.indexOf(
-      f.attributes.query.substring(
-            f.attributes.query.lastIndexOf("[")+1,
-            f.attributes.query.lastIndexOf("]")
-      )) > -1);
+      f.attributes.key) > -1);
 
     /*
      * The current version of the patternfly filter dropdown does not fully support the async
@@ -248,15 +246,15 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     this.toolbarConfig.filterConfig.fields = [
       this.toolbarConfig.filterConfig.fields[0],
       ...filters.map(filter => {
-        const type = filter.attributes.query.substring(
-            filter.attributes.query.lastIndexOf("[")+1,
-            filter.attributes.query.lastIndexOf("]")
-          );
+        const type = filter.attributes.key;
         return {
           id: type,
           title: filter.attributes.title,
           placeholder: filter.attributes.description,
-          type: type === 'assignee' || 'label' || 'title' ? 'typeahead' : 'select',
+          type: type === 'assignee' || type === 'label'
+            ? 'typeahead'
+            : type === 'title'
+            ? 'text' : 'select',
           queries: []
         };
       })
@@ -321,7 +319,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     // Unifying the filters with recent filter value
     let recentAppliedFilters = {};
     $event.appliedFilters.forEach((filter) => {
-      if (filter.query.id !== 'loader') {
+      if (filter.query === undefined || filter.query.id !== 'loader') {
         if (Object.keys(recentAppliedFilters).indexOf(filter.field.id) === -1) {
           // If this filter type was not found in this iteration before
           recentAppliedFilters[filter.field.id] = [];
@@ -333,7 +331,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
             // Multiple value for this filter type is allowed
             recentAppliedFilters[filter.field.id].push(filter);
           } else {
-            // Apply the latest value for the vilter
+            // Apply the latest value for the filter
             recentAppliedFilters[filter.field.id][0] = filter;
           }
         }
@@ -359,7 +357,12 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       if (Object.keys(params).indexOf(filter.field.id) > -1) {
         params[filter.field.id] = params[filter.field.id] + ',' + filter.query.value;
         queryObj[filter.field.id] = queryObj[filter.field.id] + ',' + filter.query.id;
-      } else {
+      }
+      else if (filter.query === undefined) {
+        params[filter.field.id] = filter.value;
+        queryObj[filter.field.id] = filter.value;
+      }
+      else {
         params[filter.field.id] = filter.query.value;
         queryObj[filter.field.id] = filter.query.id;
       }
@@ -473,21 +476,6 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         },
         getvalue: (label) => label.attributes.name
-      },
-      title: {
-        datasource: this.workItemService.getWorkItems().map(wi => wi.workItems),
-        datamap: (workitems) => {
-          return {
-            queries: workitems.map(workitem => {
-              return {
-                id: workitem.id,
-                value: workitem.attributes['system.title']
-              }
-            }),
-            primaryQueries: []
-          }
-        },
-        getvalue: (workitem) => workitem.attributes['system.title']
       }
     }
   }
