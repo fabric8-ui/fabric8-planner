@@ -216,7 +216,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           id: type,
           title: filter.attributes.title,
           placeholder: filter.attributes.description,
-          type: type === 'assignee' || 'label' ? 'typeahead' : 'select',
+          type: type === 'assignee' || type === 'label' ? 'typeahead' : 'select',
           queries: []
         };
       })
