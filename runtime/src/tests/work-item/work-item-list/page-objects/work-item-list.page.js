@@ -238,6 +238,7 @@ class WorkItemListPage {
   }
 
   clickQuickAddSave () {
+    browser.wait(until.visibilityOf(this.saveButton), constants.LONGER_WAIT, 'Failed to find the saveButton'); 
     browser.wait(until.presenceOf(this.saveButton), constants.WAIT, 'Failed to find the saveButton');
     return this.saveButton.click();
   }
@@ -409,8 +410,9 @@ class WorkItemListPage {
   }
 
   get workItemFilterPulldownEdited () {
-    browser.wait(until.presenceOf(element(by.css("span.filter-option.pull-left"))), constants.WAIT, 'Failed to find filter-by dropdown list');
-    return element(by.css("span.filter-option.pull-left"));
+    var xpathStr = ".//input[contains(@type,'text')]";
+    browser.wait(until.presenceOf(element(by.xpath(xpathStr))), constants.WAIT, 'Failed to find filter-by dropdown list');
+    return element(by.xpath(xpathStr));
   }
   clickWorkItemFilterPulldownEdited () {
     return this.workItemFilterPulldownEdited.click();
