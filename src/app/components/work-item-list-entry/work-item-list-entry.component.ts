@@ -18,7 +18,7 @@ import { LabelModel } from './../../models/label.model';
 import { WorkItem }        from '../../models/work-item';
 import { WorkItemService } from '../../services/work-item.service';
 
-import { TreeListItemComponent } from 'ngx-widgets';
+import { TreeListComponent } from 'patternfly-ng';
 
 /**
  * Work Item List Entry Component - Displays a work item and action elements for it.
@@ -46,17 +46,13 @@ import { TreeListItemComponent } from 'ngx-widgets';
   styleUrls: ['./work-item-list-entry.component.less'],
 })
 export class WorkItemListEntryComponent implements OnInit, OnDestroy {
-  @Input() listItem: TreeListItemComponent;
+  @Input() listItem: TreeListComponent;
   @Input() workItem: WorkItem;
   @Input() iterations: IterationModel[];
   @Input() selected: boolean = false;
-
-  @Output() toggleEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
-  @Output() selectEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
+  //Retaining detail and preview events as they are not part of the tree's kebab menu
   @Output() detailEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
   @Output() previewEvent: EventEmitter<WorkItem> = new EventEmitter<WorkItem>();
-  @Output() moveTopEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
-  @Output() moveBottomEvent: EventEmitter<WorkItemListEntryComponent> = new EventEmitter<WorkItemListEntryComponent>();
   @Output() clickLabel = new EventEmitter();
 
   checkedWI: boolean = false;
@@ -95,30 +91,6 @@ export class WorkItemListEntryComponent implements OnInit, OnDestroy {
     return this.workItem;
   }
 
-  select(): void {
-    this.listItem.setSelected(true);
-  }
-
-  deselect(): void {
-    this.listItem.setSelected(false);
-  }
-
-  isSelected(): boolean {
-    return this.listItem.isSelected();
-  }
-
-  isChecked(): boolean {
-    return this.checkedWI;
-  }
-
-  check(): void {
-    this.checkedWI = true;
-  }
-
-  uncheck(): void {
-    this.checkedWI = false;
-  }
-
   // helpers
 
   confirmDelete(event: MouseEvent) {
@@ -142,19 +114,6 @@ export class WorkItemListEntryComponent implements OnInit, OnDestroy {
     this.showDialog = false;
   }
 
-  selectEntry(): void {
-    this.selectEvent.emit(this);
-  }
-
-  toggleEntry(event: MouseEvent): void {
-    event.stopPropagation();
-    this.toggleEvent.emit(this);
-  }
-
-  kebabClick(event: MouseEvent): void {
-    event.stopPropagation();
-  }
-
   // event handlers
   onDelete(event: MouseEvent): void {
     if (event)
@@ -163,11 +122,6 @@ export class WorkItemListEntryComponent implements OnInit, OnDestroy {
     .subscribe(() => {
       console.log('Deleted');
     });
-  }
-
-  onSelect(event: MouseEvent): void {
-    event.stopPropagation();
-    this.selectEvent.emit(this);
   }
 
   onDetail(event: MouseEvent): void {
@@ -181,62 +135,13 @@ export class WorkItemListEntryComponent implements OnInit, OnDestroy {
     this.previewEvent.emit(this.workItem);
   }
 
-  onMoveToTop(event: MouseEvent): void {
-    event.stopPropagation();
-    this.moveTopEvent.emit(this);
-  }
-
-  onMoveToBottom(event: MouseEvent): void {
-    event.stopPropagation();
-    this.moveBottomEvent.emit(this);
-  }
-
-  onMoveToBacklog(event: MouseEvent): void {
-    event.stopPropagation();
-    //set this work item's iteration to None
-    //send a patch request
-    this.workItem.relationships.iteration = {}
-    this.workItemService
-      .update(this.workItem)
-      .switchMap(item => {
-        return this.iterationService.getIteration(item.relationships.iteration)
-          .map(iteration => {
-            item.relationships.iteration.data = iteration;
-            return item;
-          });
-      })
-      .subscribe(workItem => {
-        //update only the relevant fields
-        this.workItem.relationships.iteration.data = workItem.relationships.iteration.data;
-        this.workItem.attributes['version'] = workItem.attributes['version'];
-        try {
-          this.notifications.message({
-            message: workItem.attributes['system.title'] + ' has been moved to the Backlog.',
-            type: NotificationType.SUCCESS
-          } as Notification);
-        } catch (e) {
-          console.log('Error displaying notification. Iteration was moved to Backlog.')
-        }
-    },
-    (err) => {
-      try{
-        this.notifications.message({
-          message: this.workItem.attributes['system.title'] + ' could not be moved to the Backlog.',
-          type: NotificationType.DANGER
-        } as Notification);
-      } catch (e) {
-        console.log('Error displaying notification. Error moving Iteration to Backlog.')
-      }
-    });
-  }
-
   selectDeselectFromUrl(url: string) {
     if (url.indexOf('detail') > -1) {
       this.selectedItemId = url.split('detail/')[1].split('?')[0];
     } else {
       this.selectedItemId = 0;
     }
-    this.listItem.setSelected(this.selectedItemId == this.workItem.id);
+    //this.listItem.setSelected(this.selectedItemId == this.workItem.id);
   }
 
   listenToEvents() {
@@ -267,6 +172,5 @@ export class WorkItemListEntryComponent implements OnInit, OnDestroy {
   labelClick(event) {
     this.clickLabel.emit(event);
   }
-
 
 }

@@ -2,6 +2,7 @@ import { EventService } from './../../services/event.service';
 import { AreaModel } from '../../models/area.model';
 import { AreaService } from '../../services/area.service';
 import { FilterService } from '../../services/filter.service';
+import { GroupTypesModel } from '../../models/group-types.model';
 import { Observable } from 'rxjs/Observable';
 import { IterationService } from '../../services/iteration.service';
 import { IterationModel } from '../../models/iteration.model';
@@ -32,16 +33,24 @@ import {
   NavigationExtras
 } from '@angular/router';
 
-import { TreeNode } from 'angular2-tree-component';
-
 import { cloneDeep } from 'lodash';
-import { Broadcaster, Logger } from 'ngx-base';
+import { Broadcaster, Logger, Notification, NotificationType, Notifications } from 'ngx-base';
 import {
   AuthenticationService,
   User,
   UserService
 } from 'ngx-login-client';
 import { Space, Spaces } from 'ngx-fabric8-wit';
+
+import {
+  Action,
+  ActionConfig,
+  EmptyStateConfig,
+  ListBase,
+  ListEvent,
+  TreeListComponent,
+  TreeListConfig
+} from 'patternfly-ng';
 
 import { WorkItem } from '../../models/work-item';
 import { WorkItemDetailComponent } from './../work-item-detail/work-item-detail.component';
@@ -53,12 +62,10 @@ import { WorkItemDataService } from './../../services/work-item-data.service';
 import { CollaboratorService } from '../../services/collaborator.service';
 import { LabelService } from '../../services/label.service';
 import { LabelModel } from '../../models/label.model';
-import { TreeListComponent } from 'ngx-widgets';
 import { UrlService } from './../../services/url.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
-  // tslint:disable-next-line:use-host-property-decorator
   host: {
     'class': ''
   },
@@ -67,25 +74,27 @@ import { UrlService } from './../../services/url.service';
   styleUrls: ['./planner-list.component.less']
 })
 export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnDestroy {
-
   @ViewChildren('activeFilters', {read: ElementRef}) activeFiltersRef: QueryList<ElementRef>;
   @ViewChild('activeFiltersDiv') activeFiltersDiv: any;
-
   @ViewChild('listContainer') listContainer: any;
   @ViewChild('treeList') treeList: TreeListComponent;
-  @ViewChild('treeListItemTemplate') treeListItemTemplate: TemplateRef<any>;
-  @ViewChild('treeListLoadTemplate') treeListLoadTemplate: TemplateRef<any>;
-  @ViewChild('treeListTemplate') treeListTemplate: TemplateRef<any>;
-  @ViewChild('treeListItem') treeListItem: TreeListComponent;
   @ViewChild('detailPreview') detailPreview: WorkItemDetailComponent;
   @ViewChild('sidePanel') sidePanelRef: any;
+  @ViewChild('associateIterationModal') associateIterationModal: any;
+  @ViewChild('typeSelectPanel') typeSelectPanel: any;
+
+  actionConfig: ActionConfig;
+  emptyStateConfig: EmptyStateConfig;
+  selectType: string = 'checkbox';
+  treeListConfig: TreeListConfig;
 
   workItems: WorkItem[] = [];
   prevWorkItemLength: number = 0;
   workItemTypes: WorkItemType[] = [];
   selectedWorkItemEntryComponent: WorkItemListEntryComponent;
-  workItemToMove: WorkItemListEntryComponent;
+  workItemToMove: WorkItem;
   workItemDetail: WorkItem;
+  currentWorkItem: WorkItem = null;
   addingWorkItem = false;
   showOverlay : Boolean ;
   loggedIn: Boolean = false;
@@ -112,31 +121,11 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   private uiLockedList = true;
   private uiLockedSidebar = false;
   private children: string[] = [];
+  private currentExpandedChildren: WorkItem[] = [];
+  private expandedNode: any = null;
+  private selectedWI: WorkItem = null;
+  private initialGroup: GroupTypesModel;
 
-  // See: https://angular2-tree.readme.io/docs/options
-  treeListOptions = {
-    allowDrag: false,
-    getChildren: (node: TreeNode): any => {
-      return this.workItemService.getChildren(node.data)
-        .then((workItems: WorkItem[]) => this.workItemService.resolveWorkItems(
-          workItems,
-          this.iterations,
-          [], // We don't want to static resolve user at this point
-          this.workItemTypes,
-          this.labels
-        ))
-        .then((workItems: WorkItem[]) => {
-          // Save all the children fethced
-          workItems.forEach(w => this.children.push(w.id));
-          return workItems;
-        });
-    },
-    levelPadding: 30,
-    allowDrop: (element, to) => {
-      // return true / false based on element, to.parent, to.index. e.g.
-      return to.parent.hasChildren;
-    }
-  };
 
   constructor(
     private labelService: LabelService,
@@ -149,6 +138,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     private groupTypesService: GroupTypesService,
     private iterationService: IterationService,
     private logger: Logger,
+    private notifications: Notifications,
     private user: UserService,
     private workItemService: WorkItemService,
     private workItemDataService: WorkItemDataService,
@@ -169,13 +159,86 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     } else {
       this.currentIteration = new BehaviorSubject(null);
     }
-
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
-    // console.log('AUTH USER DATA', this.route.snapshot.data['authuser']);
-    if (this.loggedIn) {
-      this.treeListOptions['allowDrag'] = true;
-    }
+    this.setTreeConfigs();
+
+  }
+
+  setTreeConfigs() {
+    this.actionConfig = {
+      primaryActions: [],
+      moreActions: [{
+        id: 'move2top',
+        title: 'Move to Top',
+        tooltip: 'Move this work item to the top of the list'
+      }, {
+        id: 'move2bottom',
+        title: 'Move to Bottom',
+        tooltip: 'Move this work item to the bottom of the list'
+      },
+      {
+        id: 'divider1',
+        title: '',
+        separator: true
+      }, {
+        id: 'associateIteration',
+        title: 'Associate with Iteration...',
+        tooltip: 'Associate this work item with an Iteration',
+      },
+      {
+        id: 'divider2',
+        title: '',
+        separator: true
+      }, {
+        id: 'open',
+        title: 'Open',
+        tooltip: 'Open the detailed view of this work item'
+      }, {
+        id: 'preview',
+        title: 'Preview',
+        tooltip: 'Open the quick preview of this work item'
+      }, {
+        id: 'move2backlog',
+        title: 'Move to Backlog',
+        tooltip: 'Move this work item to the backlog'
+      }],
+      moreActionsDisabled: false,
+      moreActionsVisible: this.loggedIn
+    } as ActionConfig;
+
+    this.emptyStateConfig = {
+      actions: {
+        primaryActions: [{
+          id: 'createWI',
+          title: 'Create work item',
+          tooltip: 'Start the server',
+          styleClass: this.loggedIn ? 'show-wi' : 'hide-wi'
+
+        }],
+        moreActions: []
+      } as ActionConfig,
+      iconStyleClass: 'pficon-warning-triangle-o',
+      title: 'No Work Items Available',
+      info: 'There are no Work Items for your selected criteria',
+      helpLink: {
+        text: 'Create a new Work Item'
+      }
+    } as EmptyStateConfig;
+
+    this.treeListConfig = {
+      dblClick: false,
+      emptyStateConfig: this.emptyStateConfig,
+      multiSelect: false,
+      selectItems: true,
+      selectionMatchProp: 'name',
+      showCheckbox: false,
+      treeOptions: {
+        allowDrag: this.loggedIn,
+        isExpandedField: 'expanded',
+        getChildren: this.loadChildren.bind(this)
+      }
+    } as TreeListConfig;
   }
 
   ngAfterViewInit() {
@@ -185,7 +248,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
 
   ngDoCheck() {
     if (this.workItems.length != this.prevWorkItemLength) {
-      this.treeList.updateTree();
+      //this.treeList.update();
       this.prevWorkItemLength = this.workItems.length;
     }
   }
@@ -256,6 +319,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   }
 
   loadWorkItems(): void {
+    this.initialGroup = this.groupTypesService.getCurrentGroupType();
     this.uiLockedList = true;
     if (this.wiSubscriber) {
       this.wiSubscriber.unsubscribe();
@@ -375,6 +439,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
             }
           })
       });
+      //this.treeList.update();
       this.originalList = cloneDeep(this.workItems);
     },
     (err) => {
@@ -418,25 +483,31 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
               }
             })
         }
-
-        this.treeList.updateTree();
+        this.treeList.update();
       },
       (e) => console.log(e));
   }
 
-  // event handlers
-  onToggle(entryComponent: WorkItemListEntryComponent): void {
-    // This condition is to select a single work item for movement
-    // deselect the previous checked work item
-    if (this.workItemToMove) {
-      this.workItemToMove.uncheck();
-    }
-    if (this.workItemToMove == entryComponent) {
-      this.workItemToMove = null;
-    } else {
-      entryComponent.check();
-      this.workItemToMove = entryComponent;
-    }
+  loadChildren(node): any {
+    return this.workItemService.getChildren(node.data)
+      .then((workItems: WorkItem[]) => this.workItemService.resolveWorkItems(
+        workItems,
+        this.iterations,
+        [], // We don't want to static resolve user at this point
+        this.workItemTypes,
+        this.labels
+      ))
+      .then((workItems: WorkItem[]) => {
+        // Save all the children fethced
+        workItems.forEach(w => this.children.push(w.id));
+        if(this.currentWorkItem != null){
+          if(this.currentWorkItem.id === node.data.id) {
+            this.currentExpandedChildren = workItems;
+            this.expandedNode.node.data.children = workItems;
+          }
+        }
+        return workItems;
+      });
   }
 
   onDetail(entryComponent: WorkItemListEntryComponent): void { }
@@ -456,16 +527,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     this.workItems = [...resolveItem, ...this.workItems];
   }
 
-  onMoveSelectedToTop(): void{
-    this.onMoveToTop(this.workItemToMove);
-  }
-
-  onMoveSelectedToBottom(): void{
-    this.onMoveToBottom(this.workItemToMove);
-  }
-
-  onMoveToTop(entryComponent: WorkItemListEntryComponent): void {
-    this.workItemDetail = entryComponent.getWorkItem();
+  onMoveToTop(entryComponent): void {
+    this.workItemDetail = entryComponent.data;
     this.workItemService.reOrderWorkItem(this.workItemDetail, null, 'top')
     .subscribe((updatedWorkItem) => {
       let currentIndex = this.workItems.findIndex((item) => item.id === updatedWorkItem.id);
@@ -474,12 +537,12 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       // Removing duplicate old item
       this.workItems.splice( currentIndex + 1, 1);
       this.workItems[0].attributes['version'] = updatedWorkItem.attributes['version'];
-      this.treeList.updateTree();
+      this.treeList.update();
     });
   }
 
-  onMoveToBottom(entryComponent: WorkItemListEntryComponent): void {
-    this.workItemDetail = entryComponent.getWorkItem();
+  onMoveToBottom(entryComponent): void {
+    this.workItemDetail = entryComponent.data;
     this.workItemService.reOrderWorkItem(this.workItemDetail, null, 'bottom')
     .subscribe((updatedWorkItem) => {
       let currentIndex = this.workItems.findIndex((item) => item.id === updatedWorkItem.id);
@@ -488,47 +551,9 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       //remove the duplicate element
       this.workItems.splice( currentIndex, 1);
       this.workItems[this.workItems.length - 1].attributes['version'] = updatedWorkItem.attributes['version'];
-      this.treeList.updateTree();
+      this.treeList.update();
       this.listContainer.nativeElement.scrollTop = this.workItems.length * this.contentItemHeight;
     });
-  }
-
-  onMoveUp(): void {
-    this.workItemDetail = this.workItemToMove.getWorkItem();
-    let currentIndex = this.workItems.findIndex((item) => item.id === this.workItemDetail.id);
-    if (currentIndex > 0) {
-      this.workItemService.reOrderWorkItem(
-        this.workItemDetail,
-        this.workItems[currentIndex - 1].id,
-        'above'
-      ).subscribe((updatedWorkItem) => {
-        this.workItems[currentIndex].attributes['version'] = updatedWorkItem.attributes['version'];
-        // move the work item up by 1. Below statement will create two elements
-        this.workItems.splice( currentIndex - 1 , 0, this.workItemDetail);
-        // remove the duplicate element
-        this.workItems.splice( currentIndex + 1, 1 );
-        this.treeList.updateTree();
-      });
-    }
-  }
-
-  onMoveDown(): void {
-    this.workItemDetail = this.workItemToMove.getWorkItem();
-    let currentIndex = this.workItems.findIndex((item) => item.id === this.workItemDetail.id);
-    if ( currentIndex < (this.workItems.length - 1) ) {
-      this.workItemService.reOrderWorkItem(
-        this.workItemDetail,
-        this.workItems[currentIndex + 1].id,
-        'below'
-      ).subscribe((updatedWorkItem) => {
-        this.workItems[currentIndex].attributes['version'] = updatedWorkItem.attributes['version'];
-        // move the work item up by 1. Below statement will create two elements
-        this.workItems.splice( currentIndex + 2 , 0, this.workItemDetail);
-        // remove the duplicate element
-        this.workItems.splice( currentIndex, 1 );
-        this.treeList.updateTree();
-      });
-    }
   }
 
   listenToEvents() {
@@ -537,29 +562,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         .subscribe(message => {
           this.loggedIn = false;
           this.authUser = null;
-          this.treeListOptions['allowDrag'] = false;
-      })
-    );
-
-    this.eventListeners.push(
-      this.broadcaster.on<string>('move_item')
-        .subscribe((moveto: string) => {
-          switch (moveto){
-            case 'up':
-              this.onMoveUp();
-              break;
-            case 'down':
-              this.onMoveDown();
-              break;
-            case 'top':
-              this.onMoveSelectedToTop();
-              break;
-            case 'bottom':
-              this.onMoveSelectedToBottom();
-              break;
-            default:
-              break;
-          }
+          //this.treeListOptions['allowDrag'] = false;
       })
     );
 
@@ -580,15 +583,39 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         this.labels
       )[0])
       .subscribe(item => {
-        //Check if the work item meets the applied filters
+        if(this.selectedWI === null ) {
+          //add a work item to the top level list
+          this.workItems.splice(0, 0, item);
+        } else {
+          if (this.expandedNode === null) {
+            //A  WI has been selected - add the new WI as a child under that
+            this.selectedWI.hasChildren = true;
+          } else {
+            let index = this.workItems.findIndex(wi => wi.id === this.selectedWI.id)
+            if(this.selectedWI.id === this.expandedNode.node.data.id) {
+              //if the selected node is expanded
+              this.expandedNode.node.data.children.push(item);
+              if(index > -1) {
+                //this means selectedWI is a not a child WI - top level WI
+                this.workItems[index] = this.expandedNode.node.data;
+              } else {
+                //index < 0 means wi not found in workItems
+                //the selected WI is a child node and a child is being added
+                this.selectedWI = this.expandedNode.node.data;
+              }
+            } else {
+              //selected WI and expanded WI are different
+              this.selectedWI.hasChildren = true;
+            }
+          }
+        }
         if(this.filterService.doesMatchCurrentFilter(item)){
           console.log('Added WI matches the applied filters');
-          this.workItems.splice(0, 0, item);
-          this.treeList.updateTree();
         } else {
           console.log('Added WI does not match the applied filters');
-          this.treeList.updateTree();
         }
+        if(this.treeList)
+          this.treeList.update();
       })
     );
 
@@ -611,13 +638,13 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
               this.workItems.splice(0, 0, updatedItem);
             }
           }
-          this.treeList.updateTree();
+          this.treeList.update();
         } else {
           //Remove the work item from the current displayed list
           if (index > -1) {
             this.workItems.splice(index, 1);
             console.log('Updated WI does not match the applied filters')
-            this.treeList.updateTree();
+            this.treeList.update();
           }
         }
       })
@@ -682,16 +709,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     );
   }
 
-  onDragStart() {
-    //console.log('on drag start');
-  }
-
-  // Event listener for WI drop.
-  onDragEnd(workItemId: string) {
-    // rearrange is happening inside ng2-dnd library
-  }
-
-  onMoveNode($event) {
+  //Patternfly-ng's tree list component
+  handleMoveNode($event) {
     let movedWI = $event.node;
     let prevWI = $event.to.parent.children[$event.to.index - 1];
     let nextWI = $event.to.parent.children[$event.to.index + 1];
@@ -710,10 +729,100 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     }
   }
 
-  onSelect($event) {
-    this.workItemService.emitSelectedWI($event.workItem);
-    this.groupTypesService.getAllowedChildWits($event.workItem);
+  handleAction($event: Action, item: any): void {
+    switch($event.id){
+      case 'createWI':
+        //Empty state's Creat Work Item button
+        this.typeSelectPanel.openPanel()
+      break;
+      case 'move2top':
+        this.workItemToMove = item.data;
+        this.onMoveToTop(item);
+      break;
+      case 'move2bottom':
+        this.workItemToMove = item.data;
+        this.onMoveToBottom(item);
+      break;
+      case 'associateIteration':
+        this.currentWorkItem = item.data;
+        this.associateIterationModal.workItem = item.data;
+        this.associateIterationModal.open();
+      break;
+      case 'open':
+        let link = this.router.url.split('/list')[0] + '/detail/' + item.data.id;
+        this.router.navigateByUrl(link, { relativeTo: this.route });
+      break;
+      case 'preview':
+        this.onPreview(item.data);
+      break;
+      case 'move2backlog':
+        item.data.relationships.iteration = {}
+        this.workItemService
+          .update(item.data)
+          .switchMap(item => {
+            return this.iterationService.getIteration(item.relationships.iteration)
+            .map(iteration => {
+              item.relationships.iteration.data = iteration;
+              return item;
+            });
+          })
+          .subscribe(workItem => {
+          //update only the relevant fields
+          let index = this.workItems.findIndex(wi => wi.id === item.data.id)
+          this.workItems[index].relationships.iteration.data = workItem.relationships.iteration.data;
+          this.workItems[index].attributes['version'] = workItem.attributes['version'];
+          this.treeList.update();
+          try {
+            this.notifications.message({
+              message: workItem.attributes['system.title'] + ' has been moved to the Backlog.',
+              type: NotificationType.SUCCESS
+            } as Notification);
+          } catch (e) {
+            console.log('Error displaying notification. Iteration was moved to Backlog.')
+          }
+        },
+        (err) => {
+          try{
+            this.notifications.message({
+            message: item.data.attributes['system.title'] + ' could not be moved to the Backlog.',
+            type: NotificationType.DANGER
+          } as Notification);
+        } catch (e) {
+          console.log('Error displaying notification. Error moving Iteration to Backlog.')
+        }
+    });
+
+      break;
+    }
   }
+
+  handleSelectionChange($event): void {
+    if($event.item.selected === true) {
+      this.selectedWI = $event.item;
+      if(this.expandedNode != null && ($event.item.data.id !== this.expandedNode.node.item.id)) {
+        this.expandedNode = null;
+      }
+    } else {
+      this.selectedWI = null;
+      //reset the quick add context to allowed WIT for the selected group
+      this.groupTypesService.setCurrentGroupType(this.initialGroup);
+    }
+  }
+
+  handleClick($event): void {
+    this.workItemService.emitSelectedWI($event.item);
+    this.groupTypesService.getAllowedChildWits($event.item);
+  }
+
+  handleToggleExpanded($event: any): void {
+    if($event.isExpanded) {
+      this.expandedNode = $event;
+    } else {
+      this.expandedNode = null;
+    }
+  }
+
+
   togglePanelState(event: any): void {
     if (event === 'out') {
       setTimeout(() => {
@@ -740,4 +849,5 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     // Navigated to filtered view
     this.router.navigate([], navigationExtras);
   }
+
 }
