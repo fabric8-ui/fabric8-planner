@@ -22,7 +22,9 @@ import {
   OnDestroy,
   ViewEncapsulation,
   Output,
-  EventEmitter
+  EventEmitter,
+  Renderer2,
+  HostListener
 } from '@angular/core';
 import {
   Router,
@@ -87,6 +89,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   emptyStateConfig: EmptyStateConfig;
   selectType: string = 'checkbox';
   treeListConfig: TreeListConfig;
+  @ViewChild('toolbarHeight') toolbarHeight: ElementRef;
+  @ViewChild('quickaddHeight') quickaddHeight: ElementRef;
 
   workItems: WorkItem[] = [];
   prevWorkItemLength: number = 0;
@@ -146,7 +150,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     private router: Router,
     private spaces: Spaces,
     private userService: UserService,
-    private urlService: UrlService) {}
+    private urlService: UrlService,
+    private renderer: Renderer2) {}
 
   ngOnInit(): void {
     // If there is an iteration on the URL
@@ -251,7 +256,20 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       //this.treeList.update();
       this.prevWorkItemLength = this.workItems.length;
     }
+    if(this.toolbarHeight) {
+      let toolbarHt:any =  this.toolbarHeight.nativeElement.offsetHeight;
+      let quickaddHt:any =  this.quickaddHeight.nativeElement.offsetHeight;
+      let hdrHeight;
+      if(document.getElementsByClassName('navbar-pf').length > 0) {
+        hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
+      }
+      let targetHeight:any = window.innerHeight - toolbarHt - quickaddHt - hdrHeight ;
+      this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
+    }
   }
+  @HostListener('window:resize', ['$event'])
+    onResize(event) {
+   }
 
   ngOnDestroy() {
     console.log('Destroying all the listeners in list component');
