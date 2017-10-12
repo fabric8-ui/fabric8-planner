@@ -976,7 +976,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
 
   navigateBack() {
     if (this.urlService.getLastListOrBoard() === '') {
-      this.router.navigate(['..']);
+      this.router.navigate(['../..'], { relativeTo: this.route });
     } else {
       this.router.navigateByUrl(this.urlService.getLastListOrBoard());
     }
@@ -989,9 +989,10 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
       }
       // Prepare navigation extra with query params
       let navigationExtras: NavigationExtras = {
+        relativeTo: this.route,
         queryParams: params
       };
-      this.router.navigate(['..'], navigationExtras);
+      this.router.navigate(['../..'], navigationExtras);
     } else {
       let url = this.urlService.getLastListOrBoard().split('?')[0]
         + '?label=' + label.attributes.name;
