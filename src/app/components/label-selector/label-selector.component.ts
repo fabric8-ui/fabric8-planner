@@ -67,7 +67,7 @@ export class LabelSelectorComponent implements OnInit, OnChanges {
       {color: '#ededed', border: '#bbbbbb'},
       {color: '#d1d1d1', border: '#bbbbbb'}
     ];
-    this.newSelectedColor = this.colors[0];
+    this.newSelectedColor = this.colors[Math.floor(Math.random()*this.colors.length)];
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -137,6 +137,7 @@ export class LabelSelectorComponent implements OnInit, OnChanges {
   }
 
   clickOnAddLabel() {
+    this.newSelectedColor = this.colors[Math.floor(Math.random()*this.colors.length)];
     this.activeAddLabel = true;
   }
 
@@ -167,6 +168,7 @@ export class LabelSelectorComponent implements OnInit, OnChanges {
     this.labelService.createLabel(labelPayload)
       .subscribe((data: LabelModel) => {
         this.createDisabled = false;
+        this.newSelectedColor = this.colors[Math.floor(Math.random()*this.colors.length)];
         this.allLabels = [cloneDeep(data), ...this.allLabels];
         const newLabel = {
           id: data.id,
