@@ -47,10 +47,9 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
   validTitle: Boolean;
   showQuickAdd: Boolean;
   showQuickAddBtn: Boolean;
-  initialDescHeight: number = 0;
-  initialDescHeightDiff: number = 0;
-  descHeight: any = '27px';
-  descResize: any = 'none';
+  initialDescHeight:String = '26px';
+  descHeight:String = this.initialDescHeight;
+  overflow_y: String = 'hidden';
   spaceSubscription: Subscription = null;
   selectedType: WorkItemType  = null;
   availableTypes: WorkItemType[] = null;
@@ -292,11 +291,16 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
   }
 
   checkDesc(): void {
-    if (!this.initialDescHeight) {
-      this.initialDescHeight = this.qaDesc.nativeElement.offsetHeight;
-      this.initialDescHeightDiff = this.initialDescHeight - this.qaDesc.nativeElement.scrollHeight;
+    // Show scrollbar only if height is greater than 200px
+    if(this.qaDesc.nativeElement.scrollHeight > 200) {
+      this.overflow_y = 'visible';
     }
-    this.descHeight = this.qaDesc.nativeElement.scrollHeight + this.initialDescHeightDiff;
+    this.descHeight = this.qaDesc.nativeElement.scrollHeight + 'px';
+    // Reset textarea size if it is empty
+    if(this.qaDesc.nativeElement.value == "") {
+      this.descHeight = this.initialDescHeight;
+      this.overflow_y = 'hidden';
+    }
   }
 
   resetQuickAdd(): void {
@@ -304,7 +308,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
     this.createWorkItemObj();
     this.showQuickAddBtn = false;
     this.showQuickAdd = true;
-    this.descHeight = this.initialDescHeight ? this.initialDescHeight : '26px';
+    this.descHeight = this.initialDescHeight;
     this.qaTitle.nativeElement.focus();
   }
 
@@ -315,7 +319,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
       this.workItem.attributes['system.description'] = '';
       this.workItem.attributes['system.title'] = '';
       this.validTitle = false;
-      this.descHeight = this.initialDescHeight ? this.initialDescHeight : 'inherit';
+      this.descHeight = 'inherit';
     } else {
       this.createWorkItemObj();
     }
