@@ -59,7 +59,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   @ViewChild('sidePanel') sidePanelRef: any;
   @ViewChild('toolbarHeight') toolbarHeight: ElementRef;
   @ViewChild('boardContainer') boardContainer: any;
-
+  @ViewChild('containerHeight') containerHeight: ElementRef;
   workItem: WorkItem;
   cardItem: CardValue;
   filters: any[] = [];
@@ -178,8 +178,15 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       if(document.getElementsByClassName('navbar-pf').length > 0) {
         hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
       }
-      let targetHeight:any = window.innerHeight - toolbarHt - hdrHeight ;
+      let expHeight: number = 0;
+      if(document.getElementsByClassName('experimental-bar').length > 0) {
+        expHeight = (document.getElementsByClassName('experimental-bar')[0] as HTMLElement).offsetHeight;
+      }
+      let targetHeight:any = window.innerHeight - toolbarHt - hdrHeight - expHeight ;
       this.renderer.setStyle(this.boardContainer.nativeElement, 'height', targetHeight + "px");
+
+      let targetContHeight:number = window.innerHeight - hdrHeight - expHeight;
+      this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight + "px");
     }
   }
   ngOnDestroy() {

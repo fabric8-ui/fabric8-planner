@@ -91,6 +91,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   treeListConfig: TreeListConfig;
   @ViewChild('toolbarHeight') toolbarHeight: ElementRef;
   @ViewChild('quickaddHeight') quickaddHeight: ElementRef;
+  @ViewChild('containerHeight') containerHeight: ElementRef;
 
   workItems: WorkItem[] = [];
   prevWorkItemLength: number = 0;
@@ -257,14 +258,21 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.prevWorkItemLength = this.workItems.length;
     }
     if(this.toolbarHeight) {
-      let toolbarHt:any =  this.toolbarHeight.nativeElement.offsetHeight;
-      let quickaddHt:any =  this.quickaddHeight.nativeElement.offsetHeight;
-      let hdrHeight;
+      let toolbarHt:number =  this.toolbarHeight.nativeElement.offsetHeight;
+      let quickaddHt:number =  this.quickaddHeight.nativeElement.offsetHeight;
+      let hdrHeight:number = 0;
       if(document.getElementsByClassName('navbar-pf').length > 0) {
         hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
       }
-      let targetHeight:any = window.innerHeight - toolbarHt - quickaddHt - hdrHeight ;
+      let expHeight: number = 0;
+      if(document.getElementsByClassName('experimental-bar').length > 0) {
+        expHeight = (document.getElementsByClassName('experimental-bar')[0] as HTMLElement).offsetHeight;
+      }
+      let targetHeight:number = window.innerHeight - toolbarHt - quickaddHt - hdrHeight - expHeight;
       this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
+
+      let targetContHeight:number = window.innerHeight - hdrHeight - expHeight;
+      this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight + "px");
     }
   }
   @HostListener('window:resize', ['$event'])
