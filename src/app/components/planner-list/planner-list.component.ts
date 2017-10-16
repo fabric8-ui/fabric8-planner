@@ -22,7 +22,9 @@ import {
   OnDestroy,
   ViewEncapsulation,
   Output,
-  EventEmitter
+  EventEmitter,
+  Renderer2,
+  HostListener
 } from '@angular/core';
 import {
   Router,
@@ -87,6 +89,9 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   emptyStateConfig: EmptyStateConfig;
   selectType: string = 'checkbox';
   treeListConfig: TreeListConfig;
+  @ViewChild('toolbarHeight') toolbarHeight: ElementRef;
+  @ViewChild('quickaddHeight') quickaddHeight: ElementRef;
+  @ViewChild('containerHeight') containerHeight: ElementRef;
 
   workItems: WorkItem[] = [];
   prevWorkItemLength: number = 0;
@@ -146,7 +151,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     private router: Router,
     private spaces: Spaces,
     private userService: UserService,
-    private urlService: UrlService) {}
+    private urlService: UrlService,
+    private renderer: Renderer2) {}
 
   ngOnInit(): void {
     // If there is an iteration on the URL
@@ -251,7 +257,27 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       //this.treeList.update();
       this.prevWorkItemLength = this.workItems.length;
     }
+    if(this.toolbarHeight) {
+      let toolbarHt:number =  this.toolbarHeight.nativeElement.offsetHeight;
+      let quickaddHt:number =  this.quickaddHeight.nativeElement.offsetHeight;
+      let hdrHeight:number = 0;
+      if(document.getElementsByClassName('navbar-pf').length > 0) {
+        hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
+      }
+      let expHeight: number = 0;
+      if(document.getElementsByClassName('experimental-bar').length > 0) {
+        expHeight = (document.getElementsByClassName('experimental-bar')[0] as HTMLElement).offsetHeight;
+      }
+      let targetHeight:number = window.innerHeight - toolbarHt - quickaddHt - hdrHeight - expHeight;
+      this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
+
+      let targetContHeight:number = window.innerHeight - hdrHeight - expHeight;
+      this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight + "px");
+    }
   }
+  @HostListener('window:resize', ['$event'])
+    onResize(event) {
+   }
 
   ngOnDestroy() {
     console.log('Destroying all the listeners in list component');
@@ -610,11 +636,25 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
           }
         }
         if(this.filterService.doesMatchCurrentFilter(item)){
-          console.log('Added WI matches the applied filters');
+          try {
+            this.notifications.message({
+              message: item.attributes['system.title'] + ' created.',
+              type: NotificationType.SUCCESS
+            } as Notification);
+          } catch (e) {
+            console.log('Error displaying notification. Added WI matches the applied filters.')
+          }
         } else {
-          console.log('Added WI does not match the applied filters');
+          try {
+            this.notifications.message({
+              message: item.attributes['system.title'] + ' created. Added WI does not match the applied filters',
+              type: NotificationType.SUCCESS
+            } as Notification);
+          } catch (e) {
+            console.log('Error displaying notification. Added WI does not match the applied filters.')
+          }
         }
-        if(this.treeList)
+        if( this.treeList.tree != undefined )
           this.treeList.update();
       })
     );
@@ -623,7 +663,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.workItemService.editWIObservable.subscribe(updatedItem => {
         let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
         if(this.filterService.doesMatchCurrentFilter(updatedItem)){
-          console.log('Updated WI matches the applied filters');
           if (index > -1) {
             this.workItems[index] = updatedItem;
           } else {
@@ -638,12 +677,27 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
               this.workItems.splice(0, 0, updatedItem);
             }
           }
+          try {
+            this.notifications.message({
+            message: updatedItem.attributes['system.title'] + ' updated.',
+            type: NotificationType.SUCCESS
+            } as Notification);
+          } catch (e) {
+            console.log('Error displaying notification. Updated WI matches the applied filters.')
+          }
           this.treeList.update();
         } else {
           //Remove the work item from the current displayed list
           if (index > -1) {
+            try {
+              this.notifications.message({
+              message: updatedItem.attributes['system.title'] + ' updated. This work item no longer matches the applied filters.',
+              type: NotificationType.SUCCESS
+              } as Notification);
+            } catch (e) {
+              console.log('Error displaying notification. Updated WI does not match the applied filters.')
+            }
             this.workItems.splice(index, 1);
-            console.log('Updated WI does not match the applied filters')
             this.treeList.update();
           }
         }

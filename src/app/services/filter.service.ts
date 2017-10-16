@@ -3,6 +3,7 @@ import { Subject } from 'rxjs/Subject';
 import { cloneDeep } from 'lodash';
 import { Injectable, Inject } from '@angular/core';
 import { Http, Headers } from '@angular/http';
+import { ActivatedRoute } from '@angular/router';
 import { WIT_API_URL, Spaces } from 'ngx-fabric8-wit';
 import { HttpService } from './http-service';
 import { WorkItem } from './../models/work-item';
@@ -46,6 +47,7 @@ export class FilterService {
   constructor(
     private http: HttpService,
     private spaces: Spaces,
+    private route: ActivatedRoute,
     @Inject(WIT_API_URL) private baseApiUrl: string
   ) {}
 
@@ -76,7 +78,33 @@ export class FilterService {
   }
 
   getAppliedFilters(): any {
-    return this.activeFilters;
+    let arr = this.getFiltersFromUrl();
+    arr = arr.concat(this.activeFilters);
+    //remove duplicates
+    arr = arr
+    .filter((thing, index, self) => self.findIndex((t) => {return t.id === thing.id }) === index)
+    return arr;
+  }
+
+  getFiltersFromUrl(): any {
+    let refCurrentFilter = [];
+    if(this.route.snapshot.queryParams['q']) {
+      let urlString = this.route.snapshot.queryParams['q']
+      .replace(' $AND ',' ')
+      .replace(' $OR ',' ')
+      .replace('(','')
+      .replace(')','')
+      let temp_arr = urlString.split(' ');
+      for(let i = 0; i < temp_arr.length; i++) {
+        let arr = temp_arr[i].split(':')
+        refCurrentFilter.push({
+          id: arr[0],
+          paramKey: 'filter[' + arr[0] + ']',
+          value: arr[1]
+        })
+      };
+    }
+    return refCurrentFilter;
   }
 
   clearFilters(keys: string[] = []): void {
@@ -120,7 +148,13 @@ export class FilterService {
    * @returns boolean
    */
   doesMatchCurrentFilter(workItem: WorkItem): boolean {
-    return this.activeFilters.every(filter => {
+    let refCurrentFilter = this.getFiltersFromUrl();
+    //concat both arrays
+    refCurrentFilter = refCurrentFilter.concat(this.activeFilters);
+    //remove duplicates
+    refCurrentFilter = refCurrentFilter
+    .filter((thing, index, self) => self.findIndex((t) => {return t.id === thing.id }) === index)
+    return refCurrentFilter.every(filter => {
       if (filter.id && Object.keys(this.filtertoWorkItemMap).indexOf(filter.id) > -1) {
         let currentAttr = workItem;
         return this.filtertoWorkItemMap[filter.id].every((attr, map_index) => {
