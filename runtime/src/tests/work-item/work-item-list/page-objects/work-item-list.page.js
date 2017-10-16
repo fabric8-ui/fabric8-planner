@@ -260,7 +260,7 @@ class WorkItemListPage {
   /* xpath = //alm-work-item-list-entry[.//text()[contains(.,'Some Title 6')]]   */
   workItemByTitle (titleString) {
     // return element(by.xpath("//alm-work-item-list-entry[.//text()[contains(.,'" + titleString + "')]]"));
-    return element(by.xpath("//alm-tree-list-item[.//text()[contains(.,'" + titleString + "')]]"));
+    return element(by.xpath("//tree-node[.//text()[contains(.,'" + titleString + "')]]"));
   }
 
   get firstWorkItem () {
@@ -346,6 +346,10 @@ class WorkItemListPage {
   clickWorkItemDeleteButton (button) {
     browser.wait(until.presenceOf(button), constants.WAIT, 'Failed to find the button');
     return button.click();
+  }
+
+  workItemAttachedLabels(workItem){
+    return workItem.$$('.f8-wi__list-entry span.label');
   }
 
   /* User assignment dropdown */

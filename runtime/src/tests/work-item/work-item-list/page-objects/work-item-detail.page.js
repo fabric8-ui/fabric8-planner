@@ -45,7 +45,7 @@ class WorkItemDetailPage {
 
   /* This UI element is only displayed when the user accesses the detail page of an existing work item */
   get clickWorkItemDetailTitle () {
-    return element(by.id("wi-detail-title-click"));
+    return element(by.id("wi-title-div"));
   }
 
   clickWorkItemDetailTitleClick () {
@@ -53,7 +53,7 @@ class WorkItemDetailPage {
   }
 
   get workItemDetailTitle () {
-    return element(by.id("wi-detail-title"));
+    return element(by.css("#wi-title-div .inlineinput-textarea"));
   }
 
   setWorkItemDetailTitle (newTitleString, append) {
@@ -95,11 +95,11 @@ class WorkItemDetailPage {
   }
 
   get workItemTitleSaveIcon () {
-    return element(by.id("workItemTitle_btn_save"));
+    return element(by.css("#wi-title-div .inlineinput-btn-save"));
   }
 
   workItemTitleSaveIconById () {
-    return element(by.id("workItemTitle_btn_save"));
+    return element(by.css("#wi-title-div .inlineinput-btn-save"));
   }
 
   clickWorkItemTitleSaveIcon () {
@@ -107,7 +107,7 @@ class WorkItemDetailPage {
   }
 
   get workItemTitleCancelIcon () {
-    return element(by.id("workItemTitle_btn_cancel"));
+    return element(by.css("#wi-title-div .inlineinput-btn-cancel"));
   }
 
   clickWorkItemTitleCancelIcon () {
@@ -433,10 +433,6 @@ class WorkItemDetailPage {
     return element(by.id('comment_save_btn'+index)).click();
   }
   clickCloseComment(index){
-    browser.actions().mouseMove(element(by.css('#comment_body_' + index + ' .fa-close'))).perform();
-    browser.wait(
-      until.elementToBeClickable(element(by.css('#comment_body_' + index + ' .fa-close')))
-    );
     return element(by.css('#comment_body_' + index + ' .fa-close')).click();
   }
   editComments(comment,index, append){
@@ -949,6 +945,88 @@ class WorkItemDetailPage {
     )
   }
 
+  /* UI elements for Label */
+  get addLabelButton() {
+    return $('.clickable.add-label');
+  }
+
+  clickAddLabelButton(){
+    return this.addLabelButton.click();
+  }
+
+  get selectLabelDropdown() {
+    return $('.select-dropdown.dropdown-menu.dropdown-menu-left.show');
+  }
+
+  getLabelByTitle(title) {
+    return element(by.xpath("//ul[@class='select-dropdown-menu']/li//*[text()='"+title+"']"));
+  }
+
+  // Removes label by clicking on 'x'
+  removeLabelByTitle(title) {
+    let path = "//div[@id='workItemDetail_Wrapper']//*[@class='label-wrapper']//span[contains(text(), '"+ title +"')]/span";
+    return element.all(by.xpath(path)).first().click();
+  }
+
+  selectLabelByTitle(labelTitle) {
+    return this.getLabelByTitle(labelTitle).click();
+  }
+
+  get labelsCount() {
+    return $$(".dropdown-menu.dropdown-menu-left.show li").count();
+  }
+
+  get createLabelButton(){
+    return $('div.create-label-button');
+  }
+
+  clickCreateLabelButton(){
+    return this.createLabelButton.click();
+  }
+
+  get labelInput() {
+    return $('.create-label .create-label-input');
+  }
+
+  setLabelName(text) {
+    return this.labelInput.sendKeys(text);
+  }
+
+  clickLabelCheckbox() {
+    return $('button.fa-check').click();
+  }
+
+  get labelCancelIcon() {
+    return this.createLabelInputDiv.$('.pficon-close');
+  }
+
+  clickLabelCancel() {
+    return this.labelCancelIcon.click();
+  }
+
+  get labelCloseIcon() {
+    return $('.select-dropdown-header .pull-right.pficon-close.close-pointer');
+  }
+
+  clickLabelClose() {
+    return this.labelCloseIcon.click();
+  }
+
+  get LabelColorSelectorIcon() {
+    return this.createLabelInputDiv.$('.palet');
+  }
+
+  clickLabelColorSelector() {
+    return this.LabelColorSelectorIcon.click();
+  }
+
+  listOfLabels() {
+    return $$('.select-dropdown-menu li').first();
+  }
+
+  attachedLabels() {
+    return $$('f8-label .label-wrapper span.label');
+  }
 }
 
 module.exports = WorkItemDetailPage;

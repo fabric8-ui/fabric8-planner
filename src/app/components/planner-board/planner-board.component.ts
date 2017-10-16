@@ -13,7 +13,9 @@ import {
   QueryList,
   TemplateRef,
   DoCheck,
-  ViewEncapsulation
+  ViewEncapsulation,
+  Renderer2,
+  HostListener
 } from '@angular/core';
 import { Response } from '@angular/http';
 import { Router, ActivatedRoute, NavigationStart } from '@angular/router';
@@ -54,7 +56,10 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   @ViewChildren('activeFilters', {read: ElementRef}) activeFiltersRef: QueryList<ElementRef>;
   @ViewChild('activeFiltersDiv') activeFiltersDiv: any;
   @ViewChild('associateIterationModal') associateIterationModal: any;
-
+  @ViewChild('sidePanel') sidePanelRef: any;
+  @ViewChild('toolbarHeight') toolbarHeight: ElementRef;
+  @ViewChild('boardContainer') boardContainer: any;
+  @ViewChild('containerHeight') containerHeight: ElementRef;
   workItem: WorkItem;
   cardItem: CardValue;
   filters: any[] = [];
@@ -69,7 +74,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   private workItemTypes: WorkItemType[] = [];
   private readyToInit = false;
   private areas: AreaModel[] = [];
-  private loggedInUser: User;
+  private loggedInUser: any[];
   eventListeners: any[] = [];
   dialog: Dialog;
   showDialog = false;
@@ -83,7 +88,11 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   private wiSubscription = null;
   lane: any;
   private labels: LabelModel[] = [];
+  private uiLockedAll = false;
+  private uiLockedBoard = true;
+  private uiLockedSidebar = false;
 
+  sidePanelOpen: boolean = true;
   constructor(
     private auth: AuthenticationService,
     private broadcaster: Broadcaster,
@@ -100,7 +109,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     private spaces: Spaces,
     private areaService: AreaService,
     private filterService: FilterService,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private renderer: Renderer2) {
       let bag: any = this.dragulaService.find('wi-bag');
       this.dragulaEventListeners.push(
         this.dragulaService.drag.subscribe((value) => {
@@ -158,8 +168,27 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         this.workItemTypes = [];
       }
     });
+
   }
 
+  ngDoCheck() {
+    if(this.toolbarHeight) {
+      let toolbarHt:any =  this.toolbarHeight.nativeElement.offsetHeight;
+      let hdrHeight;
+      if(document.getElementsByClassName('navbar-pf').length > 0) {
+        hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
+      }
+      let expHeight: number = 0;
+      if(document.getElementsByClassName('experimental-bar').length > 0) {
+        expHeight = (document.getElementsByClassName('experimental-bar')[0] as HTMLElement).offsetHeight;
+      }
+      let targetHeight:any = window.innerHeight - toolbarHt - hdrHeight - expHeight ;
+      this.renderer.setStyle(this.boardContainer.nativeElement, 'height', targetHeight + "px");
+
+      let targetContHeight:number = window.innerHeight - hdrHeight - expHeight;
+      this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight + "px");
+    }
+  }
   ngOnDestroy() {
     console.log('Destroying all the listeners in board component');
     if (this.wiSubscription !== null) this.wiSubscription.unsubscribe();
@@ -172,6 +201,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   }
 
   initStuff() {
+    this.uiLockedBoard = true;
     Observable.combineLatest(
       this.iterationService.getIterations(),
       // this.collaboratorService.getCollaborators(),
@@ -187,15 +217,15 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       this.workItemTypes = wiTypes;
       this.readyToInit = true;
       this.areas = areas;
-      this.loggedInUser = loggedInUser;
       this.labels = labels;
+      this.loggedInUser = loggedInUser;
       // Resolve iteration filter on the first load of board view
       // If there is an existing iteration query params already
       // Set the filter service with iteration filter
       if (currentIteration !== null) {
         const filterIteration = this.iterations.find(it => {
           return it.attributes.resolved_parent_path + '/' + it.attributes.name ===
-            currentIteration;
+            currentIteration.toString();
         })
         if (filterIteration) {
            this.filterService.setFilterValues('iteration', filterIteration.id);
@@ -220,6 +250,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       else {
         this.getDefaultWorkItemTypeStates();
       }
+      this.uiLockedBoard = false;
     });
   }
 
@@ -870,6 +901,46 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
           }
         )
     );
+
+    // lock the ui when a complex query is starting in the background
+    this.eventListeners.push(
+      this.broadcaster.on<string>('backend_query_start')
+        .subscribe((context: string) => {
+          switch (context){
+            case 'workitems':
+              this.uiLockedBoard = true;
+              break;
+            case 'iterations':
+              this.uiLockedSidebar = true;
+              break;
+            case 'mixed':
+              this.uiLockedAll = true;
+              break;
+            default:
+              break;
+          }
+      })
+    );
+
+    // unlock the ui when a complex query is completed in the background
+    this.eventListeners.push(
+      this.broadcaster.on<string>('backend_query_end')
+        .subscribe((context: string) => {
+          switch (context){
+            case 'workitems':
+              this.uiLockedBoard = false;
+              break;
+            case 'iterations':
+              this.uiLockedSidebar = false;
+              break;
+            case 'mixed':
+              this.uiLockedAll = false;
+              break;
+            default:
+              break;
+          }
+      })
+    );
   }
 
   listenToUrlParams() {
@@ -894,5 +965,19 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
           this.currentWIType.next(null);
         }
       });
+  }
+
+  togglePanelState(event: any): void {
+    if (event === 'out') {
+      setTimeout(() => {
+        this.sidePanelOpen = true;
+      }, 100)
+    } else {
+      this.sidePanelOpen = false;
+    }
+  }
+
+  togglePanel() {
+    this.sidePanelRef.toggleSidePanel();
   }
 }

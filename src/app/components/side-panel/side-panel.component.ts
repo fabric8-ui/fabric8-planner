@@ -18,6 +18,7 @@ import { IterationService } from '../../services/iteration.service';
 export class SidepanelComponent implements OnInit, OnDestroy {
 
   @Input() iterations: IterationModel[] = [];
+  @Input() sidePanelOpen: Boolean = true;
 
   rootIteration: IterationModel = null;
   backlogSelected: boolean = true;
@@ -60,6 +61,11 @@ export class SidepanelComponent implements OnInit, OnDestroy {
       this.log.log('Got root iteration size of ' + count);
       this.numberOfItemsInBacklog = count;
     })
+  }
+
+  setGuidedTypeWI() {
+    let witCollection = this.workItemService.workItemTypes.map(wit => wit.id);
+    this.groupTypesService.setCurrentGroupType(witCollection);
   }
 
   listenToEvents() {
