@@ -348,6 +348,13 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
           this.workItem.relationships.labels.data.map(label => {
             return this.labels.find(l => l.id === label.id);
           });
+          // Sort labels in alphabetical order
+          this.workItem.relationships.labels.data =
+          this.workItem.relationships.labels.data.sort(function(labelA, labelB) {
+            let labelAName = labelA.attributes.name.toUpperCase();
+            let labelBName = labelB.attributes.name.toUpperCase();
+            return labelAName.localeCompare(labelBName);
+          });
         } else {
           this.workItem.relationships.labels = {
             data: []
@@ -692,6 +699,12 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
       });
       this.save(payload, true)
         .subscribe(workItem => {
+          // Sort labels in alphabetical order
+          selectedLabels = selectedLabels.sort(function(labelA, labelB) {
+            let labelAName = labelA.attributes.name.toUpperCase();
+            let labelBName = labelB.attributes.name.toUpperCase();
+            return labelAName.localeCompare(labelBName);
+          });
           this.workItem.relationships.labels = {
             data: selectedLabels
           };
@@ -976,7 +989,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
 
   navigateBack() {
     if (this.urlService.getLastListOrBoard() === '') {
-      this.router.navigate(['..']);
+      this.router.navigate(['../..'], { relativeTo: this.route });
     } else {
       this.router.navigateByUrl(this.urlService.getLastListOrBoard());
     }
@@ -989,9 +1002,10 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
       }
       // Prepare navigation extra with query params
       let navigationExtras: NavigationExtras = {
+        relativeTo: this.route,
         queryParams: params
       };
-      this.router.navigate(['..'], navigationExtras);
+      this.router.navigate(['../..'], navigationExtras);
     } else {
       let url = this.urlService.getLastListOrBoard().split('?')[0]
         + '?label=' + label.attributes.name;
