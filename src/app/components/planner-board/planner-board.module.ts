@@ -12,14 +12,14 @@ import { ModalModule } from 'ngx-modal';
 import { DragulaModule } from 'ng2-dragula';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { EventService } from './../../services/event.service';
-import { TreeModule } from 'angular2-tree-component';
+
 import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { Broadcaster, Logger } from 'ngx-base';
 import {
   AlmIconModule,
   DialogModule,
   InfiniteScrollModule,
-  TreeListModule,
+  //TreeListModule,
   WidgetsModule
 } from 'ngx-widgets';
 import { AuthenticationService } from 'ngx-login-client';
@@ -41,6 +41,7 @@ import { WorkItemDetailAddTypeSelectorModule } from '../work-item-create/work-it
 import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.module';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 import { WorkItemService } from '../../services/work-item.service';
+import { PlannerLayoutModule } from '../../widgets/planner-layout/planner-layout.module';
 
 import { MockHttp } from '../../mock/mock-http';
 
@@ -98,11 +99,12 @@ if (process.env.ENV == 'inmemory') {
     IterationModule,
     ModalModule,
     PlannerBoardRoutingModule,
+    PlannerLayoutModule,
     SidepanelModule,
     ToolbarPanelModule,
     TooltipModule.forRoot(),
-    TreeModule,
-    TreeListModule,
+    //TreeModule,
+    //TreeListModule,
     WidgetsModule,
     WorkItemDetailModule,
     WorkItemDetailAddTypeSelectorModule,

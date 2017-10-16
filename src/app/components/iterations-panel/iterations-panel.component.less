@@ -1,4 +1,5 @@
 @import (reference) '../../../assets/stylesheets/_base';
+@import (reference) '../../../assets/stylesheets/shared/_utilities';
 
 .f8-itr {
   background-color: @color-pf-black-900;
@@ -8,47 +9,113 @@
   &__panel {
     &-hdr {
       width: 100%;
-      padding: 20px;
-      padding-right: 15px;
-    }
-    .node-drop-slot,
-    .list-group-item {
-      padding: 0 !important;
-      margin:  0 !important;
-      background-color: @color-pf-black-900;
+      display: inline-block;
+      padding: 20px 15px;
+      border-left: 4px solid;
+      border-left-color: transparent;
+      cursor: default; // as item is not clickable
       &:hover {
-        background-color: @color-pf-black-700;
-      }
-      .tree-list-item {
-        display: inline-block;
-        width: 100%;
-        padding: 0;
-        background-color: @color-pf-black-900;
-        &:hover {
-          background-color: @color-pf-black-700;
-        }
-        span {
-          float: left;
-        }
-        .toggle-children-wrapper {
-          width: 25px;
-          padding-top: 5px;
-          padding-left: 10px;
-        }
-      }
-      .on-hover-background {
-        background-color: @color-pf-black-700;
+        background: @color-pf-black-700;
       }
     }
-    .tree-children {
-        .tree-list-item {
-          .toggle-children-wrapper {
-            padding-left: ((@grid-gutter-width/3) * 2.5);
+    .list-pf {
+      border-bottom: none;
+      tree-viewport {
+        overflow: visible;
+        .node-drop-slot,
+        .list-group-item {
+          padding: 0 !important;
+          margin:  0 !important;
+          background-color: @color-pf-black-900;
+          &:hover {
+            background-color: @color-pf-black-700;
           }
-          .f8-itr-entry {
-            padding-left: ((@grid-gutter-width/3)) * 4;
+          .tree-list-item {
+            display: inline-block;
+            width: 100%;
+            padding: 0 !important;
+            background-color: @color-pf-black-900;
+            &:hover {
+              background-color: @color-pf-black-700;
+            }
+            span {
+              float: left;
+            }
+            .toggle-children-wrapper {
+              width: 25px;
+              padding-top: 5px;
+              padding-left: 30px;
+            }
+          }
+          .on-hover-background {
+            background-color: @color-pf-black-700;
           }
         }
+        .tree-children {
+          padding-left: 0;
+          overflow: visible;
+          .tree-list-item {
+            .toggle-children-wrapper {
+              padding-left: ((@grid-gutter-width/3) * 4);
+            }
+            .f8-itr-entry {
+              padding-left: ((@grid-gutter-width/3)) * 5.5;
+            }
+          }
+        }
+        /*Patternfly-ng's tree styles overwrite*/
+        .tree-node {
+          background-color: @color-pf-black-900;
+          .list-pf-item {
+            display: block;
+            border: none;
+            :hover {
+              background-color: @color-pf-black-700;
+            }
+          }
+          .list-pf-container {
+            padding: 0 15px !important;
+            background-color: @color-pf-black-900;
+            border-left: 4px solid;
+            border-left-color: transparent;
+            .pfng-tree-list-content {
+              width: 85%;
+            }
+            .list-pf-content {
+              align-items: flex-start;
+              justify-content: space-between;
+              .list-pf-actions {
+                .btn-link {
+                  color: @color-pf-white;
+                }
+                .dropdown-menu{
+                  background-color: @color-pf-white;
+                  li a:hover {
+                    background-color: @color-pf-blue-50;
+                    border-color: @color-pf-blue-100;
+                    cursor: pointer;
+                  }
+                }
+              }
+            }
+          }
+          &:hover {
+            .list-pf-item {
+              border-left-color: @color-pf-blue-400;
+            }
+          }
+          &-active {
+            background-color: @color-pf-black-700;
+            .list-pf-container {
+              background-color: @color-pf-black-700;
+              border-left-color: @color-pf-blue-400;
+            }
+          }
+        }
+        .node-drop-slot {
+          height: 0;
+        }
+      }
     }
   }
   &__List {
@@ -61,26 +128,70 @@
         }
       }
       > li {
+        width: 100%;
         padding: 15px;
+        padding-left: 45px;
         list-style: none;
         &.active {
           border-left: 4px solid;
           border-left-color: transparent;
-          background-color: @color-pf-black-700;
-          &.io-itr--selected {
+          background-color: @color-pf-black-800;
+          cursor: pointer;
+          &.f8-itr--selected {
             border-left: 4px solid;
             border-left-color: @color-pf-blue;
             background-color: @color-pf-black-700;
+            .left-truncate {
+              &::before {
+                background-color: @color-pf-black-700;
+              }
+          }
           }
         }
         &:hover {
-          background-color: @color-pf-black-800 ;
+          background-color: @color-pf-black-700;
+          .left-truncate {
+            &::before {
+              background-color: @color-pf-black-700;
+            }
+          }
+        }
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+    &-parent {
+      float: right;
+      width: 55%;
+      padding-top: 3px;
+      .left-truncate {
+        padding-left: 12px;
+        color: @color-pf-white;
+        background-color: initial;
+        &::before {
+          color: @color-pf-white;
+          line-height: 1.3;
+          background-color: @color-pf-black-800;
+        }
+        span {
+          font-size: 12px;
         }
       }
     }
   }
-  &-count { float: right; }
+  &-name {
+    font-size: 12px;
+  }
+  &-status {
+    float: left;
+    width: 100%;
+    color: @color-pf-black-600;
+    font-size: 12px;
+  }
   &-desc {
+    margin: 0;
+    font-size: 12px;
     &:after,
     &:before {
       background: transparent !important;
@@ -91,6 +202,37 @@
     &-btn {
       color: @color-pf-blue;
       font-size: 13px;
+      cursor: pointer;
     }
+  }
+  .progress {
+    height: 12px;
+  }
+  //Patternfly-ng's tree styles overwrite
+  .pfng-tree-list .toggle-children-wrapper-expanded .toggle-children::before {
+    content: "\F107";
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .pfng-tree-list .toggle-children-wrapper-collapsed .toggle-children::before {
+    content: "\F105";
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .list-pf-chevron + .list-pf-content {
+    border: none;
+    padding-left: 0;
+  }
+  .list-pf-chevron {
+    margin-right: 5px;
+  }
+  .blank-slate-pf {
+    display: none;
+  }
+  .iteration-count {
+    position: absolute;
+    right: 15px;
+    color: @color-pf-black-600;
+    font-size: 12px;
   }
 }
