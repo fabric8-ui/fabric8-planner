@@ -61,7 +61,7 @@
           <p class="margin-0"
             id="link_item_title"
             *ngIf="workItem" >
-            This item, {{ workItem.attributes['system.title'] }}
+            This item, <span [innerHTML]="workItem.attributes['system.title']"></span>
           </p>
         </div>
         <div class="f8-link__content-editor table width-100"
