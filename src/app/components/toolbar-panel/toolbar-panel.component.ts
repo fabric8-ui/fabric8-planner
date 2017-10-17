@@ -90,7 +90,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     'assignee',
     'area',
     'label',
-    'workitemtype'
+    'state'
   ];
   allowedMultipleFilterKeys: string[] = [
     'label'
@@ -409,6 +409,16 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         },
         getvalue: (type) => type.attributes.name
+      },
+      state: {
+        datasource: this.workItemService.getStatusOptions(),
+        datamap: (wistates) => {
+          return {
+            queries: wistates.map(wistate => {return {id: wistate.option, value: wistate.option }}),
+            primaryQueries: []
+          }
+        },
+        getvalue: (type) => type.option
       },
       label: {
         datasource: this.labelService.getLabels().map(d => d as any[]),
