@@ -39,10 +39,11 @@ export class FilterService {
 
   private filtertoWorkItemMap = {
     'assignee': ['relationships', 'assignees', 'data', ['id']],
+    'creator': ['relationships', 'creator', 'data', 'id'],
     'area': ['relationships', 'area', 'data', 'id'],
     'workitemtype': ['relationships', 'baseType', 'data', 'id'],
     'iteration': ['relationships', 'iteration', 'data', 'id'],
-    'state': ['attributes','system.state']
+    'state': ['attributes','system.state'],
   }
 
   constructor(

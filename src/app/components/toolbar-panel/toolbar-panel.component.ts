@@ -88,6 +88,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     } as ToolbarConfig;
   allowedFilterKeys: string[] = [
     'assignee',
+    'creator',
     'area',
     'label',
     'state'
@@ -396,6 +397,19 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
             primaryQueries: Object.keys(authUser).length ?
               [{id: authUser.id, value: authUser.attributes.username + ' (me)', imageUrl: authUser.attributes.imageURL}, {id: 'none', value: 'Unassigned'}] :
               [{id: 'none', value: 'Unassigned'}]
+          }
+        },
+        getvalue: (user) => user.attributes.username
+      },
+      creator: {
+        datasource: Observable.combineLatest(this.collaboratorService.getCollaborators(), this.userService.getUser()),
+        datamap: ([users, authUser]) => {
+          if (Object.keys(authUser).length > 0) {
+            users = users.filter(u => u.id !== authUser.id);
+          }
+          return {
+            queries: users.map(user => {return {id: user.id, value: user.attributes.username, imageUrl: user.attributes.imageURL}}),
+            primaryQueries: [{id: authUser.id, value: authUser.attributes.username + ' (me)', imageUrl: authUser.attributes.imageURL}]
           }
         },
         getvalue: (user) => user.attributes.username
