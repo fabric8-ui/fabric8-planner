@@ -220,9 +220,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         primaryActions: [{
           id: 'createWI',
           title: 'Create work item',
-          tooltip: 'Start the server',
+          tooltip: 'Create work item',
           styleClass: this.loggedIn ? 'show-wi' : 'hide-wi'
-
         }],
         moreActions: []
       } as ActionConfig,
@@ -584,50 +583,12 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     });
   }
 
-  onMoveUp(): void {
-    this.workItemDetail = this.workItemToMove.getWorkItem();
-    let currentIndex = this.workItems.findIndex((item) => item.id === this.workItemDetail.id);
-    if (currentIndex > 0) {
-      this.workItemService.reOrderWorkItem(
-        this.workItemDetail,
-        this.workItems[currentIndex - 1].id,
-        'above'
-      ).subscribe((updatedWorkItem) => {
-        this.workItems[currentIndex].attributes['version'] = updatedWorkItem.attributes['version'];
-        // move the work item up by 1. Below statement will create two elements
-        this.workItems.splice( currentIndex - 1 , 0, this.workItemDetail);
-        // remove the duplicate element
-        this.workItems.splice( currentIndex + 1, 1 );
-        this.treeList.updateTree();
-      });
-    }
-  }
-
-  onMoveDown(): void {
-    this.workItemDetail = this.workItemToMove.getWorkItem();
-    let currentIndex = this.workItems.findIndex((item) => item.id === this.workItemDetail.id);
-    if ( currentIndex < (this.workItems.length - 1) ) {
-      this.workItemService.reOrderWorkItem(
-        this.workItemDetail,
-        this.workItems[currentIndex + 1].id,
-        'below'
-      ).subscribe((updatedWorkItem) => {
-        this.workItems[currentIndex].attributes['version'] = updatedWorkItem.attributes['version'];
-        // move the work item up by 1. Below statement will create two elements
-        this.workItems.splice( currentIndex + 2 , 0, this.workItemDetail);
-        // remove the duplicate element
-        this.workItems.splice( currentIndex, 1 );
-        this.treeList.updateTree();
-      });
-    }
-  }
-
   // This opens the create new work item dialog. It parses the query string
   // first to get iterationId and areaId for pre-selection in the new work item
   // dialog. Note that this only works for the current capabilities of the query
   // toolbar for now. If we extend that, we also need to extend this method.
   onCreateFromContext() {
-    console.log('Activated create work item from an empty list view.');
+    console.log('Activated create work item from a list view.');
     let query = this.route.snapshot.queryParams['q'];
     if (query) {
       let contextIteration = this.filterService.getConditionFromQuery(query, "iteration");
@@ -844,8 +805,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   handleAction($event: Action, item: any): void {
     switch($event.id){
       case 'createWI':
-        //Empty state's Creat Work Item button
-        this.typeSelectPanel.openPanel()
+        // Empty state's Create Work Item button
+        this.onCreateFromContext()
       break;
       case 'move2top':
         this.workItemToMove = item.data;

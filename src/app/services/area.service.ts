@@ -98,7 +98,7 @@ export class AreaService {
         }
     })
     .catch( err => {
-      return Observable.empty();
+      return Observable.throw(new Error(err.message));
     });
   }
 

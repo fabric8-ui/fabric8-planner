@@ -239,7 +239,7 @@ export class IterationService {
         }
       })
       .catch( err => {
-        return Observable.empty();
+        return Observable.throw(new Error(err.message));
       });
   }
 
