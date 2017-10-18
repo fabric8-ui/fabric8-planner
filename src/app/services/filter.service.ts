@@ -3,6 +3,7 @@ import { Subject } from 'rxjs/Subject';
 import { cloneDeep } from 'lodash';
 import { Injectable, Inject } from '@angular/core';
 import { Http, Headers } from '@angular/http';
+import { ActivatedRoute } from '@angular/router';
 import { WIT_API_URL, Spaces } from 'ngx-fabric8-wit';
 import { HttpService } from './http-service';
 import { WorkItem } from './../models/work-item';
@@ -46,6 +47,7 @@ export class FilterService {
   constructor(
     private http: HttpService,
     private spaces: Spaces,
+    private route: ActivatedRoute,
     @Inject(WIT_API_URL) private baseApiUrl: string
   ) {}
 
@@ -75,8 +77,41 @@ export class FilterService {
     this.filterChange.next(this.activeFilters);
   }
 
-  getAppliedFilters(): any {
-    return this.activeFilters;
+  getAppliedFilters(includeSidePanel: boolean = false): any {
+    if (includeSidePanel) {
+      let arr = this.getFiltersFromUrl();
+      arr = arr.concat(this.activeFilters);
+      //remove duplicates
+      arr = arr
+      .filter((thing, index, self) => self.findIndex((t) => {return t.id === thing.id }) === index)
+      return arr;
+    } else {
+      return this.activeFilters;
+    }
+  }
+
+  getFiltersFromUrl(): any {
+    // TODO
+    // This code needs to be looked at
+    // to support in query from the expression as well
+    let refCurrentFilter = [];
+    if(this.route.snapshot.queryParams['q']) {
+      let urlString = this.route.snapshot.queryParams['q']
+      .replace(' $AND ',' ')
+      .replace(' $OR ',' ')
+      .replace('(','')
+      .replace(')','')
+      let temp_arr = urlString.split(' ');
+      for(let i = 0; i < temp_arr.length; i++) {
+        let arr = temp_arr[i].split(':')
+        refCurrentFilter.push({
+          id: arr[0],
+          paramKey: 'filter[' + arr[0] + ']',
+          value: arr[1]
+        })
+      };
+    }
+    return refCurrentFilter;
   }
 
   clearFilters(keys: string[] = []): void {
@@ -119,7 +154,13 @@ export class FilterService {
    * @returns boolean
    */
   doesMatchCurrentFilter(workItem: WorkItem): boolean {
-    return this.activeFilters.every(filter => {
+    let refCurrentFilter = this.getFiltersFromUrl();
+    //concat both arrays
+    refCurrentFilter = refCurrentFilter.concat(this.activeFilters);
+    //remove duplicates
+    refCurrentFilter = refCurrentFilter
+    .filter((thing, index, self) => self.findIndex((t) => {return t.id === thing.id }) === index)
+    return refCurrentFilter.every(filter => {
       if (filter.id && Object.keys(this.filtertoWorkItemMap).indexOf(filter.id) > -1) {
         let currentAttr = workItem;
         return this.filtertoWorkItemMap[filter.id].every((attr, map_index) => {
@@ -159,9 +200,19 @@ export class FilterService {
     let processedObject = '';
     // If onptions has any length enclose processedObject with ()
     if (Object.keys(options).length > 1) {
-      processedObject = '(' + Object.keys(options).map(key => key + ':' + options[key]).join(' ' + this.and_notation + ' ') + ')';
+      processedObject = '(' + Object.keys(options).map(key => {
+        return typeof(options[key]) !== 'string' ? key + ':' + options[key] :
+          options[key].split(',').map(val => {
+            return key + ':' + val;
+          }).join(' ' + this.and_notation + ' ')
+      }).join(' ' + this.and_notation + ' ') + ')';
     } else if (Object.keys(options).length === 1) {
-      processedObject = Object.keys(options).map(key => key + ':' + options[key]).join(' ' + this.and_notation + ' ');
+      processedObject = Object.keys(options).map(key => {
+        return typeof(options[key]) !== 'string' ? key + ':' + options[key] :
+          options[key].split(',').map(val => {
+            return key + ':' + val;
+          }).join(' ' + this.and_notation + ' ')
+      }).join(' ' + this.and_notation + ' ');
     }
     // else return existingQuery
     else {
@@ -237,7 +288,6 @@ export class FilterService {
           return op;
         }
       } else {
-				console.log(1);
         return {};
       }
     } else {
@@ -263,7 +313,53 @@ export class FilterService {
 						...newQueryObject[join]
 					]
 					return op;
-				} else {
+        }
+        // If both the objects have one element each
+        // Then given joiner gets priority
+        else if (existingQueryObject[existingJoiner].length === 1 &&
+          newQueryObject[newJoiner].length === 1) {
+            let op = {};
+            op[join] = [
+              ...existingQueryObject[existingJoiner],
+              ...newQueryObject[newJoiner]
+            ]
+            return op;
+        }
+        // If existing query has only one element
+        // then newJoiner gets the priority
+        else if (existingQueryObject[existingJoiner].length === 1) {
+          let op = {};
+          if (newJoiner === join) {
+            op[join] = [
+              ...existingQueryObject[existingJoiner],
+              ...newQueryObject[newJoiner]
+            ]
+          } else {
+            op[join] = [
+              ...existingQueryObject[existingJoiner],
+              newQueryObject
+            ]
+          }
+          return op;
+        }
+        // If new query has only one element
+        // then existingJoiner gets the priority
+        else if (newQueryObject[newJoiner].length === 1) {
+          let op = {};
+          if (existingJoiner === join) {
+            op[join] = [
+              ...existingQueryObject[existingJoiner],
+              ...newQueryObject[newJoiner]
+            ]
+          } else {
+            op[join] = [
+              existingQueryObject,
+              ...newQueryObject[newJoiner]
+            ]
+          }
+          return op;
+        }
+        else {
 					let op = {};
 					op[join] = [
 						existingQueryObject,

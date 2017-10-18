@@ -8,7 +8,7 @@
   bottom: 0;
   left: auto;
   z-index: 2;
-  width: 33%;
+  width: 40%;
   min-width: 250px;
   padding: 0;
   overflow-x: hidden;
@@ -27,20 +27,14 @@
     border-bottom-color: @color-pf-black-300;
   }
   &--close {
-  margin-right: 10px;
-  font-size: 18px;
-  cursor: pointer;
-}
-}
-.user-avatar {
-  width: 20px;
-  height: 20px;
-  margin-right: 6px;
-  cursor: pointer;
+    margin-right: 10px;
+    font-size: 18px;
+    cursor: pointer;
+  }
 }
 .user-creator-icon {
   padding: 3px;
-  margin-right: 6px;
+  margin-right: 10px;
   color: @color-pf-black-500;
   cursor: pointer;
   .Border(1px, dashed, @color-pf-black);
@@ -68,26 +62,36 @@
 .wi-detail-title-blk {
   .detail-title {
     position: relative;
-    max-width: ~"calc(e('100% - 25px'))";
-    padding-left: 2px;
+    max-width: ~"calc(e('100% - 30px'))";
+    padding-top: 1px;
+    padding-bottom: 3px;
+    padding-left: 5px;
     margin-top: 10px;
     font-weight: 500;
-    line-height: 1.5;
+    line-height: 1.3;
     .Border(1px, solid, transparent);
   }
-  .detail-title-edit-ico {
-    line-height: 2;
-    cursor: pointer;
+  div[id='title-click-div'] {
+    &:hover {
+      .detail-title {
+        .Border(1px, solid, @color-pf-blue-200);
+        transition: border ease-in-out 0.2s;
+      }
+    }
   }
   .detail-title-edit {
+    float: left;
+    width: ~"calc(e('100% - 100px'))";
     height: 25px;
     padding-left: 5px;
     overflow: hidden;
     font-weight: 500;
     line-height: 1.3;
     background-color: @color-pf-white;
+    cursor: pointer;
     resize: none;
     .Border(1px, solid, @color-pf-blue-400);
+    transition: all ease-in-out 0.3s;
   }
   .title-error {
     position: absolute;
@@ -98,7 +102,7 @@
   .detail-title-edit-ico {
     position: absolute;
     right: 9px;
-    top: 0;
+    top: 5px;
     z-index: 10;
     display: none;
     cursor: pointer;
@@ -107,7 +111,9 @@
     background-clip: content-box;
     border-color: @color-pf-blue-400;
     cursor: pointer;
-    .detail-title-edit-ico { display: block; }
+    .detail-title-edit-ico {
+      display: block;
+    }
   }
   &:focus { border-color: @color-pf-blue; }
 }
@@ -148,17 +154,11 @@
     }
     .user-label { margin-right: 15px; }
     .user-assign-icon {
-      padding: 3px;
-      margin-right: 6px;
+      padding: 4.5px 3.5px;
+      margin-right: 10px;
       color: @color-pf-black-500;
       cursor: pointer;
       .Border(1px, dashed, @color-pf-black);
-    }
-    .user-assign-avatar {
-      width: 20px;
-      height: 20px;
-      margin-right: 6px;
-      cursor: pointer;
     }
     .active {
       padding: 5px;
@@ -173,27 +173,26 @@
   }
   .detail-creator-wrap,
   .detail-assignee-wrap,
-  .detail-area-wrap { height: 30px;
+  .detail-area-wrap,
+  .detail-iteration-wrap,
+  .detail-label-wrap,
+  .dynamic-fields-wrap,
+  .description-fields-wrap,
+  .start-coding-wrap {
     .control-label {
+      float: left;
       font-weight: 700;
       text-align: left;
+    }
+    .detail-assignee-content,
+    .detail-creator-content,
+    .detail-area-content,
+    .detail-itr-content,
+    .detail-labels-content {
+      padding-left: 90px;
     }
     [noValueLabel='none'] { color: @color-pf-blue-400; }
   }
-  .detail-iteration-wrap { height: 30px;
-    .control-label {
-      font-weight: 700;
-      text-align: left;
-    }
-    .iteration-label { margin-right: 16px; }
-  }
-  .detail-label-wrap {
-    .control-label {
-      font-weight: 700;
-      text-align: left;
-    }
-  }
-  .work-item-section { margin-left: -47px; }
 }
 .dynamic-fields-wrap,
 .description-fields-wrap,
@@ -201,12 +200,15 @@
   padding-right: 10px;
   padding-left: 10px;
   .detail-desc-wrap {
-    padding-left: 0;
-    padding-right: 35px;
+    padding-left: 90px;
   }
   .control-label {
+    float: left;
     font-weight: 700;
     text-align: left;
+  }
+  .start-coding {
+    padding-left: 90px;
   }
 }
 
@@ -300,9 +302,6 @@
       .user-list { max-height: 250px; }
     }
   }
-}
-.user-avatar {
-  .user-avatar;
 }
 .detail-action-btn {
   .detail-action-btn;

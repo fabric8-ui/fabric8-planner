@@ -96,8 +96,8 @@ export class IterationService {
           } else {
             console.log('Fetch iteration API returned some error - ', error.message);
             this.notifyError('Fetching iterations has from server has failed.', error);
-            return Observable.throw(new Error(error.message));
           }
+          return Observable.throw(new Error(error.message));
         });
     });
   }
@@ -169,8 +169,15 @@ export class IterationService {
         // Update existing iteration data
         let index = this.iterations.findIndex(item => item.id === updatedData.id);
         if (index > -1) {
+          //set hasChildren and children information
+          let childIterations = this.checkForChildIterations(updatedData, this.iterations);
+          if(childIterations.length > 0) {
+            updatedData.hasChildren = true;
+            updatedData.children = childIterations;
+          }
           this.iterations[index] = cloneDeep(updatedData);
           return this.iterations[index];
+
         } else {
           this.iterations.splice(0, 0, updatedData);
           return this.iterations[0];
@@ -204,7 +211,7 @@ export class IterationService {
         }
     })
     .catch( err => {
-      return Observable.empty();
+      return Observable.throw(new Error(err.message));
     });
   }
 

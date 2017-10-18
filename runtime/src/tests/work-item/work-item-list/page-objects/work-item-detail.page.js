@@ -27,10 +27,17 @@ class WorkItemDetailPage {
     return element(by.id("wi-detail-id"));
   }
 
-  get workItemDetailCloseButton () {
-    return element(by.css(".pficon-close.f8-quick-preview--close"));
+  get workItemDetailFullPageCloseButton () {
+    return element(by.xpath(".//*[contains (@class,'pficon-close pull-right margin-right-5 padding-15 close')]"));
+  }
+  clickWorkItemDetailFullPageCloseButton () {
+    return this.workItemDetailFullPageCloseButton.click();
   }
 
+  get workItemDetailCloseButton () {
+    return element(by.css(".pficon-close.f8-quick-preview--close"));
+//    return element(by.xpath(".//*[contains (@class,'pficon-close pull-right margin-right-5 padding-15 close')]"));
+  }
   clickWorkItemDetailCloseButton () {
     return this.workItemDetailCloseButton.click();
   }
@@ -45,7 +52,7 @@ class WorkItemDetailPage {
 
   /* This UI element is only displayed when the user accesses the detail page of an existing work item */
   get clickWorkItemDetailTitle () {
-    return element(by.id("wi-detail-title-click"));
+    return element(by.id("wi-title-div"));
   }
 
   clickWorkItemDetailTitleClick () {
@@ -53,7 +60,11 @@ class WorkItemDetailPage {
   }
 
   get workItemDetailTitle () {
-    return element(by.id("wi-detail-title"));
+//    return element(by.css("#wi-title-div .inlineinput-textarea"));
+    return element(by.xpath(".//*[contains(@class,'inlineinput-container')]/textarea[contains(@class,'input-field inlineinput-textarea')]"));
+  }
+  clickWorkItemDetailTitle2 () {
+    return this.workItemDetailTitle.click();
   }
 
   setWorkItemDetailTitle (newTitleString, append) {
@@ -95,11 +106,12 @@ class WorkItemDetailPage {
   }
 
   get workItemTitleSaveIcon () {
-    return element(by.id("workItemTitle_btn_save"));
+//    return element(by.css("#wi-title-div .inlineinput-btn-save"));
+    return element(by.xpath(".//*[contains(@class,'inlineinput-btn-save')]"));
   }
 
   workItemTitleSaveIconById () {
-    return element(by.id("workItemTitle_btn_save"));
+    return element(by.css("#wi-title-div .inlineinput-btn-save"));
   }
 
   clickWorkItemTitleSaveIcon () {
@@ -107,7 +119,8 @@ class WorkItemDetailPage {
   }
 
   get workItemTitleCancelIcon () {
-    return element(by.id("workItemTitle_btn_cancel"));
+//    return element(by.css("#wi-title-div .inlineinput-btn-cancel"));
+    return element(by.xpath(".//*[contains(@class,'inlineinput-btn-cancel')]"));
   }
 
   clickWorkItemTitleCancelIcon () {
@@ -125,7 +138,7 @@ class WorkItemDetailPage {
   }
 
   workItemDetailAvatar () {
-    return element(by.css(".pull-left.user-assign-avatar"));
+    return element(by.css(".user-assign-avatar"));
   }
 
   get workItemDetailDescription () {
@@ -149,8 +162,18 @@ class WorkItemDetailPage {
     return this.workItemDetailDescriptionValue.sendKeys(newDescriptionString);
   }
 
+  get workItemDescriptionEditIcon2 () {
+    //    return element(by.css("#wi-detail-desc .edit-icon"));
+        return element(by.xpath(".//*[contains (@id,'wi-detail-desc')]/div/div/div/i[contains(@class,'pficon-edit edit-icon')]"));
+      }
+    
+      clickWorkItemDescriptionEditIcon2 () {
+        return this.workItemDescriptionEditIcon2.click();
+      }
+
   get workItemDescriptionEditIcon () {
-    return element(by.css("#wi-detail-desc .edit-icon"));
+//    return element(by.css("#wi-detail-desc .edit-icon"));
+    return element(by.xpath(".//*[contains(@class,'description-fields-wrap')]/div/div/f8-markdown/div/div/div/i"));
   }
 
   clickWorkItemDescriptionEditIcon () {
@@ -169,13 +192,24 @@ class WorkItemDetailPage {
     return this.workItemDescriptionSaveIcon.click();
   }
 
-  get workItemDescriptionCancelIcon () {
-    return element(by.css("#wi-detail-desc .markdown-test-btn-cancel"));
-  }
+//  get workItemDescriptionCancelIcon () {
+//    return element(by.css("#wi-detail-desc .markdown-test-btn-cancel"));
+//  }
+//
+//  clickWorkItemDescriptionCancelIcon () {
+//    return this.workItemDescriptionCancelIcon.click();
+//  }
 
-  clickWorkItemDescriptionCancelIcon () {
-    return this.workItemDescriptionCancelIcon.click();
-  }
+ /* Comment save cancel button */
+ get workItemDescriptionCancelIcon () {
+  return element(by.xpath(".//*[contains(@class,'action-btn')]/i[contains(@class,'fa fa-close')]"));
+}
+clickWorkItemDescriptionCancelIcon () {
+testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptionCancelIcon", "WorkItemDetailPage");
+ return;
+}
+
+
 
   titleValidation () {
     return element(by.css(".clearfloat.title-error"));
@@ -186,7 +220,8 @@ class WorkItemDetailPage {
   }
 
   titleAlertValidation () {
-    return element(by.xpath(".//*[@id='wi-title-div']//p[.//text()[contains(.,'title is a required field')]]"));
+//    return element(by.xpath(".//*[@id='wi-title-div']//p[.//text()[contains(.,'title is a required field')]]"));
+    return element(by.xpath(".//*[contains (@class, 'error-message')]/small[contains(text(),'Empty title not allowed')]"));
   }
 
   /*
@@ -395,15 +430,68 @@ class WorkItemDetailPage {
   clickCommentsDiv (){
     return element(by.id("wi-comment-add-comment")).click();
   }
-  commentDiv  (){
-    return element(by.id("wi-comment-add-comment"));
+
+  /* Comment edit icon - aka the little pencil icon */
+  get commentIcon () {
+    return element(by.xpath(".//*[contains(@class,'f8-comment--input')]/f8-markdown/div/div/div/i"));
   }
-  writeComment  (comment){
-    return element(by.id("wi-comment-add-comment")).sendKeys(comment + protractor.Key.ENTER);
+  clickCommentIcon () {
+    browser.wait(until.presenceOf(this.commentIcon), constants.WAIT, 'Failed to find element commentIcon');
+    this.commentIcon.click().then(function(){
+      console.log("WorkItemDetailPage - clicked element: commentIcon");
+    });
+    return;
   }
+
+  /* The edit box for a comment */
+  commentDiv () {
+    return element(by.id("wi-comment"));
+    return element(by.xpath(".//*[contains(@class,'editor active')]"));
+  }
+  clickCommentDiv () {
+    return this.commentDiv().click();
+  }
+  get activeCommentEditorBox () {
+    return element(by.xpath(".//p[contains (@class,'editor-box editor-markdown')]"));
+  }
+  clickActiveCommentEditorBox () {
+    testSupport.clickElement(this.activeCommentEditorBox, "activeCommentEditorBox", "WorkItemDetailPage");
+    return;
+  }
+  writeComment (comment) {
+    return this.activeCommentEditorBox.sendKeys(comment + protractor.Key.ENTER);
+  }
+  editComments (comment, index, append) {
+    if (!append) { this.commentBody(index).clear(comment) };
+    return this.commentBody(index).sendKeys(comment);
+  }
+
+  /* Comment save button */
+  get commentSaveButton () {
+    return element(by.xpath(".//*[contains(@class,'action-btn btn-save')]/i[contains(@class,'fa fa-check')]"));
+ }
+ clickCommentSaveButton () {
+  testSupport.clickElement(this.commentSaveButton, "commentSaveButton", "WorkItemDetailPage");
+   return;
+ }
+
+ /* Comment save cancel button */
+ get commentSaveCancelButton () {
+    return element(by.xpath(".//*[contains(@class,'action-btn')]/i[contains(@class,'fa fa-close')]"));
+ }
+ clickCommentSaveCancelButton () {
+  testSupport.clickElement(this.commentSaveCancelButton, "commentSaveCancelButton", "WorkItemDetailPage");
+   return;
+ }
+
   commentsAvatar (index){
     return element(by.id("comment_avatar_"+index));
   }
+
+  commentBody (index){
+    return element(by.id("comment_body_"+index));
+  }
+
   commentsUsername  (index){
     return element(by.id("comment_username_"+ index)).getText();
   }
@@ -434,10 +522,6 @@ class WorkItemDetailPage {
   }
   clickCloseComment(index){
     return element(by.css('#comment_body_' + index + ' .fa-close')).click();
-  }
-  editComments(comment,index, append){
-    if (!append) { this.commentBody(index).clear(comment) };
-    return this.commentBody(index).sendKeys(comment);
   }
   commentsKebab (){
     return element(by.id('commentActionsKebab'));
@@ -945,6 +1029,88 @@ class WorkItemDetailPage {
     )
   }
 
+  /* UI elements for Label */
+  get addLabelButton() {
+    return $('.clickable.add-label');
+  }
+
+  clickAddLabelButton(){
+    return this.addLabelButton.click();
+  }
+
+  get selectLabelDropdown() {
+    return $('.select-dropdown.dropdown-menu.dropdown-menu-left.show');
+  }
+
+  getLabelByTitle(title) {
+    return element(by.xpath("//ul[@class='select-dropdown-menu']/li//*[text()='"+title+"']"));
+  }
+
+  // Removes label by clicking on 'x'
+  removeLabelByTitle(title) {
+    let path = "//div[@id='workItemDetail_Wrapper']//*[@class='label-wrapper']//span[contains(text(), '"+ title +"')]/span";
+    return element.all(by.xpath(path)).first().click();
+  }
+
+  selectLabelByTitle(labelTitle) {
+    return this.getLabelByTitle(labelTitle).click();
+  }
+
+  get labelsCount() {
+    return $$(".dropdown-menu.dropdown-menu-left.show li").count();
+  }
+
+  get createLabelButton(){
+    return $('div.create-label-button');
+  }
+
+  clickCreateLabelButton(){
+    return this.createLabelButton.click();
+  }
+
+  get labelInput() {
+    return $('.create-label .create-label-input');
+  }
+
+  setLabelName(text) {
+    return this.labelInput.sendKeys(text);
+  }
+
+  clickLabelCheckbox() {
+    return $('button.fa-check').click();
+  }
+
+  get labelCancelIcon() {
+    return this.createLabelInputDiv.$('.pficon-close');
+  }
+
+  clickLabelCancel() {
+    return this.labelCancelIcon.click();
+  }
+
+  get labelCloseIcon() {
+    return $('.select-dropdown-header .pull-right.pficon-close.close-pointer');
+  }
+
+  clickLabelClose() {
+    return this.labelCloseIcon.click();
+  }
+
+  get LabelColorSelectorIcon() {
+    return this.createLabelInputDiv.$('.palet');
+  }
+
+  clickLabelColorSelector() {
+    return this.LabelColorSelectorIcon.click();
+  }
+
+  listOfLabels() {
+    return $$('.select-dropdown-menu li').first();
+  }
+
+  attachedLabels() {
+    return $$('f8-label .label-wrapper span.label');
+  }
 }
 
 module.exports = WorkItemDetailPage;

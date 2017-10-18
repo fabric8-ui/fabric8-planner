@@ -17,6 +17,7 @@ import {
     MockBackend,
     MockConnection
 } from '@angular/http/testing';
+import { ActivatedRoute } from '@angular/router';
 import { Spaces } from 'ngx-fabric8-wit';
 import { WIT_API_URL } from 'ngx-fabric8-wit';
 import { FilterService } from './filter.service';
@@ -24,6 +25,11 @@ import { FilterService } from './filter.service';
 describe('Unit Test :: Filter Service', () => {
   let filterService: FilterService;
   let backend: MockBackend;
+  let mockActivatedRoute = {
+    snapshot: {
+      queryParams: { }
+    }
+  } as ActivatedRoute;
 
   beforeEach(
     async(() => {
@@ -34,6 +40,9 @@ describe('Unit Test :: Filter Service', () => {
           MockBackend,
           FilterService,
           Spaces,
+          { provide: ActivatedRoute,
+            useValue: mockActivatedRoute
+          },
           {
             provide: WIT_API_URL,
             useValue: 'https://api.url.com'
@@ -53,6 +62,7 @@ describe('Unit Test :: Filter Service', () => {
       const testbed = getTestBed();
       backend = testbed.get(MockBackend);
       filterService = testbed.get(FilterService);
+      mockActivatedRoute.snapshot.queryParams = {q:''};
     })
   );
   it('should execute the canary test', () => expect(true).toBe(true));
@@ -223,6 +233,14 @@ describe('Unit Test :: Filter Service', () => {
       filterService.constructQueryURL('iteration%3ASprint%20%231%2FSprint%20%231.1', {'parentexists': true})
     ).toBe(
       '(iteration:Sprint #1/Sprint #1.1 $AND parentexists:true)'
+    );
+  })
+
+  it('should return processed options in case of empty existing query - 1', () => {
+    expect(
+      filterService.constructQueryURL('iteration%3ASprint%20%231%2FSprint%20%231.1', {'somekey': 'somevalue, anothervalue'})
+    ).toBe(
+      '(iteration:Sprint #1/Sprint #1.1 $AND somekey:somevalue $AND somekey: anothervalue)'
     );
   })
 
@@ -473,7 +491,7 @@ describe('Unit Test :: Filter Service', () => {
       )
     )
     .toEqual(
-			{'$AND': [{'$OR': [{'some_key1': 'some_value1'}]}, {'$OR': [{'some_key': 'some_value3'}]}]}
+			{'$AND': [{'some_key1': 'some_value1'}, {'some_key': 'some_value3'}]}
 		);
   });
 
@@ -490,7 +508,7 @@ describe('Unit Test :: Filter Service', () => {
 		);
   });
 
-  it('Should correctly join - 21', () => {
+  it('Should correctly join - 21.1', () => {
     expect(
 			filterService.queryJoiner(
 				{'$OR': [{'some_key1': 'some_value1'}, {'some_key2': 'some_value2'}]},
@@ -500,6 +518,58 @@ describe('Unit Test :: Filter Service', () => {
     )
     .toEqual(
 			{'$AND': [{'$OR': [{'some_key1': 'some_value1'}, {'some_key2': 'some_value2'}]}, {'some_key3': 'some_value3'}]}
+		);
+  });
+
+  it('Should correctly join - 21.2', () => {
+    expect(
+			filterService.queryJoiner(
+				{'$OR': [{'some_key1': 'some_value1'}]},
+        '$AND',
+        {'$OR': [{'some_key3': 'some_value3'}]},
+      )
+    )
+    .toEqual(
+			{'$AND': [{'some_key1': 'some_value1'}, {'some_key3': 'some_value3'}]}
+		);
+  });
+
+  it('Should correctly join - 21.3', () => {
+    expect(
+			filterService.queryJoiner(
+				{'$OR': [{'some_key1': 'some_value1'}]},
+        '$AND',
+        {'$OR': [{'some_key3': 'some_value3'}, {'some_key4': 'some_value4'}]},
+      )
+    )
+    .toEqual(
+			{'$AND': [{'some_key1': 'some_value1'}, {'$OR' : [{'some_key3': 'some_value3'}, {'some_key4': 'some_value4'}]}]}
+		);
+  });
+
+  it('Should correctly join - 21.4', () => {
+    expect(
+			filterService.queryJoiner(
+				{'$OR': [{'some_key3': 'some_value3'}, {'some_key4': 'some_value4'}]},
+        '$AND',
+        {'$OR': [{'some_key1': 'some_value1'}]},
+      )
+    )
+    .toEqual(
+			{'$AND': [{'$OR' : [{'some_key3': 'some_value3'}, {'some_key4': 'some_value4'}]}, {'some_key1': 'some_value1'}]}
+		);
+  });
+
+  it('Should correctly join - 21.4', () => {
+    expect(
+			filterService.queryJoiner(
+				{'$OR': [{'some_key1': 'some_value1'}]},
+        '$AND',
+        {'$AND': [{'some_key3': 'some_value3'}, {'some_key4': 'some_value4'}]},
+      )
+    )
+    .toEqual(
+			{'$AND': [{'some_key1': 'some_value1'}, {'some_key3': 'some_value3'}, {'some_key4': 'some_value4'}]}
 		);
   });
 
