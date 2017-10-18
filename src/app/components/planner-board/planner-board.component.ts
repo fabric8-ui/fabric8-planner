@@ -74,14 +74,13 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   private workItemTypes: WorkItemType[] = [];
   private readyToInit = false;
   private areas: AreaModel[] = [];
-  private loggedInUser: any[];
+  private loggedInUser: User;
   eventListeners: any[] = [];
   dialog: Dialog;
   showDialog = false;
   dragulaEventListeners: any[] = [];
   private allowedFilterParams: string[] = ['iteration'];
   private urlListener = null;
-  private currentBoardType: WorkItemType | Object = {};
   private currentIteration: BehaviorSubject<string | null>;
   private currentWIType: BehaviorSubject<string | null>;
   private existingQueryParams: Object = {};
@@ -91,6 +90,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   private uiLockedAll = false;
   private uiLockedBoard = true;
   private uiLockedSidebar = false;
+  private currentSpace: Space;
 
   sidePanelOpen: boolean = true;
   constructor(
@@ -209,10 +209,9 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       this.areaService.getAreas(),
       this.labelService.getLabels(),
       this.userService.getUser().catch(err => Observable.of({} as User)),
-      this.currentIteration,
-      this.currentWIType
+      this.currentIteration
     )
-    .subscribe(([iterations, wiTypes, areas, labels, loggedInUser, currentIteration, currentWIType]) => {
+    .subscribe(([iterations, wiTypes, areas, labels, loggedInUser, currentIteration]) => {
       this.iterations = iterations;
       this.workItemTypes = wiTypes;
       this.readyToInit = true;
@@ -235,32 +234,24 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
       }
 
       // Set lanes
-      // If wi type is there in the URL queryPrams
-      if (currentWIType !== null) {
-        const type = this.workItemTypes.find(
-          t => t.attributes['name'] === this.route.snapshot.queryParams['workitemtype']
-        );
-        if (type) {
-          this.getDefaultWorkItemTypeStates(type.id);
-        } else {
-          this.getDefaultWorkItemTypeStates();
-        }
-      }
-      // Else do with the default type
-      else {
-        this.getDefaultWorkItemTypeStates();
-      }
+      this.prepareLanes();
       this.uiLockedBoard = false;
     });
   }
 
-  getWorkItems(pageSize, mainLane) {
+  getWorkItems(pageSize, mainLane, payload) {
     let lane = cloneDeep(mainLane);
-    return this.workItemService.getWorkItems(pageSize, [{
-        active: true,
-        paramKey: 'filter[workitemstate]',
-        value: lane.option
-      }, ...this.filterService.getAppliedFilters()])
+
+    let exp = {
+      expression: this.filterService.queryJoiner(
+        cloneDeep(payload.expression),
+        this.filterService.and_notation,
+        this.filterService.queryBuilder(
+          'state', this.filterService.equal_notation, lane.option
+        )
+    )}
+
+    return this.workItemService.getWorkItems2(pageSize, exp)
     .map(workItemResp => {
       let workItems = workItemResp.workItems;
       let cardValue: CardValue[] = [];
@@ -422,41 +413,16 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     });
   }
 
-  getDefaultWorkItemTypeStates(workItemTypeId?: string) {
+  prepareLanes() {
     this.lanes = [];
-    // In case no type is selected set the first one as default
-    if (!workItemTypeId) {
-      if (this.workItemTypes.length) {
-        this.currentBoardType = this.workItemTypes[0];
-        let lanes = this.workItemTypes[0].attributes.fields['system.state'].type.values;
-        lanes.forEach((value, index) => {
-          this.lanes.push({
-            option: value,
-            workItems: [] as WorkItem[],
-            nextLink: null
-          });
-        });
-        this.filterService.setFilterValues('workitemtype', this.workItemTypes[0].id);
-      }
-    }
-    else {
-      // we have a type id, we just fetch the states from it.
-      let witype = this.workItemTypes.find(type => type.id === workItemTypeId);
-      if (witype) {
-        this.currentBoardType = witype;
-        let lanes = witype.attributes.fields['system.state'].type.values;
-        lanes.forEach((value, index) => {
-          this.lanes.push({
-            option: value,
-            workItems: [] as WorkItem[],
-            nextLink: null
-          });
-        });
-        this.filterService.setFilterValues('workitemtype', witype.id);
-      } else {
-        this.getDefaultWorkItemTypeStates();
-      }
-    }
+    let lanes = ['new', 'open', 'in progress', 'resolved', 'closed'];
+    lanes.forEach((value, index) => {
+      this.lanes.push({
+        option: value,
+        workItems: [] as WorkItem[],
+        nextLink: null
+      });
+    });
   }
 
   /**
@@ -792,13 +758,47 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     );
 
     this.eventListeners.push(
-      this.filterService.filterChange.subscribe(filters => {
+      Observable.combineLatest(
+        this.filterService.filterChange,
+        this.route.queryParams
+      ).subscribe(([filters, params]) => {
         if (this.wiSubscription !== null) {
           this.wiSubscription.unsubscribe();
         }
-        this.wiSubscription = Observable.forkJoin(
-          this.lanes.map(lane => this.getWorkItems(this.pageSize, lane))
-        )
+
+        this.wiSubscription =
+        this.spaces.current.switchMap(space => {
+          let appliedFilters = this.filterService.getAppliedFilters();
+          // remove the filter item from the filters
+          for (let f=0; f<appliedFilters.length; f++) {
+            if (appliedFilters[f].paramKey=='filter[parentexists]') {
+              appliedFilters.splice(f, 1);
+            }
+          }
+          // TODO Filter temp
+          // Take all the applied filters and prepare an object to make the query string
+          let newFilterObj = {};
+          appliedFilters.forEach(item => {
+            newFilterObj[item.id] = item.value;``
+          })
+          newFilterObj['space'] = space.id;
+          let payload = {};
+          if ( this.route.snapshot.queryParams['q'] ) {
+            let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
+            let filterQuery = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
+            let exp = this.filterService.queryJoiner(existingQuery, this.filterService.and_notation, filterQuery);
+            Object.assign(payload, {
+              expression: exp
+            });
+          } else {
+            payload = {
+              expression: this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj))
+            }
+          }
+          return Observable.forkJoin(
+            this.lanes.map(lane => this.getWorkItems(this.pageSize, lane, payload))
+          )
+        })
         .take(1)
         .map(finalLanes => {
           let usersToFetch = [];
