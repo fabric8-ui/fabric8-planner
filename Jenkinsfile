@@ -11,7 +11,7 @@ node{
         ])
 }
 
-fabric8UITemplate{
+fabric8UITemplate(uiImage: 'rawlingsj/fabric8-ui-builder:test1'){
     dockerNode{
         ws {
             timeout(time: 1, unit: 'HOURS') {
