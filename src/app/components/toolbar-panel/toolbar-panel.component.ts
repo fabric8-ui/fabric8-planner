@@ -86,13 +86,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       actionConfig: {},
       filterConfig: this.filterConfig
     } as ToolbarConfig;
-  allowedFilterKeys: string[] = [
-    'assignee',
-    'creator',
-    'area',
-    'label',
-    'state'
-  ];
+  allowedFilterKeys: string[] = [];
   allowedMultipleFilterKeys: string[] = [
     'label'
   ];
@@ -148,6 +142,23 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         this.editEnabled = false;
       }
     });
+    //on the board view - do not show state filter as the lanes are based on state
+    if (this.context === 'boardview') {
+      this.allowedFilterKeys= [
+        'assignee',
+        'creator',
+        'area',
+        'label'
+      ]
+    } else {
+      this.allowedFilterKeys= [
+        'assignee',
+        'creator',
+        'area',
+        'label',
+        'state'
+      ]
+    }
   }
 
   ngAfterViewInit(): void {
