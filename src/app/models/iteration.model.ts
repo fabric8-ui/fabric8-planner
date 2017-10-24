@@ -4,9 +4,13 @@ export class IterationModel {
   links?: IterationLinks;
   relationships?: IterationRelations;
   type: string;
+  hasChildren?: boolean;
+  children?: IterationModel[];
 }
 
 export class IterationAttributes {
+  user_active?: boolean;
+  active_status?: boolean;
   endAt?: string;
   startAt?: string;
   name: string;

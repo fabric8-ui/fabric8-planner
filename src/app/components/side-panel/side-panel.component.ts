@@ -4,29 +4,31 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { Broadcaster, Logger } from 'ngx-base';
 
+import { GroupTypesService } from '../../services/group-types.service';
 import { WorkItem } from '../../models/work-item';
+import { WorkItemType } from '../../models/work-item-type';
 import { WorkItemService } from '../../services/work-item.service';
 import { IterationService } from '../../services/iteration.service';
 
 @Component({
-  host:{
-      'class':'app-component flex-container in-column-direction flex-grow-1'
-  },
   selector: 'side-panel',
   templateUrl: './side-panel.component.html',
-  styleUrls: ['./side-panel.component.scss']
+  styleUrls: ['./side-panel.component.less']
 })
 export class SidepanelComponent implements OnInit, OnDestroy {
 
   @Input() iterations: IterationModel[] = [];
+  @Input() sidePanelOpen: Boolean = true;
 
   rootIteration: IterationModel = null;
   backlogSelected: boolean = true;
+  typeGroupSelected: boolean = true;
   numberOfItemsInBacklog: number = 0;
   eventListeners: any[] = [];
 
   constructor(
     private log: Logger,
+    private groupTypesService: GroupTypesService,
     private workItemService: WorkItemService,
     private iterationService: IterationService,
     private router: Router,
@@ -61,6 +63,11 @@ export class SidepanelComponent implements OnInit, OnDestroy {
     })
   }
 
+  setGuidedTypeWI() {
+    let witCollection = this.workItemService.workItemTypes.map(wit => wit.id);
+    this.groupTypesService.setCurrentGroupType(witCollection);
+  }
+
   listenToEvents() {
     this.eventListeners = [
       this.broadcaster.on<any>('associate_iteration')
@@ -77,7 +84,7 @@ export class SidepanelComponent implements OnInit, OnDestroy {
       }),
 
       this.route.queryParams.subscribe(params => {
-        if (Object.keys(params).indexOf('iteration') > -1) {
+        if (Object.keys(params).indexOf('q') > -1) {
           this.backlogSelected = false;
         } else {
           this.backlogSelected = true;

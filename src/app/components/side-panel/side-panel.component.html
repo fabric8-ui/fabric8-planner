@@ -1,9 +1,22 @@
-<a [routerLink]="[]" [queryParams]="{}">
-  <div class="side-panel-header" [class.backlog-selected]="backlogSelected">
-    <h3>Backlog</h3>
-    <span class="badge">{{numberOfItemsInBacklog}}</span>
-  </div>
+<a class="f8-sidepanel__title"
+  [routerLink]="[]"
+  [queryParams]="{}"
+  (click)="setGuidedTypeWI()"
+  [class.backlog--selected]="backlogSelected">
+    <span class="badge pull-right"
+      [class.show]="sidePanelOpen"
+      [class.hide]="!sidePanelOpen">
+        {{numberOfItemsInBacklog}}
+      </span>
+    <span class="pull-left fa fa-th margin-right-10 padding-top-3"
+      tooltip="{{sidePanelOpen ? '' : 'All'}}"
+      placement="right"></span>
+    <h3 class="margin-0"
+      [class.show]="sidePanelOpen"
+      [class.hide]="!sidePanelOpen">All</h3>
 </a>
-<div class="flex-container flex-grow-1 in-column-direction">
-  <fab-planner-iteration [takeFromInput]="true" [iterations]="iterations" class="fab-planner-iteration"></fab-planner-iteration>
+<div class="width-100 pull-left">
+  <group-types [iterations]="iterations"
+  [sidePanelOpen]="sidePanelOpen">
+  </group-types>
 </div>

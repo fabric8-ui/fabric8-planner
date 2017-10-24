@@ -1,4 +1,4 @@
-
+import { SchemaMockGenerator } from './schema-mock-generator';
 /*
  * This class contains mock generator code for work items and
  * dependend entities like links and comments.
@@ -18,6 +18,9 @@ export class WorkItemMockGenerator {
     };
   }
 
+  private schemaMockGenerator: SchemaMockGenerator = new SchemaMockGenerator();
+  private wiTypes = this.schemaMockGenerator.getWorkItemTypes();
+
   /*
    * Returns a map structure containing initial work item comments. The structure
    * represents a map with the key being the work item id and the value the
@@ -34,6 +37,8 @@ export class WorkItemMockGenerator {
             {
               'attributes': {
                 'body': 'Some Comment 0',
+                'body.rendered': 'Some Comment 0',
+                'markup': 'Markdown',
                 'created-at': '2000-01-01T09:00:00.000000Z'
               },
               'id': 'comment-0',
@@ -42,10 +47,15 @@ export class WorkItemMockGenerator {
               },
               'relationships': {
                 'created-by': {
-                  'data': {
+
                     'id': 'user0',
+                    'imageURL': 'https://avatars.githubusercontent.com/u/2410471?v=3',
+                    'links': {
+                      'self': 'http://mock.service/api/user',
+                      'related': 'http://mock.service/api/user'
+                    },
                     'type': 'identities'
-                  }
+
                 }
               },
               'type': 'comments'
@@ -147,6 +157,7 @@ export class WorkItemMockGenerator {
       return {
         'attributes': {
           'system.created_at': this.dateTime(n),
+          'system.number': 'id' + n,
           'system.description': 'Description Text ' + n,
           'system.description.rendered': 'Description Text ' + n,
           'system.remote_item_id': 'remote_id_' + n,
@@ -157,12 +168,11 @@ export class WorkItemMockGenerator {
         'id': 'id' + n,
         'links': {
           'self': 'http://mock.service/api/workitems/id' + n,
-          'sourceLinkTypes': 'http://mock.service/api/source-link-types',
-          'targetLinkTypes': 'http://mock.service/api/target-link-types'
         },
         'relationships': {
           'assignees': { },
-          'iteration': (n % 2)? { } : { 'data': { 'id': 'iteration-id0', 'links': { 'self': 'http://mock.service/api/iterations/iteration-id0' }, 'type': 'iterations' } },
+          'labels': (n==0) ? { "data": [{"id": "label1","type": "labels"}], "links": {"related": "http://mock.service/api/workitems/id"+n+"/labels"}} : {},
+          'iteration': (n % 2) ? { 'data': { 'id': 'iteration-id1', 'links': { 'self': 'http://mock.service/api/iterations/iteration-id1' }, 'type': 'iterations' }} : { 'data': { 'id': 'iteration-id0', 'links': { 'self': 'http://mock.service/api/iterations/iteration-id0' }, 'type': 'iterations' }},
           'area': {
             'data': {
               'id': 'rootarea',
@@ -174,7 +184,7 @@ export class WorkItemMockGenerator {
           },
           'baseType': {
             'data': {
-              'id': (n % 2) ? '86af5178-9b41-469b-9096-57e5155c3f30' : 'bbf35418-04b6-426c-a60b-7f80beb0b624' ,
+              'id': this.wiTypes[n % this.wiTypes.length].id,
               'type': 'workitemtypes'
             }
           },

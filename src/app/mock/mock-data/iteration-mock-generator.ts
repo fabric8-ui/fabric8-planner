@@ -5,15 +5,17 @@
 export class IterationMockGenerator {
 
   /*
-   * Creates an array of 5 mock iterations plus parent with IDs 'iteration-id0' to 
-   * 'iteration-id25'. Other data structures in the mock generator rely on the 
-   * id naming, creating a consistent mock data. Keep in mind when changing 
+   * Creates an array of 5 mock iterations plus parent with IDs 'iteration-id0' to
+   * 'iteration-id25'. Other data structures in the mock generator rely on the
+   * id naming, creating a consistent mock data. Keep in mind when changing
    * this code.
    */
   public createIterations(): any {
     let iterations: any[] = [];
     iterations.push({
         'attributes': {
+          'user_active': false,
+          'active_status': false,
           'description': 'Root Iteration Description',
           'name': 'Root Iteration',
           'state': 'new',
@@ -31,7 +33,7 @@ export class IterationMockGenerator {
               'type': 'spaces'
             },
             'links': {
-              'self': 'http://mock.service/api/spaces/space-id0'
+              'self': 'http://mock.seactivervice/api/spaces/space-id0'
             }
           },
           'workitems': {
@@ -49,6 +51,8 @@ export class IterationMockGenerator {
     for (let n=0; n<5; n++) {
       iterations.push({
         'attributes': {
+          'user_active': n == 1 ? true : false,
+          'active_status': n == 1 ? true : false,
           'description': 'Description for iteration ' + n,
           'name': 'Iteration ' + n,
           'state': 'new',

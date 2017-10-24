@@ -94,7 +94,7 @@ class WorkItemListPage {
 /* Page elements - bottom of the page - work item quick add */
 
  get workItemQuickAddTitle () {
-   return element(by.id("exampleInput"));
+   return element(by.css(".f8-quickadd-input"));
   }
 
  typeQuickAddWorkItemTitle (keys) {
@@ -103,7 +103,7 @@ class WorkItemListPage {
  }
 
  get workItemQuickAddDesc () {
-   return element(by.id("exampleDesc"));
+   return element(by.css(".f8-quickadd-desc"));
  }
 
  typeQuickAddWorkItemDesc (keys) {
@@ -151,8 +151,8 @@ class WorkItemListPage {
     return parentElement.element(by.css('.workItemList_Delete'));
   }
   workItemKebabAssocateIterationButton (parentElement) {
-    browser.wait(until.presenceOf(parentElement.element(by.css('.workItemList_Iteration'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
-    return parentElement.element(by.css('.workItemList_Iteration'));
+    browser.wait(until.presenceOf(parentElement.element(by.css('.f8-wi__list-iteration'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
+    return parentElement.element(by.css('.f8-wi__list-iteration'));
   }
   clickWorkItemKebabAssociateIterationButton (parentElement) {
     return this.workItemKebabAssocateIterationButton (parentElement).click();
@@ -177,12 +177,13 @@ class WorkItemListPage {
   parentIterationDropDown (){
     return element(by.id('parent-iteration'));
   }
- 
+
   clickIterationById(text){
-    return element(by.id(text)).click();
+    return this.IterationById(text).click();
   }
-  IterationsById(text){
-    return element(by.id(text));
+
+  IterationById(text){
+    return element(by.id('iteration-' + text));
   }
   clickParentIterationDropDown(){
     return this.parentIterationDropDown().click();
@@ -194,12 +195,13 @@ class WorkItemListPage {
   }
 
   selectParentIterationById  (ids){
-    return element(by.id("iteration-id"+ids)).click();
+    return this.parentIterationById(ids).click();
   }
 
   parentIterationById  (ids){
-    return element(by.id("iteration-id"+ids));
+    return element(by.id("iteration-"+ids));
   }
+
   get workItemPopUpDeleteConfirmButton () {
     return element(by.buttonText('Confirm'));
   }
@@ -219,11 +221,11 @@ class WorkItemListPage {
   }
 
   get openButton () {
-    return element(by.css(".workItemQuickAdd_saveBtn"));
+    return element(by.css(".f8-quickadd__addwi-savebtn"));
   }
 
   quickAddbuttonById () {
-    return element(by.id("workItemQuickAdd_container"));
+    return element(by.css("f8-quickadd-container"));
   }
 
   clickWorkItemQuickAdd () {
@@ -232,16 +234,17 @@ class WorkItemListPage {
   }
 
   get saveButton () {
-    return  element(by.css(".workItemQuickAdd_Add"));
+    return  element(by.css(".f8-quickadd__wiblk-btn-add"));
   }
 
   clickQuickAddSave () {
+    browser.wait(until.visibilityOf(this.saveButton), constants.LONGER_WAIT, 'Failed to find the saveButton'); 
     browser.wait(until.presenceOf(this.saveButton), constants.WAIT, 'Failed to find the saveButton');
     return this.saveButton.click();
   }
 
   get cancelButton () {
-    return element(by.css(".closeQuickAdd"));
+    return element(by.css(".f8-quickadd__wiblk-btn-close"));
   }
 
   clickQuickAddCancel () {
@@ -258,7 +261,7 @@ class WorkItemListPage {
   /* xpath = //alm-work-item-list-entry[.//text()[contains(.,'Some Title 6')]]   */
   workItemByTitle (titleString) {
     // return element(by.xpath("//alm-work-item-list-entry[.//text()[contains(.,'" + titleString + "')]]"));
-    return element(by.xpath("//alm-tree-list-item[.//text()[contains(.,'" + titleString + "')]]"));
+    return element(by.xpath("//tree-node[.//text()[contains(.,'" + titleString + "')]]"));
   }
 
   get firstWorkItem () {
@@ -271,11 +274,11 @@ class WorkItemListPage {
 
   /* Title element relative to a workitem */
   workItemTitle (workItemElement) {
-    return workItemElement.element(by.css(".workItemList_title")).getText();
+    return workItemElement.element(by.css(".f8-wi__list-title")).element(by.css("p")).getText();
   }
 
   clickWorkItemTitle (workItemElement, idText) {
-    workItemElement.element(by.css(".workItemList_title")).click();
+    workItemElement.element(by.css(".f8-wi__list-title")).element(by.css("p")).click();
     var theDetailPage = new WorkItemDetailPage (idText);
     var until = protractor.ExpectedConditions;
     //browser.wait(until.presenceOf(theDetailPage.workItemDetailPageTitle), constants.WAIT, 'Detail page title taking too long to appear in the DOM');
@@ -285,12 +288,12 @@ class WorkItemListPage {
 
   /* Description element relative to a workitem */
   workItemDescription (workItemElement) {
-    return workItemElement.element(by.css(".workItemList_description")).getText();
+    return workItemElement.element(by.css(".f8-wi__list-desc")).getText();
   }
 
   /* Icon element relative to a workitem */
   workItemIcon (workItemElement) {
-    return workItemElement.element(by.css(".type.workItemList_workItemType")).getText();
+    return workItemElement.element(by.css(".type.f8-wi__list-witype")).getText();
   }
 
   workItemByIndex (itemNumber) {
@@ -312,15 +315,15 @@ class WorkItemListPage {
   }
 
   workItemViewId (parentElement) {
-    return parentElement.element(By.css( ".list-view-pf-left.type.workItemList_workItemType" ));
+    return parentElement.element(By.css( ".list-view-pf-left.type.f8-wi__list-witype" ));
   }
 
   workItemViewTitle (parentElement) {
-    return parentElement.element(By.css( ".list-group-item-heading.workItemList_title" ));
+    return parentElement.element(By.css( ".list-group-item-heading.f8-wi__list-title" ));
   }
 
   workItemViewDescription (parentElement) {
-    return parentElement.element(By.css( ".list-group-item-text.workItemList_description" ));
+    return parentElement.element(By.css( ".list-group-item-text.f8-wi__list-desc" ));
   }
 
   /*
@@ -346,6 +349,10 @@ class WorkItemListPage {
     return button.click();
   }
 
+  workItemAttachedLabels(workItem){
+    return workItem.$$('.f8-wi__list-entry span.label');
+  }
+
   /* User assignment dropdown */
   get filterDropdown () {
     return  element(by.id("wi_filter_dropdown"));
@@ -363,21 +370,89 @@ class WorkItemListPage {
   }
 
   /* Workitem filter pulldown */
-  get workItemFilterPulldown () {
-//    return element(by.css(".dropdown.filter-dropdown"));
-    return element(by.css(".filter-option.pull-left"));
+  get workItemFilterFieldsPulldown () {
+    return element(by.css(".filter-fields.dropdown-toggle"));
   }
-  clickWorkItemFilterPulldown () {
-    return this.workItemFilterPulldown.click();
+  clickWorkItemFilterFieldsPulldown () {
+    return this.workItemFilterFieldsPulldown.click();
   }
+
+  get filterByAssignee () {
+    browser.wait(until.presenceOf(element(by.xpath("//li[2]/a[@class='filter-field dropdown-item']"))), constants.WAIT, 'Failed to filter by Assignee Type');
+    return element(by.xpath("//li[2]/a[@class='filter-field dropdown-item']"));
+  }
+  clickFilterByAssignee () {
+    return this.filterByAssignee.click();
+  }
+
+  get filterByArea () {
+    browser.wait(until.presenceOf(element(by.xpath("//li[3]/a[@class='filter-field dropdown-item']"))), constants.WAIT, 'Failed to filter by Area Type');
+    return element(by.xpath("//li[3]/a[@class='filter-field dropdown-item']"));
+  }
+  clickFilterByArea () {
+    return this.filterByArea.click();
+  }
+
+  get filterByWorkitemType () {
+    browser.wait(until.presenceOf(element(by.xpath("//li[4]/a[@class='filter-field dropdown-item']"))), constants.WAIT, 'Failed to filter by Workitem Type');
+    return element(by.xpath("//li[4]/a[@class='filter-field dropdown-item']"));
+  }
+  clickFilterByWorkitemType () {
+    return this.filterByWorkitemType.click();
+  }
+
+  get workItemFilterPulldownDefault () {
+    browser.wait(until.presenceOf(element(by.css("div.pull-left.typeahead-input-container.dropdown-toggle > input.form-control"))), constants.WAIT, 'Failed to find filter-by dropdown list');
+    return element(by.css("div.pull-left.typeahead-input-container.dropdown-toggle > input.form-control"));
+  }
+  clickWorkItemFilterPulldownDefault () {
+    return this.workItemFilterPulldownDefault.click();
+  }
+
+  get workItemFilterPulldownEdited () {
+    var xpathStr = ".//input[contains(@type,'text')]";
+    browser.wait(until.presenceOf(element(by.xpath(xpathStr))), constants.WAIT, 'Failed to find filter-by dropdown list');
+    return element(by.xpath(xpathStr));
+  }
+  clickWorkItemFilterPulldownEdited () {
+    return this.workItemFilterPulldownEdited.click();
+  }
+
+  filterBy (val) {
+    browser.wait(until.presenceOf(element(by.xpath(".//*//li//text()[contains(.,' "+val+" ')]/.."))), constants.WAIT, 'Failed to find filter input field');
+    return element(by.xpath(".//*//li//text()[contains(.,' "+val+" ')]/.."));
+  }
+  clickFilterBy (val) {
+    return this.filterBy(val).click();
+  }
+
   /* Access the user assignment filter dropdown - 'assign to me' filter*/
   get filterAssignToMe () {
-    browser.wait(until.presenceOf(element(by.xpath(".//*//li//text()[contains(.,'Assigned to Me')]/.."))), constants.WAIT, 'Failed to find assigment filter');
-    return element(by.xpath(".//*//li//text()[contains(.,'Assigned to Me')]/.."));
+    browser.wait(until.presenceOf(element(by.xpath(".//*//li//text()[contains(.,'(me)')]/.."))), constants.WAIT, 'Failed to find assign to me');
+    return element(by.xpath(".//*//li//text()[contains(.,'(me)')]/.."));
   }
   clickFilterAssignToMe () {
     this.filterAssignToMe.click();
   }
+
+    /* Access the Area assignment filter dropdown - 'Area 0' filter*/
+  get filterAssignArea () {
+    browser.wait(until.presenceOf(element(by.xpath(".//*//li//text()[contains(.,'Area 0')]/.."))), constants.WAIT, 'Failed to find assign Area');
+    return element(by.xpath(".//*//li//text()[contains(.,'Area 0')]/.."));
+  }
+  clickFilterAssignArea () {
+    this.filterAssignArea.click();
+  }
+
+    /* Access the Workitem Type assignment filter dropdown - 'WI Type - Experience' filter*/
+  get filterAssignWIType () {
+    browser.wait(until.presenceOf(element(by.xpath(".//*//li//text()[contains(.,'Experience')]/.."))), constants.WAIT, 'Failed to find assign Area');
+    return element(by.xpath(".//*//li//text()[contains(.,'Experience')]/.."));
+  }
+  clickFilterAssignWIType () {
+    this.filterAssignWIType.click();
+  }
+
   get activeFilters () {
     return element(by.xpath(".//*//text()[contains(.,'Active filters:')]"));
   }
@@ -394,7 +469,7 @@ class WorkItemListPage {
   /* Adding a new workitem through the dialog */
   get detailedDialogButton () {
     /* Changed from element(by.css(".with-cursor-pointer")) - as there were multiple matches */
-    return element(by.css(".pficon-add-circle-o.margin-top-4"));
+    return element(by.css(".add-button"));
  }
 
   clickDetailedDialogButton () {
@@ -519,8 +594,8 @@ class WorkItemListPage {
   }
   /* Access the Kebab 'move to top' element relative to its parent workitem */
   workItemKebabMoveToTopButton (parentElement) {
-    browser.wait(until.presenceOf(parentElement.element(by.css('.workItemList_MoveTop'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
-    return parentElement.element(by.css('.workItemList_MoveTop'));
+    browser.wait(until.presenceOf(parentElement.element(by.css('.f8-wi__list-movetop'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
+    return parentElement.element(by.css('.f8-wi__list-movetop'));
   }
   clickWorkItemKebabMoveToTopButton (parentElement) {
     return this.workItemKebabMoveToTopButton (parentElement).click();
@@ -528,20 +603,22 @@ class WorkItemListPage {
 
   /* Access the Kebab 'move to bottom' element relative to its parent workitem */
   workItemKebabMoveToBottomButton (parentElement) {
-    browser.wait(until.presenceOf(parentElement.element(by.css('.workItemList_MoveBottom'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
-    return parentElement.element(by.css('.workItemList_MoveBottom'));
+    browser.wait(until.presenceOf(parentElement.element(by.css('.f8-wi__list-movebtm'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
+    return parentElement.element(by.css('.f8-wi__list-movebtm'));
   }
   clickWorkItemKebabMoveToBottomButton (parentElement) {
     return this.workItemKebabMoveToBottomButton (parentElement).click();
   }
-  
+
   iterationAddButton  (){
     return element(by.id('add-iteration-icon'));
   }
 
   /* Iterations Page object model */
   clickIterationKebab (index){
-    return element(by.xpath ("(.//button[@type='button'])["+ index +"]")).click();
+//    return element(by.xpath("(//div[@class='f8-itr-entry']//button[@class='btn btn-link dropdown-toggle'])["+index+"]")).click();
+    return element(by.xpath(".//*[contains (@id, 'iterationList_OuterWrap_" + index + "')]/..")).click();
+    //   .//*[contains (@id, 'iterationList_OuterWrap_
   }
   clickEditIterationKebab (){
     return element(by.linkText ("Edit")).click();
@@ -551,6 +628,9 @@ class WorkItemListPage {
   }
   clickCloseIterationKebab (){
     return element(by.linkText ("Close")).click();
+  }
+  clickCloseIterationConfirmation() {
+    return element(by.id('create-iteration-button')).click();
   }
   clickChildIterationKebab (){
     return element(by.linkText ("Create child")).click();
@@ -563,7 +643,7 @@ class WorkItemListPage {
   }
 
   clickExpandCurrentIterationIcon () {
-    return this.expandCurrentIterationIcon.click(); 
+    return this.expandCurrentIterationIcon.click();
   }
 
   get expandFutureIterationIcon () {
@@ -571,7 +651,7 @@ class WorkItemListPage {
   }
 
   clickExpandFutureIterationIcon () {
-    return this.expandFutureIterationIcon.click(); 
+    return this.expandFutureIterationIcon.click();
   }
 
   get expandPastIterationIcon () {
@@ -579,7 +659,7 @@ class WorkItemListPage {
   }
 
   clickExpandPastIterationIcon () {
-    return this.expandPastIterationIcon.click(); 
+    return this.expandPastIterationIcon.click();
   }
 
   get futureIterations () {
@@ -598,6 +678,9 @@ class WorkItemListPage {
     return element(by.css('.iteration-count')).getText();
   }
 
+  IterationByName(name){
+    return element(by.xpath(".//text()[contains(.,'" + name + "')]/../../../.."));
+  }
 
   get lastFutureIteration () {
     return element.all(by.xpath (".//text()[contains(.,'Future Iterations')]/../../../../ul/li")).last();
@@ -614,7 +697,7 @@ class WorkItemListPage {
   get lastPastIteration () {
     return element.all(by.xpath (".//text()[contains(.,'Past Iterations')]/../../../ul/li")).last();
   }
-  
+
   firstCurrentIteration () {
     return element.all(by.xpath (".//text()[contains(.,'Current Iterations')]/../../../../../ul/li")).first();
   }
@@ -624,22 +707,27 @@ class WorkItemListPage {
   }
 
   clickIterationCreateLabel  (){
-    return element(by.id("add-iteration")).click();
+    return element(by.css(".f8-itr__add")).click();
   }
 
-  get iterationTitle  (){
-    return element(by.id("iteration-name")).click();
+  get iterationTitleFromList  (){
+    return element(by.css('.f8-itr-name'));
   }
+
+  get iterationTitleFromModal  (){
+    return element(by.id("iteration-name"));
+  }
+
   setIterationTitle  (newTitleString,append){
-    if (!append) { this.iterationTitle.clear(newTitleString) };
-    return this.iterationTitle.sendKeys(newTitleString);
+    if (!append) { this.iterationTitleFromModal.clear(newTitleString) };
+    return this.iterationTitleFromModal.sendKeys(newTitleString);
   }
   get iterationDescription  (){
-    return element(by.id("iteration-description")).click();
+    return element(by.id("iteration-description"));
   }
   setIterationDescription  (newString,append){
-     if (!append) { this.iterationDescription.clear(newString) };
-    return this.iterationDescription.sendKeys(newString);
+     if (!append) { this.iterationDescription.click().clear(newString) };
+    return this.iterationDescription.click().sendKeys(newString);
   }
   get createItreationButton (){
     return element(by.id('create-iteration-button'));
@@ -669,6 +757,41 @@ class WorkItemListPage {
     return element(by.id('iteration-select-dropdown'));
   }
 
+  get forceActiveLabel(){
+    return element(by.css('.f8-active-label'));
+  }
+
+  get activeIterationButton () {
+    return element(by.css("#active-switch > label"));
+  }
+
+  clickActiveIterationButton () {
+    return this.activeIterationButton.click();
+  }
+
+  activeIterationButtonStatus (){
+    return this.activeIterationButton.element(by.css('input')).getAttribute('checked');
+  }
+
+  getPortfolio() {
+    return element(by.id('portfolio'));
+  }
+
+  clickPortfolio() {
+    return this.getPortfolio().click();
+  }
+
+  getRequirements() {
+    return element(by.id('requirements'));
+  }
+
+  clickRequirements() {
+    return this.getRequirements().click();
+  }
+
+  getExecution() {
+    return element(by.id('execution'));
+  }
 }
 
 module.exports = WorkItemListPage;

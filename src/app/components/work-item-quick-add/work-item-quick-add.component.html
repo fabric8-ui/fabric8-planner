@@ -1,82 +1,160 @@
-<div class="quickAdd_container" id="workItemQuickAdd_container" *ngIf="wilistview === 'wi-list-view'" >
-  <div class="col-md-12 col-sm-12 col-xs-12 addWorkItem" (click)="toggleQuickAdd()" [ngClass]="{'db' : showQuickAddBtn, 'dn' : !showQuickAddBtn}">
-    <a class="workItemQuickAdd_saveBtn">
+<div class="col-xs-12 col-sm-12 col-md-12
+  f8-quickadd f8-quickadd-container"
+  *ngIf="wilistview === 'wi-list-view'" >
+  <div class="col-xs-12 col-sm-12 col-md-12 f8-quickadd__addwi"
+    (click)="toggleQuickAdd()"
+    [ngClass]="{'show' : showQuickAddBtn, 'hide' : !showQuickAddBtn}">
+    <a class="f8-quickadd__addwi-savebtn">
       <i class='pficon-add-circle-o dib'></i>
     </a>
-    <span class="quick-add-label">Create Work Item</span>
+    <span class="padding-left-5">Create Work Item</span>
   </div>
-  <div class="flex-container flex-grow-1 addWorkItemBlk " *ngIf="showQuickAdd">
+  <div class="col-xs-12 col-sm-12 col-md-12 f8-quickadd__wiblk"
+    *ngIf="showQuickAdd">
     <!-- type dropdown -->
-    <div class="dropup dropdown-kebab-pf" dropdown>
-      <button class="btn btn-default dropdown-toggle work-item-selector" data-toggle="dropdown" type="button" dropdownToggle>
-        <i class="fa pull-left" [ngClass]="selectedType?selectedType.attributes.icon:''"></i>
+    <div class="dropdown-kebab-pf pull-left" dropdown [dropup]="true">
+      <button class="btn btn-default dropdown-toggle padding-v-0"
+        type="button"
+        dropdownToggle>
+        <i class="fa dib"
+          [ngClass]="selectedType?selectedType.attributes.icon:''"></i>
         <span class="fa fa-angle-up"></span>
       </button>
-      <ul class="dropdown-menu" aria-labelledby="dropdownKebab" role="menu" dropdownMenu>
-        <li *ngFor="let type of availableTypes" (click)="selectType($event, type)"><a href="#" role="menuitem" class="dropdown-item"><i class="fa pull-left" [ngClass]="type.attributes.icon"></i>&nbsp;{{type.attributes.name}}</a></li>
+      <ul class="dropdown-menu"
+        role="menu"
+        aria-labelledby="dropdownKebab"
+        *dropdownMenu>
+        <li *ngFor="let type of availableTypes"
+            role="menuitem"
+            (click)="selectType($event, type)">
+          <a class="dropdown-item" href="#">
+            <i class="fa pull-left"
+              [ngClass]="type.attributes.icon"></i>&nbsp;{{type.attributes.name}}
+          </a>
+        </li>
       </ul>
     </div>
-    <div class="workItemQuickAdd_story flex-grow-9">
-      <div class="col-md-6 col-sm-6 col-xs-12 workItemQuickAdd_storyInput">
-        <input #quickAddTitle type="text" id="exampleInput" class="form-control col-md-12 col-sm-12 col-xs-12"  [(ngModel)]="workItem.attributes['system.title']"
-              (keyup.enter)="save($event)"
-              (keyup)="checkTitle()" placeholder="Work Item Title" required/>
+    <div class="f8-quickadd__wiblk-story">
+      <div class="col-xs-12 col-sm-6 col-md-6
+        f8-quickadd__wiblk-storyinput">
+        <input class="form-control col-xs-12 col-sm-12
+          col-md-12 f8-quickadd-input"
+          type="text"
+          placeholder="Work Item Title"
+          #quickAddTitle
+          [(ngModel)]="workItem.attributes['system.title']"
+          (keyup.enter)="save($event)"
+          (keyup)="checkTitle()"  required/>
       </div>
-      <div class="col-md-6 col-sm-6 mobdn">
-        <textarea #quickAddDesc rows="1" type="text" id="exampleDesc" class="form-control pull-left"  [(ngModel)]="workItem.attributes['system.description']"
-                [style.height]="descHeight"
-                [style.resize]="descResize"
-                (keydown.enter)="save($event)"
-                (keyup.enter)="preventDef($event)"
-                (keyup)="checkDesc()"
-                placeholder="Work Item Description">
+      <div class="col-xs-12 col-sm-6 col-md-6 mobdn">
+        <textarea
+          class="form-control pull-left f8-quickadd-desc"
+          type="text"
+          rows="1"
+          placeholder="Work Item Description"
+          #quickAddDesc
+          [(ngModel)]="workItem.attributes['system.description']"
+          [style.height]="descHeight"
+          [style.resize]="descResize"
+          (keydown.enter)="save($event)"
+          (keyup.enter)="preventDef($event)"
+          (keyup)="checkDesc()">
         </textarea>
       </div>
     </div>
-    <div class="workItemQuickAdd_AddBlk">
-      <button #quickAddSubmit class="btn btn-primary pull-left workItemQuickAdd_Add "
-        (click)="save($event)" [ngClass]="{'icon-btn': validTitle,'disabled':!validTitle}"><i class="fa fa-check"></i></button>
-      <span (click)="toggleQuickAdd()" class="btn btn-default pull-right closeQuickAdd"><i class="pficon-close"></i></span>
+    <div class="f8-quickadd__wiblk-btn pull-right">
+      <button class="btn btn-primary pull-left f8-quickadd__wiblk-btn-add"
+        #quickAddSubmit
+        [ngClass]="{'': validTitle,'disabled':!validTitle}"
+        (click)="save($event)">
+        <i class="fa fa-check"></i>
+      </button>
+      <button class="btn btn-default pull-right
+        f8-quickadd__wiblk-btn-close"
+        (click)="toggleQuickAdd()">
+        <i class="pficon-close"></i>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- Quick ADD Template for Board View -->
-<div class="board-quick-add-card card-pf" id="workItemQuickAdd_container" *ngIf="wilistview === 'wi-card-view'" >
-  <div class="col-sm-12 addWorkItem" (click)="toggleQuickAdd()">
-    <a class="workItemQuickAdd_saveBtn">
+<div class="f8-quickadd-card card-pf f8-quickadd-container"
+  *ngIf="wilistview === 'wi-card-view'" >
+  <div class="col-xs-12 col-sm-12 col-md-12
+    f8-quickadd-card__addwi"
+    (click)="toggleQuickAdd()">
+    <a class="f8-quickadd-card__addwi-savebtn">
       <i class='pficon-add-circle-o dib'></i>
     </a>
   </div>
-  <div class="col-sm-12 card-pf card-pf-view addWorkItemBlk" *ngIf="showQuickAdd">
-    <div class="row">
-      <button (click)="toggleQuickAdd()" class="btn btn-link closeQuickAdd">
+  <div class="col-xs-12 col-sm-12 col-md-12 card-pf
+    card-pf-view f8-quickadd-card__wiblk"
+    *ngIf="showQuickAdd">
+    <div class="row padding-bottom-10 margin-bottom-15">
+      <button class="btn btn-link
+        f8-quickadd-card__wiblk-btn-close"
+        (click)="toggleQuickAdd()">
         <i class="pficon pficon-close"></i>
       </button>
     </div>
-    <div class="row board-inputs">
-      <div class="col-sm-2">
-        <i class="fa" [ngClass]="selectedType?selectedType.attributes.icon:''"></i>
+    <div class="row padding-top-10 margin-top-15">
+      <div class="dropdown-kebab-pf pull-left" dropdown>
+        <button class="btn btn-default dropdown-toggle padding-v-0"
+          type="button"
+          dropdownToggle>
+          <i class="fa dib"
+            [ngClass]="selectedType?selectedType.attributes.icon:''"></i>
+          <span class="fa fa-angle-down"></span>
+        </button>
+        <ul class="dropdown-menu"
+          role="menu"
+          aria-labelledby="dropdownKebab"
+          *dropdownMenu>
+          <li *ngFor="let type of availableTypes"
+              role="menuitem"
+              (click)="selectType($event, type)">
+            <a class="dropdown-item" href="#">
+              <i class="fa pull-left"
+                [ngClass]="type.attributes.icon"></i>&nbsp;{{type.attributes.name}}
+            </a>
+          </li>
+        </ul>
       </div>
-      <div class="col-sm-10">
-        <input #quickAddTitle type="text" id="exampleInput" class="form-control board-title col-sm-12"  [(ngModel)]="workItem.attributes['system.title']"
-              (keyup.enter)="save($event)"
-              (keyup)="checkTitle()" placeholder="Work Item Title" required/>
+      <div class="col-xs-10 col-sm-10 col-md-10">
+        <input class="form-control col-xs-12 col-sm-12
+          col-md-12 f8-quickadd-input"
+          type="text"
+          placeholder="Work Item Title"
+          #quickAddTitle
+          [(ngModel)]="workItem.attributes['system.title']"
+          (keyup.enter)="save($event)"
+          (keyup)="checkTitle()"
+          required/>
       </div>
-      <div class="col-sm-12 no-padding">
-        <textarea #quickAddDesc rows="1" type="text" id="exampleDesc" class="form-control board-description pull-left"  [(ngModel)]="workItem.attributes['system.description']"
-                [style.height]="descHeight"
-                [style.resize]="descResize"
-                (keydown.enter)="save($event)"
-                (keyup.enter)="preventDef($event)"
-                (keyup)="checkDesc()"
-                placeholder="Work Item Description">
+      <div class="col-xs-12 col-sm-12 col-md-12 no-padding">
+        <textarea
+          class="form-control board-description pull-left f8-quickadd-desc"
+          type="text"
+          rows="1"
+          placeholder="Work Item Description"
+          #quickAddDesc
+          [(ngModel)]="workItem.attributes['system.description']"
+          (keydown.enter)="save($event)"
+          (keyup.enter)="preventDef($event)"
+          (keyup)="checkDesc()"
+          [style.height]="descHeight"
+          [style.resize]="descResize">
         </textarea>
       </div>
     </div>
-    <div class="col-sm-2 col-sm-offset-10">
-      <button #quickAddSubmit class="btn btn-primary workItemQuickAdd_Add"
-        (click)="save($event)" [ngClass]="{'icon-btn': validTitle,'disabled':!validTitle}"><i class="fa fa-check"></i></button>
+    <div class="col-xs-2 col-sm-2 col-md-2 col-xs-offset-10 col-sm-offset-10 col-md-offset-10">
+      <button class="btn btn-primary f8-quickadd-card__wiblk-btn-add"
+        #quickAddSubmit
+        [ngClass]="{'': validTitle,'disabled':!validTitle}"
+        (click)="save($event)">
+        <i class="fa fa-check"></i>
+      </button>
     </div>
   </div>
 </div>

@@ -13,6 +13,7 @@ import { FilterMockGenerator } from './mock-data/filter-mock-generator';
 import { SpaceMockGenerator } from './mock-data/space-mock-generator';
 import { AreaMockGenerator } from './mock-data/area-mock-generator';
 import { IterationMockGenerator } from './mock-data/iteration-mock-generator';
+import { LabelMockGenerator } from './mock-data/label-mock-generator';
 
 /*
   This class provides a mock database store for entities. It provides
@@ -44,6 +45,7 @@ export class MockDataService {
   private spaceMockGenerator: SpaceMockGenerator = new SpaceMockGenerator();
   private iterationMockGenerator: IterationMockGenerator = new IterationMockGenerator();
   private areaMockGenerator: AreaMockGenerator = new AreaMockGenerator();
+  private labelMockGenerator: LabelMockGenerator = new LabelMockGenerator();
 
   // persistence store, the MockDataService is a singleton when injected as a service.
   private workItems: any[];
@@ -53,6 +55,7 @@ export class MockDataService {
   private spaces: any[];
   private iterations: any[];
   private areas: any[];
+  private labels: any[];
 
   private selfId;
 
@@ -66,6 +69,7 @@ export class MockDataService {
     this.spaces = this.spaceMockGenerator.createSpaces();
     this.iterations = this.iterationMockGenerator.createIterations();
     this.areas = this.areaMockGenerator.createAreas();
+    this.labels = this.labelMockGenerator.getAllLabels();
 
     this.selfId = this.createId();
     console.log('Started MockDataService service instance ' + this.selfId);
@@ -155,6 +159,8 @@ export class MockDataService {
         var newComment = {
               'attributes': {
                 'body': entity.data.attributes.body,
+                'body.rendered': entity.data.attributes.body,
+                'markup': 'Markdown',
                 'created-at': '2000-01-01T09:00:00.000000Z'
               },
               'id': newId,
@@ -179,11 +185,16 @@ export class MockDataService {
     }
     var localWorkItem = this.makeCopy(entity.data);
     localWorkItem.id = this.createId();
+    Object.assign(localWorkItem.attributes,
+      {
+        'system.number': localWorkItem.id,
+        'system.description': localWorkItem.attributes['system.description'] ? localWorkItem.attributes['system.description'] : '',
+        'system.description.rendered': localWorkItem.attributes['system.description'] ? localWorkItem.attributes['system.description'] : '',
+      }
+    );
     localWorkItem.links = {
-          'self': 'http://mock.service/api/workitems/id' + localWorkItem.id,
-          'sourceLinkTypes': 'http://mock.service/api/source-link-types',
-          'targetLinkTypes': 'http://mock.service/api/target-link-types'
-        };
+      'self': 'http://mock.service/api/workitems/id' + localWorkItem.id,
+    };
     this.workItemComments['id' + localWorkItem.id] = {
       'data': [],
       'meta': {
@@ -191,9 +202,52 @@ export class MockDataService {
       }
     };
     localWorkItem.relationships = {
-          'assignees': { },
-          'iteration': { },
-          'area': { },
+          'assignees': localWorkItem.relationships.assignees ? {
+            'data': [{
+              'id': localWorkItem.relationships.assignees.data[0].id,
+              'links': {
+                'self': 'http://mock.service/api/user/' + localWorkItem.relationships.assignees.data[0].id
+              },
+              'type': 'identities'
+            }]
+          } : { },
+          'iteration': localWorkItem.relationships.iteration ? {
+            'data': {
+              'id': localWorkItem.relationships.iteration.data.id,
+              'links': {
+                'self': 'http://mock.service/api/iterations/' + localWorkItem.relationships.iteration.data.id
+              },
+              'type': 'iterations'
+            }
+          } : {
+            'data': {
+              'id': 'iteration-id1',
+              'links': {
+                'self': 'http://mock.service/api/iterations/root-iteration-id'
+              },
+              'type': 'iterations'
+            }
+          },
+          'area': localWorkItem.relationships.area ? {
+            'data': {
+              'id': localWorkItem.relationships.area.data.id,
+              'links': {
+                'self': 'http://mock.service/api/areas/' + localWorkItem.relationships.area.data.id
+              },
+              'type': 'iterations'
+            }
+          } : {
+            'data': {
+              'id': 'rootarea',
+              'links': {
+                'self': 'http://mock.service/api/areas/rootarea'
+              },
+              'type': 'areas'
+            }
+           },
+          'labels': localWorkItem.relationships.labels ? {
+            'data': localWorkItem.relationships.labels.data
+            } : {},
           'baseType': {
             'data': {
               'id': '86af5178-9b41-469b-9096-57e5155c3f31',
@@ -234,6 +288,8 @@ export class MockDataService {
       if (subselect === 'comments') {
         console.log('Requested comments for workitem ' + wiId);
         return this.makeCopy(this.workItemComments[wiId]);
+      } else if (subselect === 'labels') {
+        // bad me karenge
       } else if (subselect === 'relationships') {
         console.log('Request for relationships for workitem ' + wiId);
         if (parts[2] === 'links') {
@@ -291,6 +347,14 @@ export class MockDataService {
               });
             } else {
               this.workItems[i].relationships.assignees = {};
+            }
+          }
+          // Label update
+          if (workItem.relationships.labels && workItem.relationships.labels.data) {
+            if (workItem.relationships.labels.data.length) {
+              this.workItems[i].relationships.labels.data = workItem.relationships.labels.data;
+            } else {
+              this.workItems[i].relationships.labels.data = [];
             }
           }
         } else {
@@ -385,6 +449,14 @@ export class MockDataService {
     return this.userMockGenerator.getAllUsers();
   }
 
+  public getAllLabels(): any {
+    return this.labelMockGenerator.getAllLabels();
+  }
+
+  public createLabel(body): any {
+    return this.labelMockGenerator.createLabel(body);
+  }
+
   public getLoginStatus() {
     return {
       'status': 200,
@@ -458,9 +530,14 @@ export class MockDataService {
     console.log('CREATE ITERATION');
     console.log(iteration);
     var localIteration = this.makeCopy(iteration.data);
-    localIteration.id = this.createId();
+    localIteration.id = 'iteration-id-' + this.createId();
     if (!localIteration.attributes.hasOwnProperty('state') && !localIteration.attributes.state) {
       localIteration.attributes['state'] = 'new';
+    }
+    if (localIteration.attributes['user_active'] === true) {
+      localIteration.attributes['active_status'] = true;
+    } else {
+      localIteration.attributes['active_status'] = false;
     }
     if (parentIterationId) {
       var parentIteration = this.getIteration(parentIterationId);
@@ -497,6 +574,11 @@ export class MockDataService {
         // TODO: we might have to do a proper merge of the values at some point.
         if (!localIteration.attributes.hasOwnProperty('state') || !localIteration.attributes.state) {
           localIteration.attributes['state'] = this.iterations[i].attributes['state'];
+        }
+        if (localIteration.attributes['user_active'] === true) {
+          localIteration.attributes['active_status'] = true;
+        } else {
+          localIteration.attributes['active_status'] = false;
         }
         this.iterations.splice(i, 1, localIteration);
         return this.makeCopy(localIteration);

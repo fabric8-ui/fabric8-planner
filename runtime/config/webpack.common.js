@@ -1,7 +1,5 @@
 const webpack = require('webpack');
-const helpers = require('./helpers');
 const path = require('path');
-const sass = require('./sass');
 
 const AssetsPlugin = require('assets-webpack-plugin');
 const autoprefixer = require('autoprefixer');
@@ -20,19 +18,19 @@ const ngcWebpack = require('ngc-webpack');
 const NormalModuleReplacementPlugin = require('webpack/lib/NormalModuleReplacementPlugin');
 const OptimizeJsPlugin = require('optimize-js-plugin');
 const ProvidePlugin = require('webpack/lib/ProvidePlugin');
-const sassLintPlugin = require('sasslint-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const UglifyJsPlugin = require('webpack/lib/optimize/UglifyJsPlugin');
 
 const precss = require('precss');
 
-// ExtractTextPlugin
-const extractCSS = new ExtractTextPlugin({
-  filename: '[name].[id]' + (helpers.isProd ? '.[contenthash]' : '') + '.css',
-  allChunks: true
-}
-);
+var helpers = require('./helpers');
 
+// ExtractTextPlugin
+
+const extractCSS = new ExtractTextPlugin({
+  filename: '_assets/stylesheets/[name].[id]' + (helpers.isProd ? '.[contenthash]' : '') + '.css',
+  allChunks: true
+});
 
 /*
  * Webpack Constants
@@ -96,7 +94,7 @@ module.exports = {
         })
       },
       {
-        test: /^(?!.*component).*\.scss$/,
+        test: /^(?!.*component).*\.less$/,
         use: extractCSS.extract({
           fallback: 'style-loader',
           use: [
@@ -108,18 +106,19 @@ module.exports = {
                 context: '/'
               }
             }, {
-              loader: 'sass-loader',
+              loader: 'less-loader',
               options: {
-                includePaths: sass.modules.map(function (val) {
-                  return val.sassPath;
-                }),
+                paths: [
+                  path.resolve(__dirname, "../node_modules/patternfly/src/less"),
+                  path.resolve(__dirname, "../node_modules/patternfly/node_modules")
+                  ],
                 sourceMap: true
               }
             }
           ],
         })
       }, {
-        test: /\.component\.scss$/,
+        test: /\.component\.less$/,
         use: [
           {
             loader: 'to-string-loader'
@@ -131,11 +130,12 @@ module.exports = {
               context: '/'
             }
           }, {
-            loader: 'sass-loader',
+            loader: 'less-loader',
             options: {
-              includePaths: sass.modules.map(function (val) {
-                return val.sassPath;
-              }),
+              paths: [
+                path.resolve(__dirname, "../node_modules/patternfly/src/less"),
+                path.resolve(__dirname, "../node_modules/patternfly/node_modules")
+                ],
               sourceMap: true
             }
           }
@@ -189,18 +189,6 @@ module.exports = {
      */
     new CheckerPlugin(),
 
-
-    // new sassLintPlugin({
-    //   configFile: '.sass-lint.yml',
-    //   context: ['inherits from webpack'],
-    //   ignoreFiles: [],
-    //   ignorePlugins: [],
-    //   glob: '**/*.s?(a|c)ss',
-    //   quiet: false,
-    //   failOnWarning: false,
-    //   failOnError: false,
-    //   testing: false
-    // }),
     /**
      * Plugin: ContextReplacementPlugin
      * Description: Provides context to Angular's use of System.import

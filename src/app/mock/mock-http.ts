@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import { HttpService } from '../services/http-service';
 import { Injectable, ReflectiveInjector } from '@angular/core';
 import { Http } from '@angular/http';
@@ -127,7 +128,7 @@ export class MockHttp extends HttpService {
         body: body
       });
       var res = new Response(responseOptions);
-      return Observable.of(res);
+      return Observable.of(res).delay(100);
     }
 
     /*
@@ -247,14 +248,13 @@ export class MockHttp extends HttpService {
           } else {
             return this.createResponse(url.toString(), 200, 'ok', { data: this.mockDataService.getAllAreas() });
           }
-        case '/source-link-types':
-          return this.createResponse(url.toString(), 200, 'ok', this.mockDataService.getWorkItemLinkTypes() );
-        case '/target-link-types':
-          return this.createResponse(url.toString(), 200, 'ok', this.mockDataService.getWorkItemLinkTypes() );
+        case '/workitemlinktypes':
+          return this.createResponse(url.toString(), 200, 'ok', this.mockDataService.getWorkItemLinkTypes());
+        case '/labels':
+          return this.createResponse(url.toString(), 200, 'ok', {data: this.mockDataService.getAllLabels()});
         default:
-          console.log('######## URL Not found ########');
-          console.log(url.toString());
-          return this.createResponse(url.toString(), 404, 'npt found', {} );
+          console.log('######## URL Not found ########', url.toString());
+          return this.createResponse(url.toString(), 404, 'not found', {} );
       }
     };
 
@@ -290,6 +290,8 @@ export class MockHttp extends HttpService {
         return this.createResponse(url.toString(), 200, 'ok', { data: this.mockDataService.getRedneredText(JSON.parse(body).data) });
       } else if (path.path === '/login/refresh') {
         return this.createResponse(url.toString(), 200, 'ok', { token: { access_token: 'someaccesstoken', refresh_token: 'someaccesstoken' }} );
+      } else if (path.path ===  '/labels') {
+        return this.createResponse(url.toString(), 200, 'ok', { data: this.mockDataService.createLabel(body) } );
       } else {
         return this.createResponse(url.toString(), 500, 'POST to unknown resource: ' + path.path, {});
       }
@@ -382,8 +384,13 @@ export class MockHttp extends HttpService {
           return this.createResponse(url.toString(), 200, 'ok', { data: result });
         else
           return this.createResponse(url.toString(), 500, 'Iteration does not exist: ' + path.extraPath, {});
-      } else
+      } else if (path.path.includes('/comments/')) {
+        let resp = cloneDeep(body.data);
+        resp.attributes['body.rendered'] = resp.attributes['body'];
+        return this.createResponse(url.toString(), 200, 'ok', { data: resp });
+      } else {
         return this.createResponse(url.toString(), 500, 'PATCH to unknown resource: ' + path.extraPath, {});
+      }
     };
 
     /*

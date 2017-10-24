@@ -1,12 +1,30 @@
 #!/usr/bin/groovy
 def ci (){
     stage('build planner npm'){
-        sh 'npm install'
-        sh 'npm run build'
+        container('ui'){
+            sh 'npm install'
+            sh 'npm run build'
+        }
     }
 
     stage('unit test'){
-        sh 'npm run test:unit'
+        container('ui'){
+            sh 'npm run test:unit'
+        }
+    }
+
+    stage('func test'){
+        dir('runtime'){
+            container('ui'){
+                sh '''
+        /usr/bin/Xvfb :99 -screen 0 1024x768x24 &
+        export API_URL=https://api.prod-preview.openshift.io/api/
+        export NODE_ENV=inmemory
+        npm install
+        ./tests/run_functional_tests.sh smokeTest
+'''
+            }
+        }
     }
 }
 
@@ -40,6 +58,20 @@ def cd (b){
 
     stage('unit test'){
         sh 'npm run test:unit'
+    }
+
+    stage('func test'){
+        dir('runtime'){
+            container('ui'){
+                sh '''
+        /usr/bin/Xvfb :99 -screen 0 1024x768x24 &
+        export API_URL=https://api.prod-preview.openshift.io/api/
+        export NODE_ENV=inmemory
+        npm install
+        ./tests/run_functional_tests.sh smokeTest
+    '''
+            }
+        }
     }
 
     stage('release'){

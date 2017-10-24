@@ -51,10 +51,6 @@ export class WorkItemService {
   private availableStates: DropdownOption[] = [];
   public workItemTypes: WorkItemType[] = [];
 
-  // FIXME: this is the live list of work items, held in this instance of
-  // workItemService. This prevents us from displaying two different lists of WIs.
-  // This might have to change in the future.
-  private workItems: WorkItem[] = [];
   private nextLink: string = null;
   private initialWorkItemFetchDone = false;
   private userIdMap = {};
@@ -67,6 +63,7 @@ export class WorkItemService {
 
   public addWIObservable: Subject<WorkItem> = new Subject();
   public editWIObservable: Subject<WorkItem> = new Subject();
+  public selectedWIObservable: Subject<WorkItem> = new Subject();
 
   constructor(private http: HttpService,
     private broadcaster: Broadcaster,
@@ -145,7 +142,7 @@ export class WorkItemService {
     }
   }
 
-  getWorkItems(pageSize: number = 20, filters: any[] = []): Observable<{workItems: WorkItem[], nextLink: string, totalCount: number | null}> {
+  getWorkItems(pageSize: number = 20, filters: any[] = []): Observable<{workItems: WorkItem[], nextLink: string, totalCount?: number | null}> {
     if (this._currentSpace) {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
       let url = this.workItemUrl + '?page[limit]=' + pageSize;
@@ -167,6 +164,28 @@ export class WorkItemService {
       return Observable.of<{workItems: WorkItem[], nextLink: string | null}>( {workItems: [] as WorkItem[], nextLink: null} );
     }
   }
+
+  // TODO Filter temp
+  getWorkItems2(pageSize: number = 20, filters: object): Observable<{workItems: WorkItem[], nextLink: string, totalCount?: number | null}> {
+    if (this._currentSpace) {
+      this.workItemUrl = this._currentSpace.links.self.split('spaces')[0] + 'search';
+      let url = this.workItemUrl + '?page[limit]=' + pageSize + '&' + Object.keys(filters).map(k => 'filter['+k+']='+JSON.stringify(filters[k])).join('&');
+      return this.http.get(url)
+        .map((resp) => {
+          return {
+            workItems: resp.json().data as WorkItem[],
+            nextLink: resp.json().links.next,
+            totalCount: resp.json().meta ? resp.json().meta.totalCount : 0
+          };
+        }).catch((error: Error | any) => {
+          this.notifyError('Getting work items failed.', error);
+          return Observable.throw(new Error(error.message));
+        });
+    } else {
+      return Observable.of<{workItems: WorkItem[], nextLink: string | null}>( {workItems: [] as WorkItem[], nextLink: null} );
+    }
+  }
+
 
   /**
    * This function is called from next page onwards in the scroll
@@ -190,7 +209,7 @@ export class WorkItemService {
   }
 
 
-  resolveWorkItems(workItems, iterations, users, wiTypes): WorkItem[] {
+   resolveWorkItems(workItems, iterations, users, wiTypes, labels): WorkItem[] {
     let resolvedWorkItems = workItems.map((item) => {
       // put the hasChildren on the root level for the tree
       if (item.relationships.children && item.relationships.children.meta)
@@ -212,6 +231,19 @@ export class WorkItemService {
         item.relationships.iteration.data = iterations.find((it) => it.id === iteration.id) || iteration;
       }
 
+      // Resolve labels
+      let WIlabels = item.relationships.labels.data ? cloneDeep(item.relationships.labels.data) : [];
+      item.relationships.labels.data = WIlabels.map(label => {
+        return labels.find(l => l.id === label.id);
+      })
+
+      // Sort labels in alphabetical order
+      item.relationships.labels.data = item.relationships.labels.data.sort(function(labelA, labelB) {
+        let labelAName = labelA.attributes.name.toUpperCase();
+        let labelBName = labelB.attributes.name.toUpperCase();
+        return labelAName.localeCompare(labelBName);
+      });
+
       // Resolve work item types
       let wiType = cloneDeep(item.relationships.baseType.data);
       if (wiType) {
@@ -220,10 +252,6 @@ export class WorkItemService {
       return item;
     });
     return resolvedWorkItems;
-  }
-
-  isListLoaded() {
-    return !!this.workItems.length;
   }
 
   getNextLink(): string {
@@ -249,75 +277,39 @@ export class WorkItemService {
   */
 
   /**
-   * Usage: This method gives a single work item by ID.
-   * If the item is locally available then it just resolves the comments
-   * else it fetches that item from the cloud and then resolves the comments
-   * then update the big list of work WorkItem
+   * Usage: This method gives a single work item by display number.
    *
-   * @param: number - id
+   * @param id : string - number
+   * @param owner : string
+   * @param space : string
    */
-  getWorkItemById(id: string): Observable<WorkItem> {
+  getWorkItemByNumber(id: string, owner: string = '', space: string = ''): Observable<WorkItem> {
     if (this._currentSpace) {
-      return this.http.get(this._currentSpace.links.self + '/workitems/' + id)
+      if (owner && space) {
+        return this.http.get(
+          this._currentSpace.links.self.split('/spaces/')[0] +
+          '/namedspaces' +
+          '/' + owner +
+          '/' + space +
+          '/workitems/' + id
+        )
         .map(item => item.json().data)
         .catch((error: Error | any) => {
           this.notifyError('Getting work item data failed.', error);
           return Observable.throw(new Error(error.message));
         });
+      } else {
+        return this.http.get(this._currentSpace.links.self.split('/spaces/')[0] + '/workitems/' + id)
+          .map(item => item.json().data)
+          .catch((error: Error | any) => {
+            this.notifyError('Getting work item data failed.', error);
+            return Observable.throw(new Error(error.message));
+          });
+      }
     } else {
       return Observable.of<WorkItem>( new WorkItem() );
     }
   }
-
-  /**
-   * Usage: to check if the workitem match with current filter or not.
-   * @param WorkItem - workItem
-   * @returns Boolean
-   */
-  doesMatchCurrentFilter(workItem: WorkItem): Boolean {
-    if (this.prevFilters.length) {
-      for (let i = 0; i < this.prevFilters.length; i++) {
-        // In case of assignee filter
-        if (this.prevFilters[i].id === 1 && this.prevFilters[i].active) {
-          if (!workItem.relationships.assignees.data // If un-assigned
-              || workItem.relationships.assignees.data.findIndex(item => item.id == this.prevFilters[i].value) === -1 // If assignee is not current
-          ) {
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  }
-
-  /**
-   * Usage: to update the big list of workItem with new data
-   * Existing item will be updated only with attributes
-   * New item will be added to the list
-   */
-  updateWorkItemBigList(wItems: WorkItem[]): void {
-    wItems.forEach((wItem) => {
-      if (wItem.id in this.workItemIdIndexMap) {
-        this.workItems[this.workItemIdIndexMap[wItem.id]].attributes =
-          cloneDeep(wItem.attributes);
-      } else {
-        this.workItems
-          .splice(this.workItems.length, this.workItems.length, wItem);
-      }
-    });
-    // Re-build the map once done updating the list
-    this.buildWorkItemIdIndexMap();
-  }
-
-  /**
-   * Usage: Build the workItem ID-Index map for the big list
-   */
-  buildWorkItemIdIndexMap() {
-    this.workItemIdIndexMap = {};
-    this.workItems.forEach((wItem, index) =>
-      this.workItemIdIndexMap[wItem.id] = index);
-  }
-
 
   /**
    * Usage: To resolve the users in eact WorkItem
@@ -351,14 +343,13 @@ export class WorkItemService {
   }
 
   resolveAssignees(assignees: any): Observable<User[]> {
-    if (Object.keys(assignees).length) {
+    if (Object.keys(assignees).length && assignees.data.length) {
       let observableBatch = assignees.data.map((assignee) => {
         return this.http.get(assignee.links.self)
-                .map((res) => res.json().data)
-                .catch((error: Error | any) => {
-                  this.notifyError('Resolving assignees of work item failed.', error);
-                  return Observable.throw(new Error(error.message));
-                });
+          .map((res) => res.json().data)
+          .catch((error: Error | any) => {
+            return Observable.throw(new Error(error.message));
+          });
       });
       return Observable.forkJoin(observableBatch);
     } else {
@@ -366,9 +357,34 @@ export class WorkItemService {
     }
   }
 
+  getUsersByURLs(userURLs: string[]): Observable<User[]> {
+    let observableBatch = userURLs.map((url) => {
+        return this.http.get(url)
+          .map((res) => res.json().data)
+          .catch((error: Error | any) => {
+            return Observable.throw(new Error(error.message));
+          });
+      });
+      return Observable.forkJoin(observableBatch);
+  }
+
   resolveCreator2(creator): Observable<User>{
     if (Object.keys(creator).length) {
       let creatorLink = creator.data.links.self;
+      return this.http.get(creatorLink)
+        .map(creator => creator.json().data)
+        .catch((error: Error | any) => {
+          this.notifyError('Getting work item creator failed.', error);
+          return Observable.throw(new Error(error.message));
+        });
+    } else {
+      return Observable.of(creator);
+    }
+  }
+
+  resolveCommentCreator(creator): Observable<User>{
+    if (Object.keys(creator).length) {
+      let creatorLink = creator.links.related;
       return this.http.get(creatorLink)
         .map(creator => creator.json().data)
         .catch((error: Error | any) => {
@@ -511,15 +527,6 @@ export class WorkItemService {
   }
 
   /**
-   * This is to fetch locally fetched work items
-   * this will eventually be deprecated once work item
-   * linking is re-worked
-   */
-  getLocallySavedWorkItems(): Observable<any> {
-    return Observable.of(this.workItems);
-  }
-
-  /**
    * Usage: This method is to resolve the comments for a work item
    * This method is only called when a single item is fetched for the
    * details page.
@@ -634,6 +641,7 @@ export class WorkItemService {
               option: item,
             };
           });
+          console.log('availableStates = ', this.availableStates);
           return this.availableStates;
         }).catch((error: Error | any) => {
           this.notifyError('Getting available status options for work item failed.', error);
@@ -669,13 +677,13 @@ export class WorkItemService {
     * @param: WorkItem - workItem (Item to be created)
     */
   create(workItem: WorkItem): Observable<WorkItem> {
+    console.log('work item in create ', workItem);
     let payload = JSON.stringify({data: workItem});
     if (this._currentSpace) {
       this.workItemUrl = this._currentSpace.links.self + '/workitems';
       return this.http
         .post(this.workItemUrl, payload)
         .map(response => {
-          this.broadcaster.broadcast('create_workitem', response.json().data as WorkItem);
           return response.json().data as WorkItem;
         }).catch((error: Error | any) => {
           this.notifyError('Creating work item failed.', error);
@@ -704,6 +712,13 @@ export class WorkItemService {
 
   emitEditWI(workItem: WorkItem) {
     this.editWIObservable.next(workItem);
+  }
+
+  /**
+   * Usage: This method emit a event when WI get seleceted.
+   */
+  emitSelectedWI(workItem: WorkItem) {
+    this.selectedWIObservable.next(workItem);
   }
 
   /**
@@ -767,18 +782,17 @@ export class WorkItemService {
       });
   }
 
-  getForwardLinkTypes(workItem: WorkItem): Observable<any> {
-    return this.http.get(workItem.links.targetLinkTypes)
+  /**
+   * Usage: This function fetches all the work item link types
+   * Store it in an instance variable
+   *
+   * @return Promise of LinkType[]
+   */
+  getAllLinkTypes(workItem: WorkItem): Observable<any> {
+    let workItemLinkTypesUrl = this._currentSpace.links.self + '/workitemlinktypes';
+    return this.http.get(workItemLinkTypesUrl)
       .catch((error: Error | any) => {
         this.notifyError('Getting link meta info failed (forward).', error);
-        return Observable.throw(new Error(error.message));
-      });
-  }
-
-  getBackwardLinkTypes(workItem: WorkItem): Observable<any> {
-    return this.http.get(workItem.links.sourceLinkTypes)
-      .catch((error: Error | any) => {
-        this.notifyError('Getting link meta info failed (backward).', error);
         return Observable.throw(new Error(error.message));
       });
   }
@@ -790,23 +804,18 @@ export class WorkItemService {
    * @return Promise of LinkType[]
    */
   getLinkTypes(workItem: WorkItem): Observable<Object> {
-    return Observable.forkJoin(
-      this.getForwardLinkTypes(workItem),
-      this.getBackwardLinkTypes(workItem)
-    )
-    .map(items => {
-      let linkTypes: Object = {};
-      linkTypes['forwardLinks'] = items[0].json().data;
-      linkTypes['backwardLinks'] = items[1].json().data;
-      return linkTypes;
-    })
-    .map((linkTypes: any) => {
-      return this.formatLinkTypes(linkTypes);
-    })
-    .catch((err) => {
-      console.log(err);
-      return Observable.of({});
-    });
+    return this.getAllLinkTypes(workItem)
+        .map(item => {
+          let linkTypes: Object = {};
+          linkTypes['forwardLinks'] = item.json().data;
+          linkTypes['backwardLinks'] = item.json().data;
+          return linkTypes;
+        })
+        .map((linkTypes: any) => { return this.formatLinkTypes(linkTypes); })
+        .catch((err) => {
+          console.log(err);
+          return Observable.of({});
+        });
   }
 
   formatLinkTypes(linkTypes: any): any {
@@ -815,16 +824,14 @@ export class WorkItemService {
       opLinkTypes.push({
         name: linkType.attributes['forward_name'],
         linkId: linkType.id,
-        linkType: 'forward',
-        wiType: linkType.relationships.target_type.data.id
+        linkType: 'forward'
       });
     });
     linkTypes.backwardLinks.forEach((linkType: LinkType) => {
       opLinkTypes.push({
         name: linkType.attributes['reverse_name'],
         linkId: linkType.id,
-        linkType: 'reverse',
-        wiType: linkType.relationships.source_type.data.id
+        linkType: 'reverse'
       });
     });
     return opLinkTypes;
@@ -858,11 +865,13 @@ export class WorkItemService {
         source: {
           title: wItem.attributes['system.title'],
           id: wItem.id,
+          number: wItem.attributes['system.number'],
           state: wItem.attributes['system.state']
         },
         target: {
           title: targetWItem.attributes['system.title'],
           id: targetWItem.id,
+          number: targetWItem.attributes['system.number'],
           state: targetWItem.attributes['system.state']
         },
         linkType: linkType.attributes.forward_name
@@ -877,11 +886,13 @@ export class WorkItemService {
         target: {
           title: wItem.attributes['system.title'],
           id: wItem.id,
+          number: wItem.attributes['system.number'],
           state: wItem.attributes['system.state']
         },
         source: {
           title: sourceWItem.attributes['system.title'],
           id: sourceWItem.id,
+          number: sourceWItem.attributes['system.number'],
           state: sourceWItem.attributes['system.state']
         },
         linkType: linkType.attributes.reverse_name
@@ -982,12 +993,12 @@ export class WorkItemService {
     }
   }
 
-  searchLinkWorkItem(term: string, workItemType: string): Observable<WorkItem[]> {
+  searchLinkWorkItem(term: string): Observable<WorkItem[]> {
     if (this._currentSpace) {
       // FIXME: make the URL great again (when we know the right API URL for this)!
       // search within selected space
-      let searchUrl = this.baseApiUrl + 'search?spaceID=' + this._currentSpace.id + '&q=' + term + ' type:' + workItemType;
-      //let searchUrl = currentSpace.links.self + 'search?q=' + term + ' type:' + workItemType;
+      let searchUrl = this.baseApiUrl + 'search?spaceID=' + this._currentSpace.id + '&q=' + term;
+      //let searchUrl = currentSpace.links.self + 'search?q=' + term;
       return this.http
           .get(searchUrl)
           .map((response) => response.json().data as WorkItem[])
@@ -1001,34 +1012,6 @@ export class WorkItemService {
     } else {
       return Observable.of<WorkItem[]>( [] as WorkItem[] );
     }
-  }
-
-  /**
-   * It return object of adjacent work item id
-   * {
-   *  prevItemId: previous work item id
-   *  nextItemId: next work item id
-   * }
-   *
-   * @param workItemId: string
-   */
-  getAdjacentWorkItemsIdById(workItemId: string): any {
-    let wiIndex = this.workItemIdIndexMap[workItemId];
-    let prevItemId = '';
-    let nextItemId = '';
-    if (wiIndex > 0){
-      prevItemId = this.workItems[wiIndex - 1].id;
-    }
-
-    if (wiIndex < this.workItems.length - 1) {
-      nextItemId = this.workItems[wiIndex + 1].id;
-    }
-
-    let adjacentWorkItem = {
-      prevItemId: prevItemId,
-      nextItemId: nextItemId
-    };
-    return adjacentWorkItem;
   }
 
   /**

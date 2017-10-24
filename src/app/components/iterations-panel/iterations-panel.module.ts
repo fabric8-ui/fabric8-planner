@@ -3,39 +3,50 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 
-import { CollapseModule } from 'ng2-bootstrap';
-import { DropdownModule } from 'ng2-bootstrap';
+import { CollapseModule } from 'ngx-bootstrap';
+import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 import {
   WidgetsModule
 } from 'ngx-widgets';
-
+import { ActionModule, ListModule } from 'patternfly-ng';
+import { DragulaModule } from 'ng2-dragula';
 import { FabPlannerIterationModalComponent } from '../iterations-modal/iterations-modal.component';
 import { MyDatePickerModule } from 'mydatepicker';
 import { IterationComponent } from './iterations-panel.component';
 import { IterationService } from '../../services/iteration.service';
+import { IterationListEntryComponent } from '../iteration-list-entry/iteration-list-entry.component';
+
 import { ModalModule } from 'ngx-modal';
-import { TooltipModule } from 'ng2-bootstrap';
+import { SwitchModule } from '../switch/switch.module';
+import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { TruncateModule } from 'ng2-truncate';
 
 @NgModule({
   imports: [
+    ActionModule,
+    BsDropdownModule.forRoot(),
     CollapseModule,
     CommonModule,
-    DropdownModule,
+    DragulaModule,
     FormsModule,
     MyDatePickerModule,
     ModalModule,
-    TooltipModule,
+    ListModule,
+    TooltipModule.forRoot(),
     TruncateModule,
+    SwitchModule,
     WidgetsModule,
-    RouterModule
+    RouterModule,
+    //TreeModule
+    //TreeListModule
   ],
   declarations: [
     FabPlannerIterationModalComponent,
-    IterationComponent
+    IterationComponent,
+    IterationListEntryComponent
   ],
   exports: [IterationComponent],
-  providers: [IterationService]
+  providers: [BsDropdownConfig, IterationService, TooltipConfig]
 })
 export class IterationModule { }

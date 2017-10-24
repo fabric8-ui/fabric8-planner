@@ -1,41 +1,54 @@
-import { EventService } from './../../services/event.service';
-import { Component, Input, OnInit, AfterViewInit, TemplateRef, ViewChild, ViewEncapsulation, OnChanges, Output, OnDestroy, EventEmitter, SimpleChanges } from '@angular/core';
-import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
-
-import { cloneDeep } from 'lodash';
-import { Broadcaster } from 'ngx-base';
-import { AuthenticationService, UserService, User } from 'ngx-login-client';
 import { Subscription } from 'rxjs/Subscription';
-import { Space, Spaces } from 'ngx-fabric8-wit';
+import {
+  Component,
+  Input,
+  OnInit,
+  AfterViewInit,
+  ViewEncapsulation,
+  Output,
+  OnDestroy,
+  EventEmitter
+} from '@angular/core';
+import {
+  Router,
+  ActivatedRoute,
+  NavigationExtras
+} from '@angular/router';
+import { cloneDeep } from 'lodash';
+import {
+  FilterConfig,
+  FilterEvent,
+  ToolbarConfig
+} from 'patternfly-ng';
 
+import { Broadcaster } from 'ngx-base';
+import { Spaces } from 'ngx-fabric8-wit';
+import {
+  AuthenticationService,
+  UserService,
+  User
+} from 'ngx-login-client';
+
+import { EventService } from './../../services/event.service';
 import { AreaModel } from '../../models/area.model';
 import { AreaService } from '../../services/area.service';
 import { FilterModel } from '../../models/filter.model';
 import { CollaboratorService } from '../../services/collaborator.service';
 import { FilterService } from '../../services/filter.service';
+import { LabelService } from '../../services/label.service';
 import { WorkItemService } from '../../services/work-item.service';
 import { WorkItemListEntryComponent } from '../work-item-list-entry/work-item-list-entry.component';
 import { WorkItemType } from '../../models/work-item-type';
 import { WorkItem } from '../../models/work-item';
 
-import {
-  AlmArrayFilter,
-  FilterConfig,
-  FilterEvent,
-  FilterField,
-  ToolbarConfig
-} from 'ngx-widgets';
-
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'toolbar-panel',
   templateUrl: './toolbar-panel.component.html',
-  styleUrls: ['./toolbar-panel.component.scss']
+  styleUrls: ['./toolbar-panel.component.less']
 })
-export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
-  @ViewChild('actions') actionsTemplate: TemplateRef<any>;
-  @ViewChild('add') addTemplate: TemplateRef<any>;
+export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() context: string;
   @Input() wiTypes: WorkItemType[] = [];
@@ -43,14 +56,15 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
   @Input() loggedInUser: User | Object = {};
   @Input() currentBoardType: WorkItemType | Object = {};
 
-  @Output() showDetailEvent: EventEmitter<any | null> = new EventEmitter();
+  @Output() onCreateNewWorkItemSelected: EventEmitter<any | null> = new EventEmitter();
 
-  filters: any[] = [];
   loggedIn: boolean = false;
   editEnabled: boolean = false;
+  showTypesOptions: boolean = false;
+
+  filters: any[] = [];
   workItemToMove: WorkItemListEntryComponent;
   workItemDetail: WorkItem;
-  showTypesOptions: boolean = false;
   spaceSubscription: Subscription = null;
   eventListeners: any[] = [];
   currentQueryParams: Object = {};
@@ -72,10 +86,12 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
       actionConfig: {},
       filterConfig: this.filterConfig
     } as ToolbarConfig;
-  allowedFilterKeys: string[] = [
-    'assignee',
-    'area'
+  allowedFilterKeys: string[] = [];
+  allowedMultipleFilterKeys: string[] = [
+    'label'
   ];
+
+  // the type of the list is changed (Hierarchy/Flat).
   currentListType: string = 'Hierarchy';
 
   private queryParamSubscriber = null;
@@ -105,6 +121,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
     private areaService: AreaService,
     private collaboratorService: CollaboratorService,
     private filterService: FilterService,
+    private labelService: LabelService,
     private workItemService: WorkItemService,
     private auth: AuthenticationService,
     private spaces: Spaces,
@@ -112,54 +129,86 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
   }
 
   ngOnInit() {
-    console.log('[FilterPanelComponent] Running in context: ' + this.context);
+    console.log('[ToolbarPanelComponent] Running in context: ' + this.context);
     this.loggedIn = this.auth.isLoggedIn();
     this.firstVisit = true;
-    if (this.context === 'listview') {
-      this.allowedFilterKeys.push('workitemtype');
-    } else {
-      // this.allowedFilterKeys.push('workitemtype');
-    }
-
-    // this.filterService.getFilters().then(response => {
-    //   console.log(response);
-    // });
-
-    // we need to get the wi types for the types dropdown on the board item
-    // even when there is no active space change (initial population).
+    // we want to get notified on space changes.
     this.spaceSubscription = this.spaces.current.subscribe(space => {
-      console.log(this.eventListeners);
       if (space) {
-        console.log('[FilterPanelComponent] New Space selected: ' + space.attributes.name);
+        console.log('[ToolbarPanelComponent] New Space selected: ' + space.attributes.name);
         this.editEnabled = true;
       } else {
-        console.log('[FilterPanelComponent] Space deselected.');
+        console.log('[ToolbarPanelComponent] Space deselected.');
         this.editEnabled = false;
       }
     });
+    //on the board view - do not show state filter as the lanes are based on state
+    if (this.context === 'boardview') {
+      this.allowedFilterKeys= [
+        'assignee',
+        'creator',
+        'area',
+        'label'
+      ]
+    } else {
+      this.allowedFilterKeys= [
+        'assignee',
+        'creator',
+        'area',
+        'label',
+        'state'
+      ]
+    }
   }
 
   ngAfterViewInit(): void {
-    this.listenToEvents();
+    // listen for logout events.
+    this.eventListeners.push(
+      this.broadcaster.on<string>('logout')
+        .subscribe(message => {
+          this.loggedIn = false;
+      })
+    );
+    // listen for changes on the available filters.
     this.eventListeners.push(
       this.filterService.getFilters()
         .subscribe(filters => this.setFilterTypes(filters))
     );
-  }
 
-  ngOnChanges(changes: SimpleChanges) {
+    // TODO : should be replaced by ngrx/store implementation
+    this.eventListeners.push(
+      this.eventService.labelAdd
+        .subscribe(label => {
+          const filterMap = this.getFilterMap();
+          const index = this.filterConfig.fields.findIndex(i => i.id === 'label');
+          if (index > -1) {
+            if (this.filterConfig.fields[index].queries.length > 0) {
+              this.toolbarConfig.filterConfig.fields[index].queries = [
+                ...this.toolbarConfig.filterConfig.fields[index].queries,
+                ...filterMap.label.datamap([label]).queries
+              ];
+            }
+          }
+        })
+    );
   }
 
   ngOnDestroy() {
+    // make sure we unsubscribe from all events.
     if (this.queryParamSubscriber) {
       this.queryParamSubscriber.unsubscribe();
     }
     this.eventListeners.map((e) => e.unsubscribe());
+    // clean up.
     this.filterConfig.appliedFilters = [];
     this.filterService.clearFilters(this.allowedFilterKeys);
   }
 
   onChangeListType(type: string) {
+    // the type of the list is changed (Hierarchy/Flat).
+    // this will be removed with the new tree list.
+    // and if not removed, it should be converted to a
+    // global event instead of a BehaviourSubject.
     this.currentListType = type;
     if (type==='Hierarchy') {
       this.eventService.showHierarchyListSubject.next(true);
@@ -175,6 +224,13 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
             f.attributes.query.lastIndexOf("]")
       )) > -1);
 
+    /*
+     * The current version of the patternfly filter dropdown does not fully support the async
+     * update of the filterConfig.fields fields set. It does not refresh the widget on field
+     * array change. The current workaround is to add a "dummy" entry "Select Filter.." as
+     * the first entry in the fields array. When the user selects a new value from the
+     * filter list, the implementation works subsequently.
+     */
     this.toolbarConfig.filterConfig.fields = [
       this.toolbarConfig.filterConfig.fields[0],
       ...filters.map(filter => {
@@ -186,11 +242,12 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
           id: type,
           title: filter.attributes.title,
           placeholder: filter.attributes.description,
-          type: type === 'assignee' ? 'typeahead' : 'select',
+          type: type === 'assignee' || 'label' ? 'typeahead' : 'select',
           queries: []
         };
       })
     ];
+
     this.listenToQueryParams();
   }
 
@@ -221,16 +278,18 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
           } else {
             this.toolbarConfig.filterConfig.fields[index].queries = filterMap[key].datamap(data).queries;
           }
-          const selectedQuery = this.toolbarConfig.filterConfig.fields[index].queries.find(
-            item => item.value === params[key]
+          const selectedQueries = this.toolbarConfig.filterConfig.fields[index].queries.filter(
+            item => params[key].split(',').indexOf(item.value) > -1
           );
-          if (selectedQuery) {
-            this.toolbarConfig.filterConfig.appliedFilters.push({
-              field: this.toolbarConfig.filterConfig.fields[index],
-              query: selectedQuery,
-              value: params[key]
-            });
-            this.filterService.setFilterValues(key, selectedQuery.id);
+          if (selectedQueries.length) {
+            params[key].split(',').forEach(val => {
+              this.toolbarConfig.filterConfig.appliedFilters.push({
+                field: this.toolbarConfig.filterConfig.fields[index],
+                query: selectedQueries.find(v => v.value === val.trim()),
+                value: val.trim()
+              });
+            })
+            this.filterService.setFilterValues(key, selectedQueries.map(q => q.id).join());
             // When all the params are resolved
             // Apply the filter
             if (Object.keys(params).length - 1 == i) {
@@ -249,12 +308,28 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
     let recentAppliedFilters = {};
     $event.appliedFilters.forEach((filter) => {
       if (filter.query.id !== 'loader') {
-        recentAppliedFilters[filter.field.id] = filter;
+        if (Object.keys(recentAppliedFilters).indexOf(filter.field.id) === -1) {
+          // If this filter type was not found in this iteration before
+          recentAppliedFilters[filter.field.id] = [];
+
+          recentAppliedFilters[filter.field.id].push(filter);
+        } else {
+          // If this filter type was found in this iteration before
+          if (this.allowedMultipleFilterKeys.indexOf(filter.field.id) > -1) {
+            // Multiple value for this filter type is allowed
+            recentAppliedFilters[filter.field.id].push(filter);
+          } else {
+            // Apply the latest value for the vilter
+            recentAppliedFilters[filter.field.id][0] = filter;
+          }
+        }
       }
     });
     this.toolbarConfig.filterConfig.appliedFilters = [];
     Object.keys(recentAppliedFilters).forEach((filterId) => {
-      this.toolbarConfig.filterConfig.appliedFilters.push(recentAppliedFilters[filterId]);
+      recentAppliedFilters[filterId].forEach(el => {
+        this.toolbarConfig.filterConfig.appliedFilters.push(el);
+      });
     });
 
     // Initiate next query params from current query params
@@ -265,10 +340,17 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
     this.filterService.clearFilters(this.allowedFilterKeys);
 
     // Prepare query params
+    let queryObj = {};
     this.toolbarConfig.filterConfig.appliedFilters.forEach((filter) => {
-      params[filter.field.id] = filter.query.value;
+      if (Object.keys(params).indexOf(filter.field.id) > -1) {
+        params[filter.field.id] = params[filter.field.id] + ',' + filter.query.value;
+        queryObj[filter.field.id] = queryObj[filter.field.id] + ',' + filter.query.id;
+      } else {
+        params[filter.field.id] = filter.query.value;
+        queryObj[filter.field.id] = filter.query.id;
+      }
       // Set this filter in filter service
-      this.filterService.setFilterValues(filter.field.id, filter.query.id);
+      this.filterService.setFilterValues(filter.field.id, queryObj[filter.field.id]);
     });
 
     // Set the internal change flag to true
@@ -285,27 +367,6 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
     this.router.navigate([], navigationExtras);
   }
 
-
-  onChangeBoardType(type: WorkItemType) {
-    this.currentBoardType = type;
-
-    let params = cloneDeep(this.currentQueryParams);
-    params['workitemtype'] = type.attributes.name;
-
-    // Prepare navigation extra with query params
-    let navigationExtras: NavigationExtras = {
-      queryParams: params,
-      relativeTo: this.route
-    };
-
-    // Navigated to filtered view
-    this.router.navigate([], navigationExtras);
-  }
-
-  moveItem(moveto: string) {
-    this.broadcaster.broadcast('move_item', moveto);
-  };
-
   showTypes() {
     this.showTypesOptions = true;
   }
@@ -319,24 +380,9 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
     this.router.navigate(['/work-item/list/detail/new?' + type]);
   }
 
-  // event handlers
-  onToggle(entryComponent: WorkItemListEntryComponent): void {
-    // This condition is to select a single work item for movement
-    // deselect the previous checked work item
-    if (this.workItemToMove) {
-      this.workItemToMove.uncheck();
-    }
-    if (this.workItemToMove == entryComponent) {
-      this.workItemToMove = null;
-    } else {
-      entryComponent.check();
-      this.workItemToMove = entryComponent;
-    }
-  }
-
-  showDetailType(event: MouseEvent): void {
+  createNewWorkItem(event: MouseEvent): void {
     event.stopPropagation();
-    this.showDetailEvent.emit();
+    this.onCreateNewWorkItemSelected.emit();
   }
 
   getFilterMap() {
@@ -366,6 +412,19 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
         },
         getvalue: (user) => user.attributes.username
       },
+      creator: {
+        datasource: Observable.combineLatest(this.collaboratorService.getCollaborators(), this.userService.getUser()),
+        datamap: ([users, authUser]) => {
+          if (Object.keys(authUser).length > 0) {
+            users = users.filter(u => u.id !== authUser.id);
+          }
+          return {
+            queries: users.map(user => {return {id: user.id, value: user.attributes.username, imageUrl: user.attributes.imageURL}}),
+            primaryQueries: [{id: authUser.id, value: authUser.attributes.username + ' (me)', imageUrl: authUser.attributes.imageURL}]
+          }
+        },
+        getvalue: (user) => user.attributes.username
+      },
       workitemtype: {
         datasource: this.workItemService.getWorkItemTypes(),
         datamap: (witypes) => {
@@ -375,37 +434,62 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
           }
         },
         getvalue: (type) => type.attributes.name
+      },
+      state: {
+        datasource: this.workItemService.getStatusOptions(),
+        datamap: (wistates) => {
+          return {
+            queries: wistates.map(wistate => {return {id: wistate.option, value: wistate.option }}),
+            primaryQueries: []
+          }
+        },
+        getvalue: (type) => type.option
+      },
+      label: {
+        datasource: this.labelService.getLabels().map(d => d as any[]),
+        datamap: (labels) => {
+          return {
+            queries: labels.map(label => {
+              return {
+                id: label.id,
+                value: label.attributes.name
+              }
+            }),
+            primaryQueries: []
+          }
+        },
+        getvalue: (label) => label.attributes.name
       }
     }
   }
 
-  selectFilterType(data) {
+  selectFilterType(event: FilterEvent) {
     const filterMap = this.getFilterMap();
-    if (Object.keys(filterMap).indexOf(data.id) > -1) {
-      const index = this.filterConfig.fields.findIndex(i => i.id === data.id);
+    if (Object.keys(filterMap).indexOf(event.field.id) > -1) {
+      const index = this.filterConfig.fields.findIndex(i => i.id === event.field.id);
       if (this.filterConfig.fields[index].queries.length === 0) {
         this.toolbarConfig.filterConfig.fields[index].queries = [
           this.loader
         ];
-        filterMap[data.id].datasource.subscribe(resp => {
-          if (filterMap[data.id].datamap(resp).primaryQueries.length) {
+        filterMap[event.field.id].datasource.subscribe(resp => {
+          if (filterMap[event.field.id].datamap(resp).primaryQueries.length) {
             this.toolbarConfig.filterConfig.fields[index].queries =
-              filterMap[data.id].datamap(resp).queries.length ? [
-                ...filterMap[data.id].datamap(resp).primaryQueries,
+              filterMap[event.field.id].datamap(resp).queries.length ? [
+                ...filterMap[event.field.id].datamap(resp).primaryQueries,
                 this.separator,
-                ...filterMap[data.id].datamap(resp).queries
-              ] : filterMap[data.id].datamap(resp).primaryQueries;
+                ...filterMap[event.field.id].datamap(resp).queries
+              ] : filterMap[event.field.id].datamap(resp).primaryQueries;
           } else {
-            this.toolbarConfig.filterConfig.fields[index].queries = filterMap[data.id].datamap(resp).queries;
+            this.toolbarConfig.filterConfig.fields[index].queries = filterMap[event.field.id].datamap(resp).queries;
           }
           this.savedFIlterFieldQueries[this.filterConfig.fields[index].id] = {};
-          this.savedFIlterFieldQueries[this.filterConfig.fields[index].id]['fixed'] = filterMap[data.id].datamap(resp).primaryQueries;
-          this.savedFIlterFieldQueries[this.filterConfig.fields[index].id]['filterable'] = filterMap[data.id].datamap(resp).queries;
+          this.savedFIlterFieldQueries[this.filterConfig.fields[index].id]['fixed'] = filterMap[event.field.id].datamap(resp).primaryQueries;
+          this.savedFIlterFieldQueries[this.filterConfig.fields[index].id]['filterable'] = filterMap[event.field.id].datamap(resp).queries;
         })
       } else if (this.filterConfig.fields[index].type === 'typeahead'){
         this.filterQueries({
-          text: '',
-          field: data
+          value: '',
+          field: event.field
         });
       }
     }
@@ -416,9 +500,9 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
    * from tool bar component
    * @param event
    */
-  filterQueries(event) {
+  filterQueries(event: FilterEvent) {
     const index = this.filterConfig.fields.findIndex(i => i.id === event.field.id);
-    let inp = event.text.trim();
+    let inp = event.value.trim();
 
     if (inp) {
       this.filterConfig.fields[index].queries = [
@@ -436,15 +520,6 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
         ...this.savedFIlterFieldQueries[event.field.id]['filterable']
       ]
     }
-  }
-
-  listenToEvents() {
-    this.eventListeners.push(
-      this.broadcaster.on<string>('logout')
-        .subscribe(message => {
-          this.loggedIn = false;
-      })
-    );
   }
 
   listenToQueryParams() {
@@ -488,4 +563,6 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnChanges, 
       });
     }
   }
+
+
 }

@@ -1,0 +1,67 @@
+@import (reference) './../../../assets/stylesheets/_base';
+
+.inlineinput-container {
+  width: 100%;
+  .input-field {
+    width: ~"calc(e('100% - 30px'))";
+    height: 27px;
+    padding: 0px (@grid-gutter-width/3);
+    font-size: 18px;
+    background: transparent;
+    outline: none;
+    resize: none;
+    .Border(1px, solid, transparent);
+    transition: background-color ease-in 0.3s;
+    &:focus {
+      background-color: @color-pf-white;
+      .Border(1px, solid, @color-pf-blue-400);
+      transition: border ease-in-out 0.3s,
+      background-color ease-in 0.3s;
+    }
+  }
+  .action-btn {
+    min-width: 40px;
+    margin-left: (@grid-gutter-width/3); //10px
+    vertical-align: top;
+  }
+  .editor-icon-container {
+    display: inline-block;
+    margin-left: (@grid-gutter-width/3); //10px
+    vertical-align: top;
+    cursor: pointer;
+    .edit-icon {
+      opacity: 0;
+    }
+  }
+  .error-message {
+    color: @color-pf-red;
+  }
+  &:hover {
+    .input-field {
+      .Border(1px, solid, @color-pf-blue-200);
+      transition: border ease-in-out 0.3s;
+    }
+    .edit-icon {
+      opacity: 1;
+    }
+  }
+  .active {
+    width: ~"calc(e('100% - 110px'))";
+    background-color: @color-pf-white;
+    .Border(1px, solid, @color-pf-blue-400);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),
+                0 0 8px rgba(0,136,206,.6);
+    transition: box-shadow ease-in-out 0.3s,
+                background-color ease-in 0.3s;
+  }
+  &.read-only {
+    &:hover {
+      .input-field {
+        .Border(1px, solid, transparent);
+      }
+      .edit-icon {
+        opacity: 0;
+      }
+    }
+  }
+}

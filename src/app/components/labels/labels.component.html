@@ -1,0 +1,37 @@
+<div class="label-wrapper">
+  <span *ngFor="let label of labels | slice:0:truncateAfter;" class="label"
+    [ngStyle]="{
+      'background-color': label?.attributes['background-color'],
+      'color': label.attributes['text-color']
+    }"
+    (click)="clickLabel(label, $event)">
+    <span class="pointer">
+        {{label.attributes?.name}}
+    </span>
+    <span class="close-icon-wrapper" *ngIf="allowDelete">
+      <i class="pficon-close pointer" (click)="removeLabel(label, $event)"></i>
+    </span>
+  </span>
+  <span dropdown class="dropdown" placement="right">
+    <span dropdownToggle (click)="moreClick($event)" class="dropdown-toggle"
+      *ngIf="truncateAfter!==undefined && labels.length > 4">
+        {{ labels.length - truncateAfter }} more...
+      </span>
+      <ul *dropdownMenu class="dropdown-menu label-dropdown dropdown-menu-right">
+        <li *ngFor="let label of labels | slice:truncateAfter;">
+          <span class="label" [ngStyle]="{
+              'background-color': label?.attributes['background-color'],
+              'color': label.attributes['text-color']
+            }"
+            (click)="clickLabel(label, $event)">
+            <span class="pointer">
+                {{label.attributes?.name}}
+            </span>
+            <span class="close-icon-wrapper" *ngIf="allowDelete">
+              <i class="pficon-close pointer" (click)="removeLabel(label, $event)"></i>
+            </span>
+          </span>
+        </li>
+      </ul>
+  </span>
+</div>

@@ -2,6 +2,7 @@ import { GlobalSettings } from '../shared/globals';
 
 import { Injectable } from '@angular/core';
 import { Headers } from '@angular/http';
+import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { Observable } from 'rxjs/Observable';
 
@@ -14,14 +15,18 @@ import { Notification, Notifications, NotificationType } from 'ngx-base';
 import { IterationModel } from '../models/iteration.model';
 import { MockHttp } from '../mock/mock-http';
 import { HttpService } from './http-service';
+import { WorkItem } from '../models/work-item';
 
 @Injectable()
 export class IterationService {
   public iterations: IterationModel[] = [];
+  private transformedIterations = [];
   private headers = new Headers({'Content-Type': 'application/json'});
   private _currentSpace;
 
   private selfId;
+
+  public dropWIObservable: Subject<{workItem: WorkItem, error: boolean}> = new Subject();
 
   constructor(
       private logger: Logger,
@@ -74,7 +79,14 @@ export class IterationService {
           return response.json().data as IterationModel[];
         })
         .map((data) => {
-          this.iterations = data;
+          this.iterations = data.map(iteration => {
+            let childIterations = this.checkForChildIterations(iteration, data);
+            if(childIterations.length > 0) {
+              iteration.hasChildren = true;
+              iteration.children = childIterations;
+            }
+            return iteration;
+          });
           return this.iterations;
         })
         .catch ((error: Error | any) => {
@@ -84,8 +96,8 @@ export class IterationService {
           } else {
             console.log('Fetch iteration API returned some error - ', error.message);
             this.notifyError('Fetching iterations has from server has failed.', error);
-            return Observable.throw(new Error(error.message));
           }
+          return Observable.throw(new Error(error.message));
         });
     });
   }
@@ -157,8 +169,15 @@ export class IterationService {
         // Update existing iteration data
         let index = this.iterations.findIndex(item => item.id === updatedData.id);
         if (index > -1) {
+          //set hasChildren and children information
+          let childIterations = this.checkForChildIterations(updatedData, this.iterations);
+          if(childIterations.length > 0) {
+            updatedData.hasChildren = true;
+            updatedData.children = childIterations;
+          }
           this.iterations[index] = cloneDeep(updatedData);
           return this.iterations[index];
+
         } else {
           this.iterations.splice(0, 0, updatedData);
           return this.iterations[0];
@@ -192,7 +211,7 @@ export class IterationService {
         }
     })
     .catch( err => {
-      return Observable.empty();
+      return Observable.throw(new Error(err.message));
     });
   }
 
@@ -210,9 +229,54 @@ export class IterationService {
     }
   }
 
+  getIterationById(iterationId: string): Observable<IterationModel> {
+    return this.getIterations().first()
+      .map((resultIterations) => {
+        for (let i=0; i<resultIterations.length; i++) {
+          if (resultIterations[i].id===iterationId) {
+            return resultIterations[i];
+          }
+        }
+      })
+      .catch( err => {
+        return Observable.throw(new Error(err.message));
+      });
+  }
+
   getWorkItemCountInIteration(iteration: any): Observable<number> {
     return this.getIteration({ data: iteration }).first().map((resultIteration:IterationModel) => {
       return resultIteration.relationships.workitems.meta.total;
     });
+  }
+
+  emitDropWI(workItem: WorkItem, err: boolean = false) {
+    this.dropWIObservable.next({workItem: workItem, error: err});
+  }
+
+  checkForChildIterations(parent: IterationModel, iterations): IterationModel[] {
+    let children = iterations.filter(i => {
+      //check only for direct parent
+      let path_arr = i.attributes.parent_path.split('/');
+      let id = path_arr[path_arr.length-1];
+      return (id === parent.id);
+    });
+    return children;
+  }
+
+  getTopLevelIterations(iterations): IterationModel[] {
+    let topLevelIterations = iterations.filter(iteration =>
+      ((iteration.attributes.parent_path.split('/')).length - 1) === 1
+    )
+    return topLevelIterations;
+  }
+
+  isTopLevelIteration(iteration): Boolean {
+    return ((iteration.attributes.parent_path.split('/')).length - 1) === 1;
+  }
+
+  getDirectParent(iteration, iterations): IterationModel {
+    let path_arr = iteration.attributes.parent_path.split('/');
+    let id = path_arr[path_arr.length-1];
+    return iterations.find(i => i.id === id);
   }
 }

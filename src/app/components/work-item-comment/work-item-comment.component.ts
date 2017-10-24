@@ -1,3 +1,4 @@
+import { WorkItemService } from './../../services/work-item.service';
 import { Observable } from 'rxjs';
 import { CommentLink } from '../../models/comment';
 
@@ -6,9 +7,6 @@ import {
     Component, ViewChild,
     EventEmitter, Input, Output
 } from '@angular/core';
-
-import { Router } from '@angular/router';
-import { Http } from '@angular/http';
 
 import { User } from 'ngx-login-client';
 
@@ -19,9 +17,10 @@ import { CollaboratorService } from '../../services/collaborator.service';
 @Component({
     selector: 'alm-work-item-comment',
     templateUrl: './work-item-comment.component.html',
-    styleUrls: ['./work-item-comment.component.scss'],
+    styleUrls: ['./work-item-comment.component.less'],
 })
 export class WorkItemCommentComponent implements OnInit {
+    @Input() loadingComments: boolean = true;
     @Input() comments: Comment[];
     @Input() loggedIn: Boolean;
     @Input() loggedInUser: User;
@@ -36,8 +35,7 @@ export class WorkItemCommentComponent implements OnInit {
     convictedComment: Comment;
 
     constructor(
-        private router: Router,
-        http: Http
+        private workItemService: WorkItemService
     ) {
     }
 
@@ -67,21 +65,47 @@ export class WorkItemCommentComponent implements OnInit {
       }
     }
 
-    createComment(event: any = null): void {
-      this.preventDef(event);
-      this.comment.attributes.body = event.target.textContent;
+    createComment(event): void {
+      const rawText = event.rawText;
+      const callBack = event.callBack;
+      this.comment.attributes.body = rawText;
+      this.comment.attributes.markup = 'Markdown';
       this.create.emit(this.comment);
-      event.target.textContent = '';
+      callBack('', '');
       this.createCommentObject();
     }
 
-    updateComment(val: string, comment: Comment): void {
-      let newCommentBody = document.getElementById(val).innerHTML;
-      comment.attributes.body = newCommentBody;
+    showPreview(event: any): void {
+      const rawText = event.rawText;
+      const callBack = event.callBack;
+      this.workItemService.renderMarkDown(rawText)
+        .subscribe(renderedHtml => {
+          callBack(
+            rawText,
+            renderedHtml
+          );
+        })
+    }
 
-      this.update.emit(comment);
-      this.selectedCommentId = '';
-      this.createCommentObject();
+    updateComment(event, comment): void {
+      const rawText = event.rawText;
+      const callBack = event.callBack;
+      let newCommentBody = rawText;
+      comment.attributes.body = newCommentBody;
+      comment.attributes.markup = 'Markdown';
+      this.workItemService
+        .updateComment(comment)
+        .subscribe(updatedComment => {
+          this.update.emit(updatedComment);
+          callBack(
+            updatedComment.attributes.body,
+            updatedComment.attributes['body.rendered']
+          );
+          this.createCommentObject();
+        },
+        (error) => {
+          console.log(error);
+        });
     }
 
     confirmCommentDelete(comment: Comment): void {

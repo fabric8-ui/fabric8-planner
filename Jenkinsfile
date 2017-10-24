@@ -1,7 +1,7 @@
 @Library('github.com/fabric8io/fabric8-pipeline-library@master')
 def utils = new io.fabric8.Utils()
 def flow = new io.fabric8.Fabric8Commands()
-def project = 'fabric8io/fabric8-planner'
+def project = 'fabric8-ui/fabric8-planner'
 def ciDeploy = false
 def tempVersion
 def imageName
@@ -15,14 +15,12 @@ fabric8UITemplate{
     dockerNode{
         ws {
             timeout(time: 1, unit: 'HOURS') {
+                checkout scm
+                readTrusted 'deploy/release.groovy'
+                def pipeline = load 'deploy/release.groovy'
                 if (utils.isCI()){
-                    checkout scm
-                    readTrusted 'deploy/release.groovy'
-                    def pipeline = load 'deploy/release.groovy'
 
-                    container('ui'){
-                        pipeline.ci()
-                    }
+                    pipeline.ci()
 
                     container('ui'){
                         tempVersion = pipeline.ciBuildDownstreamProject(project)
@@ -37,11 +35,9 @@ fabric8UITemplate{
 
 
                 } else if (utils.isCD()){
-
-                    git "https://github.com/${project}.git"
-                    readTrusted 'deploy/release.groovy'
+                    sh "git checkout master"
+                    sh "git pull"
                     sh "git remote set-url origin git@github.com:${project}.git"
-                    def pipeline = load 'deploy/release.groovy'
 
                     container('ui'){
                         pipeline.ci()
@@ -81,9 +77,10 @@ if (ciDeploy){
            route = deployOpenShiftSnapshot{
                mavenRepo = 'http://central.maven.org/maven2/io/fabric8/online/apps/fabric8-ui'
                githubRepo = 'fabric8-ui'
-               originalImageName = 'registry.devshift.net/fabric8io/fabric8-ui'
+               originalImageName = 'registry.devshift.net/fabric8-ui/fabric8-ui'
                newImageName = imageName
                openShiftProject = prj
+               githubProject = project
            }
        }
        stage('notify'){
@@ -95,7 +92,7 @@ if (ciDeploy){
            if (!pr){
                error "no pull request number found so cannot comment on PR"
            }
-           def message = "@${changeAuthor} snapshot fabric8-ui is deployed and available for testing at https://${route}"
+           def message = "@${changeAuthor} ${imageName} is deployed and available for testing at https://${route}"
            container('clients'){
                flow.addCommentToPullRequest(message, pr, project)
            }

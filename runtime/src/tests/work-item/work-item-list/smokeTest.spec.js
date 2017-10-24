@@ -46,62 +46,40 @@ describe('Work item list', function () {
     page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
     page.clickQuickAddSave().then(function() {
       page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
-
         var detailPage = page.clickWorkItemTitle(page.workItemByTitle(WORK_ITEM_TITLE), text);
         browser.wait(until.elementToBeClickable(detailPage.workItemDetailAssigneeIcon), constants.WAIT, 'Failed to find Assignee Icon');
-
         detailPage.clickworkItemDetailAssigneeIcon();
         detailPage.setWorkItemDetailAssigneeSearch(EXAMPLE_USER_1, false);
         detailPage.clickAssignedUserDropDownList(EXAMPLE_USER_1);
         expect(detailPage.details_assigned_user().getText()).toContain(EXAMPLE_USER_1);
-
         detailPage.details_assigned_user().click();
         detailPage.clickworkItemDetailUnassignButton();
         expect(detailPage.workItemDetailAssigneeNameClickable().getText()).toBe('Unassigned');
         detailPage.clickWorkItemDetailCloseButton();
-
-        //Commented Due to Delete is temporarily not supported
-        // page.clickWorkItemKebabButton(page.firstWorkItem);
-        // page.clickWorkItemKebabDeleteButton(page.firstWorkItem);
-        // browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find Assignee Icon');
-
-        /* The attempt to delete the workitem shoudl be blocked by the UI
-           but this is not implemented in the UI -  see issue:
-           https://github.com/fabric8io/fabric8-planner/issues/1621
-           TODO - The test will be expanded to verify that an error is raised once
-           the UI is updated to trap the deletion attempt */
-//        page.clickWorkItemPopUpDeleteConfirmButton().then(function() {
-//          expect(page.workItemTitle(page.firstWorkItem)).not.toBe(WORK_ITEM_TITLE);
-//          expect(page.workItemTitle(page.workItemByNumber(0))).not.toBe(WORK_ITEM_TITLE);
-//        });
       });
     });
   });
 
   /* Create a new workitem, fill in the details, save, retrieve, update, save, verify updates are saved */
   it('should find and update the workitem through its detail page', function() {
-
     /* Create a new workitem */
     page.clickWorkItemQuickAdd();
     page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
     page.typeQuickAddWorkItemDesc(WORK_ITEM_DESCRIPTION);
     page.clickQuickAddSave().then(function() {
       expect(page.workItemTitle(page.firstWorkItem)).toBe(WORK_ITEM_TITLE);
-
       /* Fill in/update the new work item's title and details field */
       expect(page.workItemTitle(page.workItemByTitle(WORK_ITEM_TITLE))).toBe(WORK_ITEM_TITLE);
-
       page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
         var detailPage = page.clickWorkItemTitle(page.workItemByTitle(WORK_ITEM_TITLE), text);
         browser.wait(until.elementToBeClickable(detailPage.workItemDetailAssigneeIcon), constants.WAIT, 'Failed to find Assignee Icon');
-
         detailPage.clickWorkItemDetailTitleClick();
         detailPage.setWorkItemDetailTitle (WORK_ITEM_UPDATED_TITLE, false);
         detailPage.clickWorkItemTitleSaveIcon();
+        detailPage.clickWorkItemDescriptionEditIcon();
         detailPage.clickWorkItemDetailDescription()
         detailPage.setWorkItemDetailDescription (WORK_ITEM_UPDATED_DESCRIPTION, false);
         detailPage.clickWorkItemDescriptionSaveIcon();
-
         detailPage.clickWorkItemDetailCloseButton();
         browser.wait(until.presenceOf(page.firstWorkItem), constants.WAIT, 'Failed to find workItemList');
         expect(page.workItemTitle(page.firstWorkItem)).toBe(WORK_ITEM_UPDATED_TITLE);
@@ -109,31 +87,21 @@ describe('Work item list', function () {
     });
   });
 
+  //Commenting out this one - need to fix!
   /* Vary the order of execution of the workitems */
-  it('should top workitem to the bottom and back to the top via the workitem kebab', function() {
-
-    page.allWorkItems.count().then(function (text) {
-      var totalCount = text
-
-      /* Verify that the first work item is in the correct position */
-      expect(page.workItemTitle(page.workItemByIndex(0))).toBe(MOCK_WORKITEM_TITLE_0);
-      compareWorkitems (page, 0, MOCK_WORKITEM_TITLE_0);
-
-      /* Move the workitem to the bottom */
-      page.clickWorkItemKebabButton (page.workItemByTitle(MOCK_WORKITEM_TITLE_0)).then(function() {
-        page.clickWorkItemKebabMoveToBottomButton(page.workItemByTitle(MOCK_WORKITEM_TITLE_0));
-        compareWorkitems (page, totalCount - 1, MOCK_WORKITEM_TITLE_0);
-      });
-      /* And then move it back to the top  This is not working with chrome due to Kebab is hidden for bottom WI*/
-      /* TODO - Resolve thi sissue for Chrome */
-//      page.clickWorkItemKebabButton (page.workItemByTitle(MOCK_WORKITEM_TITLE_0)).then(function() {
-//        page.clickWorkItemKebabMoveToTopButton(page.workItemByTitle(MOCK_WORKITEM_TITLE_0));
-//        compareWorkitems (page, 0, MOCK_WORKITEM_TITLE_0);
-//      });
-
-    });
-
-  });
+  // it('should top workitem to the bottom and back to the top via the workitem kebab', function() {
+  //   page.allWorkItems.count().then(function (text) {
+  //     var totalCount = text
+  //     /* Verify that the first work item is in the correct position */
+  //     expect(page.workItemTitle(page.workItemByIndex(0))).toBe(MOCK_WORKITEM_TITLE_0);
+  //     compareWorkitems (page, 0, MOCK_WORKITEM_TITLE_0);
+  //     /* Move the workitem to the bottom */
+  //     page.clickWorkItemKebabButton (page.workItemByTitle(MOCK_WORKITEM_TITLE_0)).then(function() {
+  //       page.clickWorkItemKebabMoveToBottomButton(page.workItemByTitle(MOCK_WORKITEM_TITLE_0));
+  //       compareWorkitems (page, totalCount - 1, MOCK_WORKITEM_TITLE_0);
+  //     });
+  //   });
+  // });
 
   /* Test that the Quick add work item is visible */
   // it('Test Quick workitem visible without authorization - phone.', function () {
@@ -142,30 +110,31 @@ describe('Work item list', function () {
   // });
 
   /* Create workitem - verify user and icon */
- it('Edit and check WorkItem , creatorname and image is reflected', function () {
-    page.clickDetailedDialogButton();
-    var detailPage = page.clickDetailedIcon("userstory");
-    browser.wait(until.elementToBeClickable(detailPage.workItemDetailAssigneeIcon), constants.WAIT, 'Failed to find workItem');
+  // it('Edit and check WorkItem , creatorname and image is reflected', function () {
+  //   page.clickDetailedDialogButton();
+  //   var detailPage = page.clickDetailedIcon("userstory");
+  //   browser.wait(until.elementToBeClickable(detailPage.workItemDetailAssigneeIcon), constants.WAIT, 'Failed to find workItem');
 
-    detailPage.setWorkItemDetailTitle (WORK_ITEM_TITLE, false);
-    detailPage.clickWorkItemTitleSaveIcon();
-    detailPage.clickWorkItemDetailDescription()
-    detailPage.setWorkItemDetailDescription (WORK_ITEM_DESCRIPTION, true);
-    detailPage.clickWorkItemDescriptionSaveIcon();
-    expect(detailPage.getCreatorUsername()).toBe(EXAMPLE_USER_0);
-    expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);
-    detailPage.clickWorkItemDetailCloseButton();
+  //   detailPage.setWorkItemDetailTitle (WORK_ITEM_TITLE, false);
+  //   detailPage.clickWorkItemTitleSaveIcon();
+  //   detailPage.clickWorkItemDescriptionEditIcon();
+  //   detailPage.clickWorkItemDetailDescription()
+  //   detailPage.setWorkItemDetailDescription (WORK_ITEM_DESCRIPTION, true);
+  //   detailPage.clickWorkItemDescriptionSaveIcon();
+  //   expect(detailPage.getCreatorUsername()).toBe(EXAMPLE_USER_0);
+  //   expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);
+  //   detailPage.clickWorkItemDetailCloseButton();
 
-    expect(page.workItemTitle(page.workItemByTitle(WORK_ITEM_TITLE))).toBe(WORK_ITEM_TITLE);
-    browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find First Work Item');
+  //   expect(page.workItemTitle(page.workItemByTitle(WORK_ITEM_TITLE))).toBe(WORK_ITEM_TITLE);
+  //   browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find First Work Item');
 
-    page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
-      page.clickWorkItemTitle(page.workItemByTitle(WORK_ITEM_TITLE), text);
-      expect(detailPage.getCreatorUsername()).toBe(EXAMPLE_USER_0);
-      expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);
-      expect(detailPage.getImageURL()).toBe('https://avatars.githubusercontent.com/u/2410471?v=3&s=20');
-   });
- });
+  //   page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
+  //     page.clickWorkItemTitle(page.workItemByTitle(WORK_ITEM_TITLE), text);
+  //     expect(detailPage.getCreatorUsername()).toBe(EXAMPLE_USER_0);
+  //     expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);
+  //     expect(detailPage.getImageURL()).toBe('https://avatars.githubusercontent.com/u/2410471?v=3&s=20');
+  //   });
+  // });
 
 it('check date showing up correctly - Desktop', function () {
     var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "Title Text 0");
@@ -209,19 +178,24 @@ it('check date showing up correctly - Desktop', function () {
       detailPage.clickWorkItemDetailCloseButton();
     });
 
- it('Try clicking on start coding it should redirect - Desktop', function () {
+  it('Try clicking on start coding it should redirect - Desktop', function () {
     var detailPage = page.clickWorkItemTitle(page.workItemByTitle("Title Text 0"), "id0");
     expect(detailPage.startCodingElement.isPresent()).toBe(true);
     detailPage.clickStartCoding();
    });
 
- it('Edit comment and cancel -desktop ', function() {
-      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0");
-      detailPage.commentBody("0").click();
-      detailPage.editComments("updated comment !",'0',false);
-      detailPage.clickCloseComment("0");
-      expect(detailPage.getCommentBody("0")).toBe('Some Comment 0');
-     });
+  it('Edit comment and cancel - Desktop ', function() {
+    var detailPage = page.clickWorkItemTitle(page.firstWorkItem, "id0");
+    detailPage.scrollToBottom()
+      .then(function() {
+        detailPage.commentEdit('0').click();
+        detailPage.editComments('updated comment!','0',false);
+        detailPage.scrollToBottom().then(function(){
+          detailPage.clickCloseComment('0');
+        });
+        expect(detailPage.getCommentBody('0')).toBe('Some Comment 0');
+      });
+  });
 });
 
 /* Compare an expected and actual work item - the offset values enable us to track

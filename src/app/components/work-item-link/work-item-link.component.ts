@@ -15,7 +15,7 @@ import { WorkItemService } from '../../services/work-item.service';
 @Component({
   selector: 'alm-work-item-link',
   templateUrl: './work-item-link.component.html',
-  styleUrls: ['./work-item-link.component.scss'],
+  styleUrls: ['./work-item-link.component.less'],
   // styles:['.completer-input {width:100%;float:left;};.completer-dropdown-holder {width:100%;float:left;}']
 })
 export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
@@ -34,7 +34,6 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDest
   showLinkComponent: Boolean = false;
   showLinkView: Boolean = false;
   showLinkCreator: Boolean = true;
-  searchAllowedType: string = '';
   searchNotAllowedIds: string[] = [];
   prevWItem: WorkItem | null = null;
   selectedTab: string | null = null;
@@ -118,7 +117,6 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDest
     this.searchWorkItems = [];
     this.selectedWorkItemId = null;
     this.selectedLinkType = relation;
-    this.searchAllowedType = relation.wiType;
     this.setSearchNotAllowedIds();
   }
 
@@ -209,12 +207,13 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDest
     if (links['relationships']['target']['data']['id'] == workItem['id']){
       workItemId = links['relationships']['source']['data']['id'];
     }
-    this.router.navigateByUrl(trimEnd(this.router.url.split('detail')[0], '/') + '/detail/' + workItemId);
+    this.router.navigateByUrl(trimEnd(this.router.url.split('plan')[0], '/') + '/detail/' + workItemId);
   }
 
-  getLinkId(link, wiId) {
-    return link.relationalData.source.id == wiId ?
-      link.relationalData.target.id : link.relationalData.source.id;
+  getWILink(link, workItem) {
+    return trimEnd(this.router.url.split('plan')[0], '/') + '/plan/detail/' +
+    (link.relationalData.source.id == workItem.id ?
+      link.relationalData.target.number : link.relationalData.source.number);
   }
 
   linkSearchWorkItem(term: any, event: any) {
@@ -260,14 +259,15 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDest
         }
         if (i < lis.length) {
           let selectedId = lis[i].dataset.wiid;
+          let selectedNumber = lis[i].dataset.winumber;
           let selectedTitle = lis[i].dataset.wititle;
-          this.selectSearchResult(selectedId, selectedTitle);
+          this.selectSearchResult(selectedId, selectedNumber, selectedTitle);
         }
     } else { // Normal case - search on type
       if (term.trim() != "") {
       // Search on atleast 3 char or numeric
         if (term.length >= 3 || !isNaN(term)) {
-          this.workItemService.searchLinkWorkItem(term, this.searchAllowedType)
+          this.workItemService.searchLinkWorkItem(term)
             .subscribe((searchData: WorkItem[]) => {
               this.searchWorkItems = searchData.filter((item) => {
                 return this.searchNotAllowedIds.indexOf(item.id) == -1;
@@ -293,9 +293,9 @@ export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDest
     this.searchNotAllowedIds = [];
   }
 
-  selectSearchResult(id: string, title: string){
+  selectSearchResult(id: string, number: number, title: string){
     this.selectedWorkItemId = id;
-    this.selectedValue = id + ' - ' + title;
+    this.selectedValue = number + ' - ' + title;
     this.searchWorkItems = [];
   }
 

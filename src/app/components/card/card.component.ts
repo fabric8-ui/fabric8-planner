@@ -12,13 +12,14 @@ export class CardValue {
   hasLink: Boolean;
   avatar?: string;
   link?: string;
-  menuItem?: any;
+  menuItem?: Array<object>;
+  extraData?: object;
 }
 
 @Component({
   selector: 'card',
   templateUrl: './card.component.html',
-  styleUrls: ['./card.component.scss']
+  styleUrls: ['./card.component.less']
 })
 export class CardComponent implements OnInit, OnDestroy {
 

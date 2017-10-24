@@ -16,7 +16,7 @@ import { IterationModel } from '../../models/iteration.model';
 @Component({
   selector: 'fab-planner-iteration-modal',
   templateUrl: './iterations-modal.component.html',
-  styleUrls: ['./iterations-modal.component.scss']
+  styleUrls: ['./iterations-modal.component.less']
 })
 export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnChanges {
 
@@ -87,6 +87,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
     this.iteration  = {
       // id: '',
       attributes: {
+        user_active: false,
         name: '',
         description: '',
         state: 'new',
@@ -149,9 +150,12 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   openCreateUpdateModal(
     type: string = 'create',
     iteration: IterationModel | null = null,
-    e: any
+    e?: any
   ) {
-    e.stopPropagation();
+    if(e) {
+      e.stopPropagation();
+    }
+    console.log('iteration ====', iteration);
     this.modalType = type;
     if (iteration) {
       this.iteration = cloneDeep(iteration);
@@ -204,7 +208,6 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
       this.submitBtnTxt = 'Close';
       this.modalTitle = 'Close Iteration';
     }
-
     this.createUpdateIterationDialog.open();
   }
 
@@ -353,6 +356,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
             this.iteration.attributes.state = 'start';
           } else if (this.modalType == 'close') {
             this.iteration.attributes.state = 'close';
+            this.iteration.attributes.user_active = false;
           } else {
             // Not include state if it's just an update
             delete this.iteration.attributes.state;
@@ -389,10 +393,13 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
         this.validationError = true;
         this.validationString = 'This field is required.';
       }
-     console.log(this.iteration);
   }
 
   removeError() {
     this.validationError = false;
+  }
+
+  onChecked(event) {
+    this.iteration.attributes.user_active = event;
   }
 }

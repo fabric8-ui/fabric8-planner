@@ -4,29 +4,32 @@ import { Comments, Comment } from './comment';
 import { Link } from './link';
 import { User } from 'ngx-login-client';
 import { IterationModel } from './iteration.model';
+import { LabelModel } from './label.model';
 
 export class WorkItem {
   hasChildren?: boolean;
   attributes: object = {};
   id: string;
+  number?: number;
   relationships?: WorkItemRelations;
   type: string;
   relationalData?: RelationalData;
   links?: {
     self: string;
-    sourceLinkTypes?: string;
-    targetLinkTypes?: string;
   };
 }
 
 export class WorkItemRelations {
-  area: {
+  area?: {
     data?: AreaModel
   };
-  assignees: {
+  assignees?: {
     data?: User[]
   };
-  baseType: {
+  labels?: {
+    data?: LabelModel[];
+  };
+  baseType?: {
     data: WorkItemType;
   };
   children?: {
@@ -47,10 +50,10 @@ export class WorkItemRelations {
       totalCount?: number;
     }
   };
-  creator: {
+  creator?: {
     data: User;
   };
-  iteration: {
+  iteration?: {
     data?: IterationModel;
   };
   codebase?: {
@@ -67,6 +70,7 @@ export class RelationalData {
   creator?: User;
   comments?: Comment[];
   assignees?: User[];
+  labels?: LabelModel[];
   linkDicts?: LinkDict[];
   iteration?: IterationModel;
   totalLinkCount?: number;

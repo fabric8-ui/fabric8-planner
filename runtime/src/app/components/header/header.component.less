@@ -1,0 +1,92 @@
+@import (reference) './../../../assets/stylesheets/shared/_mixins';
+@import (reference) './../../../assets/stylesheets/shared/_variables';
+
+.navbar-pf { border-top-width: @pf-custom-navbar-top-border-width;
+  // Note: The socondary persistent nav uses bottom margin to regulat the height of the overall navbar
+  // together with the height of the nav header and top colored border
+  .navbar-primary.persistent-secondary {
+    >li {
+      &.active { margin-bottom: @pf-custom-navbar-item-height;
+        &.with-no-children {  margin-bottom: @pf-custom-navbar-header-border-width !important; }// Note: this collapses the persistent menu
+        ul.navbar-persistent { top: @pf-custom-navbar-persistent-nav-offset + 2;
+          li > a {
+            padding-top: 0;
+            padding-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+  // Note the height of the a element is the element with the most effect on navigation height
+  .navbar-utility {
+    li {
+      a { padding: 0 10px; }
+      #header_dropdownToggle { line-height: (@font-size-base*2);
+        img.img-icon{
+          max-width: 25px;
+          max-height: 25px;
+          margin-top: 3px;
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+  a {
+    position: relative !important;
+    display: inline-block;
+    margin: 0 !important;
+    vertical-align: top !important;
+    >div {
+     position: relative;
+     height: 100% !important;
+    }
+  }
+  .nav-item-text {
+    position: relative;
+    top: 0;
+    display: inline-block !important;
+    height: 100%;
+    font-size: @pf-custom-navbar-font-size;
+    font-weight: lighter !important;
+    line-height: @pf-custom-navbar-item-height !important;
+    .Border(@pf-custom-navbar-debug-border, solid, orange)!important;
+  }
+  .nav-item-icon {
+    position: relative;
+    height: 100%;
+    line-height: @pf-custom-navbar-icon-height !important;
+    min-width: @pf-custom-navbar-icon-min-width;
+    display: inline-block !important;
+    vertical-align: top !important;
+    .Border(@pf-custom-navbar-debug-border, solid, darkorange)!important;
+    >img {
+      position: relative;
+      display: inline-block !important;
+      height: @pf-custom-navbar-icon-height !important ;
+      min-width: @pf-custom-navbar-icon-height;
+      padding: 0;
+      margin: auto;
+      .Border(@pf-custom-navbar-debug-border, solid, lime)!important;
+    }
+    >span {
+      &.nav-icon {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        line-height: 100%;
+        text-align: center;
+        .Border(@pf-custom-navbar-debug-border, solid, lime)!important;
+        &:before {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          font-size: @pf-cust-navbar-text-size;
+          line-height: @pf-custom-navbar-item-height;
+          vertical-align: center;
+        }
+      }
+    }
+  }
+}
