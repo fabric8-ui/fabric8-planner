@@ -3,7 +3,10 @@ import {
   OnInit,
   OnDestroy,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
+  ElementRef,
+  Renderer2,
+  HostListener
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
@@ -51,6 +54,9 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
   @ViewChild('areaSelectbox') areaSelectbox: TypeaheadDropdown;
   @ViewChild('iterationSelectbox') iterationSelectbox: TypeaheadDropdown;
   @ViewChild('userList') userList: any;
+  @ViewChild('detailHeader') detailHeader: ElementRef;
+  @ViewChild('detailContent') detailContent: ElementRef;
+
 
   areas: TypeaheadDropdownValue[] = [];
   comments: Comment[] = [];
@@ -90,6 +96,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
     private workItemService: WorkItemService,
     private workItemDataService: WorkItemDataService,
     private workItemTypeControlService: WorkItemTypeControlService,
+    private renderer: Renderer2
   ) {}
 
   ngOnInit() {
@@ -105,10 +112,13 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
       .takeUntil(takeUntilObserver)
       .subscribe((params) => {
           let workItemId = params['id'];
-          if (workItemId === 'new'){
+          if (workItemId === 'new') {
             // Create new work item ID
+            // you can add type, iteration and area GET params to the url to preselect values
             let type = this.route.snapshot.queryParams['type'];
-            this.createWorkItemObj(type);
+            let iteration = this.route.snapshot.queryParams['iteration'];
+            let area = this.route.snapshot.queryParams['area'];
+            this.createWorkItemObj(type, iteration, area);
           } else if (workItemId.split('-').length > 1) {
             // The ID is a UUID
             // To make it backword compaitable
@@ -141,7 +151,18 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
     this.eventListeners.forEach(subscriber => subscriber.unsubscribe());
   }
 
-  createWorkItemObj(type: string) {
+  ngDoCheck() {
+    if(this.detailHeader) {
+      let HdrDivHeight:any =  this.detailHeader.nativeElement.offsetHeight;
+      let targetHeight:any = window.innerHeight - HdrDivHeight - 90;
+      this.renderer.setStyle(this.detailContent.nativeElement, 'height', targetHeight + "px");
+    }
+  }
+  @HostListener('window:resize', ['$event'])
+    onResize(event){
+
+    }
+  createWorkItemObj(type: string, iterationId: string, areaId: string) {
     this.workItem = new WorkItem();
     this.workItem.id = null;
     this.workItem.attributes = new Map<string, string | number>();
@@ -158,23 +179,52 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
         }
       }
     } as WorkItemRelations;
-
+    // create base empty relationship structure
+    this.workItem.relationships = Object.assign(this.workItem.relationships, {});
     // Add creator
     this.userService.getUser()
       .subscribe(
         user => {
-          this.workItem.relationships = Object.assign(
-            this.workItem.relationships,
-            {
-              creator: {
-                data: user
-              }
-            }
-          );
+          this.workItem.relationships.creator = {
+            data: user
+          };
         },
         err => console.log(err)
       );
-
+    // if the iteration is given, add the iteration
+    if (iterationId) {
+      this.iterationService.getIterationById(iterationId)
+      .subscribe(
+        iteration => {
+          // update the iteration value list
+          this.getIterations();
+          // select the returned iteration in that list
+          this.iterations.forEach(thisIteration => thisIteration.selected = thisIteration.key === iteration.id);
+          // set the value on the model
+          this.workItem.relationships.iteration = {
+            data: iteration
+          };
+        },
+        err => console.log(err)
+      );
+    }
+    // if the area is given, add the area
+    if (areaId) {
+      this.areaService.getAreaById(areaId)
+      .subscribe(
+        area => {
+          // update the area value list
+          this.getAreas();
+          // select the returned area in that list
+          this.areas.forEach(thisArea => thisArea.selected = thisArea.key === area.id);
+          // set the value on the model
+          this.workItem.relationships.area = {
+            data: area
+          };
+        },
+        err => console.log(err)
+      );
+    }
     this.workItem.relationalData = {};
     this.workItemService.resolveType(this.workItem);
     this.workItem.attributes['system.state'] = 'new';
@@ -347,6 +397,13 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
           this.workItem.relationships.labels.data =
           this.workItem.relationships.labels.data.map(label => {
             return this.labels.find(l => l.id === label.id);
+          });
+          // Sort labels in alphabetical order
+          this.workItem.relationships.labels.data =
+          this.workItem.relationships.labels.data.sort(function(labelA, labelB) {
+            let labelAName = labelA.attributes.name.toUpperCase();
+            let labelBName = labelB.attributes.name.toUpperCase();
+            return labelAName.localeCompare(labelBName);
           });
         } else {
           this.workItem.relationships.labels = {
@@ -692,6 +749,12 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
       });
       this.save(payload, true)
         .subscribe(workItem => {
+          // Sort labels in alphabetical order
+          selectedLabels = selectedLabels.sort(function(labelA, labelB) {
+            let labelAName = labelA.attributes.name.toUpperCase();
+            let labelBName = labelB.attributes.name.toUpperCase();
+            return labelAName.localeCompare(labelBName);
+          });
           this.workItem.relationships.labels = {
             data: selectedLabels
           };
@@ -855,6 +918,7 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   iterationUpdated(iterationId: string): void {
     if (iterationId === '0') return; // Loading item
     this.loadingIteration = true;
@@ -976,9 +1040,27 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
 
   navigateBack() {
     if (this.urlService.getLastListOrBoard() === '') {
-      this.router.navigate(['..']);
+      this.router.navigate(['../..'], { relativeTo: this.route });
     } else {
       this.router.navigateByUrl(this.urlService.getLastListOrBoard());
+    }
+  }
+
+  onLabelClick(label) {
+    if (this.urlService.getLastListOrBoard() === '') {
+      let params = {
+        label: label.attributes.name
+      }
+      // Prepare navigation extra with query params
+      let navigationExtras: NavigationExtras = {
+        relativeTo: this.route,
+        queryParams: params
+      };
+      this.router.navigate(['../..'], navigationExtras);
+    } else {
+      let url = this.urlService.getLastListOrBoard().split('?')[0]
+        + '?label=' + label.attributes.name;
+      this.router.navigateByUrl(url);
     }
   }
 }

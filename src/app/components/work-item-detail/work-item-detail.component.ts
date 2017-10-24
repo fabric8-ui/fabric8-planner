@@ -367,6 +367,13 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
           this.workItem.relationships.labels.data.map(label => {
             return this.labels.find(l => l.id === label.id);
           });
+          // Sort labels in alphabetical order
+          this.workItem.relationships.labels.data =
+          this.workItem.relationships.labels.data.sort(function(labelA, labelB) {
+            let labelAName = labelA.attributes.name.toUpperCase();
+            let labelBName = labelB.attributes.name.toUpperCase();
+            return labelAName.localeCompare(labelBName);
+          });
         } else {
           this.workItem.relationships.labels = {
             data: []
@@ -626,6 +633,12 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
       this.save(payload, true)
         .subscribe(workItem => {
           this.loadingLabels = false;
+          // Sort labels in alphabetical order
+          selectedLabels = selectedLabels.sort(function(labelA, labelB) {
+            let labelAName = labelA.attributes.name.toUpperCase();
+            let labelBName = labelB.attributes.name.toUpperCase();
+            return labelAName.localeCompare(labelBName);
+          });
           this.workItem.relationships.labels = {
             data: selectedLabels
           };
@@ -1184,6 +1197,19 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
 
   constructUrl(workItem: WorkItem) {
     return this.router.url.split('plan')[0] + 'plan/detail/' + workItem.attributes['system.number'];
+  }
+
+  onLabelClick(event) {
+    let params = {
+      label: event.attributes.name
+    }
+    // Prepare navigation extra with query params
+    let navigationExtras: NavigationExtras = {
+      queryParams: params
+    };
+
+    // Navigated to filtered view
+    this.router.navigate([], navigationExtras);
   }
 
   @HostListener('window:keydown', ['$event'])

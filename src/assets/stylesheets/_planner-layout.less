@@ -2,7 +2,6 @@
 
 .f8-wi-container {
   position: relative;
-  height: ~"calc(e('100vh - 66px'))";
   >main {
     height: 100%;
     overflow: hidden;
@@ -81,6 +80,24 @@
           }
         }
       }
+    }
+  }
+  .user-avatar {
+    cursor: pointer;
+    &:extend(.user-avatar);
+    img {
+      &:extend(.user-avatar img);
+    }
+  }
+  .not-assigned-user-icon {
+    &:extend(.not-assigned-user-icon);
+  }
+}
+//overrides for patternfly-ng components
+.editor-container {
+  .editor-preview {
+    p {
+      word-wrap: break-word;
     }
   }
 }

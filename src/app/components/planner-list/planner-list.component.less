@@ -41,7 +41,7 @@
     height: 100%;
     &-wrap {
       width: 100%;
-      height: ~"calc(e('100% - 120px'))";
+     // height: ~"calc(e('100% - 120px'))";
       // to avoid overflown scroll height should be there
       overflow-y: scroll;
       border-top: 1px solid;
@@ -57,12 +57,60 @@
         .no-wi { font-size: @pf-icon-4x; }
       }
     }
+    &__quick-add {
+      position: absolute;
+      bottom: 0;
+    }
   }
-  &__quick-add {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+
+  //Patternfly-ng's tree styles - Start
+  .pfng-tree-list {
+    .list-pf-item {
+      display: flex;
+      .list-pf-container {
+        padding: 0 15px !important;
+        margin: 5px 0;
+      }
+    }
+    .tree-children {
+      padding-left: 0;
+      .tree-node-level-2 {
+        .list-pf-container {
+          padding-left: 30px !important;
+        }
+      }
+      .tree-node-level-3 {
+        .list-pf-container {
+          padding-left: 50px !important;
+        }
+      }
+    }
+    .toggle-children {
+      width: 10px;
+    }
+    .toggle-children-wrapper-expanded .toggle-children::before {
+      content: "\F107";
+      -webkit-font-smoothing: antialiased;
+    }
+    .toggle-children-wrapper-collapsed .toggle-children::before {
+      content: "\F105";
+      -webkit-font-smoothing: antialiased;
+    }
+    .list-pf-actions {
+      margin-left: 15px;
+    }
+
+    .blank-slate-pf {
+      .show-wi {
+        display: inline-block;
+      }
+      .hide-wi {
+        display: none;
+      }
+    }
   }
+  //Patternfly-ng's tree styles - End
+
   //tree-list, drag and drop css
   .error { color: @color-pf-red-100; }
   .suppress-hover {
@@ -85,7 +133,4 @@
   .node-drop-slot.is-dragging-over {
     height: 66px!important;
   }
-}
-.experimental-border .f8-wi-container {
-  height:  ~"calc(e('100vh - 106px'))"
 }

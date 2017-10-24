@@ -4,119 +4,65 @@
 		[dialog]='dialog'
   ></alm-dialog>
 </div>
-<div class="f8-wi__list-entry"
-(click)="onSelect($event);" >
-	<!--checkbox to select a WI and move it-->
-  <div class="row-cbh"
-    title="Select the checkbox to move the item."
-    *ngIf="loggedIn">
-    <input type="checkbox"
-    [checked]="checkedWI"
-    (click)="toggleEntry($event)" />
-	</div>
-  <!-- info area -->
+<div class="f8-wi__list-entry">
+	<!-- info area -->
   <div class="list-view-pf-main-info">
     <div class="list-view-pf-left type f8-wi__list-witype">
-      <span almIcon [iconType]="workItem.attributes['system.state']" class="color-grey pull-left"></span>
-      <span class="color-grey pull-left fa {{workItem.relationships?.baseType?.data?.attributes?.icon}}" title="{{workItem.relationships?.baseType?.data?.attributes?.name}}"></span>
+      <span class="color-grey pull-left"
+        almIcon
+        [iconType]="workItem.attributes['system.state']"
+        tooltip="{{workItem.attributes['system.state']}}"
+        placement="right"></span>
+      <span class="color-grey pull-left fa
+        {{workItem.relationships?.baseType?.data?.attributes?.icon}}"
+        title="{{workItem.relationships?.baseType?.data?.attributes?.name}}"></span>
       <span class="pull-left"> {{workItem.attributes['system.number']}} </span>
     </div>
     <div class="list-view-pf-body">
       <div class="list-view-pf-description">
         <div class="f8-wi__list-title truncate-ellipsis col-xs-12 row">
-            <div class="col-md-6 col-sm-6 col-xs-6">
+            <div class="f8-wi__list-description">
               <p class="workItemList_title truncate"
-                 (click)="onDetailPreview($event)">
-                  {{workItem.attributes['system.title']}}
+                 (click)="onDetailPreview($event)"
+                 [innerHTML]="workItem.attributes['system.title']">
               </p>
-              <a [routerLink]="[constructUrl(workItem)]"
-              class="fa fa-list-alt f8-action-icon"></a>
+              <a class="fa fa-list-alt f8-action-icon"
+                [routerLink]="[constructUrl(workItem)]"
+                tooltip="Open Detail View"
+                placement="right"></a>
             </div>
-            <div class="col-md-6 col-sm-6 col-xs-6">
+            <div class="f8-wi__list-description">
               <f8-label [labels]="workItem.relationships?.labels?.data ?
                 workItem.relationships?.labels?.data : []"
                 [truncateAfter]='4'
-                [allowDelete]="false"></f8-label>
+                [allowDelete]="false"
+                (onLabelClick)="labelClick($event)"></f8-label>
             </div>
         </div>
         <div class="list-group-item-text hide f8-wi__list-desc">
-          {{workItem.attributes['system.description'] ? workItem.attributes['system.description'] : "No description available for this work item."}}
+          {{workItem.attributes['system.description'] ?
+          workItem.attributes['system.description'] :
+          "No description available for this work item."}}
         </div>
       </div>
     </div>
   </div>
-  <div class="user-avatar">
-      <img
-        *ngFor="let assignee of workItem.relationships.assignees.data"
-        placement="bottom"
-        tooltip="{{assignee?.attributes?.fullName}}"
-        src="{{assignee?.attributes?.imageURL + '&s=23'}}"
-        onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=23'" />
-      <span class="pficon-user not-assigned-user-icon"
-        *ngIf="!workItem.relationships?.assignees?.data?.length"></span>
+  <div class="user-avatar margin-right-15">
+    <img
+      *ngFor="let assignee of workItem.relationships.assignees.data"
+      placement="left"
+      tooltip="{{assignee?.attributes?.fullName}}"
+      src="{{assignee?.attributes?.imageURL + '&s=23'}}"
+      onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=23'" />
+    <span class="pficon-user not-assigned-user-icon"
+      *ngIf="!workItem.relationships?.assignees?.data?.length"
+      tooltip="Unassigned"
+      placement="left"></span>
   </div>
-
-	<!-- action area -->
-  <div class="list-view-pf-actions"
-    (click)="kebabClick($event)">
-    <div class="pull-right dropdown-kebab-pf dropdown"
-       *ngIf="loggedIn" dropdown>
-      <button class="btn btn-link dropdown-toggle"
-        type="button" id="dropdownKebabRight"
-        aria-haspopup="true"
-        aria-expanded="true"
-        dropdownToggle>
-				<span class="fa fa-ellipsis-v"></span>
-			</button>
-      <ul class="dropdown-menu-right dropdown-menu"
-        aria-labelledby="dropdownKebabRight"
-        *dropdownMenu>
-				<li>
-          <a class="f8-wi__list-movetop"
-            (click)="onMoveToTop($event)">
-              Move to Top
-          </a>
-        </li>
-				<li>
-          <a class="f8-wi__list-movebtm"
-            (click)="onMoveToBottom($event)">
-              Move to Bottom
-          </a>
-        </li>
-				<li role="presentation" class="divider"></li>
-				<li>
-          <a class="f8-wi__list-iteration"
-            (click)="associateIterationModal.open($event)">
-              Associate with Iteration...
-          </a>
-        </li>
-				<li role="presentation" class="divider"></li>
-				<li>
-          <a [routerLink]="['./detail/' + workItem.attributes['system.number']]"
-             [queryParams]="queryParams">
-            Open
-          </a>
-        </li>
-				<li>
-          <a (click)="onDetailPreview($event)">
-            Preview
-          </a>
-        </li>
-				<li>
-          <a (click)="onMoveToBacklog($event)">
-            Move to Backlog
-          </a>
-        </li>
-			</ul>
-    </div>
-    <div class="pull-right">
-      <a (click)="onDetailPreview($event)"
-        class="fa fa-columns f8-action-icon"></a>
-    </div>
-	</div>
+  <div class="pull-right"
+    tooltip="Open Quick Preview"
+    placement="left">
+    <a (click)="onDetailPreview($event)"
+      class="fa fa-columns f8-action-icon"></a>
+  </div>
 </div>
-
-<fab-planner-associate-iteration-modal
-  [workItem]="workItem"
-  #associateIterationModal>
-</fab-planner-associate-iteration-modal>

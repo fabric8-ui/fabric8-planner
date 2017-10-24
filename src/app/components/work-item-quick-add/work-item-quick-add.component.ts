@@ -251,9 +251,12 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
     if (this.workItem.attributes['system.title']) {
       this.qaSubmit.nativeElement.setAttribute('disabled', true);
       this.qaTitle.nativeElement.setAttribute('disabled', true);
+      this.workItem.hasChildren = false;
+      console.log('before create ', this.workItem)
       this.workItemService
         .create(this.workItem)
         .map((workItem: WorkItem) => {
+          workItem.hasChildren = false;
           workItem.relationships.baseType.data = this.selectedType;
           return workItem;
         })

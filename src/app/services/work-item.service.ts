@@ -209,7 +209,7 @@ export class WorkItemService {
   }
 
 
-  resolveWorkItems(workItems, iterations, users, wiTypes, labels): WorkItem[] {
+   resolveWorkItems(workItems, iterations, users, wiTypes, labels): WorkItem[] {
     let resolvedWorkItems = workItems.map((item) => {
       // put the hasChildren on the root level for the tree
       if (item.relationships.children && item.relationships.children.meta)
@@ -236,6 +236,14 @@ export class WorkItemService {
       item.relationships.labels.data = WIlabels.map(label => {
         return labels.find(l => l.id === label.id);
       })
+
+      // Sort labels in alphabetical order
+      item.relationships.labels.data = item.relationships.labels.data.sort(function(labelA, labelB) {
+        let labelAName = labelA.attributes.name.toUpperCase();
+        let labelBName = labelB.attributes.name.toUpperCase();
+        return labelAName.localeCompare(labelBName);
+      });
+
       // Resolve work item types
       let wiType = cloneDeep(item.relationships.baseType.data);
       if (wiType) {
@@ -633,6 +641,7 @@ export class WorkItemService {
               option: item,
             };
           });
+          console.log('availableStates = ', this.availableStates);
           return this.availableStates;
         }).catch((error: Error | any) => {
           this.notifyError('Getting available status options for work item failed.', error);
