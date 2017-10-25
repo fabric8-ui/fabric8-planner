@@ -195,6 +195,17 @@ export class IterationService {
       });
   }
 
+  deleteIteration(iteration: IterationModel): Observable<void> {
+    return this.http
+      .delete(iteration.links.self)
+      .map(() => {
+        this.broadcaster.broadcast('delete_iteration', iteration);
+      }).catch((error: Error | any) => {
+          this.notifyError('Deleting iteration failed.', error);
+          return Observable.throw(new Error(error.message));
+      });
+  }
+
   isRootIteration(iteration: IterationModel): boolean {
     if (iteration.attributes.parent_path==='/')
       return true;

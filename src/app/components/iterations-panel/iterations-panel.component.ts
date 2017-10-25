@@ -44,7 +44,6 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild('modal') modal: FabPlannerIterationModalComponent;
   @ViewChild('treeList') treeList: TreeListComponent;
 
-
   authUser: any = null;
   loggedIn: Boolean = true;
   editEnabled: Boolean = false;
@@ -147,11 +146,14 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
         id: 'close',
         title: 'Close',
         tooltip: 'Close this iteration'
-      },
-      {
+      }, {
         id: 'createChild',
         title: 'Create Child',
         tooltip: 'Create a child under this iteration',
+      }, {
+        id: 'delete',
+        title: 'Delete',
+        tooltip: 'Delete this iteration',
       }],
       moreActionsDisabled: !this.loggedIn,
       moreActionsVisible: this.loggedIn
@@ -444,6 +446,24 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     this.modal.openCreateUpdateModal('createChild', iteration);
   }
 
+  deleteIteration(iteration: IterationModel, event?: Event) {
+    console.log('Deleting iteration ' + iteration.id);
+    this.iterationService.deleteIteration(iteration)
+      .subscribe(() => {
+        console.log('Iteration deleted on service');
+        let index = this.allIterations.findIndex((it) => it.id === iteration.id);
+        console.log('Iteration Index ' + index);
+        console.log(this.allIterations[index]);
+        this.allIterations.splice(index, 1);
+        this.treeIterations = this.iterationService.getTopLevelIterations(this.allIterations);
+        this.treeList.update();
+        this.clusterIterations();
+      },
+      (e: Error) => {
+        console.log('Error when deleting iteration: ' + e.message);
+      });
+  }
+
   listenToEvents() {
     this.eventListeners.push(
       this.broadcaster.on<string>('backlog_selected')
@@ -497,6 +517,8 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
       break;
       case 'close':
         this.onClose(item.data);
+      case 'delete':
+      this.deleteIteration(item.data);
       break;
     }
   }
