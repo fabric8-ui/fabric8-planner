@@ -31,7 +31,7 @@ import { LabelService } from './../../services/label.service';
 import { WorkItemTypeControlService } from './../../services/work-item-type-control.service';
 import { TypeaheadDropdown, TypeaheadDropdownValue } from '../typeahead-dropdown/typeahead-dropdown.component';
 import { WorkItemDataService } from './../../services/work-item-data.service';
-
+import { ModalService } from '../../services/modal.service';
 import { UrlService } from './../../services/url.service';
 import { WorkItem, WorkItemRelations } from './../../models/work-item';
 import { WorkItemService } from './../../services/work-item.service';
@@ -96,7 +96,8 @@ export class WorkItemNewDetailComponent implements OnInit, OnDestroy {
     private workItemService: WorkItemService,
     private workItemDataService: WorkItemDataService,
     private workItemTypeControlService: WorkItemTypeControlService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private modalService: ModalService
   ) {}
 
   ngOnInit() {
