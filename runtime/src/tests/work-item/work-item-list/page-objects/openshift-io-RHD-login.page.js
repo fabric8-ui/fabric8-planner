@@ -11,10 +11,9 @@
  * openshift.io Start Page Definition
  */
 
-var testSupport = require('../testSupport'),
-    constants = require("../constants"),
-
-var until = protractor.ExpectedConditions;
+let testSupport = require('../testSupport');
+let constants = require("../constants");
+let until = protractor.ExpectedConditions;
 
 class OpenShiftIoRHDLoginPage {
 
@@ -74,6 +73,7 @@ class OpenShiftIoRHDLoginPage {
     browser.wait(until.presenceOf(this.rhdLoginButton), constants.WAIT, 'Failed to find RHD login');
     this.rhdLoginButton.click().then(function(){
       console.log("OpenShiftIoRHDLoginPage - clicked element:rhdLoginButton");
+      browser.sleep(constants.SHORT_WAIT);
     });
     return;
   }

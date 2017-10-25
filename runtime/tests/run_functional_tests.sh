@@ -46,9 +46,9 @@ echo done.
 echo Running tests...
 if [ -z "$1" ]
   then
-    ../node_modules/protractor/bin/protractor tests/protractor.config.js 2>&1
+    ../node_modules/protractor/bin/protractor tests/protractor.config.js --params.target.url=$1 2>&1
 else
-    ../node_modules/protractor/bin/protractor tests/protractor.config.js --suite $1 2>&1
+    ../node_modules/protractor/bin/protractor tests/protractor.config.js --suite $1 --params.target.url=$2 --params.login.user=$3 --params.login.password=$4 2>&1
 fi
 
 TEST_RESULT=$?

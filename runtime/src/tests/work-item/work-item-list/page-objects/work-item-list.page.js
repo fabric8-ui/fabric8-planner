@@ -135,6 +135,17 @@ class WorkItemListPage {
    return element(by.linkText('Logout'));
  }
 
+ get localLoginButton() {
+  return element(by.id("login_githubLoginBtn"));
+  }
+
+ clicklocalLoginButton () {
+   browser.wait(until.presenceOf(this.localLoginButton), constants.WAIT, 'Failed to find Login Button');
+   this.localLoginButton.click().then(function(){
+      console.log("Clicked Button: localLoginButton");
+    });
+ }
+
  signInGithub (gitusername,gitpassword) {
    element(By.css('.fa.fa-github')).click();
    browser.ignoreSynchronization = true;
