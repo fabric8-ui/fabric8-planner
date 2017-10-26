@@ -39,10 +39,10 @@ class WorkItemListPage {
       refresh_token: 'somerandomtoken',
       token_type: "bearer"
     }));
-    browser.get("http://localhost:8088/?token_json="+url);
+    browser.get(browser.params.target.url + "/?token_json="+url);
   }
    else {
-     browser.get("http://localhost:8088/");
+     browser.get(browser.params.target.url);
    }
  };
 
@@ -59,7 +59,7 @@ class WorkItemListPage {
  }
 
  workItemByURLId (workItemId) {
-   browser.get("http://localhost:8088/work-item/list/detail/"+ workItemId);
+   browser.get(browser.params.target.url + "/work-item/list/detail/"+ workItemId);
     var theDetailPage = new WorkItemDetailPage (workItemId);
  }
  clickCodeMenuTab () {
@@ -133,6 +133,17 @@ class WorkItemListPage {
 
  clickLogoutButton () {
    return element(by.linkText('Logout'));
+ }
+
+ get localLoginButton() {
+  return element(by.id("login_githubLoginBtn"));
+  }
+
+ clicklocalLoginButton () {
+   browser.wait(until.presenceOf(this.localLoginButton), constants.WAIT, 'Failed to find Login Button');
+   this.localLoginButton.click().then(function(){
+      console.log("Clicked Button: localLoginButton");
+    });
  }
 
  signInGithub (gitusername,gitpassword) {
