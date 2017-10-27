@@ -77,7 +77,7 @@
             <label class="pull-left padding-left-15 control-label">
               {{workItem.relationships?.baseType?.data?.attributes?.fields['system.assignees']?.label || 'Label'}}
             </label>
-            <div class="f8-detail__content" click-outside-popup (clickOutsidePopup)="cancelAssignment()">
+            <div class="f8-detail__content" #assignee>
               <span
                 *ngIf="!workItem.relationships?.assignees?.data?.length"
                 (click)="activeSearchAssignee()"

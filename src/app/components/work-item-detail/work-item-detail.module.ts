@@ -33,7 +33,6 @@ import { MarkdownControlComponent } from '../markdown-control/markdown-control.c
 import { WorkItemLinkModule } from '../work-item-link/work-item-link.module';
 import { WorkItemCommentModule } from '../work-item-comment/work-item-comment.module';
 import { WorkItemTypeControlService } from '../../services/work-item-type-control.service';
-import { ClickOutsideDirective } from '../../directives/clickoutside.directive';
 
 let providers = [];
 
@@ -70,10 +69,9 @@ if (process.env.ENV == 'inmemory') {
   declarations: [
     WorkItemDetailComponent,
     DynamicFieldComponent,
-    MarkdownControlComponent,
-    ClickOutsideDirective
+    MarkdownControlComponent
   ],
-  exports: [WorkItemDetailComponent,ClickOutsideDirective],
+  exports: [WorkItemDetailComponent],
   providers: providers
 })
 export class WorkItemDetailModule { }

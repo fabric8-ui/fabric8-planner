@@ -28,7 +28,6 @@ import { WorkItemNewDetailRoutingModule } from './work-item-new-detail-routing.m
 import { WorkItemCommentModule } from '../work-item-comment/work-item-comment.module';
 import { CollaboratorService } from '../../services/collaborator.service'
 import { TypeaheadDropDownModule } from '../typeahead-dropdown/typeahead-dropdown.module';
-import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.module';
 
 import { AlmUserNameModule } from '../../pipes/alm-user-name.module';
 
@@ -94,8 +93,7 @@ if (process.env.ENV == 'inmemory') {
     WorkItemNewDetailRoutingModule,
     WorkItemLinkModule,
     InlineInputModule,
-    WorkItemCommentModule,
-    WorkItemDetailModule
+    WorkItemCommentModule
   ],
   declarations: [
     WorkItemNewDetailComponent
