@@ -25,11 +25,19 @@ describe('Link item ', function () {
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
     page = new WorkItemListPage(true);
+<<<<<<< HEAD
+=======
+    detailPage = new WorkItemDetailPage();
+>>>>>>> fix(test): Update WI link tests
     testSupport.setTestSpace(page);
   });
 
   it('Create a link item planner to planner - Desktop', function () {
+<<<<<<< HEAD
     var detailPage = page.clickWorkItemTitle("Title Text 2");
+=======
+    page.clickWorkItemTitle(page.workItemByTitle("Title Text 2"), "id2");
+>>>>>>> fix(test): Update WI link tests
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
 
@@ -47,7 +55,11 @@ describe('Link item ', function () {
    });
 
   it('Read a link item - Desktop', function () {
+<<<<<<< HEAD
     var detailPage = page.clickWorkItemTitle("Title Text 0");
+=======
+    page.clickWorkItemTitle(page.workItemByTitle("Title Text 0"), "id0");
+>>>>>>> fix(test): Update WI link tests
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
 
@@ -59,7 +71,11 @@ describe('Link item ', function () {
    });
 
   it('Delete link and check if it exists in list or not - Desktop', function () {
+<<<<<<< HEAD
     var detailPage = page.clickWorkItemTitle("Title Text 0");
+=======
+    page.clickWorkItemTitle(page.workItemByTitle("Title Text 0"), "id0");
+>>>>>>> fix(test): Update WI link tests
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
 
@@ -73,12 +89,20 @@ describe('Link item ', function () {
    });
 
   it('Update link child and check if it exists in list or not - Desktop', function () {
+<<<<<<< HEAD
     var detailPage = page.clickWorkItemTitle("Title Text 0");
+=======
+    page.clickWorkItemTitle(page.workItemByTitle("Title Text 0"), "id0");
+>>>>>>> fix(test): Update WI link tests
     detailPage.clickWorkItemDetailTitleClick();
     detailPage.setWorkItemDetailTitle("0", true); // Update title
     detailPage.clickWorkItemTitleSaveIcon();
     detailPage.clickWorkItemDetailCloseButton();
+<<<<<<< HEAD
     var detailPage = page.clickWorkItemTitle("Title Text 1");
+=======
+    page.clickWorkItemTitle(page.workItemByTitle("Title Text 1"), "id1");
+>>>>>>> fix(test): Update WI link tests
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
     detailPage.linkItemHeaderCaret().click();
@@ -90,7 +114,11 @@ describe('Link item ', function () {
    });
 
   it('Check the elements of link item div are visible - Desktop', function () {
+<<<<<<< HEAD
     var detailPage = page.clickWorkItemTitle("Title Text 0");
+=======
+    page.clickWorkItemTitle(page.workItemByTitle("Title Text 0"), "id0");
+>>>>>>> fix(test): Update WI link tests
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
 
