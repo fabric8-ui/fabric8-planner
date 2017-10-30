@@ -3,6 +3,8 @@
 .f8-wi__list {
   &-entry {
     display: inline-flex;
+    flex-direction: column;
+    padding: 10px 0;
     cursor: pointer;
     align-items: center;
     button {
@@ -55,6 +57,14 @@
       }
     }
   }
+  &-parent-info {
+    width: 100%;
+    color: gray;
+    font-size: 10px;
+    &-title {
+      width: ~"calc(e('100% - 100px'))";
+    }
+  }
   &-witype {
     float: left;
     width: 120px;
@@ -89,6 +99,10 @@
     vertical-align: middle;
     text-align: left;
   }
+}
+
+.width-10 {
+  width: 10%;
 }
 .list-group-item:hover {
   .f8-wi__list-title {
