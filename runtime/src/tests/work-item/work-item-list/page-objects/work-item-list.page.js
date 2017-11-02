@@ -39,7 +39,7 @@ class WorkItemListPage {
       refresh_token: browser.params.refresh_token,
       token_type: "bearer"
     }));
-    browser.get(browser.params.target.url + "/?token_json="+url, 20000);
+    browser.get(browser.params.target.url + "/?token_json="+url);
   }
    else {
      browser.get("http://localhost:8088/");
