@@ -77,6 +77,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   @ViewChild('areaSelectbox') areaSelectbox: TypeaheadDropdown;
   @ViewChild('iterationSelectbox') iterationSelectbox: TypeaheadDropdown;
   @ViewChild('labelSelector') labelSelector: LabelSelectorComponent;
+  @ViewChild('assignee') assignee : any;
 
   workItem: WorkItem;
   workItemRef: WorkItem;
@@ -153,6 +154,16 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
     private spaces: Spaces,
     private collaboratorService: CollaboratorService
   ) {}
+
+  @HostListener('document:click', ['$event.target','$event.target.classList.contains('+'"assigned_user"'+')'])
+  public onClick(targetElement,assigned_user) {
+    if (this.assignee) {
+      const clickedInsidePopup = this.assignee.nativeElement.contains(targetElement);
+      if (!clickedInsidePopup&&!assigned_user) {
+          this.cancelAssignment();
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.saving = false;

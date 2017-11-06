@@ -49,6 +49,13 @@
       >.list-group {
         border-top-width: 0 !important;
       }
+      //List entry tree view specific css
+      .tree-node-level-2 .list-pf-item {
+        padding-left: 20px;
+      }
+      .tree-node-level-3 .list-pf-item {
+        padding-left: 40px;
+      }
     }
     .card-pf {
       border: 0;
@@ -74,16 +81,6 @@
     }
     .tree-children {
       padding-left: 0;
-      .tree-node-level-2 {
-        .list-pf-container {
-          padding-left: 30px !important;
-        }
-      }
-      .tree-node-level-3 {
-        .list-pf-container {
-          padding-left: 50px !important;
-        }
-      }
     }
     .toggle-children {
       width: 10px;
@@ -108,6 +105,10 @@
         display: none;
       }
     }
+  }
+  .list-pf-chevron+.list-pf-content, .list-pf-select+.list-pf-content {
+    border-color: transparent;
+    padding-left: 0;
   }
   //Patternfly-ng's tree styles - End
 

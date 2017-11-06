@@ -91,6 +91,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
   private uiLockedBoard = true;
   private uiLockedSidebar = false;
   private currentSpace: Space;
+  private included: WorkItem[];
 
   sidePanelOpen: boolean = true;
   constructor(
@@ -254,6 +255,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
     return this.workItemService.getWorkItems2(pageSize, exp)
     .map(workItemResp => {
       let workItems = workItemResp.workItems;
+      this.included = workItemResp.included;
       let cardValue: CardValue[] = [];
       this.workItemDataService.setItems(workItems);
       lane.workItems = this.workItemService.resolveWorkItems(
@@ -261,7 +263,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         this.iterations,
         [],
         this.workItemTypes,
-        this.labels
+        this.labels,
+        this.included
       );
       lane.cardValue = lane.workItems.map(item => {
         return {
@@ -319,7 +322,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
                   return workItems[i].relationships.assignees.data[0].attributes['imageURL'];
                 else return '';})(),
         hasLink: true,
-        link: "./detail/"+workItems[i].id,
+        link: "./../detail/"+workItems[i].attributes['system.number'],
         menuItem: [{
           id: 'card_associate_iteration',
           value: 'Associate with iteration...'
@@ -327,7 +330,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
         {
           id: 'card_open',
           value: 'Open',
-          link: "./detail/"+workItems[i].id
+          link: "./../detail/"+workItems[i].attributes['system.number']
         },
         {
           id: 'card_move_to_backlog',
@@ -459,7 +462,8 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
               this.iterations,
               [],
               this.workItemTypes,
-              this.labels
+              this.labels,
+              workItemResp.included
           )];
           lane.cardValue = [
             ...lane.cardValue,
@@ -470,7 +474,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
                 title: item.attributes['system.title'],
                 avatar: '',
                 hasLink: true,
-                link: "./detail/"+item.id,
+                link: "./../detail/"+item.attributes['system.number'],
                 menuItem: [{
                   id: 'card_associate_iteration',
                   value: 'Associate with iteration...'
@@ -478,7 +482,7 @@ export class PlannerBoardComponent implements OnInit, OnDestroy {
                 {
                   id: 'card_open',
                   value: 'Open',
-                  link: "./detail/"+item.id
+                  link: "./../detail/"+item.attributes['system.number']
                 },
                 {
                   id: 'card_move_to_backlog',
