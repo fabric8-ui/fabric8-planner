@@ -215,7 +215,6 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   }
 
   actionOnClose() {
-    //console.log('Close');
     this.resetValues();
   }
 
