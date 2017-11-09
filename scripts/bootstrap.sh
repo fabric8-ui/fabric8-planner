@@ -99,9 +99,9 @@ docker exec -u root fabric8-ui-builder npm run build:prod
 
 echo "Copy over the build artifacts from container to host..."
 echo ""
-echo "This is only needed because the platform build executes `npm run clean`"
-echo "which removes the `dist` directory from the host, unlinking the volume"
-docker cp fabric8-ui-builder:/home/fabric8/fabric8-ui/dist /tmp/platform/
+echo "This is only needed because the platform build executes 'npm run clean'"
+echo "which removes the 'dist' directory from the host, unlinking the volume"
+docker exec -u root fabric8-ui-builder cp -r /home/fabric8/fabric8-ui/dist $PLATFORMPATH/
 
 echo "Generating f8ui integrated planner image from build artifacts..."
 docker rm fabric8-planner-platform
@@ -113,5 +113,5 @@ docker stop fabric8-ui-builder
 docker rm fabric8-ui-builder
 docker rmi fabric8-ui-builder
 
-echo "Running the container; visit http://localhost:8080/ on host browser..."
-docker run -it --user=root -p 8080:80 --name=fabric8-planner-platform fabric8-planner-platform
+# echo "Running the container; visit http://localhost:8080/ on host browser..."
+# docker run -it --user=root -p 8080:80 --name=fabric8-planner-platform fabric8-planner-platform
