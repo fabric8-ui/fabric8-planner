@@ -355,8 +355,10 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     //if initialGroup is undefined, the page has been refreshed - find  group context based on URL
     if ( this.route.snapshot.queryParams['q'] ) {
       let wits = this.route.snapshot.queryParams['q'].split('workitemtype:')
-      let collection = wits[1].replace(')','').split(',');
-      this.groupTypesService.findGroupConext(collection);
+      if(wits.length > 1) {
+        let collection = wits[1].replace(')','').split(',');
+        this.groupTypesService.findGroupConext(collection);
+      }
     }
     if(this.initialGroup === undefined)
       this.initialGroup = this.groupTypesService.getCurrentGroupType();
