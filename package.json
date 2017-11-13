@@ -98,7 +98,7 @@
     "ngx-base": "^2.3.0",
     "ngx-bootstrap": "^1.9.3",
     "ngx-fabric8-wit": "^6.20.0",
-    "ngx-login-client": "^1.2.0",
+    "ngx-login-client": "^1.2.4",
     "ngx-modal": "^0.0.29",
     "ngx-widgets": "^2.3.2",
     "patternfly-ng": "^0.13.5",
