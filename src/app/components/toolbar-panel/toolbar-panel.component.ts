@@ -90,6 +90,9 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   allowedMultipleFilterKeys: string[] = [
     'label'
   ];
+  textFilterKeys: string[] = [
+    'title'
+  ];
 
   // the type of the list is changed (Hierarchy/Flat).
   currentListType: string = 'Hierarchy';
@@ -138,7 +141,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('[ToolbarPanelComponent] New Space selected: ' + space.attributes.name);
         this.editEnabled = true;
       } else {
-        console.log('[ToolbarPanelComponent] Space deselected.');
+        console.log('[ToolbarPanelComponent] Space deselected. ');
         this.editEnabled = false;
       }
     });
@@ -176,17 +179,6 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     // listen for changes on the available filters.
     this.eventListeners.push(
       this.filterService.getFilters()
-      .map(filter => {
-        return [...filter, {
-          attributes:{
-            description: "Enter work item title",
-            key: "title",
-            query: "filter[title]={id}",
-            title: "Title",
-            type: "title"
-          },
-          type:"filters"}];
-      })
       .subscribe(filters => this.setFilterTypes(filters))
     );
 
@@ -243,6 +235,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
      * the first entry in the fields array. When the user selects a new value from the
      * filter list, the implementation works subsequently.
      */
+    const filterMap = this.getFilterMap();
     this.toolbarConfig.filterConfig.fields = [
       this.toolbarConfig.filterConfig.fields[0],
       ...filters.map(filter => {
@@ -251,10 +244,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           id: type,
           title: filter.attributes.title,
           placeholder: filter.attributes.description,
-          type: type === 'assignee' || type === 'label'
-            ? 'typeahead'
-            : type === 'title'
-            ? 'text' : 'select',
+          type: filterMap[type].type,
           queries: []
         };
       })
@@ -279,36 +269,48 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     // to the filter
     Object.keys(params).forEach((key, i) => {
       if (this.allowedFilterKeys.indexOf(key) > -1) {
-        filterMap[key].datasource.take(1).subscribe(data => {
-          const index = this.toolbarConfig.filterConfig.fields.findIndex(field => field.id === key);
-          if (filterMap[key].datamap(data).primaryQueries.length) {
-            this.toolbarConfig.filterConfig.fields[index].queries = [
-              ...filterMap[key].datamap(data).primaryQueries,
-              this.separator,
-              ...filterMap[key].datamap(data).queries
-            ];
-          } else {
-            this.toolbarConfig.filterConfig.fields[index].queries = filterMap[key].datamap(data).queries;
-          }
-          const selectedQueries = this.toolbarConfig.filterConfig.fields[index].queries.filter(
-            item => params[key].split(',').indexOf(item.value) > -1
-          );
-          if (selectedQueries.length) {
-            params[key].split(',').forEach(val => {
-              this.toolbarConfig.filterConfig.appliedFilters.push({
-                field: this.toolbarConfig.filterConfig.fields[index],
-                query: selectedQueries.find(v => v.value === val.trim()),
-                value: val.trim()
-              });
-            })
-            this.filterService.setFilterValues(key, selectedQueries.map(q => q.id).join());
-            // When all the params are resolved
-            // Apply the filter
-            if (Object.keys(params).length - 1 == i) {
-              this.filterService.applyFilter();
+        const index = this.toolbarConfig.filterConfig.fields.findIndex(field => field.id === key);
+        if (filterMap[key].type !== 'text') {
+          filterMap[key].datasource.take(1).subscribe(data => {
+            if (filterMap[key].datamap(data).primaryQueries.length) {
+              this.toolbarConfig.filterConfig.fields[index].queries = [
+                ...filterMap[key].datamap(data).primaryQueries,
+                this.separator,
+                ...filterMap[key].datamap(data).queries
+              ];
+            } else {
+              this.toolbarConfig.filterConfig.fields[index].queries = filterMap[key].datamap(data).queries;
             }
-          }
-        });
+            const selectedQueries = this.toolbarConfig.filterConfig.fields[index].queries.filter(
+              item => params[key].split(',').indexOf(item.value) > -1
+            );
+            if (selectedQueries.length) {
+              params[key].split(',').forEach(val => {
+                this.toolbarConfig.filterConfig.appliedFilters.push({
+                  field: this.toolbarConfig.filterConfig.fields[index],
+                  query: selectedQueries.find(v => v.value === val.trim()),
+                  value: val.trim()
+                });
+              })
+              this.filterService.setFilterValues(key, selectedQueries.map(q => q.id).join());
+            }
+          });
+        } else {
+          // Text search happens here
+          this.toolbarConfig.filterConfig.appliedFilters.push({
+            field: this.toolbarConfig.filterConfig.fields[index],
+            query: params[key],
+            value: params[key]
+          })
+          this.filterService.setFilterValues(key, params[key]);
+        }
+
+
+        // When all the params are resolved
+        // Apply the filter
+        if (Object.keys(params).length - 1 == i) {
+          this.filterService.applyFilter();
+        }
       }
     });
   }
@@ -319,7 +321,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     // Unifying the filters with recent filter value
     let recentAppliedFilters = {};
     $event.appliedFilters.forEach((filter) => {
-      if (filter.query === undefined || filter.query.id !== 'loader') {
+      if (this.textFilterKeys.findIndex(k => k === filter.field.id) > -1 ||
+        filter.query.id !== 'loader') {
         if (Object.keys(recentAppliedFilters).indexOf(filter.field.id) === -1) {
           // If this filter type was not found in this iteration before
           recentAppliedFilters[filter.field.id] = [];
@@ -358,7 +361,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         params[filter.field.id] = params[filter.field.id] + ',' + filter.query.value;
         queryObj[filter.field.id] = queryObj[filter.field.id] + ',' + filter.query.id;
       }
-      else if (filter.query === undefined) {
+      else if (this.textFilterKeys.findIndex(k => k === filter.field.id) > -1) {
         params[filter.field.id] = filter.value;
         queryObj[filter.field.id] = filter.value;
       }
@@ -412,7 +415,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
             primaryQueries: []
           }
         },
-        getvalue: (area) => area.attributes.name
+        getvalue: (area) => area.attributes.name,
+        type: 'select'
       },
       assignee: {
         datasource: Observable.combineLatest(this.collaboratorService.getCollaborators(), this.userService.getUser()),
@@ -427,7 +431,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
               [{id: null, value: 'Unassigned'}]
           }
         },
-        getvalue: (user) => user.attributes.username
+        getvalue: (user) => user.attributes.username,
+        type: 'typeahead'
       },
       creator: {
         datasource: Observable.combineLatest(this.collaboratorService.getCollaborators(), this.userService.getUser()),
@@ -440,7 +445,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
             primaryQueries: [{id: authUser.id, value: authUser.attributes.username + ' (me)', imageUrl: authUser.attributes.imageURL}]
           }
         },
-        getvalue: (user) => user.attributes.username
+        getvalue: (user) => user.attributes.username,
+        type: 'typeahead'
       },
       workitemtype: {
         datasource: this.workItemService.getWorkItemTypes(),
@@ -450,7 +456,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
             primaryQueries: []
           }
         },
-        getvalue: (type) => type.attributes.name
+        getvalue: (type) => type.attributes.name,
+        type: 'select'
       },
       state: {
         datasource: this.workItemService.getStatusOptions(),
@@ -460,7 +467,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
             primaryQueries: []
           }
         },
-        getvalue: (type) => type.option
+        getvalue: (type) => type.option,
+        type: 'select'
       },
       label: {
         datasource: this.labelService.getLabels().map(d => d as any[]),
@@ -475,7 +483,11 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
             primaryQueries: []
           }
         },
-        getvalue: (label) => label.attributes.name
+        getvalue: (label) => label.attributes.name,
+        type: 'typeahead'
+      },
+      title: {
+        type: 'text'
       }
     }
   }
@@ -484,7 +496,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     const filterMap = this.getFilterMap();
     if (Object.keys(filterMap).indexOf(event.field.id) > -1) {
       const index = this.filterConfig.fields.findIndex(i => i.id === event.field.id);
-      if (this.filterConfig.fields[index].queries.length === 0) {
+      if (filterMap[event.field.id].type !== 'text' &&
+          this.filterConfig.fields[index].queries.length === 0) {
         this.toolbarConfig.filterConfig.fields[index].queries = [
           this.loader
         ];
