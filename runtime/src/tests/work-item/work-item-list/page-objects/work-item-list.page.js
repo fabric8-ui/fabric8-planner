@@ -33,10 +33,10 @@ class WorkItemListPage {
  constructor(login) {
    if(login==true) {
     let url = encodeURIComponent(JSON.stringify({
-      access_token: 'somerandomtoken',
+      access_token: browser.params.auth_token,
       expires_in: 1800,
       refresh_expires_in: 1800,
-      refresh_token: 'somerandomtoken',
+      refresh_token: browser.params.refresh_token,
       token_type: "bearer"
     }));
     browser.get(browser.params.target.url + "/?token_json="+url);

@@ -40,19 +40,20 @@ describe('Work item list', function () {
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
     browser.ignoreSynchronization = false;
-    page = new WorkItemListPage();
+    page = new WorkItemListPage(true);
   });
 
-  /* Simple test for registered user */
-  it("should perform - LOGIN", function() {
-    browser.ignoreSynchronization = true;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000000;   /* 10 minutes */
-    console.log ("Login test for target URL: " + browser.params.target.url);
-    /* Login to SUT */
-    page.clicklocalLoginButton();
-    var RHDpage = new OpenShiftIoRHDLoginPage();
-    RHDpage.doLogin(browser);
-  });
+  // This test is obsolete as we use token for login
+  // /* Simple test for registered user */
+  // it("should perform - LOGIN", function() {
+  //   browser.ignoreSynchronization = true;
+  //   jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000000;   /* 10 minutes */
+  //   console.log ("Login test for target URL: " + browser.params.target.url);
+  //   /* Login to SUT */
+  //   page.clicklocalLoginButton();
+  //   var RHDpage = new OpenShiftIoRHDLoginPage();
+  //   RHDpage.doLogin(browser);
+  // });
 
   /* User can read, update, remove assignee on a workitem  */
   it('User can read, update, remove assignee', function() {
