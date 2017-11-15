@@ -11,10 +11,11 @@
  *
  * beforeEach will set the mode to phone. Any tests requiring a different resolution will must set explicitly.
  *
- * @author naina-verma
+ * @author naina-verma, rgarg@redhat.com
  */
 
 var WorkItemListPage = require('./page-objects/work-item-list.page'),
+  OpenShiftIoRHDLoginPage = require('./page-objects/openshift-io-RHD-login.page'),
   testSupport = require('./testSupport'),
   constants = require('./constants');
 
@@ -26,7 +27,7 @@ describe('Work item list', function () {
   var WORK_ITEM_UPDATED_TITLE = "The test workitem title - UPDATED";
   var WORK_ITEM_DESCRIPTION = "The test workitem description";
   var WORK_ITEM_UPDATED_DESCRIPTION = "The test workitem description - UPDATED";
-  var EXAMPLE_USER_0 = "Example User 0";
+  var EXAMPLE_USER_0 = "Ruchir Garg";
   var EXAMPLE_USER_1 = "Example User 1";
   var MOCK_WORKITEM_TITLE_0 = "Title Text 0";
   var WORKITEM_0_ID = 'id0';
@@ -38,8 +39,19 @@ describe('Work item list', function () {
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);
-    testSupport.setTestSpace(page);
+    browser.ignoreSynchronization = false;
+    page = new WorkItemListPage();
+  });
+
+  /* Simple test for registered user */
+  it("should perform - LOGIN", function() {
+    browser.ignoreSynchronization = true;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000000;   /* 10 minutes */
+    console.log ("Login test for target URL: " + browser.params.target.url);
+    /* Login to SUT */
+    page.clicklocalLoginButton();
+    var RHDpage = new OpenShiftIoRHDLoginPage();
+    RHDpage.doLogin(browser);
   });
 
   /* User can read, update, remove assignee on a workitem  */

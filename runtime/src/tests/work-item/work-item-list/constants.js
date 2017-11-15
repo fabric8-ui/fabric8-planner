@@ -19,5 +19,6 @@ function define(name, value) {
     });
 }
 
+define("SHORT_WAIT", 5000);
 define("WAIT", 30000);
 define("LONG_WAIT", 60000);
