@@ -466,19 +466,22 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.logger.log('Got work item list.');
       this.logger.log(workItemResp.workItems);
       const workItemsAll = workItemResp.workItems;
+      const workItems = workItemsAll;
       this.nextLink = workItemResp.nextLink;
       this.included = workItemResp.included;
       //Remove work item duplicates - a child work item
-      //should not appear part of the root response
-      const workItems = workItemsAll.filter( wi => {
-        if( wi.relationships.parent.data != undefined ) {
-          //take the parent ID and loop thorough the work items
-          if (workItemsAll.findIndex(item => item.id === wi.relationships.parent.data.id) === -1)
+      //should not appear part of the root response only for iterations
+      if (this.groupTypesService.groupName === 'execution') {
+        const workItems = workItemsAll.filter( wi => {
+          if( wi.relationships.parent.data != undefined ) {
+            //take the parent ID and loop thorough the work items
+            if (workItemsAll.findIndex(item => item.id === wi.relationships.parent.data.id) === -1)
+              return wi;
+          } else {
             return wi;
-        } else {
-          return wi;
-        }
-      });
+          }
+        });
+      }
       this.workItems = this.workItemService.resolveWorkItems(
         workItems,
         this.iterations,
