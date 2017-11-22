@@ -2,20 +2,22 @@ let SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 
 exports.config = {
     useAllAngular2AppRoots: true,
-    getPageTimeout: 30000,
-    seleniumAddress: 'http://localhost:4444/wd/hub',
+    directConnect: true,
+    getPageTimeout: 120000,
+    allScriptsTimeout: 120000,
     specs: ['./../src/tests/**/*.spec.js'],
     exclude: ['./../src/tests/**/*test-template.spec.js','./../src/tests/**/*work-item-dynamic-fields.spec.js','./../src/tests/**/EXCLUDED/*.spec.js'],
     suites: {
       smokeTest: './../src/tests/**/smokeTest.spec.js',
-      fullTest:  './../src/tests/**/*.spec.js'
+      fullTest:  './../src/tests/**/*.spec.js',
+      loginTest: './../src/tests/**/login.spec.js',
     },
 
     jasmineNodeOpts: {
         isVerbose: true,
         showColors: true,
         includeStackTrace: true,
-        defaultTimeoutInterval: 60000,
+        defaultTimeoutInterval: 120000,
         print: function () {
         }
     },
