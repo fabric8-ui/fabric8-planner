@@ -1,0 +1,13 @@
+name: planner
+controller: DeploymentConfig
+containers:
+- image: fabric8/fabric8-ui:[[F8UI_IMAGE_TAG]]
+  env:
+  - name: PROXY_PASS_URL
+    value: "https://api.free-int.openshift.com:443"
+services:
+- name: planner
+  type: NodePort
+  ports:
+    - port: 8080
+      nodePort: 32123
