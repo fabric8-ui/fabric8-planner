@@ -178,6 +178,7 @@ class WorkItemDetailPage {
   }
 
   clickWorkItemDescriptionEditIcon () {
+    this.workItemDescriptionEditIcon.click();
     return this.workItemDescriptionEditIcon.click();
   }
 
