@@ -276,6 +276,9 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       let targetContHeight:number = window.innerHeight - hdrHeight - expHeight;
       this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight + "px");
     }
+    if(document.getElementsByTagName('body')) {
+      document.getElementsByTagName('body')[0].style.overflow = "hidden";
+    }
   }
   @HostListener('window:resize', ['$event'])
     onResize(event) {
@@ -287,6 +290,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     if (this.spaceSubscription) {
       this.spaceSubscription.unsubscribe();
     }
+    document.getElementsByTagName('body')[0].style.overflow = "auto";
   }
 
   // model handlers
@@ -351,8 +355,10 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     //if initialGroup is undefined, the page has been refreshed - find  group context based on URL
     if ( this.route.snapshot.queryParams['q'] ) {
       let wits = this.route.snapshot.queryParams['q'].split('workitemtype:')
-      let collection = wits[1].replace(')','').split(',');
-      this.groupTypesService.findGroupConext(collection);
+      if(wits.length > 1) {
+        let collection = wits[1].replace(')','').split(',');
+        this.groupTypesService.findGroupConext(collection);
+      }
     }
     if(this.initialGroup === undefined)
       this.initialGroup = this.groupTypesService.getCurrentGroupType();
@@ -459,11 +465,29 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       console.log('Performance :: Fetching the initial list - '  + (t2 - t1) + ' milliseconds.');
       this.logger.log('Got work item list.');
       this.logger.log(workItemResp.workItems);
-      const workItems = workItemResp.workItems;
+      const workItemsAll = workItemResp.workItems;
+      let tempWIs = []
       this.nextLink = workItemResp.nextLink;
       this.included = workItemResp.included;
+      //Remove work item duplicates - a child work item
+      //should not appear part of the root response only for iterations
+      if (this.groupTypesService.groupName === 'execution') {
+        tempWIs = workItemsAll.filter( wi => {
+          if( wi.relationships.parent.data != undefined ) {
+            //take the parent ID and loop thorough the work items
+            let i = workItemsAll.findIndex(item => item.id === wi.relationships.parent.data.id);
+            if (i === -1) {
+              return wi;
+            }
+          } else {
+            return wi;
+          }
+        });
+      } else {
+        tempWIs = workItemsAll;
+      }
       this.workItems = this.workItemService.resolveWorkItems(
-        workItems,
+        tempWIs,
         this.iterations,
         [], // We don't want to static resolve user at this point
         this.workItemTypes,
@@ -717,6 +741,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.workItemService.editWIObservable.subscribe(updatedItem => {
         let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
         if(this.filterService.doesMatchCurrentFilter(updatedItem)){
+          updatedItem.hasChildren = updatedItem.relationships.children.meta.hasChildren;
+          updatedItem.relationships['parent'] = this.workItems[index].relationships.parent;
           if (index > -1) {
             this.workItems[index] = updatedItem;
           } else {
@@ -813,6 +839,17 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
             default:
               break;
           }
+      })
+    );
+
+    this.eventListeners.push(
+      this.iterationService.createIterationObservable.subscribe(iteration => {
+        let index = this.iterations.findIndex(i => i.id === iteration.id);
+        if (index > -1) {
+          this.iterations[index] = iteration;
+        } else {
+          this.iterations.push(iteration);
+        }
       })
     );
   }
@@ -937,7 +974,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     if (event === 'out') {
       setTimeout(() => {
         this.sidePanelOpen = true;
-      }, 100)
+      }, 200)
     } else {
       this.sidePanelOpen = false;
     }
