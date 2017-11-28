@@ -180,9 +180,8 @@ describe('Work item list', function () {
 
   it('Edit comment and cancel - Desktop ', function() {
     var detailPage = page.clickWorkItem(page.firstWorkItem);
-    detailPage.scrollToBottom()
-      .then(function() {
-        detailPage.commentEdit('0').click();
+    detailPage.scrollToBottom().then(function() {
+        detailPage.clickCommentEdit('0');
         detailPage.editComments('updated comment!','0',false);
         detailPage.scrollToBottom().then(function(){
           detailPage.clickCloseComment('0');
@@ -215,6 +214,7 @@ describe('Work item list', function () {
     detailPage.selectLabelByTitle(testLabelTitle);
     detailPage.clickLabelClose();
     detailPage.clickWorkItemDetailCloseButton();
+    browser.sleep(3000);
     expect(page.workItemAttachedLabels(page.firstWorkItem).getText()).toContain(testLabelTitle);
   });
   });
