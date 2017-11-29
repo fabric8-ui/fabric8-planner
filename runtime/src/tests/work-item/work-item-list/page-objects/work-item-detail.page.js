@@ -448,7 +448,7 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   /* The edit box for a comment */
   commentDiv () {
     return element(by.id("wi-comment"));
-    return element(by.xpath(".//*[contains(@class,'editor active')]"));
+    //return element(by.xpath(".//*[contains(@class,'editor active')]"));
   }
   clickCommentDiv () {
     return this.commentDiv().click();
