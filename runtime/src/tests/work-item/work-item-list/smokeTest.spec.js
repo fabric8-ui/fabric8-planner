@@ -183,9 +183,9 @@ describe('Work item list', function () {
     detailPage.scrollToBottom().then(function() {
         detailPage.clickCommentEdit('0');
         detailPage.editComments('updated comment!','0',false);
-        // detailPage.scrollToBottom().then(function(){
-        //   detailPage.clickCloseComment('0');
-        // });
+        detailPage.scrollToBottom().then(function(){
+          detailPage.clickCloseComment('0');
+        });
         expect(detailPage.getCommentBody('0')).toBe(' updated comment!');
       });
   });
