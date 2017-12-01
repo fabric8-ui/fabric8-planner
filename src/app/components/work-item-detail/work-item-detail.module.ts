@@ -1,3 +1,4 @@
+import { AssigneeSelectorModule } from './../assignee-selector/assignee-selector.module';
 import { LabelSelectorModule } from './../label-selector/label-selector.module';
 
 import { RouterModule } from '@angular/router';
@@ -33,6 +34,8 @@ import { MarkdownControlComponent } from '../markdown-control/markdown-control.c
 import { WorkItemLinkModule } from '../work-item-link/work-item-link.module';
 import { WorkItemCommentModule } from '../work-item-comment/work-item-comment.module';
 import { WorkItemTypeControlService } from '../../services/work-item-type-control.service';
+import { SelectDropdownModule } from './../../widgets/select-dropdown/select-dropdown.module';
+import { AssigneesModule } from './../assignee/assignee.module';
 
 let providers = [];
 
@@ -45,6 +48,8 @@ if (process.env.ENV == 'inmemory') {
 @NgModule({
   imports: [
     AlmUserNameModule,
+    AssigneesModule,
+    AssigneeSelectorModule,
     BsDropdownModule.forRoot(),
     HttpModule,
     InlineInputModule,
@@ -63,6 +68,7 @@ if (process.env.ENV == 'inmemory') {
     MarkdownModule,
     MyDatePickerModule,
     RouterModule,
+    SelectDropdownModule,
     WorkItemLinkModule,
     WorkItemCommentModule
   ],

@@ -1,0 +1,27 @@
+<f8-select-dropdown
+  #dropdown
+  [toggleButtonRef]="toggleButtonRef"
+  [dropdownItem]="dropdownItem"
+  [headerText]="'Add Assignee'"
+  [menuItems]="assignees"
+  [showSearch]="backup.length > 2"
+  (onSelect)="onSelect($event)"
+  (onSearch)="onSearch($event)"
+  (onOpen)="onOpen($event)"
+  (onClose)="onClose($event)">
+  <ng-template #toggleButtonRef>
+    <span class="clickable add-label" (click)="closeAddAssignee()">
+      Add Assignee
+    </span>
+  </ng-template>
+  <ng-template #dropdownItem let-name="attributes.fullName"
+    let-src="attributes.imageURL + '&s=20'">
+    <div class="user-avatar margin-right-10 pull-left">
+      <img
+        class="user-assign-avatar"
+        [src]="src | almAvatarSize: 20"
+        onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'"/>
+    </div>
+    <span [innerHTML]="name | almSearchHighlight: searchValue"></span>
+  </ng-template>
+</f8-select-dropdown>

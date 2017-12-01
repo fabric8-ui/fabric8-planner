@@ -3,9 +3,12 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   HostListener,
+  Input,
   OnInit,
   OnDestroy,
+  Output,
   ViewChild,
   ViewChildren,
   QueryList
@@ -49,6 +52,11 @@ import { WorkItemType } from '../../models/work-item-type';
 import { CollaboratorService } from '../../services/collaborator.service';
 import { LabelService } from '../../services/label.service';
 import { LabelModel } from '../../models/label.model';
+import { AssigneeSelectorComponent } from './../assignee-selector/assignee-selector.component';
+
+import {
+  SelectDropdownComponent
+} from './../../widgets/select-dropdown/select-dropdown.component';
 
 @Component({
   selector: 'work-item-preview',
@@ -78,6 +86,14 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   @ViewChild('iterationSelectbox') iterationSelectbox: TypeaheadDropdown;
   @ViewChild('labelSelector') labelSelector: LabelSelectorComponent;
   @ViewChild('assignee') assignee : any;
+  @ViewChild('labelname') labelnameInput: ElementRef;
+  @ViewChild('dropdown') dropdownRef: SelectDropdownComponent;
+  @ViewChild('AssigneeSelector') AssigneeSelector: AssigneeSelectorComponent;
+  @Input() selectedLabels: LabelModel[] = [];
+  @Input() selectedAssignees: User[] = [];
+
+  @Output() onOpenSelector: EventEmitter<any> = new EventEmitter();
+  @Output() onCloseSelector: EventEmitter<LabelModel[]> = new EventEmitter();
 
   workItem: WorkItem;
   workItemRef: WorkItem;
@@ -135,7 +151,11 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   loadingIteration: boolean = false;
   loadingArea: boolean = false;
   loadingLabels: boolean = false;
+  loadingAssignees: boolean = false;
   labels: LabelModel[] = [];
+
+  private activeAddAssignee: boolean = false;
+  private searchValue: string = '';
 
   constructor(
     private areaService: AreaService,
@@ -216,6 +236,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
           this.loadingIteration = true;
           this.loadingArea = true;
           this.loadingLabels = true;
+          this.loadingAssignees = true;
         })
         .switchMap(() => this.workItemService.getWorkItemByNumber(id))
         .do(workItem => {
@@ -288,12 +309,14 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   }
 
   resolveAssignees(): Observable<any> {
+    this.activeSearchAssignee();
     return this.workItemService.resolveAssignees(this.workItem.relationships.assignees)
       .do(assignees => {
         // Resolve assignees
         this.workItem.relationships.assignees = {
           data: assignees
         };
+        this.loadingAssignees = false;
       })
   }
 
@@ -626,6 +649,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   }
 
   updateLabels(selectedLabels: LabelModel[]) {
+    console.log('labels in WI detail >>>>', selectedLabels);
     if(this.workItem.id) {
       this.loadingLabels = true;
       let payload = cloneDeep(this.workItemPayload);
@@ -919,30 +943,44 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   }
 
   assignUser(user: User): void {
+    console.log('saving assignees ***');
+    this.loadingAssignees = true;
+
     if(this.workItem.id) {
+      if(this.workItem.relationships.assignees.data.length > 0 ) {
+        //this.selectedAssignees = this.workItem.relationships.assignees.data;
+      }
+      this.selectedAssignees.push(user);
+
+
+
       let payload = cloneDeep(this.workItemPayload);
       payload = Object.assign(payload, {
         relationships : {
           assignees: {
-            data: [{
-              id: user.id,
-              type: 'identities'
-            }]
+            data: this.selectedAssignees.map(assignee => {
+              return {
+                id: user.id,
+                type: 'identities'
+              }
+            })
           }
         }
       });
       this.save(payload, true)
         .switchMap(workItem => this.workItemService.resolveAssignees(workItem.relationships.assignees))
-        .subscribe(assignees => {
+        .subscribe(workItem => {
+          console.log('****selectedAssignees', workItem)
+          this.loadingAssignees = false;
           this.workItem.relationships.assignees = {
-            data: assignees
+            data: this.workItem.relationships.assignees.data
           };
 
           // TODO: List update hack. should go away
           this.workItemRef.relationships.assignees = {
-            data: assignees
+            data: this.workItem.relationships.assignees.data
           };
-
+          console.log("****1", this.workItem);
           this.updateOnList();
         })
     } else {
@@ -956,8 +994,9 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
       this.workItem.relationships.assignees = {
         data : assignee
       };
+      console.log('*****2');
     }
-    this.searchAssignee = false;
+    //this.searchAssignee = false;
   }
 
   unassignUser(): void {
@@ -1245,5 +1284,22 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
         this.closePreview();
       }
     }
+  }
+  onOpen(event) {
+    this.onOpenSelector.emit('open');
+  }
+   onClose(event) {
+    this.onCloseSelector.emit(cloneDeep(this.selectedLabels));
+  }
+
+  openDropdown() {
+    this.dropdownRef.openDropdown();
+  }
+
+  closeDropdown() {
+    this.dropdownRef.closeDropdown();
+  }
+  closeAddAssignee() {
+    this.activeAddAssignee = false;
   }
 }
