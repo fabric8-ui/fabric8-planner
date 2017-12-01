@@ -183,6 +183,7 @@ describe('Work item list', function () {
         });
         expect(detailPage.getCommentBody('0')).toBe('Some Comment 0');
       });
+      
   });
 
     /* Commenting the following two tests as they are unreliable; failing often. 
