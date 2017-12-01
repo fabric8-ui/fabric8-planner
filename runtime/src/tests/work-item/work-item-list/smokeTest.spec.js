@@ -186,7 +186,7 @@ describe('Work item list', function () {
         detailPage.scrollToBottom().then(function(){
           detailPage.clickCloseComment('0');
         });
-        expect(detailPage.getCommentBody('0')).toBe(' updated comment!');
+        expect(detailPage.getCommentBody('0')).toBe('Some Comment 0');
       });
   });
 
