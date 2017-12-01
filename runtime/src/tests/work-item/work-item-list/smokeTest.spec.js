@@ -178,7 +178,7 @@ describe('Work item list', function () {
     detailPage.clickStartCoding();
    });
 
-  it('Edit comment and cancel - Desktop ', function() {
+  fit('Edit comment and cancel - Desktop ', function() {
     var detailPage = page.clickWorkItem(page.firstWorkItem);
     detailPage.scrollToBottom().then(function() {
         detailPage.clickCommentEdit('0');
@@ -190,7 +190,7 @@ describe('Work item list', function () {
       });
   });
 
-    /* Commenting the following two tests as they are unreliable; failing often. 
+    /* Commenting the following two tests as they are unreliable; failing often.
   They will be added back once they attain certain reliability */
 
   // it('Verify create new Label', function(){
