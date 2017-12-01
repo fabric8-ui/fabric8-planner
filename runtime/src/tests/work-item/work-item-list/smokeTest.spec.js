@@ -178,7 +178,7 @@ describe('Work item list', function () {
     detailPage.clickStartCoding();
    });
 
-  fit('Edit comment and cancel - Desktop ', function() {
+  it('Edit comment and cancel - Desktop ', function() {
     var detailPage = page.clickWorkItem(page.firstWorkItem);
     detailPage.scrollToBottom().then(function() {
         detailPage.clickCommentEdit('0');
