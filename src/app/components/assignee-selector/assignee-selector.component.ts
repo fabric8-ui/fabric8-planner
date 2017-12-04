@@ -33,7 +33,11 @@ export class AssigneeSelectorComponent implements OnChanges {
   @ViewChild('dropdown') dropdownRef: SelectDropdownComponent;
 
   @Input() allUsers: User[] = [];
-  @Input() selectedAssignees: User[] = [];
+
+  selectedAssignees: User[] = [];
+  @Input('selectedAssignees') set selectedAssigneesSetter(val) {
+    this.selectedAssignees = cloneDeep(val);
+  }
 
   @Output() onSelectAssignee: EventEmitter<User[]> = new EventEmitter();
   @Output() onOpenAssignee: EventEmitter<any> = new EventEmitter();
@@ -123,9 +127,8 @@ export class AssigneeSelectorComponent implements OnChanges {
     this.onOpenAssignee.emit('open');
   }
   onClose(event) {
-    console.log('sending selected assignees', this.selectedAssignees);
     this.onCloseAssignee.emit(cloneDeep(this.selectedAssignees));
-   }
+  }
 
   openDropdown() {
     this.dropdownRef.openDropdown();

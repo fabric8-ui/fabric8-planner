@@ -890,69 +890,12 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
     this.closeUserRestFields();
   }
 
-  filterUser(event: any) {
-    // Down arrow or up arrow
-    if (event.keyCode == 40 || event.keyCode == 38) {
-      let lis = this.userList.nativeElement.children;
-      let i = 0;
-      for (; i < lis.length; i++) {
-        if (lis[i].classList.contains('selected')) {
-          break;
-        }
-      }
-      if (i == lis.length) { // No existing selected
-        if (event.keyCode == 40) { // Down arrow
-          lis[0].classList.add('selected');
-          lis[0].scrollIntoView(false);
-        } else { // Up arrow
-          lis[lis.length - 1].classList.add('selected');
-          lis[lis.length - 1].scrollIntoView(false);
-        }
-      } else { // Existing selected
-        lis[i].classList.remove('selected');
-        if (event.keyCode == 40) { // Down arrow
-          lis[(i + 1) % lis.length].classList.add('selected');
-          lis[(i + 1) % lis.length].scrollIntoView(false);
-        } else { // Down arrow
-          // In javascript mod gives exact mod for negative value
-          // For example, -1 % 6 = -1 but I need, -1 % 6 = 5
-          // To get the round positive value I am adding the divisor
-          // with the negative dividend
-          lis[(((i - 1) % lis.length) + lis.length) % lis.length].classList.add('selected');
-          lis[(((i - 1) % lis.length) + lis.length) % lis.length].scrollIntoView(false);
-        }
-      }
-    } else if (event.keyCode == 13) { // Enter key event
-      let lis = this.userList.nativeElement.children;
-      let i = 0;
-      for (; i < lis.length; i++) {
-        if (lis[i].classList.contains('selected')) {
-          break;
-        }
-      }
-      if (i < lis.length) {
-        let selectedId = lis[i].dataset.value;
-        this.assignUser(selectedId);
-      }
-    } else {
-      let inp = this.userSearch.nativeElement.value.trim();
-      this.filteredUsers = this.users.filter((item) => {
-        return item.attributes.fullName.toLowerCase().indexOf(inp.toLowerCase()) > -1;
-      });
-    }
-  }
-
-  assignUser(user: User): void {
-    console.log('saving assignees ***');
+  assignUser(users: User[]): void {
+    console.log('saving assignees ***', users);
     this.loadingAssignees = true;
 
     if(this.workItem.id) {
-      if(this.workItem.relationships.assignees.data.length > 0 ) {
-        //this.selectedAssignees = this.workItem.relationships.assignees.data;
-      }
-      this.selectedAssignees.push(user);
-
-
+      this.selectedAssignees = users;
 
       let payload = cloneDeep(this.workItemPayload);
       payload = Object.assign(payload, {
@@ -960,7 +903,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
           assignees: {
             data: this.selectedAssignees.map(assignee => {
               return {
-                id: user.id,
+                id: assignee.id,
                 type: 'identities'
               }
             })
@@ -969,55 +912,36 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
       });
       this.save(payload, true)
         .switchMap(workItem => this.workItemService.resolveAssignees(workItem.relationships.assignees))
-        .subscribe(workItem => {
-          console.log('****selectedAssignees', workItem)
+        .subscribe(assignees => {
+          console.log('****selectedAssignees', assignees)
           this.loadingAssignees = false;
           this.workItem.relationships.assignees = {
-            data: this.workItem.relationships.assignees.data
+            data: assignees
           };
 
           // TODO: List update hack. should go away
           this.workItemRef.relationships.assignees = {
-            data: this.workItem.relationships.assignees.data
+            data: assignees
           };
           console.log("****1", this.workItem);
           this.updateOnList();
         })
     } else {
-      let assignee = [{
-        attributes: {
-          fullName: user.attributes.fullName
-        },
-        id: user.id,
-        type: 'identities'
-      } as User];
+      let assignees = users.map(user => {
+        return {
+          attributes: {
+            fullName: user.attributes.fullName
+          },
+          id: user.id,
+          type: 'identities'
+        } as User;
+      });
       this.workItem.relationships.assignees = {
-        data : assignee
+        data : assignees
       };
       console.log('*****2');
     }
     //this.searchAssignee = false;
-  }
-
-  unassignUser(): void {
-    let payload = cloneDeep(this.workItemPayload);
-    payload = Object.assign(payload, {
-      relationships : {
-        assignees: {
-          data: []
-        }
-      }
-    });
-    this.save(payload, true)
-    .subscribe(() => {
-      this.workItem.relationships.assignees.data = [] as User[];
-
-      // TODO: List update hack. should go away
-      this.workItemRef.relationships.assignees.data = [] as User[];
-
-      this.updateOnList();
-    });
-    this.searchAssignee = false;
   }
 
   cancelAssignment(): void {

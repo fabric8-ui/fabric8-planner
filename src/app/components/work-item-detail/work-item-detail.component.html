@@ -107,7 +107,7 @@
                       workItem.relationships?.assignees?.data : []">
                   </f8-assignee>
 
-                  <div class="user-search" >
+                  <div class="user-search" *ngIf="loggedIn && !loadingAssignees">
                     <assignee-selector
                       id="assigneeSelector"
                       #assigneeSelector

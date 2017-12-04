@@ -21,25 +21,20 @@ import { User } from 'ngx-login-client';
 
 export class AssigneesComponent implements OnInit {
 
-    @Input('assignees') assigneeInput: User[] = [];
+  private assignees: User[] = [];
+  @Input('assignees') set assigneeInput(val) {
+    this.assignees = val;
+  };
 
-    private assignees: User[] = [];
-    private spaceSubscription: Subscription = null;
-    private spaceId;
+  private spaceSubscription: Subscription = null;
+  private spaceId;
 
-    constructor(
-      private filterService: FilterService,
-      private spaces: Spaces
-    ){}
+  constructor(
+    private filterService: FilterService,
+    private spaces: Spaces
+  ){}
 
-    ngOnInit() {
-      console.log("ASSignees: " + this.assignees);
-    }
-    ngOnChanges(changes: SimpleChanges) {
-      // this.labels = changes.labels.currentValue;
-      // if (changes.assigneeInput) {
-      //   this.assignees = this.assigneeInput;
-      //   console.log("ASSignees: " + this.assignees);
-      // }
-    }
+  ngOnInit() {
+    console.log("ASSignees: " + this.assignees);
   }
+}
