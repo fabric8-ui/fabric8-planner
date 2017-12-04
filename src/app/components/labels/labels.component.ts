@@ -50,15 +50,12 @@ export class LabelsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     // this.labels = changes.labels.currentValue;
-    console.log('ng on change called');
     if (changes.labelInput) {
-      console.log('Step 2');
       this.labels = this.labelInput.filter(label => {
         return label.attributes &&
           label.attributes['background-color'] &&
           label.attributes['text-color']
       });
-      console.log('Step 3', this.labels);
     }
   }
 

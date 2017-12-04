@@ -1,4 +1,3 @@
-import { AssigneeSelectorModule } from './../assignee-selector/assignee-selector.module';
 import { LabelSelectorModule } from './../label-selector/label-selector.module';
 
 import { RouterModule } from '@angular/router';
@@ -36,6 +35,7 @@ import { WorkItemCommentModule } from '../work-item-comment/work-item-comment.mo
 import { WorkItemTypeControlService } from '../../services/work-item-type-control.service';
 import { SelectDropdownModule } from './../../widgets/select-dropdown/select-dropdown.module';
 import { AssigneesModule } from './../assignee/assignee.module';
+import { AssigneeSelectorModule } from './../assignee-selector/assignee-selector.module';
 
 let providers = [];
 

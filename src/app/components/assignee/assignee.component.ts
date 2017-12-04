@@ -35,6 +35,5 @@ export class AssigneesComponent implements OnInit {
   ){}
 
   ngOnInit() {
-    console.log("ASSignees: " + this.assignees);
   }
 }

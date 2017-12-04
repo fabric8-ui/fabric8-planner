@@ -26,17 +26,35 @@ import { WorkItemService } from '../../services/work-item.service';
   templateUrl: './assignee-selector.component.html',
   styleUrls: ['./assignee-selector.component.less']
 })
-export class AssigneeSelectorComponent implements OnChanges {
+export class AssigneeSelectorComponent {
 
   @ViewChild('userSearch') userSearch: any;
   @ViewChild('userList') userList: any;
   @ViewChild('dropdown') dropdownRef: SelectDropdownComponent;
 
-  @Input() allUsers: User[] = [];
+  @Input() loggedInUser: User;
+
+  allUsers: User[] = [];
+  @Input('allUsers') set allUsersSetter(val: User[]) {
+    this.allUsers = cloneDeep(val);
+    this.backup = cloneDeep(this.allUsers);
+    if (this.searchValue.length) {
+      this.assignees =
+        cloneDeep(this.backup.filter(i => i.name.indexOf(this.searchValue) > - 1));
+    }
+    else {
+      this.assignees = cloneDeep(this.backup);
+    }
+    if (this.loggedInUser) {
+      this.assignees = [this.loggedInUser, ...this.assignees];
+      this.backup = [this.loggedInUser, ...this.backup];
+    }
+  }
 
   selectedAssignees: User[] = [];
   @Input('selectedAssignees') set selectedAssigneesSetter(val) {
     this.selectedAssignees = cloneDeep(val);
+    this.updateSelection();
   }
 
   @Output() onSelectAssignee: EventEmitter<User[]> = new EventEmitter();
@@ -46,7 +64,6 @@ export class AssigneeSelectorComponent implements OnChanges {
   workItem: WorkItem;
   workItemRef: WorkItem;
   users: User[] = [];
-  loggedInUser: User;
   workItemPayload: WorkItem;
   searchAssignee: Boolean = false;
 
@@ -61,22 +78,6 @@ export class AssigneeSelectorComponent implements OnChanges {
     private workItemService: WorkItemService
   ) {}
 
-  ngOnChanges(changes: SimpleChanges) {
-    if( changes.allUsers ) {
-      this.backup = cloneDeep(this.allUsers);
-      if (this.searchValue.length) {
-        this.assignees =
-          cloneDeep(this.backup.filter(i => i.name.indexOf(this.searchValue) > - 1));
-      }
-      else {
-        this.assignees = cloneDeep(this.backup);
-      }
-      console.log("assignee:"+this.assignees);
-    }
-    if( changes.selectedLabels ) {
-      this.updateSelection();
-    }
-  }
   onSelect(event: any) {
     let findSelectedIndex = this.selectedAssignees.findIndex(i => i.id === event.id);
     if (findSelectedIndex > -1) {

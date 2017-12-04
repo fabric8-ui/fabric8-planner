@@ -891,7 +891,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   }
 
   assignUser(users: User[]): void {
-    console.log('saving assignees ***', users);
     this.loadingAssignees = true;
 
     if(this.workItem.id) {
@@ -913,7 +912,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
       this.save(payload, true)
         .switchMap(workItem => this.workItemService.resolveAssignees(workItem.relationships.assignees))
         .subscribe(assignees => {
-          console.log('****selectedAssignees', assignees)
           this.loadingAssignees = false;
           this.workItem.relationships.assignees = {
             data: assignees
@@ -923,7 +921,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
           this.workItemRef.relationships.assignees = {
             data: assignees
           };
-          console.log("****1", this.workItem);
           this.updateOnList();
         })
     } else {
@@ -939,7 +936,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
       this.workItem.relationships.assignees = {
         data : assignees
       };
-      console.log('*****2');
     }
     //this.searchAssignee = false;
   }

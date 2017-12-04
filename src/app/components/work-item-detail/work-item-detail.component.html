@@ -101,42 +101,20 @@
                   <span *ngIf="loadingAssignees"
                     class="spinner spinner-sm spinner-inline">
                   </span>
-
                   <f8-assignee *ngIf="!loadingAssignees"
                     [assignees]="workItem.relationships?.assignees?.data ?
                       workItem.relationships?.assignees?.data : []">
                   </f8-assignee>
-
-                  <div class="user-search" *ngIf="loggedIn && !loadingAssignees">
+                  <div class="user-search"
+                    *ngIf="loggedIn && !loadingAssignees">
                     <assignee-selector
                       id="assigneeSelector"
-                      #assigneeSelector
                       [allUsers]="users"
+                      [loggedInUser]="loggedInUser"
                       [selectedAssignees]="workItem.relationships?.assignees?.data ?
                       workItem.relationships?.assignees?.data : []"
                       (onCloseAssignee)="assignUser($event)">
                     </assignee-selector>
-                  </div>
-                  <!-- <span
-                    *ngIf="!workItem.relationships?.assignees?.data?.length"
-                    class="pull-left fa fa-user-plus user-assign-icon">
-                  </span>
-                  <div class="user-avatar margin-right-10 pull-left"
-                    *ngIf="workItem.relationships?.assignees?.data?.length">
-                    <img
-                      class="user-assign-avatar"
-                      placement="bottom"
-                      tooltip="{{workItem.relationships?.assignees?.data[0]?.attributes?.fullName}}"
-                      src="{{workItem.relationships?.assignees?.data[0]?.attributes?.imageURL + '&s=20'}}"
-                      onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'" />
-                  </div> -->
-                  <div class="pull-left detail-assignee-name">
-                      <!-- <span *ngIf="!searchAssignee && !workItem.relationships?.assignees?.data?.length" (click)="activeSearchAssignee()" class="placeholder pointer assigned_user">
-                        Unassigned
-                      </span>
-                      <span *ngIf="!searchAssignee && workItem.relationships?.assignees?.data?.length" (click)="activeSearchAssignee()" class="pointer assigned_user" id="WI_details_assigned_user">
-                        {{workItem.relationships?.assignees?.data[0] | almUserName:'Assignee not found' }}
-                      </span> -->
                   </div>
                 </div>
               </div>
