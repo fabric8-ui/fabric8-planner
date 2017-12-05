@@ -20,6 +20,7 @@ import {
 } from 'ngx-login-client';
 import { WorkItem, WorkItemRelations } from '../../models/work-item';
 import { WorkItemService } from '../../services/work-item.service';
+import { setTimeout } from 'core-js/library/web/timers';
 
 @Component({
   selector: 'assignee-selector',
@@ -37,7 +38,15 @@ export class AssigneeSelectorComponent {
   allUsers: User[] = [];
   @Input('allUsers') set allUsersSetter(val: User[]) {
     this.allUsers = cloneDeep(val);
-    this.backup = cloneDeep(this.allUsers);
+    this.backup = cloneDeep(this.allUsers.map(user => {
+      return {
+        name: user.attributes.fullName,
+        src: user.attributes.imageURL,
+        id: user.id,
+        stickontop: false,
+        selected: false
+      }
+    }));
     if (this.searchValue.length) {
       this.assignees =
         cloneDeep(this.backup.filter(i => i.name.indexOf(this.searchValue) > - 1));
@@ -46,15 +55,22 @@ export class AssigneeSelectorComponent {
       this.assignees = cloneDeep(this.backup);
     }
     if (this.loggedInUser) {
-      this.assignees = [this.loggedInUser, ...this.assignees];
-      this.backup = [this.loggedInUser, ...this.backup];
+      this.backup = [{
+        name: this.loggedInUser.attributes.fullName,
+        src: this.loggedInUser.attributes.imageURL,
+        id: this.loggedInUser.id,
+        stickontop: true,
+        selected: false
+      }, ...this.backup];
+      this.assignees = [this.backup[0], ...this.assignees];
+      this.allUsers = [this.loggedInUser, ...this.allUsers];
     }
+    this.updateSelection();
   }
 
   selectedAssignees: User[] = [];
   @Input('selectedAssignees') set selectedAssigneesSetter(val) {
     this.selectedAssignees = cloneDeep(val);
-    this.updateSelection();
   }
 
   @Output() onSelectAssignee: EventEmitter<User[]> = new EventEmitter();
@@ -93,14 +109,14 @@ export class AssigneeSelectorComponent {
   }
   updateSelection() {
     this.assignees.forEach((assignee, index) => {
-      if (this.selectedAssignees.find(l => assignee.id === l.id)) {
+      if (this.selectedAssignees.find(a => assignee.id === a.id)) {
         this.assignees[index].selected = true;
       } else {
         this.assignees[index].selected = false;
       }
     });
-    this.backup.forEach((label, index) => {
-      if (this.selectedAssignees.find(l => label.id === l.id)) {
+    this.backup.forEach((assignee, index) => {
+      if (this.selectedAssignees.find(a => assignee.id === a.id)) {
         this.backup[index].selected = true;
       } else {
         this.backup[index].selected = false;
@@ -111,9 +127,13 @@ export class AssigneeSelectorComponent {
   onSearch(event: any) {
     let needle = event.trim();
     this.searchValue = needle;
-    console.log('backup = ', this.backup);
     if (needle.length) {
-      this.assignees = cloneDeep(this.backup.filter(i => i.attributes.fullName.toLowerCase().indexOf(needle.toLowerCase()) > -1));
+      this.assignees = cloneDeep(
+        this.backup.filter(
+          i =>
+            i.name.toLowerCase().indexOf(needle.toLowerCase()) > -1 ||
+            i.stickontop
+        ));
     } else {
       this.assignees = cloneDeep(this.backup);
     }
