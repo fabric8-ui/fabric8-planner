@@ -24,7 +24,8 @@ import {
   Output,
   EventEmitter,
   Renderer2,
-  HostListener
+  HostListener,
+  AfterViewChecked
 } from '@angular/core';
 import {
   Router,
@@ -76,7 +77,7 @@ import { WorkItemDetailAddTypeSelectorComponent } from './../work-item-create/wo
   templateUrl: './planner-list.component.html',
   styleUrls: ['./planner-list.component.less']
 })
-export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnDestroy {
+export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
   @ViewChildren('activeFilters', {read: ElementRef}) activeFiltersRef: QueryList<ElementRef>;
   @ViewChild('activeFiltersDiv') activeFiltersDiv: any;
   @ViewChild('typeSelectPanel') typeSelectPanel: WorkItemDetailAddTypeSelectorComponent;
@@ -254,7 +255,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     this.authUser = cloneDeep(this.route.snapshot.data['authuser']);
   }
 
-  ngDoCheck() {
+  ngAfterViewChecked() {
     if (this.workItems.length != this.prevWorkItemLength) {
       //this.treeList.update();
       this.prevWorkItemLength = this.workItems.length;
