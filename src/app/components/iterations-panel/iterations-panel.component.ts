@@ -150,6 +150,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
       showCheckbox: false,
       treeOptions: {
         allowDrag: false,
+        allowDrop: false,
         isExpandedField: 'expanded'
       }
     } as TreeListConfig;
