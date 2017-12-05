@@ -15,7 +15,6 @@ import {
   DoCheck,
   ViewEncapsulation,
   Renderer2,
-  HostListener,
   AfterViewChecked
 } from '@angular/core';
 import { Response } from '@angular/http';
