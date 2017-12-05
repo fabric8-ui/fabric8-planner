@@ -113,7 +113,8 @@
                       [loggedInUser]="loggedInUser"
                       [selectedAssignees]="workItem.relationships?.assignees?.data ?
                       workItem.relationships?.assignees?.data : []"
-                      (onCloseAssignee)="assignUser($event)">
+                      (onCloseAssignee)="assignUser($event)"
+                      (onOpenAssignee)="activeSearchAssignee()">
                     </assignee-selector>
                   </div>
                 </div>
