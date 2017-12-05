@@ -67,6 +67,7 @@ import { LabelService } from '../../services/label.service';
 import { LabelModel } from '../../models/label.model';
 import { UrlService } from './../../services/url.service';
 import { WorkItemDetailAddTypeSelectorComponent } from './../work-item-create/work-item-create.component';
+import { setTimeout } from 'core-js/library/web/timers';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -93,7 +94,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
   selectType: string = 'checkbox';
   treeListConfig: TreeListConfig;
   @ViewChild('toolbarHeight') toolbarHeight: ElementRef;
-  @ViewChild('quickaddHeight') quickaddHeight: ElementRef;
   @ViewChild('containerHeight') containerHeight: ElementRef;
 
   workItems: WorkItem[] = [];
@@ -260,9 +260,13 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
       //this.treeList.update();
       this.prevWorkItemLength = this.workItems.length;
     }
+
     if(this.toolbarHeight) {
       let toolbarHt:number =  this.toolbarHeight.nativeElement.offsetHeight;
-      let quickaddHt:number =  this.quickaddHeight.nativeElement.offsetHeight;
+      let quickaddHt:number =  0;
+      if(document.getElementsByClassName('f8-wi-list__quick-add').length > 0) {
+        quickaddHt = (document.getElementsByClassName('f8-wi-list__quick-add')[0] as HTMLElement).offsetHeight;
+      }
       let hdrHeight:number = 0;
       if(document.getElementsByClassName('navbar-pf').length > 0) {
         hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
@@ -273,7 +277,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
       }
       let targetHeight:number = window.innerHeight - toolbarHt - quickaddHt - hdrHeight - expHeight;
       this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
-
       let targetContHeight:number = window.innerHeight - hdrHeight - expHeight;
       this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight + "px");
     }
