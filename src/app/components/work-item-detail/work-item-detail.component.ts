@@ -79,7 +79,6 @@ import {
 export class WorkItemDetailComponent implements OnInit, OnDestroy {
 
   @ViewChild('title') title: any;
-  @ViewChild('userSearch') userSearch: any;
   @ViewChild('userList') userList: any;
   @ViewChild('dropdownButton') dropdownButton: any;
   @ViewChild('areaSelectbox') areaSelectbox: TypeaheadDropdown;
@@ -115,7 +114,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   searchAssignee: Boolean = false;
 
   users: User[] = [];
-  filteredUsers: User[] = [];
 
   loggedInUser: User;
 
@@ -137,7 +135,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
 
   dynamicFormGroup: FormGroup;
   dynamicFormDataArray: any;
-  usersLoaded: Boolean = false;
 
   saving: Boolean = false;
   savingError: Boolean = false;
@@ -309,7 +306,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   }
 
   resolveAssignees(): Observable<any> {
-    this.activeSearchAssignee();
     return this.workItemService.resolveAssignees(this.workItem.relationships.assignees)
       .do(assignees => {
         // Resolve assignees
@@ -791,25 +787,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
   }
 
   closeDetails(): void {
-    // //console.log(this.router.url.split('/')[1]);
-    // this.panelState = 'out';
 
-    // // In case detaile wi add, on close type id query param should be removed
-    // let queryParams = cloneDeep(this.queryParams);
-    // if (Object.keys(queryParams).indexOf('type') > -1) {
-    //   delete queryParams['type'];
-    // }
-
-    // // Wait for the animation to finish
-    // // From in to out it takes 300 ms
-    // // So wait for 400 ms
-    // setTimeout(() => {
-    //   this.router.navigate(
-    //     [this.router.url.split('/detail/')[0]],
-    //     {queryParams: queryParams}
-    //   );
-    //   this.broadcaster.broadcast('detail_close')
-    // }, 400);
   }
 
   listenToEvents() {
@@ -832,30 +810,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
       this.spaces.current.subscribe(space => {
         this.closePreview();
       })
-      // this.spaces.current.switchMap(space => {
-      //   return this.route.params;
-      // }).subscribe((params) => {
-      //   if (params['id'] !== undefined) {
-      //     id = params['id'];
-      //     if (id === 'new'){
-      //       //Add a new work item
-      //       this.headerEditable = true;
-      //       let type = this.route.snapshot.queryParams['type'];
-      //       // Create new item with the WI type
-      //       this.createWorkItemObj(type);
-      //       // Open the panel
-      //       if (this.panelState === 'out') {
-      //         this.panelState = 'in';
-      //         setTimeout(() => {
-      //           if (this.headerEditable && typeof(this.title) !== 'undefined') {
-      //           this.title.nativeElement.focus();
-      //         }});
-      //       }
-      //     } else {
-      //       this.loadWorkItem(id);
-      //     }
-      //   }
-      // })
     );
   }
 
@@ -872,27 +826,15 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
         this.users = this.users.filter(user => {
           return user.id !== authUser.id;
         });
-        this.filteredUsers = this.users;
-        this.usersLoaded = true;
       });
       this.closeUserRestFields();
       this.searchAssignee = true;
-      // Takes a while to render the component
-      setTimeout(() => {
-        if (this.userSearch) {
-          this.userSearch.nativeElement.focus();
-        }
-      }, 50);
     }
-  }
-
-  deactiveSearchAssignee() {
-    this.closeUserRestFields();
   }
 
   assignUser(users: User[]): void {
     this.loadingAssignees = true;
-
+    this.closeUserRestFields();
     if(this.workItem.id) {
       this.selectedAssignees = users;
 
