@@ -39,10 +39,10 @@ class WorkItemListPage {
       refresh_token: 'somerandomtoken',
       token_type: "bearer"
     }));
-    browser.get(browser.baseUrl + "/?token_json="+url);
+    browser.get(browser.params.target.url + "?token_json="+url);
   }
    else {
-     browser.get(browser.baseUrl);
+     browser.get(browser.params.target.url);
    }
  };
 
@@ -117,6 +117,17 @@ class WorkItemListPage {
  }
 
  /* Login functions */
+
+ get localLoginButton() {
+  return element(by.id("login_githubLoginBtn"));
+ }
+
+ clicklocalLoginButton () {
+  browser.wait(until.presenceOf(this.localLoginButton), constants.WAIT, 'Failed to find Login Button');
+  this.localLoginButton.click().then(function(){
+    console.log("Clicked Button: localLoginButton");
+  });
+ }
 
  clickLoginButton () {
    return element(by.id('header_rightDropdown')).all(By.tagName('a')).get(0).click();

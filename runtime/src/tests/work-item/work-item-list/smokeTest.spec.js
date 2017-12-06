@@ -16,9 +16,10 @@
 
 var WorkItemListPage = require('./page-objects/work-item-list.page'),
   testSupport = require('./testSupport'),
-  constants = require('./constants');
+  constants = require('./constants'),
+  OpenShiftIoRHDLoginPage = require('./page-objects/openshift-io-RHD-login.page');
 
-describe('Work item list', function () {
+  describe('Work item list', function () {
   var page, items, browserMode;
 
   var until = protractor.ExpectedConditions;
@@ -38,8 +39,17 @@ describe('Work item list', function () {
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);
-    testSupport.setTestSpace(page);
+    page = new WorkItemListPage();
+  });
+
+   /* Simple test for registered user */
+  fit("should perform - LOGIN", function() {
+    browser.ignoreSynchronization = true;
+    console.log ("Login test for target URL: " + browser.params.target.url);
+    /* Login to SUT */
+    page.clicklocalLoginButton();
+    var RHDpage = new OpenShiftIoRHDLoginPage();
+    RHDpage.doLogin(browser);
   });
 
   /* User can read, update, remove assignee on a workitem  */
