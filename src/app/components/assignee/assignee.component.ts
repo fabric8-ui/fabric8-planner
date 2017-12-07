@@ -20,8 +20,8 @@ import { User } from 'ngx-login-client';
 })
 
 export class AssigneesComponent implements OnInit {
-
   private assignees: User[] = [];
+
   @Input('assignees') set assigneeInput(val) {
     this.assignees = val;
   };

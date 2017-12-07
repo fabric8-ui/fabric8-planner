@@ -1,5 +1,9 @@
 <div>
-  <div class="dib margin-right-15 margin-bottom-7"
+  <div *ngIf="assignees.length < 1">
+    <span class="dib fa fa-user-plus user-assign-icon margin-right-5"></span>
+    <small class="dib">Unassigned</small>
+  </div>
+  <div class="f8-assignees dib margin-right-15 margin-bottom-7"
     *ngFor="let assignee of assignees">
     <div class="user-avatar margin-right-10 pull-left">
       <img

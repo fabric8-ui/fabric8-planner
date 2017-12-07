@@ -1,4 +1,5 @@
 <f8-select-dropdown
+  id="f8-add-assignee-dropdown"
   #dropdown
   *ngIf="assignees.length"
   [toggleButtonRef]="toggleButtonRef"
@@ -11,7 +12,9 @@
   (onOpen)="onOpen($event)"
   (onClose)="onClose($event)">
   <ng-template #toggleButtonRef>
-    <span class="clickable add-label" (click)="closeAddAssignee()">
+    <span class="clickable add-label"
+      id="f8-add-assignee"
+      (click)="closeAddAssignee()">
       <i class="pficon pficon-add-circle-o"></i>
       Add Assignee
     </span>
