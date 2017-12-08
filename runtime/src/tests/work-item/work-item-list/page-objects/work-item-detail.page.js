@@ -349,6 +349,10 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
     return this.AddAssigneeButton.click();
   }
 
+  get AssigneeDropdown() {
+    return element(by.css("#f8-add-assignee-dropdown .select-dropdown"));
+  }
+
   get AssigneeSearch () {
     return element(by.css("#f8-add-assignee-dropdown .select-dropdown-search-input"));
   }
@@ -356,6 +360,10 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   setAssigneeSearch(newSearchString, append) {
     if (!append) { this.AssigneeSearch.clear() };
     return this.AssigneeSearch.sendKeys(newSearchString);
+  }
+
+  get AssigneeDropdownListItem() {
+    return element(by.xpath('.//f8-select-dropdown[@id="f8-add-assignee-dropdown"]//li'));
   }
 
   clickAssigneeListItem(username) {
