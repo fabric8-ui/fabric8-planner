@@ -30,19 +30,21 @@ detailedWorkItemIcons["bug"] = ".card-pf-icon-circle.fa.fa-bug ";
 
 class WorkItemListPage {
 
- constructor(login) {
-   if(login==true) {
-    let url = encodeURIComponent(JSON.stringify({
-      access_token: 'somerandomtoken',
-      expires_in: 1800,
-      refresh_expires_in: 1800,
-      refresh_token: 'somerandomtoken',
-      token_type: "bearer"
-    }));
-    browser.get(browser.params.target.url + "?token_json="+url);
-  }
-   else {
-     browser.get(browser.params.target.url);
+  constructor(auth_token="", refresh_token="") {
+    // TODO: Find a better way to construct URL
+    let params = browser.params;
+    let url = params.host + '/' + params.login.user + '/' + params.spaceName + '/plan';
+    if(auth_token && refresh_token) {
+      let token = encodeURIComponent(JSON.stringify({
+        access_token: auth_token,
+        expires_in: 1800,
+        refresh_expires_in: 1800,
+        refresh_token: refresh_token,
+        token_type: "bearer"
+      }));
+      browser.get(url + "?token_json="+token);
+    } else {
+     browser.get(url);
    }
  };
 
@@ -129,12 +131,20 @@ class WorkItemListPage {
   });
  }
 
+ // Login button when planner is running in standalone mode
  clickLoginButton () {
-   return element(by.id('header_rightDropdown')).all(By.tagName('a')).get(0).click();
+   return element(by.id('header_rightDropdown')).all(By.tagName('a')).get(1).click();
+ }
+
+ get topNavBar() {
+   return $('#header_rightDropdown > li.pull-right.dropdown.user-dropdown-menu');
  }
 
  clickLogoutButton () {
-   return element(by.linkText('Logout'));
+   browser.wait(until.presenceOf(this.topNavBar));
+   this.topNavBar.click().then(function(){
+    return element(by.linkText('Log Out')).click();
+  });
  }
 
  signInGithub (gitusername,gitpassword) {
@@ -148,7 +158,7 @@ class WorkItemListPage {
  }
 
   /* Access the Kebab element relative to its parent workitem */
-  workItemKebabDeleteButton (parentElement) {
+  KebabDeleteButton (parentElement) {
     browser.wait(until.presenceOf(parentElement.element(by.css('.workItemList_Delete'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
     return parentElement.element(by.css('.workItemList_Delete'));
   }

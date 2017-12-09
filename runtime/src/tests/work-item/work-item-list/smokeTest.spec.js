@@ -11,7 +11,7 @@
  *
  * beforeEach will set the mode to phone. Any tests requiring a different resolution will must set explicitly.
  *
- * @author naina-verma, rgarg@redhat.com
+ * @author naina-verma, rgarg@redhat.com, ijarif@redhat.com
  */
 
 var WorkItemListPage = require('./page-objects/work-item-list.page'),
@@ -19,42 +19,59 @@ var WorkItemListPage = require('./page-objects/work-item-list.page'),
   constants = require('./constants'),
   OpenShiftIoRHDLoginPage = require('./page-objects/openshift-io-RHD-login.page');
 
-  describe('Work item list', function () {
+describe('Work item list', function () {
   var page, items, browserMode;
 
   var until = protractor.ExpectedConditions;
-  var WORK_ITEM_TITLE = "The test workitem title";
+  var NEW_WORK_ITEM_TITLE_1 = "New Work Item 1"
+  var NEW_WORK_ITEM_TITLE_2 = "New Work Item 2"
+  var WORK_ITEM_TITLE = "Workitem_Title_20";
+  var WORK_ITEM_TITLE_1 = "Workitem_Title_19";
   var WORK_ITEM_UPDATED_TITLE = "Test workitem title-UPDATED";
   var WORK_ITEM_DESCRIPTION = "The test workitem description";
   var WORK_ITEM_UPDATED_DESCRIPTION = "Test description-UPDATED";
-  var EXAMPLE_USER_0 = "Example User 0";
-  var EXAMPLE_USER_1 = "Example User 1";
-  var MOCK_WORKITEM_TITLE_0 = "Title Text 0";
-  var WORKITEM_0_ID = 'id0';
-  var WORKITEM_1_ID = 'id1';
-  var AREA_0_TITLE = '/Root Area/Area 0';
-  var AREA_1_TITLE = '/Root Area/Area 1';
+  // TODO find a better way to fetch this
+  var EXAMPLE_USER = browser.params.fullName //"Ibrahim Jarif";
+  var SPACE_NAME = browser.params.spaceName //'ijarif-space-2017-12-08T18:33:59';
+  var AREA_1_TITLE = '/' + SPACE_NAME + '/Area_1';
+  var AREA_2_TITLE = '/' + SPACE_NAME + '/Area_2';
+  var ITERATION_1_TITLE = '/' + SPACE_NAME + '/Iteration_1';
+  var ITERATION_2_TITLE = '/' + SPACE_NAME + '/Iteration_2';
   var newLabelTitle = "My Test Label";
   var testLabelTitle = "Example Label 0";
+  var AUTH_TOKEN = "";
+  var REFRESH_TOKEN = "";
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage();
+    if (AUTH_TOKEN && REFRESH_TOKEN){
+      console.log("AUTH and REFRESH tokens found. Skipping login.")
+      page = new WorkItemListPage(this.AUTH_TOKEN, this.REFRESH_TOKEN);
+    } else {
+      page = new WorkItemListPage()
+    }
+    browser.ignoreSynchronization = false;
   });
 
    /* Simple test for registered user */
-  fit("should perform - LOGIN", function() {
-    browser.ignoreSynchronization = true;
-    console.log ("Login test for target URL: " + browser.params.target.url);
+  it("should perform - LOGIN", function() {
     /* Login to SUT */
-    page.clicklocalLoginButton();
+    page.clickLoginButton();
+    browser.ignoreSynchronization = true;
     var RHDpage = new OpenShiftIoRHDLoginPage();
     RHDpage.doLogin(browser);
+    browser.executeScript("return window.localStorage.getItem('auth_token');").then(function(val) {
+      this.AUTH_TOKEN = val;
+    });
+    browser.executeScript("return window.localStorage.getItem('refresh_token');").then(function(val) {
+      this.REFRESH_TOKEN = val
+    });
   });
 
   /* User can read, update, remove assignee on a workitem  */
   it('User can read, update, remove assignee', function() {
-    page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
+    page.clickWorkItemQuickAdd();
+    page.typeQuickAddWorkItemTitle(NEW_WORK_ITEM_TITLE_1);
     page.clickQuickAddSave().then(function() {
       var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
       browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find detail page close Icon');
@@ -78,9 +95,10 @@ var WorkItemListPage = require('./page-objects/work-item-list.page'),
   /* Create a new workitem, fill in the details, save, retrieve, update, save, verify updates are saved */
   it('should find and update the workitem through its detail page', function() {
     /* Create a new workitem */
-    page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
+    page.clickWorkItemQuickAdd();
+    page.typeQuickAddWorkItemTitle(NEW_WORK_ITEM_TITLE_2);
+    page.typeQuickAddWorkItemDesc(WORK_ITEM_DESCRIPTION);
     page.clickQuickAddSave().then(function() {
-      expect(page.workItemTitle(page.firstWorkItem)).toBe(WORK_ITEM_TITLE);
       /* Fill in/update the new work item's title and details field */
       var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
       browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find Assignee Icon');
@@ -97,81 +115,80 @@ var WorkItemListPage = require('./page-objects/work-item-list.page'),
     });
   });
 
-  /* Test that the Quick add work item is visible */
-  it('Test Quick workitem not visible without authorization', function () {
-    page.clickLogoutButton().click();
-    expect(page.quickAddbuttonById().isPresent()).toBeFalsy();
-  });
+  //Commenting out this one - need to fix!
+  /* Vary the order of execution of the workitems */
+  // it('should top workitem to the bottom and back to the top via the workitem kebab', function() {
+  //   page.allWorkItems.count().then(function (text) {
+  //     var totalCount = text
+  //     /* Verify that the first work item is in the correct position */
+  //     expect(page.workItemTitle(page.workItemByIndex(0))).toBe(MOCK_WORKITEM_TITLE_0);
+  //     compareWorkitems (page, 0, MOCK_WORKITEM_TITLE_0);
+  //     /* Move the workitem to the bottom */
+  //     page.clickWorkItemKebabButton (page.workItemByTitle(MOCK_WORKITEM_TITLE_0)).then(function() {
+  //       page.clickWorkItemKebabMoveToBottomButton(page.workItemByTitle(MOCK_WORKITEM_TITLE_0));
+  //       compareWorkitems (page, totalCount - 1, MOCK_WORKITEM_TITLE_0);
+  //     });
+  //   });
+  // });
 
   /* Create workitem - verify user and icon */
   it('Edit and check WorkItem, creator name and image is reflected', function () {
-    var detailPage = page.clickWorkItemTitle(MOCK_WORKITEM_TITLE_0);
+    var detailPage = page.clickWorkItemTitle(WORK_ITEM_UPDATED_TITLE);
     detailPage.clickWorkItemTitleDiv();
-    detailPage.setWorkItemDetailTitle (WORK_ITEM_TITLE, false);
+    detailPage.setWorkItemDetailTitle(NEW_WORK_ITEM_TITLE_2, false);
     detailPage.clickWorkItemTitleSaveIcon();
     detailPage.clickWorkItemDescriptionEditIcon();
     detailPage.clickWorkItemDetailDescription()
     detailPage.setWorkItemDetailDescription (WORK_ITEM_DESCRIPTION, true);
     detailPage.clickWorkItemDescriptionSaveIcon();
-    expect(detailPage.getCreatorUsername()).toBe(EXAMPLE_USER_0);
+    expect(detailPage.getCreatorUsername()).toBe(EXAMPLE_USER);
     expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);
     detailPage.clickWorkItemDetailCloseButton();
 
-    expect(page.workItemTitle(page.workItemByTitle(WORK_ITEM_TITLE))).toBe(WORK_ITEM_TITLE);
-    browser.wait(until.presenceOf(page.workItemByTitle(WORK_ITEM_TITLE)), constants.WAIT, 'Failed to find the Work Item');
+    expect(page.workItemTitle(page.workItemByTitle(NEW_WORK_ITEM_TITLE_2))).toBe(NEW_WORK_ITEM_TITLE_2);
 
-    detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
-    expect(detailPage.getCreatorUsername()).toBe(EXAMPLE_USER_0);
+    detailPage = page.clickWorkItemTitle(NEW_WORK_ITEM_TITLE_2);
+    expect(detailPage.getCreatorUsername()).toBe(EXAMPLE_USER);
     expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);
-    expect(detailPage.getImageURL()).toBe('https://avatars.githubusercontent.com/u/2410471?v=3&s=20');
-  });
-
-  it('check date showing up correctly - Desktop', function () {
-    var detailPage = page.clickWorkItemTitle(MOCK_WORKITEM_TITLE_0);
-    browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find workItem');
-    expect(detailPage.getCreatedtime()).toBe('a few seconds ago');
+    expect(detailPage.getImageURL()).toBe('https://www.gravatar.com/avatar/6c96128e82945d7f89ff253c1bfd5353.jpg&s=20');
   });
 
   it('Updating area to a WI -desktop ', function() {
-    var detailPage = page.clickWorkItemTitle(MOCK_WORKITEM_TITLE_0);
-    browser.wait(until.elementToBeClickable(detailPage.areaLabel), constants.WAIT, 'Failed to find areaLabel');
+    var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE_1);
+    browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find areaLabel');
     detailPage.clickAreaSelect();
-    detailPage.clickAreas(WORKITEM_0_ID);
+    detailPage.searchAreaInput(AREA_1_TITLE);
+    detailPage.selectArea(AREA_1_TITLE);
     expect(detailPage.saveAreasButton().isPresent()).toBe(true);
     detailPage.SaveAreas();
 
-    browser.wait(until.elementToBeClickable(detailPage.AreaSelect()), constants.WAIT, 'Failed to find area');
-    expect(detailPage.AreaSelect().getText()).toBe(AREA_0_TITLE);
+    browser.wait(until.elementToBeClickable(detailPage.AreaSelect), constants.WAIT, 'Failed to find area');
+    expect(detailPage.AreaSelect.getText()).toBe(AREA_1_TITLE);
     detailPage.clickAreaSelect();
-    detailPage.clickAreas(WORKITEM_1_ID);
-
+    detailPage.searchAreaInput(AREA_2_TITLE);
+    detailPage.selectArea(AREA_2_TITLE);
     detailPage.SaveAreas();
-    browser.wait(until.elementToBeClickable(detailPage.AreaSelect()), constants.WAIT, 'Failed to find area');
-    expect(detailPage.AreaSelect().getText()).toBe(AREA_1_TITLE);
+    browser.wait(until.elementToBeClickable(detailPage.AreaSelect), constants.WAIT, 'Failed to find area');
+    expect(detailPage.AreaSelect.getText()).toBe(AREA_2_TITLE);
   });
 
   it('Re-Associate Workitem from detail page', function() {
-    var detailPage = page.clickWorkItemTitle(MOCK_WORKITEM_TITLE_0);
+    var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
     detailPage.IterationOndetailPage().click();
-    detailPage.associateIterationById("id1");
+    detailPage.associateIteration(ITERATION_1_TITLE);
     detailPage.saveIteration();
-    expect(detailPage.getAssociatedIteration()).toBe("/Root Iteration/Iteration 1");
+    expect(detailPage.getAssociatedIteration()).toBe(ITERATION_1_TITLE);
     detailPage.clickWorkItemDetailCloseButton();
     // Re - assocaite
-    var detailPage = page.clickWorkItemTitle(MOCK_WORKITEM_TITLE_0);
+    var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
     detailPage.IterationOndetailPage().click();
-    detailPage.associateIterationById("id0");
+    detailPage.associateIteration(ITERATION_2_TITLE);
     detailPage.saveIteration();
-    expect(detailPage.getAssociatedIteration()).toBe("/Root Iteration/Iteration 0");
+    expect(detailPage.getAssociatedIteration()).toBe(ITERATION_2_TITLE);
   });
 
-  it('Try clicking on start coding it should redirect - Desktop', function () {
-    var detailPage = page.clickWorkItemTitle(MOCK_WORKITEM_TITLE_0);
-    expect(detailPage.startCodingElement.isPresent()).toBe(true);
-   });
-
   it('Edit comment and cancel - Desktop ', function() {
-    var detailPage = page.clickWorkItemTitle(MOCK_WORKITEM_TITLE_0);
+    var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
     detailPage.scrollToBottomRight().then(function() {
       detailPage.clickCommentEdit('0');
       detailPage.editComments('updated comment!','0',false);
@@ -181,6 +198,45 @@ var WorkItemListPage = require('./page-objects/work-item-list.page'),
       expect(detailPage.getCommentBody('0')).toBe('Some Comment 0');
     });
   });
+
+    /* Commenting the following two tests as they are unreliable; failing often.
+  They will be added back once they attain certain reliability */
+
+  // it('Verify create new Label', function(){
+  //   var detailPage = page.clickWorkItem(page.firstWorkItem);
+  //   detailPage.clickAddLabelButton();
+  //   let origLabelCount
+  //   detailPage.labelsCount.then(function(count){
+  //     origLabelCount = count
+  //   });
+  //   detailPage.clickCreateLabelButton();
+  //   detailPage.setLabelName(newLabelTitle);
+  //   detailPage.clickLabelCheckbox();
+  //   // Verify label count has increased by 1
+  //   detailPage.labelsCount.then(function(count){
+  //     expect(count).toBe(origLabelCount + 1);
+  //   });
+  //   // Verify label exists in the list
+  //   expect(detailPage.listOfLabels().getText()).toContain(detailPage.getLabelByTitle(newLabelTitle).getText());
+  // })
+
+  // it('Verify added label appears on the list page', function(){
+  //   var detailPage = page.clickWorkItem(page.firstWorkItem);
+  //   detailPage.clickAddLabelButton();
+  //   detailPage.selectLabelByTitle(testLabelTitle);
+  //   detailPage.clickLabelClose();
+  //   detailPage.clickWorkItemDetailCloseButton();
+  //   browser.sleep(3000);
+  //   expect(page.workItemAttachedLabels(page.firstWorkItem).getText()).toContain(testLabelTitle);
+  // });
+
+
+  /* Test that the Quick add work item is visible */
+  it('Test Quick workitem not visible without authorization', function () {
+    page.clickLogoutButton();
+    expect(page.quickAddbuttonById().isPresent()).toBeFalsy();
+  });
+
 });
 
 /* Compare an expected and actual work item - the offset values enable us to track

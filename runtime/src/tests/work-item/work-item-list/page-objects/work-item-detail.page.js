@@ -633,18 +633,21 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
     // return element(by.id('area_label'));
     return element(by.css('.detail-area-wrap > #area_label'));
   }
-  AreaSelect (){
+  get AreaSelect (){
     return element(by.css('#area-dropdown .details-dropdown'));
     //#area-dropdown > div.typeahead-dropdown.combobox-container > span.pointer.details-dropdown
   }
   clickAreaSelect (){
-    return this.AreaSelect().click();
+    return this.AreaSelect.click();
   }
   searchAreaInput (AreaInput) {
-    return element(by.id("areaSearchInput")).sendKeys(AreaInput).click();
+    return element(by.id("valueSearchInput")).sendKeys(AreaInput).click();
   }
-  clickAreas  (areaid){
-    return element(by.id('area-'+ areaid)).click();
+  clickAreas (areaid){
+    return element(by.xpath(areaid)).click();
+  }
+  selectArea(areaName) {
+    return element(by.xpath('.//typeahead-dropdown//span//b[contains(text(), "'+ areaName+'")]/../..')).click();
   }
   saveAreasButton (){
     return element(by.css('#area-dropdown .save-button'));
