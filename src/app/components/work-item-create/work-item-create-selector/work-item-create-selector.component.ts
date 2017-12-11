@@ -1,4 +1,15 @@
-import { Component, OnInit, Input, AfterViewChecked, OnChanges, EventEmitter, Output, ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  AfterViewChecked,
+  OnChanges,
+  EventEmitter,
+  Output,
+  ViewChild,
+  ElementRef,
+  Renderer2
+} from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 
 import { cloneDeep } from 'lodash';
