@@ -14,7 +14,7 @@
     "reinstall": "rimraf node_modules && npm --force cache clean && npm install",
     "test:unit": "gulp test:unit",
     "semantic-release": "semantic-release pre && gulp build && cp -r .git dist && npm publish dist/ && semantic-release post",
-    "build-planner": "npm run install && npm run build && npm pack dist/",
+    "build-planner": "npm install && npm run build && npm pack dist/",
     "unit-test": "npm run test:unit",
     "setupFuncTestEnv": "cd runtime && /usr/bin/Xvfb :99 -screen 0 1440x900x24 & && export API_URL=https://api.prod-preview.openshift.io/api/ && export NODE_ENV=inmemory && npm install",
     "func-test": "npm run -s setupFuncTestEnv && ./tests/run_functional_tests.sh smokeTest"
