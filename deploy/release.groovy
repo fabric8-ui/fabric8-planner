@@ -2,29 +2,19 @@
 def ci (){
     stage('build planner npm'){
         container('ui'){
-            sh 'npm install'
-            sh 'npm run build'
-            sh 'npm pack dist/'
+            sh 'npm run build-planner'
         }
     }
 
     stage('unit test'){
         container('ui'){
-            sh 'npm run test:unit'
+            sh 'npm run unit-test'
         }
     }
 
     stage('func test'){
-        dir('runtime'){
-            container('ui'){
-                sh '''
-        /usr/bin/Xvfb :99 -screen 0 1440x900x24 &
-        export API_URL=https://api.prod-preview.openshift.io/api/
-        export NODE_ENV=inmemory
-        npm install
-        ./tests/run_functional_tests.sh smokeTest
-'''
-            }
+        container('ui'){
+            sh 'npm run func-test'
         }
     }
 }
