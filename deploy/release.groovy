@@ -14,7 +14,10 @@ def ci (){
 
     stage('func test'){
         container('ui'){
-            sh 'npm run func-test'
+            sh '''
+            /usr/bin/Xvfb :99 -screen 0 1440x900x24 &
+            npm run func-test
+            '''
         }
     }
 }

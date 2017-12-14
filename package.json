@@ -16,8 +16,7 @@
     "semantic-release": "semantic-release pre && gulp build && cp -r .git dist && npm publish dist/ && semantic-release post",
     "build-planner": "npm install && npm run build && npm pack dist/",
     "unit-test": "npm run test:unit",
-    "setupFuncTestEnv": "/usr/bin/Xvfb :99 -screen 0 1440x900x24 &",
-    "func-test": "npm run -s setupFuncTestEnv && cd runtime && npm install && ./tests/run_functional_tests.sh smokeTest"
+    "func-test": "cd runtime && npm install && ./tests/run_functional_tests.sh smokeTest"
   },
   "license": "Apache-2.0",
   "contributors": [
