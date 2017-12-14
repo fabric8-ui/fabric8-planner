@@ -20,7 +20,6 @@ import {
   WidgetsModule
 } from 'ngx-widgets';
 
-import { NgxDatatableModule } from '../../../../node_modules/rh-ngx-datatable';
 import { ActionModule, ListModule } from 'patternfly-ng';
 import { Logger } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
