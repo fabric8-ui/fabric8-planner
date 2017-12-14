@@ -23,6 +23,7 @@ def ci (){
         ./tests/run_functional_tests.sh smokeTest
 '''
             }
+        }
     }
 }
 
