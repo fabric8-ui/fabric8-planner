@@ -14,9 +14,8 @@
     "reinstall": "rimraf node_modules && npm --force cache clean && npm install",
     "test:unit": "gulp test:unit",
     "semantic-release": "semantic-release pre && gulp build && cp -r .git dist && npm publish dist/ && semantic-release post",
-    "build-planner": "npm install && npm run build && npm pack dist/",
-    "unit-test": "npm run test:unit",
-    "func-test": "cd runtime && npm install && ./tests/run_functional_tests.sh smokeTest"
+    "build-planner": "npm cache clean && npm install && npm run build && npm pack dist/",
+    "unit-test": "npm run test:unit"
   },
   "license": "Apache-2.0",
   "contributors": [
