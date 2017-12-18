@@ -390,7 +390,7 @@ class WorkItemListPage {
 
   get filterByArea () {
     browser.wait(until.presenceOf(element(by.xpath("//li[3]/a[@class='filter-field dropdown-item']"))), constants.WAIT, 'Failed to filter by Area Type');
-    return element(by.xpath("//li[3]/a[@class='filter-field dropdown-item']"));
+    return element(by.xpath("//li[4]/a[@class='filter-field dropdown-item']"));
   }
   clickFilterByArea () {
     return this.filterByArea.click();
@@ -439,12 +439,13 @@ class WorkItemListPage {
   }
 
     /* Access the Area assignment filter dropdown - 'Area 0' filter*/
-  get filterAssignArea () {
-    browser.wait(until.presenceOf(element(by.xpath(".//*//li//text()[contains(.,'Area 0')]/.."))), constants.WAIT, 'Failed to find assign Area');
-    return element(by.xpath(".//*//li//text()[contains(.,'Area 0')]/.."));
+  filterAssignArea (area) {
+    browser.wait(until.presenceOf(element(by.xpath(
+      ".//*//li//text()[contains(.,'"+ area +"')]/.."))), constants.WAIT, 'Failed to find assign Area');
+    return element(by.xpath(".//*//li//text()[contains(.,'" + area +"')]/.."));
   }
-  clickFilterAssignArea () {
-    this.filterAssignArea.click();
+  clickFilterAssignArea (area) {
+    this.filterAssignArea(area).click();
   }
 
     /* Access the Workitem Type assignment filter dropdown - 'WI Type - Experience' filter*/

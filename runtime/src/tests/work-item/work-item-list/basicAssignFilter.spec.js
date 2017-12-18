@@ -20,25 +20,47 @@
 var WorkItemListPage = require('./page-objects/work-item-list.page'),
   testSupport = require('./testSupport'),
   CommonPage = require('./page-objects/common.page'),
-  constants = require('./constants');
+  constants = require('./constants'),
+  OpenShiftIoRHDLoginPage = require('./page-objects/openshift-io-RHD-login.page');
 
 describe('Basic filter workitems by assignee Test', function () {
   var page;
   var until = protractor.ExpectedConditions;
-  var EXAMPLE_USER_0 = "example 0";
-  var EXAMPLE_USER_0_VERIFY = "Example User 0";
-  var WORK_ITEM_TITLE = "Quick Add WI in Current Context";
-  var AREA_0_TITLE = "Area 0";
   var WORK_ITEM_TYPE = "Experience";
+  var EXAMPLE_USER = browser.params.fullName;
+  var SPACE_NAME = browser.params.spaceName;
+  var AREA_1_TITLE = '/' + SPACE_NAME + '/Area_1';
+  var NEW_WORK_ITEM_TITLE_1 = "New Work Item 1";
+  var AUTH_TOKEN = '';
+  var REFRESH_TOKEN = '';
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);
-    testSupport.setTestSpace(page);
-    //browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find first work item');   
+    if (AUTH_TOKEN && REFRESH_TOKEN){
+      console.log("AUTH and REFRESH tokens found. Skipping login.")
+      page = new WorkItemListPage(this.AUTH_TOKEN, this.REFRESH_TOKEN);
+    } else {
+      page = new WorkItemListPage()
+    }
+    browser.ignoreSynchronization = false;
   });
 
-    it ('should add workitems in the context of current Assignee filter', function() {
+   /* Simple test for registered user */
+  it("should perform - LOGIN", function() {
+    /* Login to SUT */
+    page.clickLoginButton();
+    browser.ignoreSynchronization = true;
+    var RHDpage = new OpenShiftIoRHDLoginPage();
+    RHDpage.doLogin(browser);
+    browser.executeScript("return window.localStorage.getItem('auth_token');").then(function(val) {
+      this.AUTH_TOKEN = val;
+    });
+    browser.executeScript("return window.localStorage.getItem('refresh_token');").then(function(val) {
+      this.REFRESH_TOKEN = val
+    });
+  });
+
+  it ('should add workitems in the context of current Assignee filter', function() {
     /*Set filter by Assignee*/
     page.clickWorkItemFilterFieldsPulldown();
     page.clickFilterByAssignee();
@@ -46,38 +68,30 @@ describe('Basic filter workitems by assignee Test', function () {
     page.clickFilterAssignToMe();
 
     browser.wait(until.presenceOf(page.currentActiveFilter), constants.WAIT, 'Failed to find active filter');  
-    expect (page.allWorkItems.count()).toBe(0).then(function(){
-      page.clickWorkItemQuickAdd();
-      page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
-      page.clickQuickAddSave().then(function() {
-        page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
-          var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
-          expect(detailPage.details_assigned_user().getText()).toContain(EXAMPLE_USER_0_VERIFY);
-          detailPage.clickWorkItemDetailCloseButton();
-        })
-      })
+    page.clickWorkItemQuickAdd();
+    page.typeQuickAddWorkItemTitle(NEW_WORK_ITEM_TITLE_1);
+    page.clickQuickAddSave().then(function() {
+      var detailPage = page.clickWorkItemTitle(NEW_WORK_ITEM_TITLE_1);
+      expect(detailPage.details_assigned_user().getText()).toContain(EXAMPLE_USER);
+      detailPage.clickWorkItemDetailCloseButton();
     })
   });
 
-    it ('should add workitems in the context of current Area filter', function() {
+  it ('should add workitems in the context of current Area filter', function() {
     /*Set filter by Area*/
     page.clickWorkItemFilterFieldsPulldown();
     page.clickFilterByArea();
     page.clickWorkItemFilterPulldownEdited();
-    page.clickFilterAssignArea();
+    page.clickFilterAssignArea('Area_1');
 
     browser.wait(until.presenceOf(page.currentActiveFilter), constants.WAIT, 'Failed to find active filter');  
-    expect (page.allWorkItems.count()).not.toBe(0).then(function(){
       page.clickWorkItemQuickAdd();
-      page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
+      page.typeQuickAddWorkItemTitle(NEW_WORK_ITEM_TITLE_1);
       page.clickQuickAddSave().then(function() {
-        page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
-          var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
-          expect(detailPage.AreaSelect().getText()).toContain(AREA_0_TITLE);
-          detailPage.clickWorkItemDetailCloseButton();
-        })
+        var detailPage = page.clickWorkItemTitle(NEW_WORK_ITEM_TITLE_1);
+        expect(detailPage.AreaSelect.getText()).toContain(AREA_1_TITLE);
+        detailPage.clickWorkItemDetailCloseButton();
       })
-    })
   });
 
     /* The following 2 tests are commented out due to bug where quick add button is not displayed  

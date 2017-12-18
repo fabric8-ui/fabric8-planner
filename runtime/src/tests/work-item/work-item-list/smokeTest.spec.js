@@ -31,8 +31,8 @@ describe('Work item list', function () {
   var WORK_ITEM_DESCRIPTION = "The test workitem description";
   var WORK_ITEM_UPDATED_DESCRIPTION = "Test description-UPDATED";
   // TODO find a better way to fetch this
-  var EXAMPLE_USER = browser.params.fullName //"Ibrahim Jarif";
-  var SPACE_NAME = browser.params.spaceName //'ijarif-space-2017-12-08T18:33:59';
+  var EXAMPLE_USER = browser.params.fullName;
+  var SPACE_NAME = browser.params.spaceName;
   var AREA_1_TITLE = '/' + SPACE_NAME + '/Area_1';
   var AREA_2_TITLE = '/' + SPACE_NAME + '/Area_2';
   var ITERATION_1_TITLE = '/' + SPACE_NAME + '/Iteration_1';
