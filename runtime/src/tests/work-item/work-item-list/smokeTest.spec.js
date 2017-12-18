@@ -27,7 +27,7 @@ describe('Work item list', function () {
   var WORK_ITEM_DESCRIPTION = "The test workitem description";
   var WORK_ITEM_UPDATED_DESCRIPTION = "Test description-UPDATED";
   var EXAMPLE_USER_0 = "Example User 0";
-  var EXAMPLE_USER_1 = "Example User 1";
+  var EXAMPLE_USER_1 = "Ruchir Garg (me)";
   var MOCK_WORKITEM_TITLE_0 = "Title Text 0";
   var WORKITEM_0_ID = 'id0';
   var WORKITEM_1_ID = 'id1';
@@ -38,8 +38,8 @@ describe('Work item list', function () {
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);
-    testSupport.setTestSpace(page);
+    page = new WorkItemListPage();
+    // testSupport.setTestSpace(page);
   });
 
   /* User can read, update, remove assignee on a workitem  */
