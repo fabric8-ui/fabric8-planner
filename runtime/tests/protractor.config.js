@@ -3,6 +3,7 @@ let SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 exports.config = {
     useAllAngular2AppRoots: true,
     getPageTimeout: 30000,
+    allScriptsTimeout: 50000,
     seleniumAddress: 'http://localhost:4444/wd/hub',
     specs: ['./../src/tests/**/*.spec.js'],
     exclude: ['./../src/tests/**/*test-template.spec.js','./../src/tests/**/*work-item-dynamic-fields.spec.js','./../src/tests/**/EXCLUDED/*.spec.js'],

@@ -33,13 +33,13 @@ class WorkItemListPage {
  constructor(login) {
    if(login==true) {
     let url = encodeURIComponent(JSON.stringify({
-      access_token: 'somerandomtoken',
-      expires_in: 1800,
-      refresh_expires_in: 1800,
-      refresh_token: 'somerandomtoken',
+      access_token: browser.params.access_token,
+      expires_in: 2592000,
+      refresh_expires_in: 2592000,
+      refresh_token: browser.params.refresh_token,
       token_type: "bearer"
     }));
-    browser.get("http://localhost:8088/?token_json="+url);
+    browser.get(browser.params.target.url + "/?token_json="+url);
   }
    else {
      browser.get("http://localhost:8088/");

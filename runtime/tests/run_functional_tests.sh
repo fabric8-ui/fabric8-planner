@@ -42,13 +42,23 @@ echo -n Building source...
 curl http://localhost:8088/ -o /dev/null -s
 echo done.
 
+echo "=> Get user tokens from WIT/Auth.........."
+tokens=$(curl 'http://localhost:8080/api/login/generate' | python -c "import sys, json; jdata = sys.stdin.read(); data = json.loads(jdata); testuser_access = data[0]['token']['access_token']; print testuser_access; testuser_refresh = data[0]['token']['refresh_token']; print testuser_refresh ; testuser2_access = data[1]['token']['access_token']; print testuser2_access; testuser2_refresh = data[1]['token']['refresh_token']; print testuser2_refresh")
+testuser_access_token=$(echo $tokens | cut -d' ' -f1)
+testuser_refresh_token=$(echo $tokens | cut -d' ' -f2)
+testuser2_access_token=$(echo $tokens | cut -d' ' -f3)
+testuser2_refresh_token=$(echo $tokens | cut -d' ' -f4)
+echo "this is access token for testuser: $testuser_access_token"
+echo ""
+echo "this is refresh token for testuser: $testuser_refresh_token"
+
 # Finally run protractor
 echo Running tests...
 if [ -z "$1" ]
   then
-    ../node_modules/protractor/bin/protractor tests/protractor.config.js 2>&1
+    ../node_modules/protractor/bin/protractor tests/protractor.config.js --params.target.url=$1 2>&1
 else
-    ../node_modules/protractor/bin/protractor tests/protractor.config.js --suite $1 2>&1
+    ../node_modules/protractor/bin/protractor tests/protractor.config.js --suite $1 --params.target.url=$2 --params.access_token=$testuser_access_token --params.refresh_token=$testuser_refresh_token 2>&1
 fi
 
 TEST_RESULT=$?
