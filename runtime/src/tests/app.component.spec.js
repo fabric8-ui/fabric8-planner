@@ -1,10 +1,10 @@
 describe('Splash page', function() {
 
   beforeEach(function() {
-      browser.get('http://localhost:8088/');
+      browser.get(browser.params.host);
   });
 
   it('should redirect to the worklist.', function() {
-      expect(browser.getCurrentUrl()).toMatch("http://localhost:8088/");
+      expect(browser.getCurrentUrl()).toMatch(browser.params.host);
   });
 });

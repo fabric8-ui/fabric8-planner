@@ -20,31 +20,12 @@ var WorkItemListPage = require('./page-objects/work-item-list.page'),
   OpenShiftIoRHDLoginPage = require('./page-objects/openshift-io-RHD-login.page');
 
 describe('Work item list', function () {
-  var page, items, browserMode;
-
+  var page, AUTH_TOKEN, REFRESH_TOKEN;
   var until = protractor.ExpectedConditions;
-  var NEW_WORK_ITEM_TITLE_1 = "New Work Item 1"
-  var NEW_WORK_ITEM_TITLE_2 = "New Work Item 2"
-  var WORK_ITEM_TITLE = "Workitem_Title_20";
-  var WORK_ITEM_TITLE_1 = "Workitem_Title_19";
-  var WORK_ITEM_UPDATED_TITLE = "Test workitem title-UPDATED";
-  var WORK_ITEM_DESCRIPTION = "The test workitem description";
-  var WORK_ITEM_UPDATED_DESCRIPTION = "Test description-UPDATED";
-  // TODO find a better way to fetch this
-  var EXAMPLE_USER = browser.params.fullName;
-  var SPACE_NAME = browser.params.spaceName;
-  var AREA_1_TITLE = '/' + SPACE_NAME + '/Area_1';
-  var AREA_2_TITLE = '/' + SPACE_NAME + '/Area_2';
-  var ITERATION_1_TITLE = '/' + SPACE_NAME + '/Iteration_1';
-  var ITERATION_2_TITLE = '/' + SPACE_NAME + '/Iteration_2';
-  var newLabelTitle = "My Test Label";
-  var testLabelTitle = "Example Label 0";
-  var AUTH_TOKEN = "";
-  var REFRESH_TOKEN = "";
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    if (AUTH_TOKEN && REFRESH_TOKEN){
+    if(AUTH_TOKEN && REFRESH_TOKEN){
       console.log("AUTH and REFRESH tokens found. Skipping login.")
       page = new WorkItemListPage(this.AUTH_TOKEN, this.REFRESH_TOKEN);
     } else {
@@ -71,24 +52,24 @@ describe('Work item list', function () {
   /* User can read, update, remove assignee on a workitem  */
   it('User can read, update, remove assignee', function() {
     page.clickWorkItemQuickAdd();
-    page.typeQuickAddWorkItemTitle(NEW_WORK_ITEM_TITLE_1);
+    page.typeQuickAddWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
     page.clickQuickAddSave().then(function() {
-      var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
+      var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
       browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find detail page close Icon');
       //Assign the user
       detailPage.clickAddAssigneeButton();
-      detailPage.setAssigneeSearch(EXAMPLE_USER_1, false);
-      detailPage.clickAssigneeListItem(EXAMPLE_USER_1);
+      detailPage.setAssigneeSearch(constants.EXAMPLE_USER_1, false);
+      detailPage.clickAssigneeListItem(constants.EXAMPLE_USER_1);
       detailPage.clickCloseAssigneeDropdown();
       //Verify assignee has been assigned
-      expect(detailPage.AssignUsers.getText()).toContain(EXAMPLE_USER_1);
+      expect(detailPage.AssignUsers.getText()).toContain(constants.EXAMPLE_USER_1);
       //unassign the user
       detailPage.clickAddAssigneeButton();
-      detailPage.setAssigneeSearch(EXAMPLE_USER_1, false);
-      detailPage.clickAssigneeListItem(EXAMPLE_USER_1);
+      detailPage.setAssigneeSearch(constants.EXAMPLE_USER_1, false);
+      detailPage.clickAssigneeListItem(constants.EXAMPLE_USER_1);
       detailPage.clickCloseAssigneeDropdown();
       //Verify assignee has been unassigned
-      expect(detailPage.AssignUsers.getText()).not.toContain(EXAMPLE_USER_1);
+      expect(detailPage.AssignUsers.getText()).not.toContain(constants.EXAMPLE_USER_1);
      });
   });
 
@@ -96,22 +77,23 @@ describe('Work item list', function () {
   it('should find and update the workitem through its detail page', function() {
     /* Create a new workitem */
     page.clickWorkItemQuickAdd();
-    page.typeQuickAddWorkItemTitle(NEW_WORK_ITEM_TITLE_2);
-    page.typeQuickAddWorkItemDesc(WORK_ITEM_DESCRIPTION);
+    page.typeQuickAddWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_2);
+    page.typeQuickAddWorkItemDesc(constants.WORK_ITEM_DESCRIPTION);
     page.clickQuickAddSave().then(function() {
       /* Fill in/update the new work item's title and details field */
-      var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
+      expect(page.workItemTitle(page.workItemByTitle(constants.WORK_ITEM_TITLE))).toBe(WORK_ITEM_TITLE);
+      var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
       browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find Assignee Icon');
       detailPage.clickWorkItemDetailTitleClick();
-      detailPage.setWorkItemDetailTitle (WORK_ITEM_UPDATED_TITLE, false);
+      detailPage.setWorkItemDetailTitle (constants.WORK_ITEM_UPDATED_TITLE, false);
       detailPage.clickWorkItemTitleSaveIcon();
       detailPage.clickWorkItemDescriptionEditIcon();
       detailPage.clickWorkItemDetailDescription()
-      detailPage.setWorkItemDetailDescription (WORK_ITEM_UPDATED_DESCRIPTION, false);
+      detailPage.setWorkItemDetailDescription (constants.WORK_ITEM_UPDATED_DESCRIPTION, false);
       detailPage.clickWorkItemDescriptionSaveIcon();
       detailPage.clickWorkItemDetailCloseButton();
-      browser.wait(until.presenceOf(page.workItemByTitle(WORK_ITEM_UPDATED_TITLE)), constants.WAIT, 'Failed to find workItemList');
-      expect(page.workItemTitle(page.firstWorkItem)).toBe(WORK_ITEM_UPDATED_TITLE);
+      browser.wait(until.presenceOf(page.workItemByTitle(constants.WORK_ITEM_UPDATED_TITLE)), constants.WAIT, 'Failed to find workItemList');
+      expect(page.workItemTitle(page.firstWorkItem)).toBe(constants.WORK_ITEM_UPDATED_TITLE);
     });
   });
 
@@ -133,62 +115,62 @@ describe('Work item list', function () {
 
   /* Create workitem - verify user and icon */
   it('Edit and check WorkItem, creator name and image is reflected', function () {
-    var detailPage = page.clickWorkItemTitle(WORK_ITEM_UPDATED_TITLE);
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_UPDATED_TITLE);
     detailPage.clickWorkItemTitleDiv();
-    detailPage.setWorkItemDetailTitle(NEW_WORK_ITEM_TITLE_2, false);
+    detailPage.setWorkItemDetailTitle(constants.NEW_WORK_ITEM_TITLE_2, false);
     detailPage.clickWorkItemTitleSaveIcon();
     detailPage.clickWorkItemDescriptionEditIcon();
     detailPage.clickWorkItemDetailDescription()
-    detailPage.setWorkItemDetailDescription (WORK_ITEM_DESCRIPTION, true);
+    detailPage.setWorkItemDetailDescription (constants.WORK_ITEM_DESCRIPTION, true);
     detailPage.clickWorkItemDescriptionSaveIcon();
-    expect(detailPage.getCreatorUsername()).toBe(EXAMPLE_USER);
+    expect(detailPage.getCreatorUsername()).toBe(constants.EXAMPLE_USER);
     expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);
     detailPage.clickWorkItemDetailCloseButton();
 
-    expect(page.workItemTitle(page.workItemByTitle(NEW_WORK_ITEM_TITLE_2))).toBe(NEW_WORK_ITEM_TITLE_2);
+    expect(page.workItemTitle(page.workItemByTitle(constants.NEW_WORK_ITEM_TITLE_2))).toBe(constants.NEW_WORK_ITEM_TITLE_2);
 
-    detailPage = page.clickWorkItemTitle(NEW_WORK_ITEM_TITLE_2);
-    expect(detailPage.getCreatorUsername()).toBe(EXAMPLE_USER);
+    detailPage = page.clickWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_2);
+    expect(detailPage.getCreatorUsername()).toBe(constants.EXAMPLE_USER);
     expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);
     expect(detailPage.getImageURL()).toBe('https://www.gravatar.com/avatar/6c96128e82945d7f89ff253c1bfd5353.jpg&s=20');
   });
 
   it('Updating area to a WI -desktop ', function() {
-    var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE_1);
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE_1);
     browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find areaLabel');
     detailPage.clickAreaSelect();
-    detailPage.searchAreaInput(AREA_1_TITLE);
-    detailPage.selectArea(AREA_1_TITLE);
+    detailPage.searchAreaInput(constants.AREA_1_TITLE);
+    detailPage.selectArea(constants.AREA_1_TITLE);
     expect(detailPage.saveAreasButton().isPresent()).toBe(true);
     detailPage.SaveAreas();
 
     browser.wait(until.elementToBeClickable(detailPage.AreaSelect), constants.WAIT, 'Failed to find area');
-    expect(detailPage.AreaSelect.getText()).toBe(AREA_1_TITLE);
+    expect(detailPage.AreaSelect.getText()).toBe(constants.AREA_1_TITLE);
     detailPage.clickAreaSelect();
-    detailPage.searchAreaInput(AREA_2_TITLE);
-    detailPage.selectArea(AREA_2_TITLE);
+    detailPage.searchAreaInput(constants.AREA_2_TITLE);
+    detailPage.selectArea(constants.AREA_2_TITLE);
     detailPage.SaveAreas();
     browser.wait(until.elementToBeClickable(detailPage.AreaSelect), constants.WAIT, 'Failed to find area');
-    expect(detailPage.AreaSelect.getText()).toBe(AREA_2_TITLE);
+    expect(detailPage.AreaSelect.getText()).toBe(constants.AREA_2_TITLE);
   });
 
   it('Re-Associate Workitem from detail page', function() {
-    var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
     detailPage.IterationOndetailPage().click();
-    detailPage.associateIteration(ITERATION_1_TITLE);
+    detailPage.associateIteration(constants.ITERATION_1_TITLE);
     detailPage.saveIteration();
-    expect(detailPage.getAssociatedIteration()).toBe(ITERATION_1_TITLE);
+    expect(detailPage.getAssociatedIteration()).toBe(constants.ITERATION_1_TITLE);
     detailPage.clickWorkItemDetailCloseButton();
     // Re - assocaite
-    var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
     detailPage.IterationOndetailPage().click();
-    detailPage.associateIteration(ITERATION_2_TITLE);
+    detailPage.associateIteration(constants.ITERATION_2_TITLE);
     detailPage.saveIteration();
-    expect(detailPage.getAssociatedIteration()).toBe(ITERATION_2_TITLE);
+    expect(detailPage.getAssociatedIteration()).toBe(constants.ITERATION_2_TITLE);
   });
 
   it('Edit comment and cancel - Desktop ', function() {
-    var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
     detailPage.scrollToBottomRight().then(function() {
       detailPage.clickCommentEdit('0');
       detailPage.editComments('updated comment!','0',false);

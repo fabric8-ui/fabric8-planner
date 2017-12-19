@@ -24,15 +24,8 @@ var WorkItemListPage = require('./page-objects/work-item-list.page'),
   OpenShiftIoRHDLoginPage = require('./page-objects/openshift-io-RHD-login.page');
 
 describe('Basic filter workitems by assignee Test', function () {
-  var page;
+  var page, AUTH_TOKEN, REFRESH_TOKEN;
   var until = protractor.ExpectedConditions;
-  var WORK_ITEM_TYPE = "Experience";
-  var EXAMPLE_USER = browser.params.fullName;
-  var SPACE_NAME = browser.params.spaceName;
-  var AREA_1_TITLE = '/' + SPACE_NAME + '/Area_1';
-  var NEW_WORK_ITEM_TITLE_1 = "New Work Item 1";
-  var AUTH_TOKEN = '';
-  var REFRESH_TOKEN = '';
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
@@ -69,10 +62,10 @@ describe('Basic filter workitems by assignee Test', function () {
 
     browser.wait(until.presenceOf(page.currentActiveFilter), constants.WAIT, 'Failed to find active filter');  
     page.clickWorkItemQuickAdd();
-    page.typeQuickAddWorkItemTitle(NEW_WORK_ITEM_TITLE_1);
+    page.typeQuickAddWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
     page.clickQuickAddSave().then(function() {
-      var detailPage = page.clickWorkItemTitle(NEW_WORK_ITEM_TITLE_1);
-      expect(detailPage.details_assigned_user().getText()).toContain(EXAMPLE_USER);
+      var detailPage = page.clickWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
+      expect(detailPage.details_assigned_user().getText()).toContain(constants.EXAMPLE_USER);
       detailPage.clickWorkItemDetailCloseButton();
     })
   });
@@ -86,10 +79,10 @@ describe('Basic filter workitems by assignee Test', function () {
 
     browser.wait(until.presenceOf(page.currentActiveFilter), constants.WAIT, 'Failed to find active filter');  
       page.clickWorkItemQuickAdd();
-      page.typeQuickAddWorkItemTitle(NEW_WORK_ITEM_TITLE_1);
+      page.typeQuickAddWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
       page.clickQuickAddSave().then(function() {
-        var detailPage = page.clickWorkItemTitle(NEW_WORK_ITEM_TITLE_1);
-        expect(detailPage.AreaSelect.getText()).toContain(AREA_1_TITLE);
+        var detailPage = page.clickWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
+        expect(detailPage.AreaSelect.getText()).toContain(constants.AREA_1_TITLE);
         detailPage.clickWorkItemDetailCloseButton();
       })
   });
