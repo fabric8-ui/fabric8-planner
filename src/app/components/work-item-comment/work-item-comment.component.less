@@ -8,6 +8,7 @@
         width: 40px;
         padding-top: 9px;
         padding-bottom: 9px;
+        cursor: pointer;
       }
       a { padding: 13px 15px; }
       &:nth-child(2) {
@@ -60,12 +61,12 @@
     padding-left: 40px;
   }
 
-  &-comment-author {
+  &-author {
     max-width: 100%;
     min-width: 0;  //fix for having full wrapper width and overflowen content
     padding-right: 10px;
-    margin-top: 0;
-    margin-bottom: 5px;
+    margin-top: 5px;
+    margin-bottom: 10px;
     strong {
       display: inline-block;
       width: 100%;
@@ -84,4 +85,10 @@
     &:hover { border-color: @color-pf-blue-200; }
   }
 }
-
+.user-avatar {
+  cursor: pointer;
+  &:extend(.user-avatar);
+  img {
+    &:extend(.user-avatar img);
+  }
+}

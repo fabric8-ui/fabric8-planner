@@ -14,7 +14,7 @@ import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { EventService } from './../../services/event.service';
 
 import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
-import { Broadcaster, Logger } from 'ngx-base';
+import { Logger } from 'ngx-base';
 import {
   AlmIconModule,
   DialogModule,
@@ -42,6 +42,7 @@ import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.modul
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 import { WorkItemService } from '../../services/work-item.service';
 import { PlannerLayoutModule } from '../../widgets/planner-layout/planner-layout.module';
+import { PlannerModalModule } from '../modal/modal.module';
 
 import { MockHttp } from '../../mock/mock-http';
 
@@ -54,7 +55,6 @@ if (process.env.ENV == 'inmemory') {
     GlobalSettings,
     WorkItemService,
     WorkItemDataService,
-    Broadcaster,
     Logger,
     {
       provide: HttpService,
@@ -70,7 +70,6 @@ if (process.env.ENV == 'inmemory') {
     GlobalSettings,
     WorkItemService,
     WorkItemDataService,
-    Broadcaster,
     Logger,
     {
       provide: HttpService,
@@ -108,7 +107,8 @@ if (process.env.ENV == 'inmemory') {
     WidgetsModule,
     WorkItemDetailModule,
     WorkItemDetailAddTypeSelectorModule,
-    WorkItemQuickAddModule
+    WorkItemQuickAddModule,
+    PlannerModalModule
   ],
   declarations: [
     PlannerBoardComponent

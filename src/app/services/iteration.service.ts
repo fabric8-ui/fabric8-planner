@@ -27,6 +27,7 @@ export class IterationService {
   private selfId;
 
   public dropWIObservable: Subject<{workItem: WorkItem, error: boolean}> = new Subject();
+  public createIterationObservable: Subject<IterationModel> = new Subject();
 
   constructor(
       private logger: Logger,
@@ -111,6 +112,7 @@ export class IterationService {
   createIteration(iteration: IterationModel, parentIteration: IterationModel): Observable<IterationModel> {
     console.log('Create on iteration service.');
     let iterationsUrl;
+    delete iteration.id;
     if (parentIteration) {
       iterationsUrl = parentIteration.links.self;
     }
@@ -229,6 +231,20 @@ export class IterationService {
     }
   }
 
+  getIterationById(iterationId: string): Observable<IterationModel> {
+    return this.getIterations().first()
+      .map((resultIterations) => {
+        for (let i=0; i<resultIterations.length; i++) {
+          if (resultIterations[i].id===iterationId) {
+            return resultIterations[i];
+          }
+        }
+      })
+      .catch( err => {
+        return Observable.throw(new Error(err.message));
+      });
+  }
+
   getWorkItemCountInIteration(iteration: any): Observable<number> {
     return this.getIteration({ data: iteration }).first().map((resultIteration:IterationModel) => {
       return resultIteration.relationships.workitems.meta.total;
@@ -264,5 +280,9 @@ export class IterationService {
     let path_arr = iteration.attributes.parent_path.split('/');
     let id = path_arr[path_arr.length-1];
     return iterations.find(i => i.id === id);
+  }
+
+  emitCreateIteration(iteration: IterationModel) {
+    this.createIterationObservable.next(iteration);
   }
 }

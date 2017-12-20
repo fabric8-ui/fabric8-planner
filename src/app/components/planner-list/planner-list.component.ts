@@ -24,7 +24,8 @@ import {
   Output,
   EventEmitter,
   Renderer2,
-  HostListener
+  HostListener,
+  AfterViewChecked
 } from '@angular/core';
 import {
   Router,
@@ -65,6 +66,8 @@ import { CollaboratorService } from '../../services/collaborator.service';
 import { LabelService } from '../../services/label.service';
 import { LabelModel } from '../../models/label.model';
 import { UrlService } from './../../services/url.service';
+import { WorkItemDetailAddTypeSelectorComponent } from './../work-item-create/work-item-create.component';
+import { setTimeout } from 'core-js/library/web/timers';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -75,22 +78,22 @@ import { UrlService } from './../../services/url.service';
   templateUrl: './planner-list.component.html',
   styleUrls: ['./planner-list.component.less']
 })
-export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnDestroy {
+export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
   @ViewChildren('activeFilters', {read: ElementRef}) activeFiltersRef: QueryList<ElementRef>;
   @ViewChild('activeFiltersDiv') activeFiltersDiv: any;
+  @ViewChild('typeSelectPanel') typeSelectPanel: WorkItemDetailAddTypeSelectorComponent;
+
   @ViewChild('listContainer') listContainer: any;
   @ViewChild('treeList') treeList: TreeListComponent;
   @ViewChild('detailPreview') detailPreview: WorkItemDetailComponent;
   @ViewChild('sidePanel') sidePanelRef: any;
   @ViewChild('associateIterationModal') associateIterationModal: any;
-  @ViewChild('typeSelectPanel') typeSelectPanel: any;
 
   actionConfig: ActionConfig;
   emptyStateConfig: EmptyStateConfig;
   selectType: string = 'checkbox';
   treeListConfig: TreeListConfig;
   @ViewChild('toolbarHeight') toolbarHeight: ElementRef;
-  @ViewChild('quickaddHeight') quickaddHeight: ElementRef;
   @ViewChild('containerHeight') containerHeight: ElementRef;
 
   workItems: WorkItem[] = [];
@@ -130,6 +133,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   private expandedNode: any = null;
   private selectedWI: WorkItem = null;
   private initialGroup: GroupTypesModel;
+  private included: WorkItem[];
 
 
   constructor(
@@ -218,9 +222,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         primaryActions: [{
           id: 'createWI',
           title: 'Create work item',
-          tooltip: 'Start the server',
+          tooltip: 'Create work item',
           styleClass: this.loggedIn ? 'show-wi' : 'hide-wi'
-
         }],
         moreActions: []
       } as ActionConfig,
@@ -252,14 +255,18 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     this.authUser = cloneDeep(this.route.snapshot.data['authuser']);
   }
 
-  ngDoCheck() {
+  ngAfterViewChecked() {
     if (this.workItems.length != this.prevWorkItemLength) {
       //this.treeList.update();
       this.prevWorkItemLength = this.workItems.length;
     }
+
     if(this.toolbarHeight) {
       let toolbarHt:number =  this.toolbarHeight.nativeElement.offsetHeight;
-      let quickaddHt:number =  this.quickaddHeight.nativeElement.offsetHeight;
+      let quickaddHt:number =  0;
+      if(document.getElementsByClassName('f8-wi-list__quick-add').length > 0) {
+        quickaddHt = (document.getElementsByClassName('f8-wi-list__quick-add')[0] as HTMLElement).offsetHeight;
+      }
       let hdrHeight:number = 0;
       if(document.getElementsByClassName('navbar-pf').length > 0) {
         hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
@@ -270,9 +277,11 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       }
       let targetHeight:number = window.innerHeight - toolbarHt - quickaddHt - hdrHeight - expHeight;
       this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
-
       let targetContHeight:number = window.innerHeight - hdrHeight - expHeight;
       this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight + "px");
+    }
+    if(document.getElementsByTagName('body')) {
+      document.getElementsByTagName('body')[0].style.overflow = "hidden";
     }
   }
   @HostListener('window:resize', ['$event'])
@@ -285,6 +294,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     if (this.spaceSubscription) {
       this.spaceSubscription.unsubscribe();
     }
+    document.getElementsByTagName('body')[0].style.overflow = "auto";
   }
 
   // model handlers
@@ -346,6 +356,17 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
 
   loadWorkItems(): void {
     this.initialGroup = this.groupTypesService.getCurrentGroupType();
+    //if initialGroup is undefined, the page has been refreshed - find  group context based on URL
+    if ( this.route.snapshot.queryParams['q'] ) {
+      let wits = this.route.snapshot.queryParams['q'].split('workitemtype:')
+      if(wits.length > 1) {
+        let collection = wits[1].replace(')','').split(',');
+        this.groupTypesService.findGroupConext(collection);
+      }
+    }
+    if(this.initialGroup === undefined)
+      this.initialGroup = this.groupTypesService.getCurrentGroupType();
+
     this.uiLockedList = true;
     if (this.wiSubscriber) {
       this.wiSubscriber.unsubscribe();
@@ -365,6 +386,11 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.areas = items[2];
       this.loggedInUser = items[3];
       this.labels = items[4];
+      if(this.initialGroup === undefined) {
+        let witCollection = this.workItemTypes.map(wit => wit.id);
+        this.groupTypesService.setCurrentGroupType(witCollection);
+        this.initialGroup = this.groupTypesService.getCurrentGroupType();
+      }
       // If there is an iteration filter on the URL
       // const queryParams = this.route.snapshot.queryParams;
       // if (Object.keys(queryParams).indexOf('iteration') > -1) {
@@ -404,8 +430,13 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
         newFilterObj[item.id] = item.value;
       })
       newFilterObj['space'] = this.currentSpace.id;
+      let showFlatList = false;
+      if (this.groupTypesService.groupName === 'execution' || this.groupTypesService.groupName === 'requirements')
+        showFlatList = true;
+      //console.log('showFlatList', this.groupTypesService.groupName);
       let payload = {
-        parentexists: !!!this.showHierarchyList
+        //for execution level set this to true
+        parentexists: true
       };
       if ( this.route.snapshot.queryParams['q'] ) {
         let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
@@ -438,14 +469,34 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       console.log('Performance :: Fetching the initial list - '  + (t2 - t1) + ' milliseconds.');
       this.logger.log('Got work item list.');
       this.logger.log(workItemResp.workItems);
-      const workItems = workItemResp.workItems;
+      const workItemsAll = workItemResp.workItems;
+      let tempWIs = []
       this.nextLink = workItemResp.nextLink;
+      this.included = workItemResp.included;
+      //Remove work item duplicates - a child work item
+      //should not appear part of the root response only for iterations
+      if (this.groupTypesService.groupName === 'execution') {
+        tempWIs = workItemsAll.filter( wi => {
+          if( wi.relationships.parent.data != undefined ) {
+            //take the parent ID and loop thorough the work items
+            let i = workItemsAll.findIndex(item => item.id === wi.relationships.parent.data.id);
+            if (i === -1) {
+              return wi;
+            }
+          } else {
+            return wi;
+          }
+        });
+      } else {
+        tempWIs = workItemsAll;
+      }
       this.workItems = this.workItemService.resolveWorkItems(
-        workItems,
+        tempWIs,
         this.iterations,
         [], // We don't want to static resolve user at this point
         this.workItemTypes,
-        this.labels
+        this.labels,
+        this.included
       );
       this.workItemDataService.setItems(this.workItems);
       // Resolve assignees
@@ -491,7 +542,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
             this.iterations,
             [],
             this.workItemTypes,
-            this.labels
+            this.labels,
+            newWiItemResp.included
           )
         ];
         this.workItemDataService.setItems(this.workItems);
@@ -516,6 +568,14 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
 
   loadChildren(node): any {
     return this.workItemService.getChildren(node.data)
+      //set the parent information for the child WIs
+      .then((workItems: WorkItem[]) => {
+        workItems.map(wi => {
+          wi.relationships.parent = { data: {} as WorkItem };
+          wi.relationships.parent.data = node.data;
+        });
+        return workItems;
+      })
       .then((workItems: WorkItem[]) => this.workItemService.resolveWorkItems(
         workItems,
         this.iterations,
@@ -582,6 +642,24 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     });
   }
 
+  // This opens the create new work item dialog. It parses the query string
+  // first to get iterationId and areaId for pre-selection in the new work item
+  // dialog. Note that this only works for the current capabilities of the query
+  // toolbar for now. If we extend that, we also need to extend this method.
+  onCreateFromContext() {
+    console.log('Activated create work item from a list view.');
+    let query = this.route.snapshot.queryParams['q'];
+    if (query) {
+      let contextIteration = this.filterService.getConditionFromQuery(query, "iteration");
+      let contextArea = this.filterService.getConditionFromQuery(query, "area");
+      this.typeSelectPanel.openPanel(contextIteration, contextArea);
+    } else {
+      console.log('No current query for add from empty list');
+      // use standard non-context create dialog
+      this.typeSelectPanel.openPanel();
+    }
+  }
+
   listenToEvents() {
     this.eventListeners.push(
       this.broadcaster.on<string>('logout')
@@ -616,10 +694,14 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
           if (this.expandedNode === null) {
             //A  WI has been selected - add the new WI as a child under that
             this.selectedWI.hasChildren = true;
+            item.relationships.parent = { data: {} as WorkItem }
+            item.relationships.parent.data = this.selectedWI;
           } else {
             let index = this.workItems.findIndex(wi => wi.id === this.selectedWI.id)
             if(this.selectedWI.id === this.expandedNode.node.data.id) {
               //if the selected node is expanded
+              item.relationships.parent = { data: {} as WorkItem }
+              item.relationships.parent.data = this.selectedWI;
               this.expandedNode.node.data.children.push(item);
               if(index > -1) {
                 //this means selectedWI is a not a child WI - top level WI
@@ -654,7 +736,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
             console.log('Error displaying notification. Added WI does not match the applied filters.')
           }
         }
-        //if( this.treeList.tree != undefined )
+        if( this.workItems.length > 0 )
           this.treeList.update();
       })
     );
@@ -663,6 +745,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
       this.workItemService.editWIObservable.subscribe(updatedItem => {
         let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
         if(this.filterService.doesMatchCurrentFilter(updatedItem)){
+          updatedItem.hasChildren = updatedItem.relationships.children.meta.hasChildren;
+          updatedItem.relationships['parent'] = this.workItems[index].relationships.parent;
           if (index > -1) {
             this.workItems[index] = updatedItem;
           } else {
@@ -761,6 +845,17 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
           }
       })
     );
+
+    this.eventListeners.push(
+      this.iterationService.createIterationObservable.subscribe(iteration => {
+        let index = this.iterations.findIndex(i => i.id === iteration.id);
+        if (index > -1) {
+          this.iterations[index] = iteration;
+        } else {
+          this.iterations.push(iteration);
+        }
+      })
+    );
   }
 
   //Patternfly-ng's tree list component
@@ -786,8 +881,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   handleAction($event: Action, item: any): void {
     switch($event.id){
       case 'createWI':
-        //Empty state's Creat Work Item button
-        this.typeSelectPanel.openPanel()
+        // Empty state's Create Work Item button
+        this.onCreateFromContext()
       break;
       case 'move2top':
         this.workItemToMove = item.data;
@@ -853,12 +948,14 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
   handleSelectionChange($event): void {
     if($event.item.selected === true) {
       this.selectedWI = $event.item;
-      if(this.expandedNode != null && ($event.item.data.id !== this.expandedNode.node.item.id)) {
+      if(this.expandedNode != null && ($event.item.id !== this.expandedNode.node.item.id)) {
         this.expandedNode = null;
       }
     } else {
       this.selectedWI = null;
       //reset the quick add context to allowed WIT for the selected group
+      this.logger.log('Reset work item types as per the work item type group.');
+      this.logger.log(this.initialGroup);
       this.groupTypesService.setCurrentGroupType(this.initialGroup);
     }
   }
@@ -881,7 +978,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, DoCheck, OnD
     if (event === 'out') {
       setTimeout(() => {
         this.sidePanelOpen = true;
-      }, 100)
+      }, 200)
     } else {
       this.sidePanelOpen = false;
     }

@@ -7,14 +7,16 @@
     color: @color-pf-white;
   }
   &__panel {
+    float: left;
+    width: 100%;
     &-hdr {
+      float: left;
       width: 100%;
-      display: inline-block;
       padding: 20px 15px;
       border-left: 4px solid;
       border-left-color: transparent;
       cursor: default; // as item is not clickable
-      &:hover {
+      &:not(.nohover):hover {
         background: @color-pf-black-700;
       }
     }
@@ -80,6 +82,11 @@
             border-left-color: transparent;
             .pfng-tree-list-content {
               width: 85%;
+            }
+            .list-pf-chevron {
+              .toggle-children {
+                padding-top: 5px;
+              }
             }
             .list-pf-content {
               align-items: flex-start;
@@ -224,7 +231,7 @@
     padding-left: 0;
   }
   .list-pf-chevron {
-    margin-right: 5px;
+    margin-right: 0;
   }
   .blank-slate-pf {
     display: none;

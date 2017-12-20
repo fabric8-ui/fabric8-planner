@@ -39,10 +39,10 @@ class WorkItemListPage {
       refresh_token: 'somerandomtoken',
       token_type: "bearer"
     }));
-    browser.get("http://localhost:8088/?token_json="+url);
+    browser.get(browser.baseUrl + "/?token_json="+url);
   }
    else {
-     browser.get("http://localhost:8088/");
+     browser.get(browser.baseUrl);
    }
  };
 
@@ -59,7 +59,7 @@ class WorkItemListPage {
  }
 
  workItemByURLId (workItemId) {
-   browser.get("http://localhost:8088/work-item/list/detail/"+ workItemId);
+   browser.get(browser.baseUrl + "/work-item/list/detail/"+ workItemId);
     var theDetailPage = new WorkItemDetailPage (workItemId);
  }
  clickCodeMenuTab () {
@@ -238,6 +238,7 @@ class WorkItemListPage {
   }
 
   clickQuickAddSave () {
+    browser.wait(until.visibilityOf(this.saveButton), constants.LONGER_WAIT, 'Failed to find the saveButton'); 
     browser.wait(until.presenceOf(this.saveButton), constants.WAIT, 'Failed to find the saveButton');
     return this.saveButton.click();
   }
@@ -260,7 +261,7 @@ class WorkItemListPage {
   /* xpath = //alm-work-item-list-entry[.//text()[contains(.,'Some Title 6')]]   */
   workItemByTitle (titleString) {
     // return element(by.xpath("//alm-work-item-list-entry[.//text()[contains(.,'" + titleString + "')]]"));
-    return element(by.xpath("//tree-node[.//text()[contains(.,'" + titleString + "')]]"));
+    return element(by.xpath("//tree-node[.//text()='" + titleString + "']"));
   }
 
   get firstWorkItem () {
@@ -276,13 +277,13 @@ class WorkItemListPage {
     return workItemElement.element(by.css(".f8-wi__list-title")).element(by.css("p")).getText();
   }
 
-  clickWorkItemTitle (workItemElement, idText) {
-    workItemElement.element(by.css(".f8-wi__list-title")).element(by.css("p")).click();
-    var theDetailPage = new WorkItemDetailPage (idText);
-    var until = protractor.ExpectedConditions;
-    //browser.wait(until.presenceOf(theDetailPage.workItemDetailPageTitle), constants.WAIT, 'Detail page title taking too long to appear in the DOM');
-    browser.wait(testSupport.waitForText(theDetailPage.clickWorkItemDetailTitle), constants.WAIT, "Title text is still not present");
-    return theDetailPage;
+  clickWorkItemTitle (title) {
+    return this.clickWorkItem(this.workItemByTitle(title));
+  }
+
+  clickWorkItem(workItemElement) {
+    workItemElement.$$(".f8-wi__list-description").first().element(by.css("p")).click()
+    return new WorkItemDetailPage();
   }
 
   /* Description element relative to a workitem */
@@ -409,8 +410,9 @@ class WorkItemListPage {
   }
 
   get workItemFilterPulldownEdited () {
-    browser.wait(until.presenceOf(element(by.css("span.filter-option.pull-left"))), constants.WAIT, 'Failed to find filter-by dropdown list');
-    return element(by.css("span.filter-option.pull-left"));
+    var xpathStr = ".//input[contains(@type,'text')]";
+    browser.wait(until.presenceOf(element(by.xpath(xpathStr))), constants.WAIT, 'Failed to find filter-by dropdown list');
+    return element(by.xpath(xpathStr));
   }
   clickWorkItemFilterPulldownEdited () {
     return this.workItemFilterPulldownEdited.click();
@@ -614,7 +616,9 @@ class WorkItemListPage {
 
   /* Iterations Page object model */
   clickIterationKebab (index){
-    return element(by.xpath("(//div[@class='f8-itr-entry']//button[@class='btn btn-link dropdown-toggle'])["+index+"]")).click();
+//    return element(by.xpath("(//div[@class='f8-itr-entry']//button[@class='btn btn-link dropdown-toggle'])["+index+"]")).click();
+    return element(by.xpath(".//*[contains (@id, 'iterationList_OuterWrap_" + index + "')]/..")).click();
+    //   .//*[contains (@id, 'iterationList_OuterWrap_
   }
   clickEditIterationKebab (){
     return element(by.linkText ("Edit")).click();

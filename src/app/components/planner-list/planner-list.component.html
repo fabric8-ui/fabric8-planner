@@ -47,7 +47,7 @@
       <toolbar-panel
         context="listview"
         [wiTypes]="workItemTypes"
-        (onCreateNewWorkItemSelected)="typeSelectPanel.openPanel()"
+        (onCreateNewWorkItemSelected)="onCreateFromContext()"
         [currentBoardType]="currentBoardType"
         [areas]="areas"
         [loggedInUser]="loggedInUser">
@@ -82,7 +82,8 @@
               [workItem]="node.data"
               [iterations]="iterations"
               (detailEvent)="onDetail($event)"
-              (previewEvent)="onPreview($event)">
+              (previewEvent)="onPreview($event)"
+              (clickLabel)="onClickLabel($event)">
             </alm-work-item-list-entry>
           </ng-template>
           <ng-template #actionTemplate let-node="node" let-index="index">
@@ -108,8 +109,7 @@
 
       <div class="f8-wi-list__quick-add width-100 pull-left"
         id="workItemList_quickAdd"
-        *ngIf="loggedIn"
-        #quickaddHeight>
+        *ngIf="loggedIn">
         <alm-work-item-quick-add
           [wilistview]="'wi-list-view'"
           (close)="close($event)"
@@ -131,3 +131,5 @@
   [workItem]="currentWorkItem"
   #associateIterationModal>
 </fab-planner-associate-iteration-modal>
+
+<osio-modal></osio-modal>

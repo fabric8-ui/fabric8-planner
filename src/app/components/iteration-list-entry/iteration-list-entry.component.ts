@@ -55,7 +55,6 @@ export class IterationListEntryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loggedIn = this.auth.isLoggedIn();
-    console.log('iteration = ', this.iteration);
   }
 
   ngOnDestroy() {
@@ -68,7 +67,7 @@ export class IterationListEntryComponent implements OnInit, OnDestroy {
   }
 
   setGuidedTypeWI(wiCollection) {
-    this.groupTypesService.setCurrentGroupType(wiCollection);
+    this.groupTypesService.setCurrentGroupType(wiCollection, 'execution');
   }
 
   constructURL(iterationId: string) {
@@ -84,17 +83,18 @@ export class IterationListEntryComponent implements OnInit, OnDestroy {
     //Join type and space query
     const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, it_query );
 
+    //For better usability, show all work items under an iteration
     //Iterations should only show allowed work item types
-    const wi_key = 'workitemtype';
-    const wi_compare = this.filterService.in_notation;
-    const wi_value = this.collection;
+    // const wi_key = 'workitemtype';
+    // const wi_compare = this.filterService.in_notation;
+    // const wi_value = this.collection;
 
     //Query for type
-    const type_query = this.filterService.queryBuilder(wi_key, wi_compare, wi_value);
-    const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+    //const type_query = this.filterService.queryBuilder(wi_key, wi_compare, wi_value);
+    //const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
     //const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
     //second_join gives json object
-    return this.filterService.jsonToQuery(second_join);
+    return this.filterService.jsonToQuery(first_join);
     //reverse function jsonToQuery(second_join);
     //return '';
   }

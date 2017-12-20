@@ -12,7 +12,7 @@
 var WorkItemListPage = require('./page-objects/work-item-list.page'),
   constants = require('./constants'),
   testSupport = require('./testSupport');
-  WorkItemDetailPage = require('./page-objects/work-item-detail.page'),
+
 describe('Comments tests :: ', function () {
   var page, items, browserMode;
 
@@ -22,17 +22,22 @@ var waitTime = 30000;
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
     page = new WorkItemListPage(true);
-    detailPage = new WorkItemDetailPage(true);
     testSupport.setTestSpace(page);
   });
-  it('Verify comments text area, username, comment,time is present -desktop ', function() {
-      page.clickWorkItemTitle(page.firstWorkItem, "id0");
-      expect(detailPage.commentDiv().isPresent()).toBe(true);
-      detailPage.clickCommentsDiv();
-      detailPage.writeComment("some comment");
-      expect(detailPage.commentsAvatar('0').isPresent()).toBe(true);
-     });
 
+  it('Verify comments text area, username, comment,time is present -desktop ', function() {
+    var detailPage = page.clickWorkItem(page.firstWorkItem);
+    detailPage.clickCommentIcon();
+    detailPage.clickCommentDiv();
+    detailPage.clickActiveCommentEditorBox();
+    detailPage.writeComment("some other comment!!!!");
+    detailPage.clickCommentSaveButton();
+    expect(detailPage.commentsAvatar('0').isPresent()).toBe(true);
+    expect(detailPage.commentBody('0').getText()).toBe("some other comment!!!!");
+  });
+
+     /* Tests are commented out pending updates to UI page source to restore UI element ID's 
+     
   it('Edit comment and remove previous value and save -desktop ', function() {
       page.clickWorkItemTitle(page.firstWorkItem, "id0");
       detailPage.commentBody("0").click();
@@ -79,4 +84,5 @@ var waitTime = 30000;
       expect(detailPage.deleteCommentDialogeDeletebtn().isPresent()).toBe(true);
       expect(detailPage.getDeleteCommentDialogeModalTitle()).toBe("Delete Comment");
      });
+     */
 });

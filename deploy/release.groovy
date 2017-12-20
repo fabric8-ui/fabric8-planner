@@ -4,6 +4,7 @@ def ci (){
         container('ui'){
             sh 'npm install'
             sh 'npm run build'
+            sh 'npm pack dist/'
         }
     }
 
@@ -17,11 +18,8 @@ def ci (){
         dir('runtime'){
             container('ui'){
                 sh '''
-        /usr/bin/Xvfb :99 -screen 0 1024x768x24 &
-        export API_URL=https://api.prod-preview.openshift.io/api/
-        export NODE_ENV=inmemory
         npm install
-        ./tests/run_functional_tests.sh smokeTest
+        HEADLESS_MODE=true ./tests/run_functional_tests.sh smokeTest
 '''
             }
         }
@@ -64,11 +62,8 @@ def cd (b){
         dir('runtime'){
             container('ui'){
                 sh '''
-        /usr/bin/Xvfb :99 -screen 0 1024x768x24 &
-        export API_URL=https://api.prod-preview.openshift.io/api/
-        export NODE_ENV=inmemory
         npm install
-        ./tests/run_functional_tests.sh smokeTest
+        HEADLESS_MODE=true ./tests/run_functional_tests.sh smokeTest
     '''
             }
         }

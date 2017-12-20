@@ -21,7 +21,7 @@ import {
 } from 'ngx-widgets';
 
 import { ActionModule, ListModule } from 'patternfly-ng';
-import { Broadcaster, Logger } from 'ngx-base';
+import { Logger } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
 
 import { GlobalSettings } from '../../shared/globals';
@@ -31,6 +31,7 @@ import {
 import { GroupTypesModule } from '../group-types-panel/group-types-panel.module';
 import { IterationModule } from '../iterations-panel/iterations-panel.module';
 import { LabelsModule } from '../labels/labels.module';
+import { PlannerModalModule } from '../modal/modal.module';
 import { PlannerListRoutingModule } from './planner-list-routing.module';
 import { SidepanelModule } from '../side-panel/side-panel.module';
 import { ToolbarPanelModule } from '../toolbar-panel/toolbar-panel.module';
@@ -45,6 +46,7 @@ import { WorkItemService } from '../../services/work-item.service';
 import { MockHttp } from '../../mock/mock-http';
 import { HttpService } from '../../services/http-service';
 import { LabelService } from '../../services/label.service';
+import { AssigneesModule } from './../assignee/assignee.module';
 
 let providers = [];
 
@@ -53,7 +55,6 @@ if (process.env.ENV == 'inmemory') {
     BsDropdownConfig,
     GlobalSettings,
     WorkItemService,
-    Broadcaster,
     WorkItemDataService,
     EventService,
     Logger,
@@ -71,7 +72,6 @@ if (process.env.ENV == 'inmemory') {
     GlobalSettings,
     WorkItemService,
     WorkItemDataService,
-    Broadcaster,
     EventService,
     Logger,
     {
@@ -91,6 +91,7 @@ if (process.env.ENV == 'inmemory') {
   imports: [
     ActionModule,
     AlmIconModule,
+    AssigneesModule,
     BsDropdownModule.forRoot(),
     CommonModule,
     DialogModule,
@@ -110,7 +111,8 @@ if (process.env.ENV == 'inmemory') {
     WidgetsModule,
     WorkItemDetailModule,
     WorkItemQuickAddModule,
-    WorkItemDetailAddTypeSelectorModule
+    WorkItemDetailAddTypeSelectorModule,
+    PlannerModalModule
   ],
   declarations: [
     PlannerListComponent,

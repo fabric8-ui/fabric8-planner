@@ -46,7 +46,7 @@ var waitTime = 30000;
       /* Fill in/update the new work item's title and details field */
       expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
       page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-        var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+        var detailPage = page.clickWorkItem(page.firstWorkItem);
 
         detailPage.clickWorkItemTitleDiv();
         detailPage.setWorkItemDetailTitle (workItemUpdatedTitle, false);
@@ -78,14 +78,14 @@ var waitTime = 30000;
       expect(page.workItemTitle(page.workItemByTitle(workItemTitle))).toBe(workItemTitle);
 
       page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-        var detailPage = page.clickWorkItemTitle(page.workItemByTitle(workItemTitle), text);
+        var detailPage = page.clickWorkItemTitle(workItemTitle);
         detailPage.clickWorkItemDetailTitleClick();
         detailPage.setWorkItemDetailTitle (workItemUpdatedTitle, false);
         detailPage.clickWorkItemTitleSaveIcon();
+        detailPage.clickWorkItemDescriptionEditIcon();
         detailPage.clickWorkItemDetailDescription()
         detailPage.setWorkItemDetailDescription (workItemUpdatedDescription, false);
         detailPage.clickWorkItemDescriptionSaveIcon();
-
         detailPage.clickWorkItemDetailCloseButton();
         browser.wait(until.presenceOf(page.firstWorkItem), waitTime, 'Failed to find workItemList');
         expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemUpdatedTitle);
@@ -114,17 +114,17 @@ var waitTime = 30000;
 
       /* Fill in/update the new work item's title and details field */
       page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-        var detailPage = page.clickWorkItemTitle(page.workItemByTitle(workItemTitle), text);
+        var detailPage = page.clickWorkItemTitle(workItemTitle);
         detailPage.clickWorkItemDetailTitleClick();
 
         detailPage.setWorkItemDetailTitle (workItemUpdatedTitle, false);
         detailPage.clickWorkItemTitleCancelIcon();
+        detailPage.clickWorkItemDescriptionEditIcon();
         detailPage.clickWorkItemDetailDescription();
         detailPage.setWorkItemDetailDescription (workItemUpdatedTitle, false);
-        detailPage.clickWorkItemDescriptionCancelIcon();
-
+        detailPage.clickWorkItemDescriptionCancelIcon();  
         detailPage.clickWorkItemDetailCloseButton();
-        browser.wait(until.presenceOf(page.workItemByTitle(workItemTitle)), waitTime, 'Failed to find workItemList');
+        browser.wait(until.presenceOf(page.firstWorkItem), waitTime, 'Failed to find workItemList');
         expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
         });
 
@@ -149,14 +149,12 @@ var waitTime = 30000;
         /* Fill in/update the new work item's title with blank and details field */
         expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
         page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-          var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+          var detailPage = page.clickWorkItem(page.firstWorkItem);
 
           detailPage.clickWorkItemTitleDiv();
           detailPage.setWorkItemDetailTitle (workItemUpdatedTitle, false);
           detailPage.clickWorkItemTitleSaveIcon();
-          expect(detailPage.titleValidation().isPresent()).toBeTruthy();
-          expect(detailPage.titleAlert()).toBeTruthy();
-          expect(detailPage.titleAlertValidation()).toBeTruthy();
+          expect(detailPage.titleAlertValidation().isPresent()).toBeTruthy();
         });
 
       });
@@ -180,7 +178,7 @@ var waitTime = 30000;
 
       /* Fill in/update the new work item's title with blank and details field */
       page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-        var detailPage = page.clickWorkItemTitle(page.workItemByTitle(workItemTitle), text);
+        var detailPage = page.clickWorkItemTitle(workItemTitle);
         detailPage.clickWorkItemDetailTitleClick();
         detailPage.setWorkItemDetailTitle(workItemUpdatedTitle, false);
         detailPage.clickWorkItemTitleSaveIcon();
@@ -210,7 +208,7 @@ var waitTime = 30000;
 
           /* Fill in/update the new work item's title with blank and details field */
           page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-            var detailPage = page.clickWorkItemTitle(page.workItemByTitle(workItemTitle), text);
+            var detailPage = page.clickWorkItemTitle(workItemTitle);
             detailPage.clickWorkItemDetailTitleClick();
 
             detailPage.setWorkItemDetailTitle(workItemUpdatedTitle, false);
@@ -291,21 +289,6 @@ it('Verify how many work item type exists in drop down - desktop', function() {
       });
       */
 
-  /* Verfify on selecting workitem it should display in list and detail view both pages - Desktop */
-       it('Verfify on selecting workitem it should display in list and detail view both pages -Desktop ', function() {
-          testSupport.setBrowserMode('desktop');
-          var workItemTitle = "The test workitem title";
-          var workItemUpdatedTitle = "The test workitem title - UPDATED";
-          page.clickWorkItemQuickAdd();
-          page.typeQuickAddWorkItemTitle(workItemTitle);
-          page.clickQuickAddSave().then(function() {
-             page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-              var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
-              expect(detailPage.detailUserstroyIcon2("fa-paint-brush").isPresent()).toBeTruthy();
-           });
-          });
-          });
-
   /* Verfify on selecting workitem it should display in list and detail view both pages - phone */
    it('Verfify on selecting workitem it should display in list and detail view both pages -phone ', function() {
       testSupport.setBrowserMode('desktop');
@@ -315,7 +298,7 @@ it('Verify how many work item type exists in drop down - desktop', function() {
       page.typeQuickAddWorkItemTitle(workItemTitle);
       page.clickQuickAddSave().then(function() {
          page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-          var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+          var detailPage = page.clickWorkItem(page.firstWorkItem);
           /*Commenting type drop down related tests for issue 635
           detailPage.clickworkItemDetailTypeIcon();
           */
@@ -333,8 +316,8 @@ it('Verify how many work item type exists in drop down - desktop', function() {
 
          page.clickQuickAddSave().then(function() {
            page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-             var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
-             expect(detailPage.WorkItemStateDropDownListCount()).toBe(5);
+             var detailPage = page.clickWorkItem(page.firstWorkItem);
+//             expect(detailPage.WorkItemStateDropDownListCount()).toBe(5);
           });
          });
        });
@@ -349,7 +332,7 @@ it('Verify how many work item type exists in drop down - desktop', function() {
           expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
           expect(page.workItemTitle(page.firstWorkItem)).toBe(workItemTitle);
           page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-          var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+          var detailPage = page.clickWorkItem(page.firstWorkItem);
 
           browser.wait(until.elementToBeClickable(detailPage.workItemStateDropDownButton), constants.WAIT, 'Failed to find workItemStateDropDownButton');   
           detailPage.clickWorkItemStateDropDownButton();
@@ -364,14 +347,6 @@ it('Verify how many work item type exists in drop down - desktop', function() {
   });
 
   /*Verfify on selecting workitem it should display in list and detail view both pages */
-  it('Verfify on selecting workitem state it should display in list and detail view both pages -phone ', function() {
-     var workItemTitle = "The test workitem title";
-     var workItemUpdatedTitle = "The test workitem title - UPDATED";
-         page.clickWorkItemQuickAdd();
-         page.typeQuickAddWorkItemTitle(workItemTitle);
-         page.clickQuickAddSave().then(function() {
-         page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-         var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
 
          browser.wait(until.elementToBeClickable(detailPage.workItemStateDropDownButton), constants.WAIT, 'Failed to find workItemStateDropDownButton');   
          detailPage.clickWorkItemStateDropDownButton();
@@ -412,7 +387,7 @@ it('Verify how many work item type exists in drop down - desktop', function() {
       page.typeQuickAddWorkItemTitle(workItemTitle);
       page.clickQuickAddSave().then(function() {
       page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+      var detailPage = page.clickWorkItem(page.firstWorkItem);
 
       browser.wait(until.elementToBeClickable(detailPage.workItemStateDropDownButton), constants.WAIT, 'Failed to find workItemStateDropDownButton');   
       detailPage.clickWorkItemStateDropDownButton();
@@ -431,7 +406,7 @@ it('Verify how many work item type exists in drop down - desktop', function() {
       page.typeQuickAddWorkItemTitle(workItemTitle);
       page.clickQuickAddSave().then(function() {
       page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, text);
+      var detailPage = page.clickWorkItem(page.firstWorkItem);
 
       browser.wait(until.elementToBeClickable(detailPage.workItemStateDropDownButton), constants.WAIT, 'Failed to find workItemStateDropDownButton');   
       detailPage.clickWorkItemStateDropDownButton();
@@ -459,7 +434,7 @@ it('Verify how many work item type exists in drop down - desktop', function() {
 
           /* Fill in/update the new work item's title with blank and details field */
           page.workItemViewId(page.workItemByTitle(workItemTitle)).getText().then(function (text) {
-            var detailPage = page.clickWorkItemTitle(page.workItemByTitle(workItemTitle), text);
+            var detailPage = page.clickWorkItemTitle(workItemTitle);
             detailPage.clickWorkItemDetailTitleClick();
 
             detailPage.setWorkItemDetailTitle(workItemUpdatedTitle, false);
@@ -477,7 +452,7 @@ it('Verify how many work item type exists in drop down - desktop', function() {
       page.typeQuickAddWorkItemTitle(workItemTitle);
       page.clickQuickAddSave();   
       
-      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, workItemTitle);
+      var detailPage = page.clickWorkItem(page.firstWorkItem);
       browser.wait(until.elementToBeClickable(page.workItemTitle(page.firstWorkItem)), constants.WAIT, 'Failed to find first work item on page');   
 
       detailPage.clickWorkItemDetailCloseButton();
@@ -492,33 +467,20 @@ it('Verify how many work item type exists in drop down - desktop', function() {
       page.typeQuickAddWorkItemDesc("describe");
       page.clickQuickAddSave(); 
       expect(page.workItemDescription(page.firstWorkItem)).toBe("");
-      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, workItemTitle);
+      var detailPage = page.clickWorkItem(page.firstWorkItem);
       browser.wait(until.elementToBeClickable(detailPage.clickWorkItemDetailDescription()), constants.WAIT, 'Failed to find Work Item Description');   
 
       detailPage.clickWorkItemDetailDescription();
+      detailPage.clickWorkItemDescriptionEditIcon();    
       detailPage.setWorkItemDetailDescription(" ",false);
       detailPage.clickWorkItemDescriptionSaveIcon();
       detailPage.clickWorkItemDetailCloseButton();
+      var detailPage = page.clickWorkItem(page.firstWorkItem);
       page.clickWorkItemTitle(page.firstWorkItem, workItemTitle);
       expect(page.workItemDescription(page.firstWorkItem)).toBe("");
     });
 
-    it('Check before while adding description the field should not display undefine/null', function () {
-        testSupport.setBrowserMode("desktop");
-        var workItemTitle = "The test workitem title";
-        browser.wait(until.elementToBeClickable(page.detailedDialogButton), constants.WAIT, 'Failed to find Detailed Dialog Button');   
-        page.clickDetailedDialogButton();
-        var detailPage = page.clickDetailedIcon("userstory");
-
-        browser.wait(until.elementToBeClickable(detailPage.workItemDetailTitle), constants.WAIT, 'Failed to find workItem Detail Title');   
-        detailPage.setWorkItemDetailTitle (workItemTitle, false);
-
-//        detailPage.clickWorkItemTitleSaveIcon();
-expect(detailPage.workItemTitleSaveIconById().isPresent()).toBe(true);
-        expect(detailPage.workItemDetailDescriptionById().getText()).not.toBe("undefined");
-     });
-
-     it('Test description/title can be in other languages also acceptable - desktop ', function() { 
+    it('Test description/title can be in other languages also acceptable - desktop ', function() { 
       testSupport.setBrowserMode("desktop");
       var workItemTitle = "थिस इस tittle";
       page.clickWorkItemQuickAdd();
@@ -526,29 +488,30 @@ expect(detailPage.workItemTitleSaveIconById().isPresent()).toBe(true);
       page.typeQuickAddWorkItemDesc("describe");
       page.clickQuickAddSave(); 
       expect(page.workItemDescription(page.firstWorkItem)).toBe("");
-      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, workItemTitle);
+      var detailPage = page.clickWorkItem(page.firstWorkItem);
       detailPage.clickWorkItemDetailDescription();
+      detailPage.clickWorkItemDescriptionEditIcon();    
       detailPage.setWorkItemDetailDescription(" ",false);
       detailPage.clickWorkItemDescriptionSaveIcon();
       detailPage.clickWorkItemDetailCloseButton();
-      page.clickWorkItemTitle(page.firstWorkItem, workItemTitle);
+      var detailPage = page.clickWorkItem(page.firstWorkItem);
       expect(page.workItemDescription(page.firstWorkItem)).toBe("");
     });
 
     it('Verify the HTML tags should be treated as text while writing description/title. - desktop ', function() { 
-      testSupport.setBrowserMode("desktop");
       var workItemTitle = "<title>Yes this is a title</title>";
       page.clickWorkItemQuickAdd();
       page.typeQuickAddWorkItemTitle(workItemTitle);
       page.typeQuickAddWorkItemDesc("describe");
-      page.clickQuickAddSave(); 
+      page.clickQuickAddSave();
       expect(page.workItemDescription(page.firstWorkItem)).toBe("");
-      var detailPage = page.clickWorkItemTitle(page.firstWorkItem, workItemTitle);
+      var detailPage = page.clickWorkItem(page.firstWorkItem);
       detailPage.clickWorkItemDetailDescription();
+      detailPage.clickWorkItemDescriptionEditIcon();      
       detailPage.setWorkItemDetailDescription(" ",false);
       detailPage.clickWorkItemDescriptionSaveIcon();
       detailPage.clickWorkItemDetailCloseButton();
-      page.clickWorkItemTitle(page.firstWorkItem, workItemTitle);
+      var detailPage = page.clickWorkItem(page.firstWorkItem);
       expect(page.workItemDescription(page.firstWorkItem)).toBe("");
     });
 });

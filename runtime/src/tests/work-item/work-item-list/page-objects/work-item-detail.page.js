@@ -27,8 +27,16 @@ class WorkItemDetailPage {
     return element(by.id("wi-detail-id"));
   }
 
+  get workItemDetailFullPageCloseButton () {
+    return element(by.xpath(".//*[contains(@class,'f8-detail__header')]/span[contains(@class,'pficon-close pull-right')]"));
+  }
+  clickWorkItemDetailFullPageCloseButton () {
+    return this.workItemDetailFullPageCloseButton.click();
+  }
+
   get workItemDetailCloseButton () {
-    return element(by.css(".pficon-close.f8-quick-preview--close"));
+      return element(by.css(".f8-quick-preview--close"));
+//    return element(by.xpath(".//*[contains (@class,'pficon-close pull-right margin-right-5 padding-15 close')]"));
   }
 
   clickWorkItemDetailCloseButton () {
@@ -53,7 +61,11 @@ class WorkItemDetailPage {
   }
 
   get workItemDetailTitle () {
-    return element(by.css("#wi-title-div .inlineinput-textarea"));
+//    return element(by.css("#wi-title-div .inlineinput-textarea"));
+    return element(by.xpath(".//*[contains(@class,'inlineinput-container')]/textarea[contains(@class,'input-field inlineinput-textarea')]"));
+  }
+  clickWorkItemDetailTitle2 () {
+    return this.workItemDetailTitle.click();
   }
 
   setWorkItemDetailTitle (newTitleString, append) {
@@ -95,7 +107,8 @@ class WorkItemDetailPage {
   }
 
   get workItemTitleSaveIcon () {
-    return element(by.css("#wi-title-div .inlineinput-btn-save"));
+//    return element(by.css("#wi-title-div .inlineinput-btn-save"));
+    return element(by.css('.inlineinput-btn-save'));
   }
 
   workItemTitleSaveIconById () {
@@ -103,11 +116,13 @@ class WorkItemDetailPage {
   }
 
   clickWorkItemTitleSaveIcon () {
+    browser.wait(until.elementToBeClickable(this.workItemTitleSaveIcon));
     return this.workItemTitleSaveIcon.click();
   }
 
   get workItemTitleCancelIcon () {
-    return element(by.css("#wi-title-div .inlineinput-btn-cancel"));
+//    return element(by.css("#wi-title-div .inlineinput-btn-cancel"));
+    return element(by.xpath(".//*[contains(@class,'inlineinput-btn-cancel')]"));
   }
 
   clickWorkItemTitleCancelIcon () {
@@ -125,7 +140,7 @@ class WorkItemDetailPage {
   }
 
   workItemDetailAvatar () {
-    return element(by.css(".pull-left.user-assign-avatar"));
+    return element(by.css(".user-assign-avatar"));
   }
 
   get workItemDetailDescription () {
@@ -149,11 +164,22 @@ class WorkItemDetailPage {
     return this.workItemDetailDescriptionValue.sendKeys(newDescriptionString);
   }
 
+  get workItemDescriptionEditIcon2 () {
+    //    return element(by.css("#wi-detail-desc .edit-icon"));
+        return element(by.xpath(".//*[contains (@id,'wi-detail-desc')]/div/div/div/i[contains(@class,'pficon-edit edit-icon')]"));
+      }
+
+      clickWorkItemDescriptionEditIcon2 () {
+        return this.workItemDescriptionEditIcon2.click();
+      }
+
   get workItemDescriptionEditIcon () {
-    return element(by.css("#wi-detail-desc .edit-icon"));
+//    return element(by.css("#wi-detail-desc .edit-icon"));
+    return element(by.xpath(".//*[contains(@class,'description-fields-wrap')]/div/div/f8-markdown/div/div/div/i"));
   }
 
   clickWorkItemDescriptionEditIcon () {
+    this.workItemDescriptionEditIcon.click();
     return this.workItemDescriptionEditIcon.click();
   }
 
@@ -169,13 +195,24 @@ class WorkItemDetailPage {
     return this.workItemDescriptionSaveIcon.click();
   }
 
-  get workItemDescriptionCancelIcon () {
-    return element(by.css("#wi-detail-desc .markdown-test-btn-cancel"));
-  }
+//  get workItemDescriptionCancelIcon () {
+//    return element(by.css("#wi-detail-desc .markdown-test-btn-cancel"));
+//  }
+//
+//  clickWorkItemDescriptionCancelIcon () {
+//    return this.workItemDescriptionCancelIcon.click();
+//  }
 
-  clickWorkItemDescriptionCancelIcon () {
-    return this.workItemDescriptionCancelIcon.click();
-  }
+ /* Comment save cancel button */
+ get workItemDescriptionCancelIcon () {
+  return element(by.xpath(".//*[contains(@class,'action-btn')]/i[contains(@class,'fa fa-close')]"));
+}
+clickWorkItemDescriptionCancelIcon () {
+testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptionCancelIcon", "WorkItemDetailPage");
+ return;
+}
+
+
 
   titleValidation () {
     return element(by.css(".clearfloat.title-error"));
@@ -186,7 +223,8 @@ class WorkItemDetailPage {
   }
 
   titleAlertValidation () {
-    return element(by.xpath(".//*[@id='wi-title-div']//p[.//text()[contains(.,'title is a required field')]]"));
+//    return element(by.xpath(".//*[@id='wi-title-div']//p[.//text()[contains(.,'title is a required field')]]"));
+    return element(by.xpath(".//*[contains (@class, 'error-message')]/small[contains(text(),'Empty title not allowed')]"));
   }
 
   /*
@@ -301,109 +339,115 @@ class WorkItemDetailPage {
   /* The following UI elements support the assignment of a user to a work item */
 
   /* Icon for the user assigned to the workitem */
-  get workItemDetailAssigneeIcon () {
-    return element(by.css(".user-assign-icon"));
-  }
-  clickworkItemDetailAssigneeIcon () {
-    return this.workItemDetailAssigneeIcon.click();
-  }
-  get workItemDetailUnAssigneeIcon () {
-    return element(by.css(".pull-left.fa.fa-user-plus.user-assign-icon"));
-  }
-  clickWorkItemDetailUnAssigneeIcon () {
-    return this.workItemDetailUnAssigneeIcon.click();
+
+  /* ASSIGNEES */
+  get AddAssigneeButton () {
+    return element(by.id("f8-add-assignee"));
   }
 
-  /* The user assigned to the workitem */
-  workItemDetailAssignee () {
-    return element(by.xpath(".//*[contains(@class,'detail-assignee-name')]"));
-  }
-  workItemDetailAssigneeName () {
-    return element(by.css(".pull-left.detail-assignee-name"));
-  }
-  clickworkItemDetailAssigneeName () {
-    return this.workItemDetailAssigneeName.click();
+  clickAddAssigneeButton() {
+    return this.AddAssigneeButton.click();
   }
 
-  workItemDetailAssigneeNameClickable () {
-    return element(by.css(".placeholder.pointer"));
-  }
-  details_assigned_user () {
-    return element(by.id("WI_details_assigned_user"));
-  }
-  get clickWorkItemDetailAssignee () {
-    return this.workItemDetailAssignee.click();
+  get AssigneeDropdown() {
+    return element(by.css("#f8-add-assignee-dropdown .select-dropdown"));
   }
 
-  /* Search string box for the user to assign to the workitem */
-  get workItemDetailAssigneeSearch () {
-    return element(by.id('userAssigneeSearchInput'));
-  }
-  checkworkItemDetailAssigneeSearch () {
-    return element(by.id('userAssigneeSearchInput'));
-  }
-  setWorkItemDetailAssigneeSearch (newSearchString, append) {
-    if (!append) { this.workItemDetailAssigneeSearch.clear(newSearchString) };
-    return this.workItemDetailAssigneeSearch.sendKeys(newSearchString);
+  get AssigneeSearch () {
+    return element(by.css("#f8-add-assignee-dropdown .select-dropdown-search-input"));
   }
 
-  /* The list of users to whom work items can be assigned */
-  get workItemDetailAssigneeList () {
-    return element(by.css(".user-list"));
+  setAssigneeSearch(newSearchString, append) {
+    if (!append) { this.AssigneeSearch.clear() };
+    return this.AssigneeSearch.sendKeys(newSearchString);
   }
 
-  clickworkItemDetailAssigneeList () {
-    return this.workItemDetailAssigneeList.click();
+  get AssigneeDropdownListItem() {
+    return element(by.xpath('.//f8-select-dropdown[@id="f8-add-assignee-dropdown"]//li'));
   }
 
-  /* The first username in the list of users */
-  get workItemDetailFirstUser () {
-    return element(by.css(".item-li.first-item"));
+  clickAssigneeListItem(username) {
+    element(by.xpath('.//f8-select-dropdown[@id="f8-add-assignee-dropdown"]//b[text()="'+ username +'"]')).click();
   }
 
-  get clickworkItemDetailFirstUser () {
-    return this.workItemDetailFirstUser.click();
+  get closeAssigneeDropdown () {
+    return element(by.css("#f8-add-assignee-dropdown .close-pointer"));
   }
 
-  /* Select the assigned user by name */
-  assignedUserDropDownList (userName) {
-    return element(by.xpath(".//*[@id='wi-detail-form']//li[.//text()[contains(.,'" + userName + "')]]"));
+  clickCloseAssigneeDropdown() {
+    return this.closeAssigneeDropdown.click();
   }
 
-  clickAssignedUserDropDownList (userName) {
-    return this.assignedUserDropDownList(userName).click();
+  get AssignUsers() {
+    return $$(".f8-assignees span");
   }
 
-  /* The Unassign button */
-  get workItemDetailUnassignButton () {
-    return element(by.xpath(".//*[contains(@class,'action-item') and contains(text(),'Unassign')]"));
-  }
-
-  clickworkItemDetailUnassignButton () {
-    return this.workItemDetailUnassignButton.click();
-  }
-
-  /* The Cancel button */
-  get workItemDetailCancelButton () {
-    return element(by.xpath(".//*[contains(@class,'action-item') and contains(text(),'Cancel')]"));
-  }
-
-  clickworkItemDetailCancelButton () {
-    return this.workItemDetailCancelButton.click();
-  }
 /**UI elements for comments testSupport  */
   clickCommentsDiv (){
     return element(by.id("wi-comment-add-comment")).click();
   }
-  commentDiv  (){
-    return element(by.id("wi-comment-add-comment"));
+
+  /* Comment edit icon - aka the little pencil icon */
+  get commentIcon () {
+    return element(by.xpath(".//*[contains(@class,'f8-comment--input')]/f8-markdown/div/div/div/i"));
   }
-  writeComment  (comment){
-    return element(by.id("wi-comment-add-comment")).sendKeys(comment + protractor.Key.ENTER);
+  clickCommentIcon () {
+    browser.wait(until.presenceOf(this.commentIcon), constants.WAIT, 'Failed to find element commentIcon');
+    this.commentIcon.click().then(function(){
+      console.log("WorkItemDetailPage - clicked element: commentIcon");
+    });
+    return;
   }
+
+  /* The edit box for a comment */
+  commentDiv () {
+    return element(by.id("wi-comment"));
+    //return element(by.xpath(".//*[contains(@class,'editor active')]"));
+  }
+  clickCommentDiv () {
+    return this.commentDiv().click();
+  }
+  get activeCommentEditorBox () {
+    return element(by.xpath(".//p[contains (@class,'editor-box editor-markdown')]"));
+  }
+  clickActiveCommentEditorBox () {
+    testSupport.clickElement(this.activeCommentEditorBox, "activeCommentEditorBox", "WorkItemDetailPage");
+    return;
+  }
+  writeComment (comment) {
+    return this.activeCommentEditorBox.sendKeys(comment + protractor.Key.ENTER);
+  }
+  editComments (comment, index, append) {
+    if (!append) { this.commentBody(index).clear(comment) };
+    return this.commentBody(index).sendKeys(comment);
+  }
+
+  /* Comment save button */
+  get commentSaveButton () {
+    return element(by.xpath(".//*[contains(@class,'action-btn btn-save')]/i[contains(@class,'fa fa-check')]"));
+ }
+ clickCommentSaveButton () {
+  testSupport.clickElement(this.commentSaveButton, "commentSaveButton", "WorkItemDetailPage");
+   return;
+ }
+
+ /* Comment save cancel button */
+ get commentSaveCancelButton () {
+    return element(by.xpath(".//*[contains(@class,'action-btn')]/i[contains(@class,'fa fa-close')]"));
+ }
+ clickCommentSaveCancelButton () {
+  testSupport.clickElement(this.commentSaveCancelButton, "commentSaveCancelButton", "WorkItemDetailPage");
+   return;
+ }
+
   commentsAvatar (index){
     return element(by.id("comment_avatar_"+index));
   }
+
+  commentBody (index){
+    return element(by.id("comment_body_"+index));
+  }
+
   commentsUsername  (index){
     return element(by.id("comment_username_"+ index)).getText();
   }
@@ -414,13 +458,17 @@ class WorkItemDetailPage {
     return element(by.id('comment_time_'+index)).getText();
   }
   commentEdit(index) {
-    browser.actions().mouseMove(element(by.css('#comment_body_' + index))).perform();
-    browser.wait(until.elementToBeClickable(
-      element(by.css('#comment_body_' + index + ' .edit-icon'))),
-      constants.WAIT, 'Failed to find comment edit button');
+    browser.wait(until.presenceOf(element(by.css('#comment_body_' + index))))
     return element(by.css('#comment_body_' + index + ' .edit-icon'));
   }
+  clickCommentEdit(index) {
+    var editcommenticon = this.commentEdit(index);
+    editcommenticon.click();
+    return editcommenticon.click();
+  }
+
   commentBody(index){
+    browser.wait(until.presenceOf(element(by.css('#comment_body_' + index + ' .editor-box')), constants.WAIT, "Failed to find the comment"))
     return element(by.css('#comment_body_' + index + ' .editor-box'));
   }
   getCommentBody  (index){
@@ -434,10 +482,6 @@ class WorkItemDetailPage {
   }
   clickCloseComment(index){
     return element(by.css('#comment_body_' + index + ' .fa-close')).click();
-  }
-  editComments(comment,index, append){
-    if (!append) { this.commentBody(index).clear(comment) };
-    return this.commentBody(index).sendKeys(comment);
   }
   commentsKebab (){
     return element(by.id('commentActionsKebab'));
@@ -559,16 +603,13 @@ class WorkItemDetailPage {
     return element(by.id("bind-link")).click();
   }
   linkTitle (){
-    return element(by.css(".link-title")).getText();
-  }
-  linkState (index){
-    return element(by.id("linkSWIstate_" + index)).getText();
+    return element(by.css(".f8-link__list-item-title")).getText();
   }
   linkclose (index){
     return element(by.id("closeLink_" + index));
   }
-  linkTotalByTypes (index){
-    return element(by.id("linktotal_" + index)).getText();
+  linkTotalByTypes (){
+    return element(by.id("wi-link-total")).getText();
   }
   linkItemTitle (){
     return element(by.id("link_item_title")).getText();
@@ -945,6 +986,16 @@ class WorkItemDetailPage {
     )
   }
 
+  scrollToBottomRight() {
+    return browser.executeScript('window.scrollTo(1440,900);');
+  }
+
+  scrollToTopRight() {
+    // var elm = element(by.css(".pficon-close.f8-quick-preview--close"));
+    // return browser.executeScript("arguments[0].scrollIntoView();", elm.getWebElement());
+    return browser.executeScript('window.scrollTo(1440,0);');
+  }
+
   /* UI elements for Label */
   get addLabelButton() {
     return $('.clickable.add-label');
@@ -959,7 +1010,8 @@ class WorkItemDetailPage {
   }
 
   getLabelByTitle(title) {
-    return element(by.xpath("//ul[@class='select-dropdown-menu']/li//*[text()='"+title+"']"));
+    browser.wait(until.elementToBeClickable(element(by.xpath("//ul[@class='select-dropdown-menu']/li//*[text()='"+ title +"']")), constants.WAIT));
+    return element(by.xpath("//ul[@class='select-dropdown-menu']/li//*[text()='"+ title +"']"));
   }
 
   // Removes label by clicking on 'x'

@@ -17,7 +17,7 @@ services:
     ports:
       - "8088:8080"
     volumes:
-      - ./runtime/dist:/dist:Z
+      - ./runtime/dist:/dist
   auth:
     container_name: fabric8-planner-auth
     image: docker.io/fabric8/fabric8-auth:latest

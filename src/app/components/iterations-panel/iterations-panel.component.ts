@@ -20,7 +20,6 @@ import { WorkItem } from '../../models/work-item';
 import { FabPlannerIterationModalComponent } from '../iterations-modal/iterations-modal.component';
 import {
   Action,
-  ActionConfig,
   EmptyStateConfig,
   ListBase,
   ListEvent,
@@ -58,7 +57,6 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   masterIterations;
   treeIterations;
   activeIterations:IterationModel[] = [];
-  actionConfig: ActionConfig;
   emptyStateConfig: EmptyStateConfig;
   treeListConfig: TreeListConfig;
 
@@ -137,26 +135,6 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   setTreeConfigs() {
-    this.actionConfig = {
-      primaryActions: [],
-      moreActions: [{
-        id: 'edit',
-        title: 'Edit',
-        tooltip: 'Edit this iteration'
-      }, {
-        id: 'close',
-        title: 'Close',
-        tooltip: 'Close this iteration'
-      },
-      {
-        id: 'createChild',
-        title: 'Create Child',
-        tooltip: 'Create a child under this iteration',
-      }],
-      moreActionsDisabled: !this.loggedIn,
-      moreActionsVisible: this.loggedIn
-    } as ActionConfig;
-
     this.emptyStateConfig = {
       iconStyleClass: '',
       title: 'No Iterations Available',
@@ -264,10 +242,16 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
 
   //This function is called after the iteration modal closes.
   onCreateOrupdateIteration(iteration: IterationModel) {
-    console.log('onCreateOrupdateIteration called >> ', iteration);
     let index = this.allIterations.findIndex((it) => it.id === iteration.id);
     if (index >= 0) {
       this.allIterations[index] = iteration;
+      //if iteration is a child iteration update that content
+      let parent = this.iterationService.getDirectParent(iteration, this.allIterations);
+      if( parent != undefined ) {
+        let parentIndex = this.allIterations.findIndex(i => i.id === parent.id);
+        let childIndex = this.allIterations[parentIndex].children.findIndex(child => child.id === iteration.id);
+        this.allIterations[parentIndex].children[childIndex] = iteration;
+      }
     } else {
       this.allIterations.splice(this.allIterations.length, 0, iteration);
       //Check if the new iteration has a parent
@@ -289,6 +273,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     this.treeIterations = this.iterationService.getTopLevelIterations(this.allIterations);
     this.treeList.update();
     this.clusterIterations();
+    this.iterationService.emitCreateIteration(iteration);
   }
 
   getWorkItemsByIteration(iteration: IterationModel) {
@@ -480,21 +465,10 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   //Patternfly-ng's tree list related functions
-  handleAction($event: Action, item: any): void {
-    switch($event.id) {
-      case 'edit':
-        this.onEdit(item.data);
-      break;
-      case 'createChild':
-        this.onCreateChild(item.data);
-      break;
-      case 'close':
-        this.onClose(item.data);
-      break;
-    }
+  handleClick($event: Action, item: any) {
   }
 
-  handleClick($event: Action, item: any) {
-
+  setGuidedTypeWI() {
+    this.groupTypesService.setCurrentGroupType(this.collection, 'execution');
   }
  }
