@@ -318,13 +318,13 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   onDrop(args) {
-    let [el, target, source, sibling] = args;
-    let iterationId = target.getAttribute('data-id');
-    let workItemId = el.getAttribute('data-UUID');
-    let reqVersion = el.getAttribute('data-version');
-    let selfLink = el.getAttribute('data-selfLink');
-    this.assignWIToIteration(workItemId, parseInt(reqVersion), iterationId, selfLink);
-    target.classList.remove('on-hover-background');
+    // let [el, target, source, sibling] = args;
+    // let iterationId = target.getAttribute('data-id');
+    // let workItemId = el.getAttribute('data-UUID');
+    // let reqVersion = el.getAttribute('data-version');
+    // let selfLink = el.getAttribute('data-selfLink');
+    // this.assignWIToIteration(workItemId, parseInt(reqVersion), iterationId, selfLink);
+    // target.classList.remove('on-hover-background');
   }
 
   onOver(args) {
