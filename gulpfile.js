@@ -10,6 +10,7 @@ var gulp = require('gulp'),
   LessAutoprefix = require('less-plugin-autoprefix'),
   autoprefix = new LessAutoprefix({ browsers: ['last 2 versions'] }),
   lesshint = require('gulp-lesshint'),
+  combiner = require('stream-combiner2');
   concat = require('gulp-concat-css'),
   changed = require('gulp-changed');
   del = require('del'),
@@ -73,6 +74,8 @@ function transpileLESS(src, debug) {
     .pipe(gulp.dest(function (file) {
       return libraryDist + file.base.slice(__dirname.length + 'src/'.length);
     }));
+    combined.on('error', console.error.bind(console));
+    return combined;
 }
 
 function minifyCSS(file) {
@@ -95,7 +98,7 @@ gulp.task('lint-less', function lintLessTask() {
   return gulp
   .src('src/**/*.less')
   .pipe(stylelint({
-    failAfterError: false,
+    failAfterError: false, // turn on to fail build of stylelint errors
     reporters: [{
       formatter: 'string', console: true
     }]
@@ -107,7 +110,7 @@ gulp.task('stylelint', function lintLessTask() {
   return gulp
   .src('src/**/*.less')
   .pipe(stylelint({
-    failAfterError: true,
+    failAfterError: false, // turn on to fail build of stylelint errors
     reporters: [{
       formatter: 'verbose', console: true
     }]

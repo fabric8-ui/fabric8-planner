@@ -4,15 +4,15 @@
     "block-closing-brace-newline-before": "always-multi-line",
     "block-no-empty": [true, {
       "message": "Do not leave empty blocks.",
-      "severity": "error"
+      "severity": "warning"
     }],
     "block-opening-brace-newline-after": ["always-multi-line", {
       "message": "Always add a line after ending a brace",
-      "severity": "error"
+      "severity": "warning"
     }],
     "block-opening-brace-space-before": ["always-multi-line", {
       "message": "Add a space before starting a brace.",
-      "severity": "error"
+      "severity": "warning"
     }],
     "color-hex-case": ["lower", {
       "message": "Use lowercase hex codes for better readability.",
@@ -25,7 +25,7 @@
     "color-no-invalid-hex": true,
     "declaration-no-important": [true, {
       "message": "If this is necessary, you must get approval for a line item exclusion.",
-      "severity": "error"
+      "severity": "warning"
     }],
     "declaration-block-no-duplicate-properties": [true, {
       "ignore": ["consecutive-duplicates-with-different-values"]
@@ -37,16 +37,16 @@
     "declaration-block-semicolon-newline-after": "always-multi-line",
     "font-family-name-quotes": ["always-where-recommended", {
       "message": "You need to change your quotes to follow Font-Family guidelines.",
-      "severity": "error"
+      "severity": "warning"
     }],
     "function-calc-no-unspaced-operator": true,
     "function-comma-space-after": ["always-single-line", {
       "message": "Always include a space after a comma.",
-      "severity": "error"
+      "severity": "warning"
     }],
     "function-comma-space-before": ["never", {
       "message": "Never put a space before a comma.",
-      "severity": "error"
+      "severity": "warning"
     }],
     "function-name-case": ["lower", {
       "message": "You should really use lower case name for functions in the stylesheets.",
@@ -54,27 +54,27 @@
     }],
     "function-url-quotes": ["always", {
       "message": "Quotes around URLs are required - please fix.",
-      "severity": "error"
+      "severity": "warning"
     }],
     "function-whitespace-after": "always",
     "font-family-no-duplicate-names": true,
     "number-leading-zero": ["never", {
       "message": "Do not add zeros before a number.",
-      "severity": "error"
+      "severity": "warning"
     }],
     "number-no-trailing-zeros": [null, {
       "message": "Do not add trailing zeros to numbers.",
-      "severity": "error"
+      "severity": "warning"
     }],
     "no-eol-whitespace": true,
     "string-no-newline": true,
     "string-quotes": ["single", {
       "message": "Only use single quotes in your stylesheets.",
-      "severity": "error"
+      "severity": "warning"
     }],
     "unit-case": "lower",
     "unit-no-unknown": [true, {
-      "severity": "error"
+      "severity": "warning"
     }],
     "unit-whitelist": [
       "px",
