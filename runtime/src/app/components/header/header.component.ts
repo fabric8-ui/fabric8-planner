@@ -17,7 +17,7 @@ export class HeaderComponent implements OnInit {
 
   systemContext: string = 'planner';
   currentContext: Context;
-  recentContexts: Context[];
+  recentContexts: Context[] = [];
   systemStatus: SystemStatus[];
   loggedInUser: User;
   followQueryParams: Object = {};
@@ -35,25 +35,40 @@ export class HeaderComponent implements OnInit {
     private headerService: HeaderService) {
   
       this.headerService.clean();
+      this.headerService.activateMenuItemById('planner_list');
+  }
 
-      this.systemStatus = [
-        {
-          id: 'sys0',
-          name: 'Some Subsystem',
-          statusOk: true
-        } as SystemStatus,
-        {
-          id: 'sys1',
-          name: 'Some Other Subsystem',
-          statusOk: false
-        } as SystemStatus      
-      ]
+  private goTo(menuItem: MenuItem) {
+    for (let m of menuItem.contextLinks) {
+      if (m.context == "planner") {
+        if (m.type == "internal") {
+          this.logger.log('[PlannerHeader] internal link found for MenuItem: ' + m.path);
+          this.goToInternal(m.path);
+        } else if (m.type == "external") {
+          this.logger.log('[PlannerHeader] external link found for MenuItem: ' + m.path);
+          this.goToExternal(m.path);
+        } else {
+          this.logger.warn('[PlannerHeader] No link found for MenuItem: ' + menuItem.id)
+        }
+      }
     }
+  } 
+
+  private goToInternal(path: string) {
+    this.logger.log('[PlannerHeader] Switching to internal route: ' + path);
+    // TODO: do navigation using this.router
+  }
+
+  private goToExternal(path: string) {
+    this.logger.log('[PlannerHeader] Switching to external route: ' + path);   
+    // TODO: do navigation window.url (or similar)
+  }
 
   onSelectRecentContext(context: Context) {
   }
 
   onSelectMenuItem(menuItem: MenuItem) {
+    this.goTo(menuItem);
   }    
 
   onSelectViewAllSpaces() {
@@ -108,18 +123,17 @@ export class HeaderComponent implements OnInit {
         this.loggedInUser = user;        
       } else {
         this.logger.warn('[PlannerHeader] UserService returned empty object user value.')        
+        this.loggedInUser = null;        
       }
     });
 
-    /*
-    // we subscribe to the current space to get notified when the space switches
+    // we subscribe to the current space to get notified when the space switches. This only fires if a switch is happening, not on bootstrap
     this.spacesService.current.subscribe(space => {
       this.currentSpace = space;
       if (this.currentSpace) {       
         // Note: the ""+this.currentSpace.path is needed because Space is broken
+        this.logger.log('[PlannerHeader] Received from SpaceService new currentContext: ' + space.id);
         let context = this.headerService.createContext(this.currentSpace.attributes.name, ""+this.currentSpace.id, this.currentSpace, this.loggedInUser);
-        console.log('##############################1');
-        console.log(context);
         this.currentContext = context;
       } else {
         this.currentContext = null;
@@ -128,23 +142,30 @@ export class HeaderComponent implements OnInit {
 
     // we subscribe to all spaces list to get notified when the spaces list changes
     this.spacesService.getAllSpaces().subscribe((spaces) => {
+      this.logger.log('[PlannerHeader] Received from SpaceService new spaces list with length: ' + spaces.length);
       this.spaces = spaces as Space[];
-      this.currentSpace = spaces[0];
-      if (this.currentSpace) {
-        this.logger.log('[PlannerHeader] Selected new Space: ' + this.currentSpace.id);
-        // Note: the ""+this.currentSpace.path is needed because Space is broken
-        let context = this.headerService.createContext(this.currentSpace.attributes.name, ""+this.currentSpace.id, this.currentSpace, this.loggedInUser);
-        console.log('##############################2');
-        console.log(context);
-        this.currentContext = context;
-        this.spacesService.setCurrent(this.currentSpace);
-      } else {
-        this.logger.log('[PlannerHeader] Deselected Space.');
-        this.currentContext = null;
-        this.spacesService.setCurrent(null);
+      for (let thisSpace of this.spaces) {
+        this.logger.log('[PlannerHeader] Prepare space from allSpaces: ' + thisSpace.id);
+        let context = this.headerService.createContext(thisSpace.attributes.name, ""+thisSpace.id, thisSpace, this.loggedInUser);        
+        this.recentContexts.push(context);
+        this.headerService.addRecentContext(context);
+      } 
+      // if there is no currentSpace yet, we select the first one to be the new currentSpace
+      if (!this.currentSpace) {
+        this.currentSpace = spaces[0];
+        if (this.currentSpace) {
+          this.logger.log('[PlannerHeader] Selected new Space on result of getAllSpaces: ' + this.currentSpace.id);
+          // Note: the ""+this.currentSpace.path is needed because Space is broken
+          let context = this.headerService.createContext(this.currentSpace.attributes.name, ""+this.currentSpace.id, this.currentSpace, this.loggedInUser);
+          this.currentContext = context;
+          this.spacesService.setCurrent(this.currentSpace);
+        } else {
+          this.logger.log('[PlannerHeader] Deselected Space.');
+          this.currentContext = null;
+          this.spacesService.setCurrent(null);
+        }
       }
     });
-    */
 
     // we preserve the iteration query params TODO: is this needed?
     this.route.queryParams.subscribe(params => {
@@ -153,7 +174,22 @@ export class HeaderComponent implements OnInit {
       if (Object.keys(params).indexOf('iteration') > -1) {
         this.followQueryParams['iteration'] = params['iteration'];
       }
-    })    
+    });
+    
+    // if there is no systemStatus retrieved from the storage, init it with something meaningful
+    this.headerService.retrieveSystemStatus().subscribe((systemStatus: SystemStatus[]) => {
+      // TODO: instead of adding template data here, retrieve the real systemStatus somewhere, because the user could have used a deepLink
+      if (!systemStatus || systemStatus.length==0) {
+        this.systemStatus = [
+          {
+            id: 'planner',
+            name: 'Planner',
+            statusOk: true
+          } as SystemStatus 
+        ]
+        this.headerService.persistSystemStatus(this.systemStatus);    
+      }
+    })
   }
 
 }
