@@ -84,7 +84,8 @@
       "em",
       "rem",
       "vh",
-      "vw"
+      "vw",
+      "*pf-custom-navbar-item-height"
     ],
     "value-list-comma-space-after": "always-single-line",
     "value-list-comma-space-before": "never",
