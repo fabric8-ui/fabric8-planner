@@ -206,6 +206,11 @@ class WorkItemListPage {
     return this.parentIterationDropDown().sendKeys(text);
   }
 
+  selectParentIterationByName(name) {
+    this.searchParentIteration(name);
+    return element(by.xpath(
+      '//*[contains(@class, "f8-iteration-modal-list")]//*[contains(text(), "'+ name +'")]')).click();
+  }
   selectParentIterationById  (ids){
     return this.parentIterationById(ids).click();
   }
@@ -623,6 +628,12 @@ class WorkItemListPage {
 //    return element(by.xpath("(//div[@class='f8-itr-entry']//button[@class='btn btn-link dropdown-toggle'])["+index+"]")).click();
     return element(by.xpath(".//*[contains (@id, 'iterationList_OuterWrap_" + index + "')]/..")).click();
     //   .//*[contains (@id, 'iterationList_OuterWrap_
+  }
+  clickIterationKebabByIndex(index) {
+    var ele = $$('.f8-itr__panel pfng-action.list-pf-actions').get(index);
+    // The iteration might not be in view. Scroll to the element
+    browser.executeScript('arguments[0].scrollIntoView(true)', ele.getWebElement())
+    return ele.click();
   }
   clickEditIterationKebab (){
     return element(by.linkText ("Edit")).click();

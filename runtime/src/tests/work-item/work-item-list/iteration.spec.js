@@ -11,46 +11,43 @@
 
 var WorkItemListPage = require('./page-objects/work-item-list.page'),
   testSupport = require('./testSupport'),
-  constants = require("./constants");
+  constants = require("./constants"),
+  OpenShiftIoRHDLoginPage = require('./page-objects/openshift-io-RHD-login.page');
+
 
 describe('Iteration CRUD tests :: ', function () {
-  var page;
-
-  const workitemStatus  = {
-    New: 0,
-    Open: 1,
-    InProgress: 2,
-    Resolved: 3,
-    Closed: 4
-  }
-
+  var page, AUTH_TOKEN, REFRESH_TOKEN;
   var until = protractor.ExpectedConditions,
-    expectedForceActiveLabel = 'Force Active:',
-    newIteration = {
-      'Title' : 'New Iteration',
-      'Description' : 'New Iteration Description',
-      'Index': '6'
-    },
-    firstIteration = {
-      'Title' : 'Iteration 0',
-      'Index' : 1,
-      'ID' : 'id0',
-      'FullPath' : '/Root Iteration/Iteration 0',
-      'shortPath' : '/Iteration 0'
-    },
-    secondIteration = { // Second iteration is active by default (mock data)
-      'ID' : 'id1',
-      'FullPath' : '/Root Iteration/Iteration 1',
-      'Index': 2
-    },
+    expectedForceActiveLabel = 'Force Active:',    
     updateIterationTitle = 'Update Iteration',
     updateIterationDescription = 'Update Iteration Description',
     childIterationTitle = 'New Child Iteration',
     childIterationDescription = 'New Child Iteration Description';
 
   beforeEach(function () {
+    browser.ignoreSynchronization = false;
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);
+    if (AUTH_TOKEN && REFRESH_TOKEN){
+      console.log("AUTH and REFRESH tokens found. Skipping login.")
+      page = new WorkItemListPage(this.AUTH_TOKEN, this.REFRESH_TOKEN);
+    } else {
+      page = new WorkItemListPage()
+    }
+  });
+
+  /* Simple test for registered user */
+  it("should perform - LOGIN", function() {
+    /* Login to SUT */
+    page.clickLoginButton();
+    browser.ignoreSynchronization = true;
+    var RHDpage = new OpenShiftIoRHDLoginPage();
+    RHDpage.doLogin(browser);
+    browser.executeScript("return window.localStorage.getItem('auth_token');").then(function(val) {
+      this.AUTH_TOKEN = val;
+    });
+    browser.executeScript("return window.localStorage.getItem('refresh_token');").then(function(val) {
+      this.REFRESH_TOKEN = val
+    });
   });
 
   /* Verify the UI buttons are present */
@@ -73,21 +70,19 @@ describe('Iteration CRUD tests :: ', function () {
   it('Verify setting the Iteration title and description fields', function() {
     /* Create a new iteration */ 
     page.clickIterationAddButton();
-    page.setIterationTitle(newIteration.Title, false);
-    page.clickParentIterationDropDown();
-    page.selectParentIterationById(firstIteration.ID);
-    page.setIterationDescription(newIteration.Description, false);
+    page.setIterationTitle(constants.NEW_ITERATION_TITLE, false);
+    page.setIterationDescription(constants.NEW_ITERATION_DESCRIPTION, false);
 
-    /* TODO - Mocking is failing to create new iterations */
-//    page.clickCreateIteration();
-//
-//    /* Verify that the new iteration was successfully added */
-//    browser.wait(until.presenceOf(page.IterationByName(newIteration.Title)), constants.WAIT, 'Failed to find iteration with title: ' + newIteration.Title);
-//
-//    page.clickIterationKebab(newIteration.Index);
-//    page.clickEditIterationKebab();
-//    expect(page.iterationTitleFromModal.getAttribute('value')).toBe(newIteration.Title);
-//    expect(page.iterationDescription.getAttribute('value')).toBe(newIteration.Description)
+    page.clickCreateIteration();
+
+    /* Verify that the new iteration was successfully added */
+    browser.wait(until.presenceOf(page.IterationByName(constants.NEW_ITERATION_TITLE)),
+      constants.WAIT,
+      'Failed to find iteration with title: ' + constants.NEW_ITERATION_TITLE);
+    page.clickIterationKebabByIndex("5");
+    page.clickEditIterationKebab();
+    expect(page.iterationTitleFromModal.getAttribute('value')).toBe(constants.NEW_ITERATION_TITLE);
+    expect(page.iterationDescription.getAttribute('value')).toBe(constants.NEW_ITERATION_DESCRIPTION);
   });
 
   it('Verify force active button label exists', function() {
@@ -114,10 +109,10 @@ describe('Iteration CRUD tests :: ', function () {
 
   it('Verify force active button state(true) is preserved', function(){
     page.clickIterationAddButton();
-    page.setIterationTitle(newIteration.Title, false);
-    page.setIterationDescription(newIteration.Description, false);
+    page.setIterationTitle(constants.NEW_ITERATION_TITLE, false);
+    page.setIterationDescription(constants.NEW_ITERATION_DESCRIPTION, false);
     page.clickParentIterationDropDown();
-    page.selectParentIterationById(firstIteration.ID);
+    page.selectParentIterationByName("Iteration_3");
 
     // Enable active iteration
     page.clickActiveIterationButton();
@@ -162,30 +157,30 @@ describe('Iteration CRUD tests :: ', function () {
     var detailPage = page.clickWorkItem(page.firstWorkItem);
     browser.wait(until.elementToBeClickable(detailPage.workItemStateDropDownButton), constants.WAIT, 'Failed to find workItemStateDropDownButton');
     detailPage.IterationOndetailPage().click();
-    detailPage.associateIterationById(firstIteration.ID);
+    detailPage.associateIterationByName("Iteration_3");
     detailPage.saveIteration();
-    expect(detailPage.getAssociatedIteration()).toBe(firstIteration.FullPath);
+    expect(detailPage.getAssociatedIteration()).toContain("Iteration_3");
     detailPage.clickWorkItemDetailCloseButton();
 
     // Reopen the same detail page and check changes are saved
     var detailPage = page.clickWorkItem(page.firstWorkItem);
     browser.wait(until.elementToBeClickable(detailPage.workItemStateDropDownButton), constants.WAIT, 'Failed to find workItemStateDropDownButton');
-    expect(detailPage.getAssociatedIteration()).toBe(firstIteration.FullPath);
+    expect(detailPage.getAssociatedIteration()).toContain("Iteration_3");
     detailPage.clickWorkItemDetailCloseButton();
   });
 
   it('Re-Associate Workitem from detail page', function() {
     var detailPage = page.clickWorkItem(page.firstWorkItem);
     detailPage.IterationOndetailPage().click();
-    detailPage.associateIterationById(firstIteration.ID);
+    detailPage.associateIterationByName("Iteration_2");
     detailPage.saveIteration();
 
     // Re - associate
     var detailPage = page.clickWorkItem(page.firstWorkItem);
     detailPage.IterationOndetailPage().click();
-    detailPage.associateIterationById(secondIteration.ID);
+    detailPage.associateIterationByName("Iteration_3");
     detailPage.saveIteration();
-    expect(detailPage.getAssociatedIteration()).toBe(secondIteration.FullPath);
+    expect(detailPage.getAssociatedIteration()).toContain("Iteration_3");
     detailPage.clickWorkItemDetailCloseButton();
   });
 
@@ -196,9 +191,8 @@ describe('Iteration CRUD tests :: ', function () {
 
   it('Verify Parent Iteration state preserved', function(){
     page.clickIterationAddButton();
-    page.setIterationTitle(newIteration.Title, false);
+    page.setIterationTitle(constants.NEW_ITERATION_TITLE, false);
     page.clickParentIterationDropDown();
-    page.selectParentIterationById(firstIteration.ID);
     page.clickCreateIteration();
 
     /* TODO - Mocking is blocking the creation of new iterations */

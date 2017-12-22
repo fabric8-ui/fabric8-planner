@@ -18,7 +18,6 @@ function define(name, value) {
         enumerable: true
     });
 }
-
 define("WAIT", 30000);
 define("LONG_WAIT", 60000);
 define("NEW_WORK_ITEM_TITLE_1", "New Work Item 1")
@@ -34,7 +33,8 @@ define("AREA_1_TITLE", '/' + this.SPACE_NAME + '/Area_1');
 define("AREA_2_TITLE", '/' + this.SPACE_NAME + '/Area_2');
 define("ITERATION_1_TITLE", '/' + this.SPACE_NAME + '/Iteration_1');
 define("ITERATION_2_TITLE", '/' + this.SPACE_NAME + '/Iteration_2');
-define("newLabelTitle", "My Test Label");
-define("testLabelTitle", "Example Label 0");
+define("NEW_LABEL_TITLE", "My Test Label");
+define("NEW_ITERATION_TITLE", "New Iteration");
+define("NEW_ITERATION_DESCRIPTION", "New Iteration Description");
 define("AUTH_TOKEN", browser.params.auth_token);
 define("REFRESH_TOKEN", browser.params.refresh_token);

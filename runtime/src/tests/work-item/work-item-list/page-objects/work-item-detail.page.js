@@ -691,6 +691,11 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   associateIterationById(iterationid){
     return element(by.id('iteration-'+ iterationid)).click();
   }
+  associateIterationByName(name) {
+    return element(
+      by.xpath("//*[@class='detail-itr-content']//*[@class='item-li']//*[contains(text(), '"+name+"')]/.."))
+      .click();
+  }
   genericLinkseach(text){
     return element(by.linkText(text)).click();
   }
