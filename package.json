@@ -135,7 +135,7 @@
     "file-loader": "1.1.5",
     "gh-pages": "1.0.0",
     "gulp": "3.9.1",
-    "gulp-changed": "3.1.1",
+    "gulp-changed": "^3.1.1",
     "gulp-concat": "2.6.1",
     "gulp-concat-css": "2.3.0",
     "gulp-cssmin": "0.2.0",

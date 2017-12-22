@@ -11,6 +11,7 @@ var gulp = require('gulp'),
   autoprefix = new LessAutoprefix({ browsers: ['last 2 versions'] }),
   lesshint = require('gulp-lesshint'),
   concat = require('gulp-concat-css'),
+  changed = require('gulp-changed');
   del = require('del'),
   replace = require('gulp-string-replace'),
   sourcemaps = require('gulp-sourcemaps'),
