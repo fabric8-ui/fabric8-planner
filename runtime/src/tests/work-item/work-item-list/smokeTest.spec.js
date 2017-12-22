@@ -81,7 +81,7 @@ describe('Work item list', function () {
     page.typeQuickAddWorkItemDesc(constants.WORK_ITEM_DESCRIPTION);
     page.clickQuickAddSave().then(function() {
       /* Fill in/update the new work item's title and details field */
-      expect(page.workItemTitle(page.workItemByTitle(constants.WORK_ITEM_TITLE))).toBe(WORK_ITEM_TITLE);
+      expect(page.workItemTitle(page.workItemByTitle(constants.WORK_ITEM_TITLE))).toBe(constants.WORK_ITEM_TITLE);
       var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
       browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find Assignee Icon');
       detailPage.clickWorkItemDetailTitleClick();
@@ -93,7 +93,7 @@ describe('Work item list', function () {
       detailPage.clickWorkItemDescriptionSaveIcon();
       detailPage.clickWorkItemDetailCloseButton();
       browser.wait(until.presenceOf(page.workItemByTitle(constants.WORK_ITEM_UPDATED_TITLE)), constants.WAIT, 'Failed to find workItemList');
-      expect(page.workItemTitle(page.firstWorkItem)).toBe(constants.WORK_ITEM_UPDATED_TITLE);
+      expect(page.workItemByTitle(constants.WORK_ITEM_UPDATED_TITLE).isPresent()).toBe(true);
     });
   });
 
@@ -127,7 +127,7 @@ describe('Work item list', function () {
     expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);
     detailPage.clickWorkItemDetailCloseButton();
 
-    expect(page.workItemTitle(page.workItemByTitle(constants.NEW_WORK_ITEM_TITLE_2))).toBe(constants.NEW_WORK_ITEM_TITLE_2);
+    expect(page.workItemByTitle(constants.NEW_WORK_ITEM_TITLE_2).isPresent()).toBe(true);
 
     detailPage = page.clickWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_2);
     expect(detailPage.getCreatorUsername()).toBe(constants.EXAMPLE_USER);
