@@ -21,12 +21,14 @@ let until = protractor.ExpectedConditions;
 
 /* Icons displayed after the detailed dialog button is clicked */
 let detailedWorkItemIcons = [];
-detailedWorkItemIcons["userstory"] = ".card-pf-icon-circle.fa.fa-bookmark";
-detailedWorkItemIcons["valueproposition"] = ".card-pf-icon-circle.fa.fa-gift";
-detailedWorkItemIcons["fundamental"] = ".card-pf-icon-circle.fa.fa-bank";
+detailedWorkItemIcons["papercut"] = ".card-pf-icon-circle.fa.fa-scissors";
+detailedWorkItemIcons["valueproposition"] = ".card-pf-icon-circle.fa.fa-diamond";
+detailedWorkItemIcons["fundamental"] = ".card-pf-icon-circle.fa.fa-university";
 detailedWorkItemIcons["experience"] = ".card-pf-icon-circle.fa.fa-map";
-detailedWorkItemIcons["feature"] = ".card-pf-icon-circle.fa.fa-mouse-pointer";
-detailedWorkItemIcons["bug"] = ".card-pf-icon-circle.fa.fa-bug ";
+detailedWorkItemIcons["feature"] = ".card-pf-icon-circle.fa.fa-puzzle-piece";
+detailedWorkItemIcons["bug"] = ".card-pf-icon-circle.fa.fa-bug";
+detailedWorkItemIcons["task"] = ".card-pf-icon-circle.fa.fa-tasks";
+detailedWorkItemIcons["scenario"] = ".card-pf-icon-circle.fa.fa-bolt";
 
 class WorkItemListPage {
 

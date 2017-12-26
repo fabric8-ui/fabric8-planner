@@ -15,40 +15,54 @@
 var WorkItemListPage = require('./page-objects/work-item-list.page'),
   testSupport = require('./testSupport'),
   constants = require('./constants'),
-  WorkItemDetailPage = require('./page-objects/work-item-detail.page');
-
-var workItemTitle = "The test workitem title";
-var workItemUpdatedTitle = "The test workitem title - UPDATED";
-var workItemDescription = "The test workitem description";
-var workItemUpdatedDescription = "The test workitem description - UPDATED";
-var until = protractor.ExpectedConditions;
-var waitTime = 30000;
+  OpenShiftIoRHDLoginPage = require('./page-objects/openshift-io-RHD-login.page');
 
 describe('Work item list', function () {
-  var page, items, browserMode;
-  var until = protractor.ExpectedConditions;
+  var page, AUTH_TOKEN, REFRESH_TOKEN, until = protractor.ExpectedConditions;
+  var waitTime = 30000;
+
   beforeEach(function () {
+    browser.ignoreSynchronization = false;
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);   
-    testSupport.setTestSpace(page);
+    if (AUTH_TOKEN && REFRESH_TOKEN){
+      console.log("AUTH and REFRESH tokens found. Skipping login.")
+      page = new WorkItemListPage(this.AUTH_TOKEN, this.REFRESH_TOKEN);
+    } else {
+      page = new WorkItemListPage()
+    }
+  });
+
+  /* Simple test for registered user */
+  it("should perform - LOGIN", function() {
+    /* Login to SUT */
+    page.clickLoginButton();
+    browser.ignoreSynchronization = true;
+    var RHDpage = new OpenShiftIoRHDLoginPage();
+    RHDpage.doLogin(browser);
+    browser.executeScript("return window.localStorage.getItem('auth_token');").then(function(val) {
+      this.AUTH_TOKEN = val;
+    });
+    browser.executeScript("return window.localStorage.getItem('refresh_token');").then(function(val) {
+      this.REFRESH_TOKEN = val
+    });
   });
 
 it('Create WorkItem and creatorname and image is relecting', function () {
   page.clickDetailedDialogButton();
-  var detailPage = page.clickDetailedIcon("userstory");
+  var detailPage = page.clickDetailedIcon("scenario");
 
   detailPage.clickWorkItemDetailTitle2();
   browser.wait(until.elementToBeClickable(detailPage.workItemDetailTitle), constants.WAIT, 'Failed to find workItemDetailTitle');   
-  detailPage.setWorkItemDetailTitle (workItemTitle, false);
+  detailPage.setWorkItemDetailTitle (constants.NEW_WORK_ITEM_TITLE_2, false);
   detailPage.clickWorkItemTitleSaveIcon();
 
   detailPage.clickWorkItemDescriptionEditIcon2();
   detailPage.clickWorkItemDetailDescription();
 
-  detailPage.setWorkItemDetailDescription (workItemDescription, true);
+  detailPage.setWorkItemDetailDescription (constants.WORK_ITEM_DESCRIPTION, true);
   detailPage.clickWorkItemDescriptionSaveIcon();
 
-  expect(detailPage.getCreatorUsername()).toBe('Example User 0');
+  expect(detailPage.getCreatorUsername()).toBe(constants.EXAMPLE_USER);
   expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);     
   detailPage.clickWorkItemDetailFullPageCloseButton();
 
@@ -60,20 +74,20 @@ it('Create WorkItem and creatorname and image is relecting', function () {
 
 it('Edit and check WorkItem , creatorname and image is relecting', function () {
   page.clickDetailedDialogButton();
-  var detailPage = page.clickDetailedIcon("userstory");
+  var detailPage = page.clickDetailedIcon("fundamental");
 
   detailPage.clickWorkItemDetailTitle2();
   browser.wait(until.elementToBeClickable(detailPage.workItemDetailTitle), constants.WAIT, 'Failed to find workItemDetailTitle'); 
-  detailPage.setWorkItemDetailTitle (workItemTitle, false);
+  detailPage.setWorkItemDetailTitle (constants.NEW_WORK_ITEM_TITLE_2, false);
   detailPage.clickWorkItemTitleSaveIcon();
 
   detailPage.clickWorkItemDescriptionEditIcon2();
   detailPage.clickWorkItemDetailDescription()
 
-  detailPage.setWorkItemDetailDescription (workItemDescription, true);
+  detailPage.setWorkItemDetailDescription (constants.WORK_ITEM_DESCRIPTION, true);
   detailPage.clickWorkItemDescriptionSaveIcon();
 
-  expect(detailPage.getCreatorUsername()).toBe('Example User 0');
+  expect(detailPage.getCreatorUsername()).toBe(constants.EXAMPLE_USER);
   expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);     
   detailPage.clickWorkItemDetailFullPageCloseButton();
 
@@ -92,31 +106,30 @@ it('Edit and check WorkItem , creatorname and image is relecting', function () {
 
  it('check Creator is readonly - desktop', function () {
    page.clickDetailedDialogButton();
-   var detailPage = page.clickDetailedIcon("userstory");
-   browser.wait(until.elementToBeClickable(detailPage.workItemDetailAssigneeIcon), constants.WAIT, 'Failed to find Assignee Icon');   
-   expect(detailPage.getCreatorUsername()).toBe('Example User 0');
+   var detailPage = page.clickDetailedIcon("bug");
+   expect(detailPage.getCreatorUsername()).toBe(constants.EXAMPLE_USER);
    });
  /*  This test is blocked by : https://github.com/almighty/almighty-ui/issues/605 */
  it('check Creator is shown as loggedIn user - desktop', function () {
    page.clickDetailedDialogButton();
-   var detailPage = page.clickDetailedIcon("userstory");
+   var detailPage = page.clickDetailedIcon("bug");
    expect(detailPage.getCreatorAvatar().isPresent()).toBe(true); 
-   expect(detailPage.getCreatorUsername()).toBe('Example User 0');
+   expect(detailPage.getCreatorUsername()).toBe(constants.EXAMPLE_USER);
    });
  
 /* Test commented out pending resolution of issue: https://github.com/almighty/almighty-ui/issues/538  */
  it('should create a new workitem through the detail dialog - phone.', function () {
    page.clickDetailedDialogButton();
-   var detailPage = page.clickDetailedIcon("userstory");
+   var detailPage = page.clickDetailedIcon("experience");
 
    detailPage.clickWorkItemDetailTitle2();
    browser.wait(until.elementToBeClickable(detailPage.workItemDetailTitle), constants.WAIT, 'Failed to find workItemDetailTitle'); 
-   detailPage.setWorkItemDetailTitle (workItemTitle, false);
+   detailPage.setWorkItemDetailTitle (constants.NEW_WORK_ITEM_TITLE_2, false);
    detailPage.clickWorkItemTitleSaveIcon();
    
    detailPage.clickWorkItemDescriptionEditIcon2();
    detailPage.clickWorkItemDetailDescription()
-   detailPage.setWorkItemDetailDescription (workItemDescription, true);
+   detailPage.setWorkItemDetailDescription (constants.WORK_ITEM_DESCRIPTION, true);
    detailPage.clickWorkItemDescriptionSaveIcon(); 
    detailPage.clickWorkItemDetailFullPageCloseButton();
 
