@@ -24,6 +24,9 @@ define("NEW_WORK_ITEM_TITLE_1", "New Work Item 1")
 define("NEW_WORK_ITEM_TITLE_2", "New Work Item 2");
 define("WORK_ITEM_TITLE", "Workitem_Title_20");
 define("WORK_ITEM_TITLE_1", "Workitem_Title_19");
+define("WORK_ITEM_TITLE_2", "Workitem_Title_18");
+define("WORK_ITEM_TITLE_3", "Workitem_Title_17");
+define("WORK_ITEM_TITLE_4", "Workitem_Title_11");
 define("WORK_ITEM_UPDATED_TITLE", "Test workitem title-UPDATED");
 define("WORK_ITEM_DESCRIPTION", "The test workitem description");
 define("WORK_ITEM_UPDATED_DESCRIPTION", "Test description-UPDATED");

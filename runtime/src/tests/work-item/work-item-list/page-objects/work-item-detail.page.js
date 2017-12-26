@@ -575,6 +575,8 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
     return element(by.id("create-link-button"));
   }
   clickCreateLinkButton (){
+    browser.executeScript('arguments[0].scrollIntoView(true)',
+                          this.createLinkButton.getWebElement());
     return this.createLinkButton.click();
   }
   get checkLinkDropDown (){

@@ -290,6 +290,7 @@ class WorkItemListPage {
   }
 
   clickWorkItem(workItemElement) {
+    browser.executeScript('arguments[0].scrollIntoView(true)', workItemElement.getWebElement());
     workItemElement.$("p").click();
     return new WorkItemDetailPage();
   }
