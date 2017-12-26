@@ -26,7 +26,7 @@ describe('Work board tests :: ', function () {
     boardPage = new WorkBoardPage(true);
   });
 
-  it( 'Verify Board elements are present -desktop ', function() {
+/*  it( 'Verify Board elements are present -desktop ', function() {
         var stateList = typesOfStatesList();
         var countstateList = totalCountOftypesOfStatesList();
         verifytypesOfStates(stateList,'false','false');
@@ -34,15 +34,15 @@ describe('Work board tests :: ', function () {
   });
 
   it( 'Shuffle Board elements New to Open  -desktop ', function() {
-        var stateList = typesOfStatesList();      
-        boardPage.clickWithId("1");
+        var stateList = typesOfStatesList();  
+        boardPage.getBoardById("id-1");
         browser.wait(until.elementToBeClickable(detailPage.workItemStateDropDownButton), constants.WAIT, 'Failed to find workItemStateDropDownButton');   
         detailPage.clickWorkItemStateDropDownButton();
         detailPage.WorkItemStateDropDownList().get(1).click();
         detailPage.clickWorkItemDetailCloseButton();
         browser.wait(until.elementToBeClickable(page.spaceDropdown), constants.WAIT, 'Failed to find elemet');     
-        page.clickOnSpaceDropdown();
-        page.selectSpaceDropDownValue("3");
+        // page.clickOnSpaceDropdown();
+        // page.selectSpaceDropDownValue("3");
         browser.wait(until.elementToBeClickable(page.openButton), constants.WAIT, 'Failed to find elemet'); 
         var countstateList = totalCountOftypesOfStatesList();
         verifytotalCountPertypesOfStates(countstateList,'1','1'); 
@@ -51,14 +51,12 @@ describe('Work board tests :: ', function () {
 
   it( '1.1 Shuffle Board elements Open to inProgress -desktop ', function() {
         var stateList = typesOfStatesList();   
-        boardPage.clickWithId("5");
+        boardPage.getBoardById("id-5");
         browser.wait(until.elementToBeClickable(detailPage.workItemStateDropDownButton), constants.WAIT, 'Failed to find workItemStateDropDownButton');   
         detailPage.clickWorkItemStateDropDownButton();
         detailPage.WorkItemStateDropDownList().get(2).click();
         detailPage.clickWorkItemDetailCloseButton();
         browser.wait(until.elementToBeClickable(page.spaceDropdown), constants.WAIT, 'Failed to find elemet'); 
-        page.clickOnSpaceDropdown();
-        page.selectSpaceDropDownValue("2"); 
         browser.wait(until.elementToBeClickable(page.openButton), constants.WAIT, 'Failed to find elemet'); 
         countstateList = totalCountOftypesOfStatesList();
         verifytotalCountPertypesOfStates(countstateList,'2','5');       
@@ -67,14 +65,12 @@ describe('Work board tests :: ', function () {
 
   it( 'Shuffle Board elements inProgress- resolved  -desktop ', function() {
         var stateList = typesOfStatesList();  
-        boardPage.clickWithIdAnyColumn("3","1");
+        boardPage.getBoardById("id-3");
         browser.wait(until.elementToBeClickable(detailPage.workItemStateDropDownButton), constants.WAIT, 'Failed to find workItemStateDropDownButton');   
         detailPage.clickWorkItemStateDropDownButton();
         detailPage.WorkItemStateDropDownList().get(3).click();
         detailPage.clickWorkItemDetailCloseButton();
         browser.wait(until.elementToBeClickable(page.spaceDropdown), constants.WAIT, 'Failed to find elemet'); 
-        page.clickOnSpaceDropdown();
-        page.selectSpaceDropDownValue("3");
         browser.wait(until.elementToBeClickable(page.openButton), constants.WAIT, 'Failed to find elemet'); 
         var countstateList = totalCountOftypesOfStatesList();
         verifytotalCountPertypesOfStates(countstateList,'3','1');
@@ -83,14 +79,12 @@ describe('Work board tests :: ', function () {
 
   it( '2.1 Shuffle Board elements inProgress- open -desktop ', function() {
         var stateList = typesOfStatesList();
-        boardPage.clickWithIdAnyColumn("3","1");
+        boardPage.getBoardById("id-3");
         browser.wait(until.elementToBeClickable(detailPage.workItemStateDropDownButton), constants.WAIT, 'Failed to find workItemStateDropDownButton');   
         detailPage.clickWorkItemStateDropDownButton();
         detailPage.WorkItemStateDropDownList().get(1).click();
         detailPage.clickWorkItemDetailCloseButton();
         browser.wait(until.elementToBeClickable(page.spaceDropdown), constants.WAIT, 'Failed to find elemet'); 
-        page.clickOnSpaceDropdown();
-        page.selectSpaceDropDownValue("4");
         browser.wait(until.elementToBeClickable(page.openButton), constants.WAIT, 'Failed to find elemet'); 
         countstateList = totalCountOftypesOfStatesList();
         verifytotalCountPertypesOfStates(countstateList,'1','1');       
@@ -100,7 +94,7 @@ describe('Work board tests :: ', function () {
   it( 'Verify Board Filter elements are present -desktop ', function() {
        expect(boardPage.getFilterWITButton().isPresent()).toBe(true);
        expect(boardPage.getTextFilterWITButton()).toBe("Planner Item");
-       var list = ['User Story','Value Proposition','Fundamental','Experience','Scenario','Feature','Bug','Planner Item'];
+       var list = ['Fundamental','Experience','Scenario','Feature','Bug','User Story'];
        for (var i=0;i<list.length;i++){
             boardPage.clickFilterWITButton();
             boardPage.clickWITFilterDropDownElements(list[i]);
@@ -110,24 +104,24 @@ describe('Work board tests :: ', function () {
   });
 
   it( 'Verify On change filters types represent correct data -desktop ', function() {
-        var list = ['Planner Item','User Story'];
+        var list = ['User Story'];
         //Few filters are pending due to : https://github.com/fabric8-ui/fabric8-planner/issues/1255
-      //  var list = ['User Story','Value Proposition','Fundamental','Experience','Scenario','Feature','Bug','Planner Item'];
+      //  var list = ['User Story','Value Proposition','Fundamental','Experience','Scenario','Feature','Bug','User Story'];
        for (var i=0;i<list.length;i++){
             boardPage.clickFilterWITButton();
             boardPage.clickWITFilterDropDownElements(list[i]);
             expect(boardPage.getFilterWITButton().isPresent()).toBe(true);
             expect(boardPage.getTextFilterWITButton()).toBe(list[i]);
             countstateList = totalCountOftypesOfStatesList();
-            if(list[i]== 'Planner Item'){
-            verifytotalCountPertypesOfStates(countstateList,'false','false');
+            if(list[i]== 'User Story'){
+            verifytotalCountPertypesOfStates(countstateList,'0','8');
             }
-            if(list[i]=='User Story'){
-              verifytotalCountPertypesOfStates(countstateList,'2','5'); 
+            if(list[i]=='Value Proposition'){
+              verifytotalCountPertypesOfStates(countstateList,'0','8'); 
             }
        }
   });
-
+*/
   
 });
 
