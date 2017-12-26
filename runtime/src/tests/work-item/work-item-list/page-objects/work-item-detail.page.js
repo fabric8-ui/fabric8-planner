@@ -1041,6 +1041,7 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   }
 
   clickCreateLabelButton(){
+    browser.executeScript('arguments[0].scrollIntoView(true)', this.createLabelButton.getWebElement());
     return this.createLabelButton.click();
   }
 
