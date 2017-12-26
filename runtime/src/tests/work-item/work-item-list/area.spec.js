@@ -11,37 +11,14 @@
 
 var WorkItemListPage = require('./page-objects/work-item-list.page'),
   constants = require('./constants'),
-  testSupport = require('./testSupport'),
-  OpenShiftIoRHDLoginPage = require('./page-objects/openshift-io-RHD-login.page');
+  testSupport = require('./testSupport');
 
 describe('Area tests :: ', function () {
-  var page, AUTH_TOKEN, REFRESH_TOKEN;
-  var until = protractor.ExpectedConditions;
+  var page, until = protractor.ExpectedConditions;
 
   beforeEach(function () {
-    browser.ignoreSynchronization = false;
     testSupport.setBrowserMode('desktop');
-    if (AUTH_TOKEN && REFRESH_TOKEN){
-      console.log("AUTH and REFRESH tokens found. Skipping login.")
-      page = new WorkItemListPage(this.AUTH_TOKEN, this.REFRESH_TOKEN);
-    } else {
-      page = new WorkItemListPage()
-    }
-  });
-
-  /* Simple test for registered user */
-  it("should perform - LOGIN", function() {
-    /* Login to SUT */
-    page.clickLoginButton();
-    browser.ignoreSynchronization = true;
-    var RHDpage = new OpenShiftIoRHDLoginPage();
-    RHDpage.doLogin(browser);
-    browser.executeScript("return window.localStorage.getItem('auth_token');").then(function(val) {
-      this.AUTH_TOKEN = val;
-    });
-    browser.executeScript("return window.localStorage.getItem('refresh_token');").then(function(val) {
-      this.REFRESH_TOKEN = val
-    });
+    page = new WorkItemListPage()
   });
 
   it('Verify Area elements are present -desktop ', function() {

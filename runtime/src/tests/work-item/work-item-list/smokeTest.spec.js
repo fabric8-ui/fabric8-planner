@@ -16,37 +16,14 @@
 
 var WorkItemListPage = require('./page-objects/work-item-list.page'),
   testSupport = require('./testSupport'),
-  constants = require('./constants'),
-  OpenShiftIoRHDLoginPage = require('./page-objects/openshift-io-RHD-login.page');
+  constants = require('./constants');
 
 describe('Work item list', function () {
-  var page, AUTH_TOKEN, REFRESH_TOKEN;
-  var until = protractor.ExpectedConditions;
+  var page, until = protractor.ExpectedConditions;
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    if(AUTH_TOKEN && REFRESH_TOKEN){
-      console.log("AUTH and REFRESH tokens found. Skipping login.")
-      page = new WorkItemListPage(this.AUTH_TOKEN, this.REFRESH_TOKEN);
-    } else {
-      page = new WorkItemListPage()
-    }
-    browser.ignoreSynchronization = false;
-  });
-
-   /* Simple test for registered user */
-  it("should perform - LOGIN", function() {
-    /* Login to SUT */
-    page.clickLoginButton();
-    browser.ignoreSynchronization = true;
-    var RHDpage = new OpenShiftIoRHDLoginPage();
-    RHDpage.doLogin(browser);
-    browser.executeScript("return window.localStorage.getItem('auth_token');").then(function(val) {
-      this.AUTH_TOKEN = val;
-    });
-    browser.executeScript("return window.localStorage.getItem('refresh_token');").then(function(val) {
-      this.REFRESH_TOKEN = val
-    });
+    page = new WorkItemListPage()
   });
 
   /* User can read, update, remove assignee on a workitem  */
@@ -54,7 +31,7 @@ describe('Work item list', function () {
     page.clickWorkItemQuickAdd();
     page.typeQuickAddWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
     page.clickQuickAddSave().then(function() {
-      var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
+      var detailPage = page.clickWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
       browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find detail page close Icon');
       //Assign the user
       detailPage.clickAddAssigneeButton();
@@ -81,8 +58,8 @@ describe('Work item list', function () {
     page.typeQuickAddWorkItemDesc(constants.WORK_ITEM_DESCRIPTION);
     page.clickQuickAddSave().then(function() {
       /* Fill in/update the new work item's title and details field */
-      expect(page.workItemTitle(page.workItemByTitle(constants.WORK_ITEM_TITLE))).toBe(constants.WORK_ITEM_TITLE);
-      var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
+      expect(page.workItemByTitle(constants.NEW_WORK_ITEM_TITLE_2).isPresent()).toBe(true);
+      var detailPage = page.clickWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_2);
       browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find Assignee Icon');
       detailPage.clickWorkItemDetailTitleClick();
       detailPage.setWorkItemDetailTitle (constants.WORK_ITEM_UPDATED_TITLE, false);

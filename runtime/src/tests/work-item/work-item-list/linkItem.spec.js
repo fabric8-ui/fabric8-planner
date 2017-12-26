@@ -16,36 +16,14 @@
 
 var WorkItemListPage = require('./page-objects/work-item-list.page'),
   testSupport = require('./testSupport'),
-  constants = require('./constants'),
-  OpenShiftIoRHDLoginPage = require('./page-objects/openshift-io-RHD-login.page');
+  constants = require('./constants');
 
 describe('Link item ', function () {
-  var page, AUTH_TOKEN, REFRESH_TOKEN, until = protractor.ExpectedConditions;
+  var page, until = protractor.ExpectedConditions;
 
   beforeEach(function () {
-    browser.ignoreSynchronization = false;
     testSupport.setBrowserMode('desktop');
-    if (AUTH_TOKEN && REFRESH_TOKEN){
-      console.log("AUTH and REFRESH tokens found. Skipping login.")
-      page = new WorkItemListPage(this.AUTH_TOKEN, this.REFRESH_TOKEN);
-    } else {
-      page = new WorkItemListPage()
-    }
-  });
-
-  /* Simple test for registered user */
-  it("should perform - LOGIN", function() {
-    /* Login to SUT */
-    page.clickLoginButton();
-    browser.ignoreSynchronization = true;
-    var RHDpage = new OpenShiftIoRHDLoginPage();
-    RHDpage.doLogin(browser);
-    browser.executeScript("return window.localStorage.getItem('auth_token');").then(function(val) {
-      this.AUTH_TOKEN = val;
-    });
-    browser.executeScript("return window.localStorage.getItem('refresh_token');").then(function(val) {
-      this.REFRESH_TOKEN = val
-    });
+    page = new WorkItemListPage()
   });
 
   it('Create a link item planner to planner - Desktop', function () {
