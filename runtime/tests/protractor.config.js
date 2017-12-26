@@ -42,6 +42,22 @@ exports.config = {
         summary: {
             displayDuration: true
         }
-        }));
+      }));
+      if (process.env.NODE_ENV == "inmemory") {
+        global.PLANNER_URL = browser.baseUrl + '/plan'
+      } else {
+        global.SPACE_NAME = process.env.SPACE_NAME;
+        global.PLANNER_URL = browser.baseUrl + '/' + process.env.USER + '/' + SPACE_NAME + '/plan';
+      }
+      global.USER_FULL_NAME = process.env.FULL_NAME || "Example User 0";
+      token = encodeURIComponent(JSON.stringify({
+        access_token: process.env.AUTH_TOKEN || "somerandomtoken",
+        expires_in: 1800,
+        refresh_expires_in: 1800,
+        refresh_token: process.env.REFRESH_TOKEN || "somerandomtoken",
+        token_type: "bearer"
+      }));
+      // Bypass login by supplying auth and refresh token
+      browser.get(browser.baseUrl + "/?token_json=" + token);
     }
 };

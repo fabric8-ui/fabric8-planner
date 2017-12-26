@@ -32,22 +32,8 @@ detailedWorkItemIcons["scenario"] = ".card-pf-icon-circle.fa.fa-bolt";
 
 class WorkItemListPage {
 
-  constructor(auth_token="", refresh_token="") {
-    // TODO: Find a better way to construct URL
-    let params = browser.params;
-    let url = params.host + '/' + params.login.user + '/' + params.spaceName + '/plan';
-    if(auth_token && refresh_token) {
-      let token = encodeURIComponent(JSON.stringify({
-        access_token: auth_token,
-        expires_in: 1800,
-        refresh_expires_in: 1800,
-        refresh_token: refresh_token,
-        token_type: "bearer"
-      }));
-      browser.get(url + "?token_json="+token);
-    } else {
-     browser.get(url);
-   }
+  constructor(){
+    browser.get(PLANNER_URL);
  };
 
  /* Select the space in which the tests will be run */
