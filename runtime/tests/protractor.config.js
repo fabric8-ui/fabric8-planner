@@ -6,7 +6,7 @@ exports.config = {
     directConnect: process.env.DIRECT_CONNECT === 'true',
     seleniumAddress: 'http://localhost:4444/wd/hub',
     specs: ['./../src/tests/**/*.spec.js'],
-    exclude: ['./../src/tests/**/*test-template.spec.js','./../src/tests/**/*work-item-dynamic-fields.spec.js','./../src/tests/**/EXCLUDED/*.spec.js'],
+    exclude: ['./../src/tests/**/EXCLUDED/*.spec.js'],
     suites: {
         smokeTest: './../src/tests/**/smokeTest.spec.js',
         fullTest:  './../src/tests/**/*.spec.js'
@@ -21,16 +21,17 @@ exports.config = {
     },
     troubleshoot: true,
     capabilities: {
-        'browserName': 'chrome',
-        'shardTestFiles': true,
-        'loggingPrefs': {
-            'driver': 'WARNING',
-            'server': 'WARNING',
-            'browser': 'INFO'
-        },
-        'chromeOptions': {
-            'args': process.env.HEADLESS_MODE === 'true'? ['--no-sandbox', '--headless'] : ['--no-sandbox']
-        }
+      'browserName': 'chrome',
+      'shardTestFiles': true,
+      'maxInstances': 4,        
+      'loggingPrefs': {
+        'driver': 'WARNING',
+        'server': 'WARNING',
+        'browser': 'INFO'
+      },
+      'chromeOptions': {
+        'args': process.env.HEADLESS_MODE === 'true'? ['--no-sandbox', '--headless'] : ['--no-sandbox']
+      }
     },
 
     onPrepare: function () {
@@ -44,7 +45,7 @@ exports.config = {
         }
       }));
       if (process.env.NODE_ENV == "inmemory") {
-        global.PLANNER_URL = browser.baseUrl + '/plan'
+        global.PLANNER_URL = browser.baseUrl + '/plan/list'
       } else {
         global.SPACE_NAME = process.env.SPACE_NAME;
         global.PLANNER_URL = browser.baseUrl + '/' + process.env.USER + '/' + SPACE_NAME + '/plan';

@@ -1,10 +1,10 @@
 describe('Splash page', function() {
 
   beforeEach(function() {
-      browser.get(browser.params.host);
+      browser.get(PLANNER_URL);
   });
 
   it('should redirect to the worklist.', function() {
-      expect(browser.getCurrentUrl()).toMatch(browser.params.host);
+      expect(browser.getCurrentUrl()).toMatch(PLANNER_URL);
   });
 });

@@ -35,18 +35,18 @@ describe('Work item list', function () {
       browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find detail page close Icon');
       //Assign the user
       detailPage.clickAddAssigneeButton();
-      detailPage.setAssigneeSearch(constants.EXAMPLE_USER_1, false);
-      detailPage.clickAssigneeListItem(constants.EXAMPLE_USER_1);
+      detailPage.setAssigneeSearch(constants.EXAMPLE_USER, false);
+      detailPage.clickAssigneeListItem(constants.EXAMPLE_USER);
       detailPage.clickCloseAssigneeDropdown();
       //Verify assignee has been assigned
-      expect(detailPage.AssignUsers.getText()).toContain(constants.EXAMPLE_USER_1);
+      expect(detailPage.AssignUsers.getText()).toContain(constants.EXAMPLE_USER);
       //unassign the user
       detailPage.clickAddAssigneeButton();
-      detailPage.setAssigneeSearch(constants.EXAMPLE_USER_1, false);
-      detailPage.clickAssigneeListItem(constants.EXAMPLE_USER_1);
+      detailPage.setAssigneeSearch(constants.EXAMPLE_USER, false);
+      detailPage.clickAssigneeListItem(constants.EXAMPLE_USER);
       detailPage.clickCloseAssigneeDropdown();
       //Verify assignee has been unassigned
-      expect(detailPage.AssignUsers.getText()).not.toContain(constants.EXAMPLE_USER_1);
+      expect(detailPage.AssignUsers.getText()).not.toContain(constants.EXAMPLE_USER);
      });
   });
 
@@ -92,7 +92,7 @@ describe('Work item list', function () {
 
   /* Create workitem - verify user and icon */
   it('Edit and check WorkItem, creator name and image is reflected', function () {
-    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_UPDATED_TITLE);
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE_1);
     detailPage.clickWorkItemTitleDiv();
     detailPage.setWorkItemDetailTitle(constants.NEW_WORK_ITEM_TITLE_2, false);
     detailPage.clickWorkItemTitleSaveIcon();
@@ -109,7 +109,7 @@ describe('Work item list', function () {
     detailPage = page.clickWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_2);
     expect(detailPage.getCreatorUsername()).toBe(constants.EXAMPLE_USER);
     expect(detailPage.getCreatorAvatar().isPresent()).toBe(true);
-    expect(detailPage.getImageURL()).toBe('https://www.gravatar.com/avatar/6c96128e82945d7f89ff253c1bfd5353.jpg&s=20');
+    expect(detailPage.getImageURL()).toBe(constants.USER_IMAGE);
   });
 
   it('Updating area to a WI -desktop ', function() {
@@ -134,16 +134,16 @@ describe('Work item list', function () {
   it('Re-Associate Workitem from detail page', function() {
     var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
     detailPage.IterationOndetailPage().click();
-    detailPage.associateIteration(constants.ITERATION_1_TITLE);
+    detailPage.associateIterationByName(constants.ITERATION_TITLE_1);
     detailPage.saveIteration();
-    expect(detailPage.getAssociatedIteration()).toBe(constants.ITERATION_1_TITLE);
+    expect(detailPage.getAssociatedIteration()).toContain(constants.ITERATION_TITLE_1);
     detailPage.clickWorkItemDetailCloseButton();
     // Re - assocaite
     var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
     detailPage.IterationOndetailPage().click();
-    detailPage.associateIteration(constants.ITERATION_2_TITLE);
+    detailPage.associateIterationByName(constants.ITERATION_TITLE_2);
     detailPage.saveIteration();
-    expect(detailPage.getAssociatedIteration()).toBe(constants.ITERATION_2_TITLE);
+    expect(detailPage.getAssociatedIteration()).toContain(constants.ITERATION_TITLE_2);
   });
 
   it('Edit comment and cancel - Desktop ', function() {
@@ -192,6 +192,10 @@ describe('Work item list', function () {
 
   /* Test that the Quick add work item is visible */
   it('Test Quick workitem not visible without authorization', function () {
+    // Skip test in inmemory mode
+    if(process.env.NODE_ENV){
+      return
+    }
     page.clickLogoutButton();
     expect(page.quickAddbuttonById().isPresent()).toBeFalsy();
   });

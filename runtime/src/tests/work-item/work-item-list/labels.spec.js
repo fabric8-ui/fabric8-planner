@@ -53,7 +53,7 @@ describe('Labels CRUD Tests', function () {
       expect(count).toBe(origLabelCount + 1);
     });
     // Verify label exists in the list
-    expect(detailPage.listOfLabels().getText()).toContain(detailPage.getLabelByTitle(constants.NEW_LABEL_TITLE).getText());
+    expect(detailPage.listOfLabels().getText()).toContain(constants.NEW_LABEL_TITLE);
   })
 
   it('Verify adding existing labels', function(){

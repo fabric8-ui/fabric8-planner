@@ -27,7 +27,7 @@ describe('Link item ', function () {
   });
 
   it('Create a link item planner to planner - Desktop', function () {
-    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE_2);
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
 
@@ -35,11 +35,11 @@ describe('Link item ', function () {
     detailPage.linkItemHeaderCaret().click();
     detailPage.clickCreateLinkButton();
     detailPage.clickLinkDropDown();
-    detailPage.linkTypeDropDownListString("is related to").click();
+    detailPage.linkTypeDropDownListString(constants.LINK_TYPE).click();
 
-    detailPage.setSearchLinkItem(constants.WORK_ITEM_TITLE_2);
+    detailPage.setSearchLinkItem(constants.WORK_ITEM_TITLE_1);
     detailPage.clickOnLinkBind();
-    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE_2);
+    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE_1);
     expect(detailPage.linkclose("0").isPresent()).toBe(true);
     expect(detailPage.linkTotalByTypes()).toBe("1");
    });
@@ -51,7 +51,7 @@ describe('Link item ', function () {
 
     browser.wait(until.elementToBeClickable(detailPage.linkItemHeaderCaret()), constants.WAIT, 'Link icon is not clickable');
     detailPage.linkItemHeaderCaret().click();
-    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE_3);
+    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE);
     expect(detailPage.linkItemTotalCount().getText()).toBe('1');
     expect(detailPage.linkclose("0").isPresent()).toBe(true);
    });
@@ -63,7 +63,7 @@ describe('Link item ', function () {
 
     browser.wait(until.elementToBeClickable(detailPage.linkItemHeaderCaret()), constants.WAIT, 'Link icon is not clickable');
     detailPage.linkItemHeaderCaret().click();
-    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE_3);
+    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE);
     expect(detailPage.linkclose("0").isPresent()).toBe(true);
     detailPage.linkclose("0").click();
     expect(detailPage.linkclose("0").isPresent()).toBe(false);
@@ -71,16 +71,16 @@ describe('Link item ', function () {
    });
 
   it('Update link child and check if it exists in list or not - Desktop', function () {
-    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE_4);
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
     detailPage.clickWorkItemDetailTitleClick();
     detailPage.setWorkItemDetailTitle("0", true); // Update title
     detailPage.clickWorkItemTitleSaveIcon();
     detailPage.clickWorkItemDetailCloseButton();
-    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE_3);
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE_1);
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
     detailPage.linkItemHeaderCaret().click();
-    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE_4 + '0'); // Verify new title
+    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE + '0'); // Verify new title
     expect(detailPage.linkclose("0").isPresent()).toBe(true);
     detailPage.linkclose("0").click();
     expect(detailPage.linkclose("0").isPresent()).toBe(false);

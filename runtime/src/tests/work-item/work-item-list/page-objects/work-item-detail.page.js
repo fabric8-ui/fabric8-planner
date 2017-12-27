@@ -363,11 +363,11 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   }
 
   get AssigneeDropdownListItem() {
-    return element(by.xpath('.//f8-select-dropdown[@id="f8-add-assignee-dropdown"]//li'));
+    return element.all(by.xpath('.//f8-select-dropdown[@id="f8-add-assignee-dropdown"]//li'));
   }
 
   clickAssigneeListItem(username) {
-    element(by.xpath('.//f8-select-dropdown[@id="f8-add-assignee-dropdown"]//b[text()="'+ username +'"]')).click();
+    element(by.xpath('.//f8-select-dropdown[@id="f8-add-assignee-dropdown"]//*[contains(text(), "'+ username +'")]')).click();
   }
 
   get closeAssigneeDropdown () {
@@ -1008,7 +1008,7 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
 
   /* UI elements for Label */
   get addLabelButton() {
-    return $('.clickable.add-label');
+    return $('.label-selector-wrapper .clickable.add-label');
   }
 
   clickAddLabelButton(){
@@ -1068,7 +1068,7 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   }
 
   get labelCloseIcon() {
-    return $('.select-dropdown-header .pull-right.pficon-close.close-pointer');
+    return $('.label-selector-wrapper .select-dropdown-header .pull-right.pficon-close.close-pointer');
   }
 
   clickLabelClose() {
@@ -1084,7 +1084,7 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   }
 
   listOfLabels() {
-    return $$('.select-dropdown-menu li').first();
+    return $$('.label-selector-wrapper .select-dropdown-menu li').first();
   }
 
   attachedLabels() {

@@ -683,7 +683,9 @@ class WorkItemListPage {
   }
 
   IterationByName(name){
-    return element(by.xpath(".//text()[contains(.,'" + name + "')]/../../../.."));
+    var ele = element(by.xpath(".//*[contains(text(),'" + name + "')]/../../../.."));
+    browser.executeScript('arguments[0].scrollIntoView(true)', ele.getWebElement());
+    return ele;
   }
 
   get lastFutureIteration () {
