@@ -25,7 +25,7 @@ describe('Work item list', function () {
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);
+    page = new WorkItemListPage();
     testSupport.setTestSpace(page);
     browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find first work item');
   });
@@ -51,15 +51,20 @@ describe('Work item list', function () {
       expect(detailPage.AssigneeDropdownListItem.getText()).toContain(constants.EXAMPLE_USER + ' (me)');
       expect(detailPage.AssigneeDropdownListItem.getText()).not.toContain("some user");
 
-      //to user has been clicked
       detailPage.clickAssigneeListItem(constants.EXAMPLE_USER);
-      detailPage.clickAssigneeListItem(EXAMPLE_USER_2);
+
+      // This works only in mock testing. The production DB has only 1 user
+      if(process.env.NODE_ENV) {
+        detailPage.clickAssigneeListItem(EXAMPLE_USER_2);
+      }
       detailPage.clickCloseAssigneeDropdown();
       expect(detailPage.AssigneeDropdown.isDisplayed()).toBe(false);
 
       //Verify assignee has been assigned
       expect(detailPage.AssignUsers.getText()).toContain(constants.EXAMPLE_USER);
-      expect(detailPage.AssignUsers.getText()).toContain(EXAMPLE_USER_2);
+      if(process.env.NODE_ENV) {
+        expect(detailPage.AssignUsers.getText()).toContain(EXAMPLE_USER_2);
+      }
     });
   });
 
@@ -80,14 +85,18 @@ describe('Work item list', function () {
       //assign user to wi
       detailPage.clickAddAssigneeButton();
       detailPage.clickAssigneeListItem(constants.EXAMPLE_USER)
-      detailPage.clickAssigneeListItem(EXAMPLE_USER_2);
+      if(process.env.NODE_ENV) {
+        detailPage.clickAssigneeListItem(EXAMPLE_USER_2);
+      }
       detailPage.clickCloseAssigneeDropdown();
       //to unassign user to wi
       detailPage.clickAddAssigneeButton();
       detailPage.clickAssigneeListItem(constants.EXAMPLE_USER);
       detailPage.clickCloseAssigneeDropdown();
       expect(detailPage.AssignUsers.getText()).not.toContain(constants.EXAMPLE_USER);
-      expect(detailPage.AssignUsers.getText()).toContain(EXAMPLE_USER_2);
+      if(process.env.NODE_ENV) {
+        expect(detailPage.AssignUsers.getText()).toContain(EXAMPLE_USER_2);
+      }
     });
   });
 
