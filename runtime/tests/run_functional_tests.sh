@@ -6,10 +6,11 @@ declare -r SCRIPT_DIR=$(cd $(dirname "$SCRIPT_PATH") && pwd)
 source "$SCRIPT_DIR/lib/common.inc.sh"
 
 main() {
-  local base_url=${BASE_URL:-"http://localhost:8088/"}
+  local base_url=${BASE_URL:-"http://localhost:8088"}
   local protractor="$(npm bin)/protractor"
   local suite=${1:-fullTest}
-
+  # All tests will use mock data
+  export NODE_ENV=inmemory
   # BASE_URL is set means planner is already running.
   # Start planner only if BASE_URL is not set
   if [[ -z ${BASE_URL+x} ]]; then

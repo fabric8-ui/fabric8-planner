@@ -26,7 +26,7 @@ start_webdriver() {
 start_planner() {
   echo "NODE_ENV=inmemory mode set; Planner will use mock data"
   echo "Starting local development server"
-  NODE_ENV=inmemory $(npm bin)/webpack-dev-server --inline --progress --host 0.0.0.0 --port 8088 &
+  NODE_ENV=inmemory $(npm bin)/webpack-dev-server --inline --host 0.0.0.0 --port 8088 &
 }
 
 planner_running() {
