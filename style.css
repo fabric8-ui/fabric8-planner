@@ -1,0 +1,10 @@
+/* NavBar */
+a.navbar-brand {
+  line-height: 2em;
+  text-transform: uppercase;
+}
+
+/* Jumbotron */
+.jumbotron {
+  text-align: center;
+}
