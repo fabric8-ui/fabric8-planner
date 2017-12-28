@@ -1,5 +1,26 @@
 let SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 
+// Validate test config.
+function validate_config(){
+  if(process.env.NODE_ENV != 'inmemory'){
+    // Mysteriously, NODE_ENV is set to "test". NODE_ENV should not have been set to "test"
+    // Unset NODE_ENV variable.
+    process.env.NODE_ENV = '';
+
+    process.env.SPACE_NAME || throwErr("SPACE_NAME variable not set");
+    process.env.USER || throwErr("USER variable not set")
+    process.env.FULL_NAME || throwErr("FULL_NAME variable not set")
+    process.env.AUTH_TOKEN ||throwErr("AUTH_TOKEN variable not set");
+    process.env.REFRESH_TOKEN || throwErr("REFRESH_TOKEN variable not set");
+  }
+}
+
+function throwErr(msg){
+  throw new Error(msg);
+}
+
+validate_config();
+
 exports.config = {
     useAllAngular2AppRoots: true,
     getPageTimeout: 30000,
@@ -35,7 +56,7 @@ exports.config = {
     },
 
     onPrepare: function () {
-        jasmine.getEnv().addReporter(new SpecReporter({
+      jasmine.getEnv().addReporter(new SpecReporter({
         spec: {
             displayStacktrace: true,
             displayDuration: true,
@@ -47,10 +68,8 @@ exports.config = {
       if (process.env.NODE_ENV == "inmemory") {
         global.PLANNER_URL = browser.baseUrl + '/plan/list'
       } else {
-        global.SPACE_NAME = process.env.SPACE_NAME;
-        global.PLANNER_URL = browser.baseUrl + '/' + process.env.USER + '/' + SPACE_NAME + '/plan';
+        global.PLANNER_URL = browser.baseUrl + '/' + process.env.USER + '/' + process.env.SPACE_NAME + '/plan';
       }
-      global.USER_FULL_NAME = process.env.FULL_NAME || "Example User 0";
       token = encodeURIComponent(JSON.stringify({
         access_token: process.env.AUTH_TOKEN || "somerandomtoken",
         expires_in: 1800,
