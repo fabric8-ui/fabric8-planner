@@ -45,7 +45,8 @@ if(process.env.NODE_ENV == "inmemory") {
     define("LABEL_2", "Example Label 3");
     define("PARENT_ITERATION", "Iteration 3");
     define("LINK_TYPE", "test");
-    define("USER_IMAGE", "https://avatars.githubusercontent.com/u/2410471?v=3&s=20")
+    define("USER_IMAGE", "https://avatars.githubusercontent.com/u/2410471?v=3&s=20");
+    define("COMMENT_1", "Some Comment 0");
 } else {
     define("WORK_ITEM_TITLE", "Workitem_Title_20");
     define("WORK_ITEM_TITLE_1", "Workitem_Title_19");
@@ -64,4 +65,5 @@ if(process.env.NODE_ENV == "inmemory") {
     define("PARENT_ITERATION", "Iteration_3");
     define("LINK_TYPE", "is related to");
     define("USER_IMAGE", "https://www.gravatar.com/avatar/6c96128e82945d7f89ff253c1bfd5353.jpg&s=20");
+    define("COMMENT_1", "Comment # 2")
 }

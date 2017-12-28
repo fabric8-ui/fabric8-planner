@@ -35,14 +35,12 @@ describe('Work item list', function () {
       browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find detail page close Icon');
       //Assign the user
       detailPage.clickAddAssigneeButton();
-      detailPage.setAssigneeSearch(constants.EXAMPLE_USER, false);
       detailPage.clickAssigneeListItem(constants.EXAMPLE_USER);
       detailPage.clickCloseAssigneeDropdown();
       //Verify assignee has been assigned
       expect(detailPage.AssignUsers.getText()).toContain(constants.EXAMPLE_USER);
       //unassign the user
       detailPage.clickAddAssigneeButton();
-      detailPage.setAssigneeSearch(constants.EXAMPLE_USER, false);
       detailPage.clickAssigneeListItem(constants.EXAMPLE_USER);
       detailPage.clickCloseAssigneeDropdown();
       //Verify assignee has been unassigned
@@ -55,7 +53,6 @@ describe('Work item list', function () {
     /* Create a new workitem */
     page.clickWorkItemQuickAdd();
     page.typeQuickAddWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_2);
-    page.typeQuickAddWorkItemDesc(constants.WORK_ITEM_DESCRIPTION);
     page.clickQuickAddSave().then(function() {
       /* Fill in/update the new work item's title and details field */
       expect(page.workItemByTitle(constants.NEW_WORK_ITEM_TITLE_2).isPresent()).toBe(true);
@@ -113,7 +110,7 @@ describe('Work item list', function () {
   });
 
   it('Updating area to a WI -desktop ', function() {
-    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE_1);
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
     browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find areaLabel');
     detailPage.clickAreaSelect();
     detailPage.searchAreaInput(constants.AREA_1_TITLE);
@@ -154,7 +151,7 @@ describe('Work item list', function () {
       detailPage.scrollToBottomRight().then(function(){
         detailPage.clickCloseComment('0');
       });
-      expect(detailPage.getCommentBody('0')).toBe('Some Comment 0');
+      expect(detailPage.getCommentBody('0')).toBe(constants.COMMENT_1);
     });
   });
 
