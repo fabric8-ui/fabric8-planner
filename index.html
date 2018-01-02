@@ -3,61 +3,68 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/css/patternfly.min.css">
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/css/patternfly-additions.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+        integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+        rel="stylesheet" crossorigin="anonymous">
   <link rel="stylesheet" href="./style.css"
 </head>
 
 <body>
 
-  <nav class="navbar navbar-pf">
-    <div class="navbar-header container">
+  <nav class="navbar navbar-dark">
+    <div class="container">
       <a href="/fabric8-planner" class="navbar-brand">
         <strong>Fabric8</strong> Planner
       </a>
-      <ul class="nav navbar-nav navbar-primary pull-right">
-        <li>
-          <a href="https://github.com/fabric8-ui/fabric8-planner/tree/master/docs" target="_blank">Docs</a>
+      <ul class="nav justify-content-end">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/fabric8-ui/fabric8-planner/tree/master/docs" target="_blank">Docs</a>
         </li>
-        <li>
-          <a href="https://github.com/fabric8-ui/fabric8-planner/" target="_blank">GitHub</a>
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/fabric8-ui/fabric8-planner/" target="_blank">GitHub</a>
         </li>
-        <li>
-          <a href="https://openshift.io/openshiftio/openshiftio/plan" target="_blank">Try Out</a>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openshift.io/openshiftio/openshiftio/plan" target="_blank">Try Out</a>
         </li>
       </ul>
     </div>
   </nav>
 
   <section class="jumbotron">
-    <div class="container">
-      <img src="./images/planner_logo.svg" alt="Fabric8 Planner Logo" />
-      <div id="repoInfo">
-        <h1>Fabric8 Planner</h1>
-        <p>Prepare to launch, one plan at a time...</p>
-        <div id="repoDetails">
+    <img src="./images/planner_logo.svg" alt="Fabric8 Planner Logo" />
+    <div id="repoInfo">
+      <h1 class="display-4">Fabric8 Planner</h1>
+      <p class="lead">Prepare to launch, one plan at a time...</p>
+      <div class="spinner"></div>
+      <div id="repoDetails">
 
-          <div class="repoStats" title="Repo Watches">
-            <img src="images/octicons/eye.svg" alt="watches" />
-            <span id="repoWatches"></span>
-          </div>
-          <div class="repoStats" title="Repo Stars">
-            <img src="images/octicons/star.svg" alt="watches" />
-            <span id="repoStars"></span>
-          </div>
-          <div class="repoStats" title="Repo Forks">
-            <img src="images/octicons/repo-forked.svg" alt="watches" />
-            <span id="repoForks"></span>
-          </div>
-
+        <div class="repoStats" title="Repo Watches">
+          <img src="images/octicons/eye.svg" alt="watches" />
+          <span id="repoWatches"></span>
         </div>
+        <div class="repoStats" title="Repo Stars">
+          <img src="images/octicons/star.svg" alt="watches" />
+          <span id="repoStars"></span>
+        </div>
+        <div class="repoStats" title="Repo Forks">
+          <img src="images/octicons/repo-forked.svg" alt="watches" />
+          <span id="repoForks"></span>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/js/patternfly.min.js"></script>
+  <section class="container">
+    <p class="lead pitch">Fabric8 Planner is an all-round planning tool, designed to fit your projects' methodologies.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </section>
+
+  <section id="repoContrib" class="container"></section>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
   <script src="script.js"></script>
 </body>
 
