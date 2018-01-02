@@ -5,6 +5,7 @@ def ci (){
             sh 'npm install'
             sh 'npm run build'
             sh 'npm pack dist/'
+            sh 'npm cache clean --force'
         }
     }
 

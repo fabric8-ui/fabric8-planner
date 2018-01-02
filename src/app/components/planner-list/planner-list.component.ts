@@ -9,7 +9,7 @@ import { IterationModel } from '../../models/iteration.model';
 import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import {
-  AfterViewInit,
+  AfterViewChecked,
   Component,
   ElementRef,
   Input,
@@ -18,14 +18,12 @@ import {
   ViewChildren,
   QueryList,
   TemplateRef,
-  DoCheck,
   OnDestroy,
   ViewEncapsulation,
   Output,
   EventEmitter,
   Renderer2,
-  HostListener,
-  AfterViewChecked
+  HostListener
 } from '@angular/core';
 import {
   Router,
@@ -45,22 +43,15 @@ import {
 } from 'ngx-login-client';
 import { Space, Spaces } from 'ngx-fabric8-wit';
 
-import {
-  Action,
-  ActionConfig,
-  EmptyStateConfig,
-  ListBase,
-  ListEvent,
-  TreeListComponent,
-  TreeListConfig
-} from 'patternfly-ng';
+// import for column
+import { datatableColumn } from './datatable-config';
 
+import { WorkItemCellComponent } from '../work-item-cell/work-item-cell.component'
 import { WorkItem } from '../../models/work-item';
 import { WorkItemDetailComponent } from './../work-item-detail/work-item-detail.component';
-import { WorkItemType }               from '../../models/work-item-type';
+import { WorkItemType } from '../../models/work-item-type';
 import { GroupTypesService } from '../../services/group-types.service';
-import { WorkItemListEntryComponent } from '../work-item-list-entry/work-item-list-entry.component';
-import { WorkItemService }            from '../../services/work-item.service';
+import { WorkItemService } from '../../services/work-item.service';
 import { WorkItemDataService } from './../../services/work-item-data.service';
 import { CollaboratorService } from '../../services/collaborator.service';
 import { LabelService } from '../../services/label.service';
@@ -78,35 +69,34 @@ import { setTimeout } from 'core-js/library/web/timers';
   templateUrl: './planner-list.component.html',
   styleUrls: ['./planner-list.component.less']
 })
-export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
-  @ViewChildren('activeFilters', {read: ElementRef}) activeFiltersRef: QueryList<ElementRef>;
+export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy {
+  @ViewChildren('activeFilters', { read: ElementRef }) activeFiltersRef: QueryList<ElementRef>;
   @ViewChild('activeFiltersDiv') activeFiltersDiv: any;
   @ViewChild('typeSelectPanel') typeSelectPanel: WorkItemDetailAddTypeSelectorComponent;
 
   @ViewChild('listContainer') listContainer: any;
-  @ViewChild('treeList') treeList: TreeListComponent;
   @ViewChild('detailPreview') detailPreview: WorkItemDetailComponent;
   @ViewChild('sidePanel') sidePanelRef: any;
   @ViewChild('associateIterationModal') associateIterationModal: any;
 
-  actionConfig: ActionConfig;
-  emptyStateConfig: EmptyStateConfig;
   selectType: string = 'checkbox';
-  treeListConfig: TreeListConfig;
   @ViewChild('toolbarHeight') toolbarHeight: ElementRef;
   @ViewChild('containerHeight') containerHeight: ElementRef;
 
+
+  datatableWorkitems: any[] = [];
+  checkableColumn: any[] = datatableColumn;
+  columns: any[] = this.checkableColumn;
   workItems: WorkItem[] = [];
   prevWorkItemLength: number = 0;
   workItemTypes: WorkItemType[] = [];
-  selectedWorkItemEntryComponent: WorkItemListEntryComponent;
   workItemToMove: WorkItem;
   workItemDetail: WorkItem;
   currentWorkItem: WorkItem = null;
   addingWorkItem = false;
-  showOverlay : Boolean ;
+  showOverlay: Boolean;
   loggedIn: Boolean = false;
-  contentItemHeight: number = 67;
+  contentItemHeight: number = 50;
   pageSize: number = 20;
   filters: any[] = [];
   allUsers: User[] = [] as User[];
@@ -134,7 +124,9 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
   private selectedWI: WorkItem = null;
   private initialGroup: GroupTypesModel;
   private included: WorkItem[];
-
+  private _lastTagetContentHeight: number = 0;
+  private _scrollTrigger = 5;
+  private _lastCheckedScrollHeight = 0;
 
   constructor(
     private labelService: LabelService,
@@ -156,13 +148,14 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
     private spaces: Spaces,
     private userService: UserService,
     private urlService: UrlService,
-    private renderer: Renderer2) {}
+    private renderer: Renderer2) { }
 
   ngOnInit(): void {
     // If there is an iteration on the URL
     // Setting the value to currentIteration
     // BehaviorSubject so that we can compare
     // on update the value on URL
+
     const queryParams = this.route.snapshot.queryParams;
     if (Object.keys(queryParams).indexOf('iteration') > -1) {
       this.currentIteration = new BehaviorSubject(queryParams['iteration']);
@@ -171,91 +164,11 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
     }
     this.listenToEvents();
     this.loggedIn = this.auth.isLoggedIn();
-    this.setTreeConfigs();
-
-  }
-
-  setTreeConfigs() {
-    this.actionConfig = {
-      primaryActions: [],
-      moreActions: [{
-        id: 'move2top',
-        title: 'Move to Top',
-        tooltip: 'Move this work item to the top of the list'
-      }, {
-        id: 'move2bottom',
-        title: 'Move to Bottom',
-        tooltip: 'Move this work item to the bottom of the list'
-      },
-      {
-        id: 'divider1',
-        title: '',
-        separator: true
-      }, {
-        id: 'associateIteration',
-        title: 'Associate with Iteration...',
-        tooltip: 'Associate this work item with an Iteration',
-      },
-      {
-        id: 'divider2',
-        title: '',
-        separator: true
-      }, {
-        id: 'open',
-        title: 'Open',
-        tooltip: 'Open the detailed view of this work item'
-      }, {
-        id: 'preview',
-        title: 'Preview',
-        tooltip: 'Open the quick preview of this work item'
-      }, {
-        id: 'move2backlog',
-        title: 'Move to Backlog',
-        tooltip: 'Move this work item to the backlog'
-      }],
-      moreActionsDisabled: false,
-      moreActionsVisible: this.loggedIn
-    } as ActionConfig;
-
-    this.emptyStateConfig = {
-      actions: {
-        primaryActions: [{
-          id: 'createWI',
-          title: 'Create work item',
-          tooltip: 'Create work item',
-          styleClass: this.loggedIn ? 'show-wi' : 'hide-wi'
-        }],
-        moreActions: []
-      } as ActionConfig,
-      iconStyleClass: 'pficon-warning-triangle-o',
-      title: 'No Work Items Available',
-      info: 'There are no Work Items for your selected criteria',
-      helpLink: {
-        text: 'Create a new Work Item'
-      }
-    } as EmptyStateConfig;
-
-    this.treeListConfig = {
-      dblClick: false,
-      emptyStateConfig: this.emptyStateConfig,
-      multiSelect: false,
-      selectItems: true,
-      selectionMatchProp: 'name',
-      showCheckbox: false,
-      treeOptions: {
-        allowDrag: this.loggedIn,
-        isExpandedField: 'expanded',
-        getChildren: this.loadChildren.bind(this)
-      }
-    } as TreeListConfig;
-  }
-
-  ngAfterViewInit() {
-    let oldHeight = 0;
-    this.authUser = cloneDeep(this.route.snapshot.data['authuser']);
   }
 
   ngAfterViewChecked() {
+    let oldHeight = 0;
+    this.authUser = cloneDeep(this.route.snapshot.data['authuser']);
     if (this.workItems.length != this.prevWorkItemLength) {
       //this.treeList.update();
       this.prevWorkItemLength = this.workItems.length;
@@ -272,21 +185,44 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
         hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
       }
       let expHeight: number = 0;
-      if(document.getElementsByClassName('experimental-bar').length > 0) {
+      if (document.getElementsByClassName('experimental-bar').length > 0) {
         expHeight = (document.getElementsByClassName('experimental-bar')[0] as HTMLElement).offsetHeight;
       }
-      let targetHeight:number = window.innerHeight - toolbarHt - quickaddHt - hdrHeight - expHeight;
+      let targetHeight: number = window.innerHeight - toolbarHt - quickaddHt - hdrHeight - expHeight;
       this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
-      let targetContHeight:number = window.innerHeight - hdrHeight - expHeight;
+
+      let targetContHeight: number = window.innerHeight - hdrHeight - expHeight;
       this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight + "px");
+
+      if (this._lastTagetContentHeight !== targetContHeight) {
+        this._lastTagetContentHeight = targetContHeight;
+        this.initWiItems(Math.ceil(targetContHeight / this.contentItemHeight) + 20); // +20 is for demo purpose
+      }
     }
-    if(document.getElementsByTagName('body')) {
+
+    // To get the dropdown working
+    if (document.getElementsByClassName('planner-hack-dropdown').length) {
+      let arr = document.getElementsByClassName('planner-hack-dropdown');
+      for(let i = 0; i < arr.length; i++) {
+        arr[i].parentElement.parentElement.style.overflow = 'visible';
+      }
+    }
+
+    if (document.getElementsByClassName('planner-hack-title-truncate').length) {
+      let arr = document.getElementsByClassName('planner-hack-title-truncate');
+      for(let i = 0; i < arr.length; i++) {
+        arr[i].parentElement.style.display = 'inline-flex';
+      }
+    }
+
+
+    if (document.getElementsByTagName('body')) {
       document.getElementsByTagName('body')[0].style.overflow = "hidden";
     }
   }
   @HostListener('window:resize', ['$event'])
-    onResize(event) {
-   }
+  onResize(event) {
+  }
 
   ngOnDestroy() {
     console.log('Destroying all the listeners in list component');
@@ -299,9 +235,8 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
 
   // model handlers
 
-  initWiItems(event: any): void {
-    this.pageSize = event.pageSize;
-
+  initWiItems(pageSize: any): void {
+    this.pageSize = pageSize;
     // Space subscription should only listen to changes
     // till the page is changed to something else.
     // Unsubscribe in ngOnDestroy acts way after the new page inits
@@ -313,7 +248,6 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
         event.url.indexOf('plan/detail') > -1 ||
         event.url.indexOf('plan') == -1
       );
-
     this.spaceSubscription =
       // On any of these event inside combineLatest
       // We load the work items
@@ -326,45 +260,46 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
         // only emits workItemReload when hierarchy view is on
         this.eventService.workItemListReloadOnLink.filter(() => this.showHierarchyList)
       )
-      .takeUntil(takeUntilObserver)
-      .subscribe(([
-        space,
-        activeFilter,
-        //iteration,
-        queryParams,
-        showHierarchyList,
-        workItemListReload
-      ]) => {
-        if (showHierarchyList) {
-          this.logger.log('Switching to hierarchy list mode.');
-        } else {
-          this.logger.log('Switching to flat list mode.');
-        }
+        .takeUntil(takeUntilObserver)
+        .subscribe(([
+          space,
+          activeFilter,
+          //iteration,
+          queryParams,
+          showHierarchyList,
+          workItemListReload
+        ]) => {
+          if (showHierarchyList) {
+            this.logger.log('Switching to hierarchy list mode.');
+          } else {
+            this.logger.log('Switching to flat list mode.');
+          }
 
-        this.showHierarchyList = showHierarchyList;
+          this.showHierarchyList = showHierarchyList;
 
-        if (space) {
-          console.log('[WorkItemListComponent] New Space selected: ' + space.attributes.name);
-          this.currentSpace = space;
-          this.loadWorkItems();
-        } else {
-          console.log('[WorkItemListComponent] Space deselected');
-          this.workItems = [];
-        }
-      });
+          if (space) {
+            console.log('[WorkItemListComponent] New Space selected: ' + space.attributes.name);
+            this.currentSpace = space;
+            this.loadWorkItems();
+          } else {
+            console.log('[WorkItemListComponent] Space deselected');
+            this.workItems = [];
+            this.datatableWorkitems = [];
+          }
+        });
   }
 
   loadWorkItems(): void {
     this.initialGroup = this.groupTypesService.getCurrentGroupType();
     //if initialGroup is undefined, the page has been refreshed - find  group context based on URL
-    if ( this.route.snapshot.queryParams['q'] ) {
+    if (this.route.snapshot.queryParams['q']) {
       let wits = this.route.snapshot.queryParams['q'].split('workitemtype:')
       if(wits.length > 1) {
         let collection = wits[1].replace(')','').split(',');
         this.groupTypesService.findGroupConext(collection);
       }
     }
-    if(this.initialGroup === undefined)
+    if (this.initialGroup === undefined)
       this.initialGroup = this.groupTypesService.getCurrentGroupType();
 
     this.uiLockedList = true;
@@ -386,7 +321,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
       this.areas = items[2];
       this.loggedInUser = items[3];
       this.labels = items[4];
-      if(this.initialGroup === undefined) {
+      if (this.initialGroup === undefined) {
         let witCollection = this.workItemTypes.map(wit => wit.id);
         this.groupTypesService.setCurrentGroupType(witCollection);
         this.initialGroup = this.groupTypesService.getCurrentGroupType();
@@ -405,124 +340,146 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
       //   this.filterService.clearFilters(['iteration']);
       // }
     })
-    .switchMap((items) => {
-      let appliedFilters = this.filterService.getAppliedFilters();
-      // remove the filter item from the filters
-      for (let f=0; f<appliedFilters.length; f++) {
-        if (appliedFilters[f].paramKey=='filter[parentexists]') {
-          appliedFilters.splice(f, 1);
-        }
-      }
-      // KNOWN ISSUE: if the tree is expanded when switching the mode, the user will experience
-      // some weird issues. Problem is there seems to be no way of force-collapsing the tree yet.
-      // TODO: collapse the tree here so it does not give weird effects when switching modes
-      // if (this.showHierarchyList) {
-      //   // we want to display the hierarchy, so filter out all items that are childs (have no parent)
-      //   // to do this, we need to append a filter: /spaces/{id}/workitems?filter[parentexists]=false
-      //   appliedFilters.push({ id: 'parentexists', paramKey: 'filter[parentexists]', value: 'false' });
-      // }
-      this.logger.log('Requesting work items with filters: ' + JSON.stringify(appliedFilters));
-
-      // TODO Filter temp
-      // Take all the applied filters and prepare an object to make the query string
-      let newFilterObj = {};
-      appliedFilters.forEach(item => {
-        newFilterObj[item.id] = item.value;
-      })
-      newFilterObj['space'] = this.currentSpace.id;
-      let showFlatList = false;
-      if (this.groupTypesService.groupName === 'execution' || this.groupTypesService.groupName === 'requirements')
-        showFlatList = true;
-      //console.log('showFlatList', this.groupTypesService.groupName);
-      let payload = {
-        //for execution level set this to true
-        parentexists: true
-      };
-      if ( this.route.snapshot.queryParams['q'] ) {
-        let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
-        let filterQuery = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
-        let exp = this.filterService.queryJoiner(existingQuery, this.filterService.and_notation, filterQuery);
-        Object.assign(payload,{
-          expression:exp
-        });
-      } else {
-        Object.assign(payload,{
-          expression: this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj))
-        });
-      }
-      return Observable.forkJoin(
-        Observable.of(this.iterations),
-        Observable.of(this.workItemTypes),
-        // TODO implement search API mock for inmemory
-        process.env.ENV == 'inmemory' ? this.workItemService.getWorkItems(
-          this.pageSize,
-          appliedFilters
-        ) :
-        this.workItemService.getWorkItems2(
-          this.pageSize,
-          payload
-        )
-      )
-    })
-    .subscribe(([iterations, wiTypes, workItemResp]) => {
-      const t2 = performance.now();
-      console.log('Performance :: Fetching the initial list - '  + (t2 - t1) + ' milliseconds.');
-      this.logger.log('Got work item list.');
-      this.logger.log(workItemResp.workItems);
-      const workItemsAll = workItemResp.workItems;
-      let tempWIs = []
-      this.nextLink = workItemResp.nextLink;
-      this.included = workItemResp.included;
-      //Remove work item duplicates - a child work item
-      //should not appear part of the root response only for iterations
-      if (this.groupTypesService.groupName === 'execution') {
-        tempWIs = workItemsAll.filter( wi => {
-          if( wi.relationships.parent.data != undefined ) {
-            //take the parent ID and loop thorough the work items
-            let i = workItemsAll.findIndex(item => item.id === wi.relationships.parent.data.id);
-            if (i === -1) {
-              return wi;
-            }
-          } else {
-            return wi;
+      .switchMap((items) => {
+        let appliedFilters = this.filterService.getAppliedFilters();
+        // remove the filter item from the filters
+        for (let f = 0; f < appliedFilters.length; f++) {
+          if (appliedFilters[f].paramKey == 'filter[parentexists]') {
+            appliedFilters.splice(f, 1);
           }
+        }
+        // KNOWN ISSUE: if the tree is expanded when switching the mode, the user will experience
+        // some weird issues. Problem is there seems to be no way of force-collapsing the tree yet.
+        // TODO: collapse the tree here so it does not give weird effects when switching modes
+        // if (this.showHierarchyList) {
+        //   // we want to display the hierarchy, so filter out all items that are childs (have no parent)
+        //   // to do this, we need to append a filter: /spaces/{id}/workitems?filter[parentexists]=false
+        //   appliedFilters.push({ id: 'parentexists', paramKey: 'filter[parentexists]', value: 'false' });
+        // }
+        this.logger.log('Requesting work items with filters: ' + JSON.stringify(appliedFilters));
+
+        // TODO Filter temp
+        // Take all the applied filters and prepare an object to make the query string
+        let newFilterObj = {};
+        appliedFilters.forEach(item => {
+          newFilterObj[item.id] = item.value;
+        })
+        newFilterObj['space'] = this.currentSpace.id;
+        let showFlatList = false;
+        if (this.groupTypesService.groupName === 'execution' || this.groupTypesService.groupName === 'requirements')
+          showFlatList = true;
+        //console.log('showFlatList', this.groupTypesService.groupName);
+        let payload = {
+          //for execution level set this to true
+          parentexists: true
+        };
+        if (this.route.snapshot.queryParams['q']) {
+          let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
+          let filterQuery = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
+          let exp = this.filterService.queryJoiner(existingQuery, this.filterService.and_notation, filterQuery);
+          Object.assign(payload, {
+            expression: exp
+          });
+        } else {
+          Object.assign(payload, {
+            expression: this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj))
+          });
+        }
+        return Observable.forkJoin(
+          Observable.of(this.iterations),
+          Observable.of(this.workItemTypes),
+          // TODO implement search API mock for inmemory
+          process.env.ENV == 'inmemory' ? this.workItemService.getWorkItems(
+            this.pageSize,
+            appliedFilters
+          ) :
+            this.workItemService.getWorkItems2(
+              this.pageSize,
+              payload
+            )
+        )
+      })
+      .subscribe(([iterations, wiTypes, workItemResp]) => {
+        const t2 = performance.now();
+        console.log('Performance :: Fetching the initial list - ' + (t2 - t1) + ' milliseconds.');
+        this.logger.log('Got work item list.');
+        this.logger.log(workItemResp.workItems);
+        const workItems = workItemResp.workItems.filter((workItem: WorkItem) => {
+          return !!!Object.keys(workItem.relationships.parent).length;
+        });;
+        this.nextLink = workItemResp.nextLink;
+        this.included = workItemResp.included;
+        this.workItems = this.workItemService.resolveWorkItems(
+          workItems,
+          this.iterations,
+          [], // We don't want to static resolve user at this point
+          this.workItemTypes,
+          this.labels,
+          this.included
+        );
+        this.datatableWorkitems = this.tableWorkitem(this.workItems);
+        this.workItemDataService.setItems(this.workItems);
+        // Resolve assignees
+        const t3 = performance.now();
+        if (!this.workItems || this.workItems.length == 0) {
+          // if there are no work items, unlock the ui here
+          this.uiLockedList = false;
+        }
+        this.workItems.forEach((item, index) => {
+          this.workItemService.resolveAssignees(item.relationships.assignees).take(1)
+            .subscribe(assignees => {
+              item.relationships.assignees.data = assignees;
+              // After the assignees is resolved
+              // We should add it to the datatableWorkitems
+              this.datatableWorkitems[index].assignees = assignees;
+              if (index == this.workItems.length - 1) {
+                const t4 = performance.now();
+                console.log('Performance :: Resolved all the users - ' + (t4 - t3) + ' milliseconds.');
+                this.uiLockedList = false;
+              }
+            })
         });
-      } else {
-        tempWIs = workItemsAll;
-      }
-      this.workItems = this.workItemService.resolveWorkItems(
-        tempWIs,
-        this.iterations,
-        [], // We don't want to static resolve user at this point
-        this.workItemTypes,
-        this.labels,
-        this.included
-      );
-      this.workItemDataService.setItems(this.workItems);
-      // Resolve assignees
-      const t3 = performance.now();
-      if (!this.workItems || this.workItems.length==0) {
-        // if there are no work items, unlock the ui here
-        this.uiLockedList = false;
-      }
-      this.workItems.forEach((item, index) => {
-        this.workItemService.resolveAssignees(item.relationships.assignees).take(1)
-          .subscribe(assignees => {
-            item.relationships.assignees.data = assignees;
-            if (index == this.workItems.length - 1) {
-              const t4 = performance.now();
-              console.log('Performance :: Resolved all the users - '  + (t4 - t3) + ' milliseconds.');
-              this.uiLockedList = false;
+
+        // Resolve creators
+        const t5 = performance.now();
+        const allCreatorURLs: string[] = this.workItems.reduce(
+          (uniqueItems: WorkItem[], workItem: WorkItem) => {
+            if (!uniqueItems.find((item) => {
+              return item.relationships.creator.data.id ===
+                workItem.relationships.creator.data.id
+              })) {
+              return [...uniqueItems, workItem]
+            } else {
+              return uniqueItems;
             }
+          }, [] as WorkItem[])
+          .map((item: WorkItem) => {
+            return item.relationships.creator.data.links.self;
+          });
+
+        this.workItemService.getUsersByURLs(allCreatorURLs)
+          .subscribe((creators: User[]) => {
+            this.workItems.forEach((item, index) => {
+              item.relationships.creator.data = creators.find(creator => {
+                if (item.relationships.creator.data.id === creator.id) {
+                  // After the assignees is resolved
+                  // We should add it to the datatableWorkitems
+                  this.datatableWorkitems[index].creator = creator;
+                  return true;
+                } else {
+                  return false;
+                }
+              })
+            });
+            const t6 = performance.now();
+            console.log('Performance :: Resolved all the creators - ' + (t6 - t5) + ' milliseconds.');
           })
+        // this.originalList = cloneDeep(this.workItems);
+      },
+      (err) => {
+        console.log('Error in Work Item list', err);
+        this.uiLockedList = false;
       });
-      //this.treeList.update();
-      this.originalList = cloneDeep(this.workItems);
-    },
-    (err) => {
-      console.log('Error in Work Item list', err);
-      this.uiLockedList = false;
-    });
   }
 
   fetchMoreWiItems(): void {
@@ -531,75 +488,190 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
       .getMoreWorkItems(this.nextLink)
       .subscribe((newWiItemResp) => {
         const t2 = performance.now();
-        const workItems = newWiItemResp.workItems;
+        const workItems = newWiItemResp.workItems.filter((workItem: WorkItem) => {
+          return !!!Object.keys(workItem.relationships.parent).length;
+        });
         this.nextLink = newWiItemResp.nextLink;
         const wiLength = this.workItems.length;
+        const newItems = this.workItemService.resolveWorkItems(
+          workItems,
+          this.iterations,
+          [],
+          this.workItemTypes,
+          this.labels,
+          newWiItemResp.included
+        );
         this.workItems = [
           ...this.workItems,
-          // Returns an array of resolved work items
-          ...this.workItemService.resolveWorkItems(
-            workItems,
-            this.iterations,
-            [],
-            this.workItemTypes,
-            this.labels,
-            newWiItemResp.included
-          )
+          ...newItems
+        ];
+        this.datatableWorkitems = [
+          ...this.datatableWorkitems,
+          ...this.tableWorkitem(newItems)
         ];
         this.workItemDataService.setItems(this.workItems);
-        console.log('Performance :: Fetching more list items - '  + (t2 - t1) + ' milliseconds.');
+        console.log('Performance :: Fetching more list items - ' + (t2 - t1) + ' milliseconds.');
 
         // Resolve assignees
         const t3 = performance.now();
         for (let i = wiLength; i < this.workItems.length; i++) {
           this.workItemService.resolveAssignees(this.workItems[i].relationships.assignees).take(1)
             .subscribe(assignees => {
-              this.workItems[i].relationships.assignees.data = assignees
+              this.workItems[i].relationships.assignees.data = assignees;
+              // After the assignees is resolved
+              // We should add it to the datatableWorkitems
+              this.datatableWorkitems[i].assignees = assignees;
               if (i == this.workItems.length - 1) {
                 const t4 = performance.now();
-                console.log('Performance :: Resolved all the users - '  + (t4 - t3) + ' milliseconds.');
+                console.log('Performance :: Resolved all the users - ' + (t4 - t3) + ' milliseconds.');
               }
             })
         }
-        this.treeList.update();
+
+        // Resolve creators
+        const t5 = performance.now();
+        const allCreatorURLs: string[] = this.workItems.slice(wiLength).reduce(
+          (uniqueItems: WorkItem[], workItem: WorkItem) => {
+            if (!uniqueItems.find((item) => {
+              return item.relationships.creator.data.id ===
+                workItem.relationships.creator.data.id
+              })) {
+              return [...uniqueItems, workItem]
+            } else {
+              return uniqueItems;
+            }
+          }, [] as WorkItem[])
+          .map((item: WorkItem) => {
+            return item.relationships.creator.data.links.self;
+          });
+
+        this.workItemService.getUsersByURLs(allCreatorURLs)
+          .subscribe((creators: User[]) => {
+            this.workItems.slice(wiLength).forEach((item, index) => {
+              item.relationships.creator.data = creators.find(creator => {
+                if (item.relationships.creator.data.id === creator.id) {
+                  // After the assignees is resolved
+                  // We should add it to the datatableWorkitems
+                  this.datatableWorkitems[wiLength + index].creator = creator;
+                  return true;
+                } else {
+                  return false;
+                }
+              })
+            });
+            const t6 = performance.now();
+            console.log('Performance :: Resolved all the creators - ' + (t6 - t5) + ' milliseconds.');
+          })
+
+        //this.treeList.update();
       },
       (e) => console.log(e));
   }
 
-  loadChildren(node): any {
-    return this.workItemService.getChildren(node.data)
+  loadChildren(workItem: WorkItem): Observable<WorkItem[]> {
+    return this.workItemService.getChildren(workItem)
       //set the parent information for the child WIs
-      .then((workItems: WorkItem[]) => {
+      .map((workItems: WorkItem[]) => {
         workItems.map(wi => {
           wi.relationships.parent = { data: {} as WorkItem };
-          wi.relationships.parent.data = node.data;
+          wi.relationships.parent.data = workItem;
         });
         return workItems;
       })
-      .then((workItems: WorkItem[]) => this.workItemService.resolveWorkItems(
+      .map((workItems: WorkItem[]) => this.workItemService.resolveWorkItems(
         workItems,
         this.iterations,
         [], // We don't want to static resolve user at this point
         this.workItemTypes,
         this.labels
       ))
-      .then((workItems: WorkItem[]) => {
-        // Save all the children fethced
-        workItems.forEach(w => this.children.push(w.id));
-        if(this.currentWorkItem != null){
-          if(this.currentWorkItem.id === node.data.id) {
-            this.currentExpandedChildren = workItems;
-            this.expandedNode.node.data.children = workItems;
-          }
-        }
+      .do((workItems: WorkItem[]) => {
+        this.datatableWorkitems = [
+          ...this.datatableWorkitems,
+          ...this.tableWorkitem(workItems, workItem.id)
+        ];
         return workItems;
-      });
+      })
+      .map((workItems: WorkItem[]) => {
+        const startIndex = this.workItems.length;
+        this.workItems = [
+          ...this.workItems,
+          ...workItems
+        ];
+        this.workItemDataService.setItems(this.workItems);
+        return {workItems, startIndex};
+      })
+      .map((values) => {
+        // Resolve creator
+        const allCreatorURLs: string[] = this.workItems.slice(values.startIndex).reduce(
+          (uniqueItems: WorkItem[], workItem: WorkItem) => {
+            if (!uniqueItems.find((item) => {
+              return item.relationships.creator.data.id ===
+                workItem.relationships.creator.data.id
+              })) {
+              return [...uniqueItems, workItem]
+            } else {
+              return uniqueItems;
+            }
+          }, [] as WorkItem[])
+          .map((item: WorkItem) => {
+            return item.relationships.creator.data.links.self;
+          });
+
+        this.workItemService.getUsersByURLs(allCreatorURLs)
+          .subscribe((creators: User[]) => {
+            this.workItems.slice(values.startIndex).forEach((item, index) => {
+              item.relationships.creator.data = creators.find(creator => {
+                if (item.relationships.creator.data.id === creator.id) {
+                  // After the assignees is resolved
+                  // We should add it to the datatableWorkitems
+                  this.datatableWorkitems[values.startIndex + index].creator = creator;
+                  return true;
+                } else {
+                  return false;
+                }
+              })
+            });
+          })
+
+        // Resolve assignees
+        const allAssigneeURLs: string[] = this.workItems.slice(values.startIndex).reduce(
+          (urls: string[], workItem: WorkItem) => {
+            const assigneeURLs = workItem.relationships.assignees.data ?
+              workItem.relationships.assignees.data.map((assignee: User) => {
+                return assignee.links.self;
+              }) : [];
+            return [...urls, ...assigneeURLs]
+          }, []
+        ).reduce(
+          (uniqueURLs: string[], url: string) => {
+            if (!uniqueURLs.find(item => item === url)) {
+              return [...uniqueURLs, url]
+            } else {
+              return uniqueURLs;
+            }
+          }, [] as string[]);
+
+        this.workItemService.getUsersByURLs(allAssigneeURLs)
+          .subscribe((assignees: User[]) => {
+            this.workItems.slice(values.startIndex).forEach((item, index) => {
+              item.relationships.assignees.data = assignees.filter(assignee => {
+                return item.relationships.assignees.data
+                  .findIndex(a => a.id === assignee.id) > -1;
+              });
+              this.datatableWorkitems[values.startIndex + index].assignees =
+                item.relationships.assignees.data;
+            });
+          })
+
+        return values.workItems;
+      })
   }
 
-  onDetail(entryComponent: WorkItemListEntryComponent): void { }
-
-  onPreview(workItem: WorkItem): void {
-    this.detailPreview.openPreview(workItem);
+  onPreview(event: MouseEvent, id: string): void {
+    console.log(id);
+    this.workItemDataService.getItem(id).subscribe(workItem => {
+      this.detailPreview.openPreview(workItem);   });
   }
 
   onCreateWorkItem(workItem) {
@@ -611,34 +683,103 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
       this.labels
     );
     this.workItems = [...resolveItem, ...this.workItems];
+    this.datatableWorkitems = [
+      ...this.tableWorkitem([this.workItems[0]]),
+      ...this.datatableWorkitems
+    ];
   }
 
-  onMoveToTop(entryComponent): void {
-    this.workItemDetail = entryComponent.data;
+  onMoveToTop(id: string): void {
+    this.workItemDataService.getItem(id).subscribe((workItem) => {
+    this.workItemDetail = workItem;
     this.workItemService.reOrderWorkItem(this.workItemDetail, null, 'top')
-    .subscribe((updatedWorkItem) => {
-      let currentIndex = this.workItems.findIndex((item) => item.id === updatedWorkItem.id);
-      // Putting on top of the list
-      this.workItems.splice(0, 0, this.workItems[currentIndex]);
-      // Removing duplicate old item
-      this.workItems.splice( currentIndex + 1, 1);
-      this.workItems[0].attributes['version'] = updatedWorkItem.attributes['version'];
-      this.treeList.update();
+      .subscribe((updatedWorkItem) => {
+        let currentIndex = this.workItems.findIndex((item) => item.id === updatedWorkItem.id);
+        // Putting on top of the list
+        this.workItems.splice(0, 0, this.workItems[currentIndex]);
+        // Removing duplicate old item
+        this.workItems.splice(currentIndex + 1, 1);
+        // Remove duplicate from datatable workitems
+        this.datatableWorkitems.splice(currentIndex, 1);
+        this.workItems[0].attributes['version'] = updatedWorkItem.attributes['version'];
+        // Update datatable WorkItems
+        this.datatableWorkitems = [...this.tableWorkitem([this.workItems[0]]), ...this.datatableWorkitems];
+      });
     });
   }
 
-  onMoveToBottom(entryComponent): void {
-    this.workItemDetail = entryComponent.data;
+  onMoveToBottom(id: string): void {
+    this.workItemDataService.getItem(id).subscribe((workItem) => {
+    this.workItemDetail = workItem;
     this.workItemService.reOrderWorkItem(this.workItemDetail, null, 'bottom')
-    .subscribe((updatedWorkItem) => {
-      let currentIndex = this.workItems.findIndex((item) => item.id === updatedWorkItem.id);
-      //move the item as the last of the loaded list
-      this.workItems.splice((this.workItems.length), 0, this.workItems[currentIndex]);
-      //remove the duplicate element
-      this.workItems.splice( currentIndex, 1);
-      this.workItems[this.workItems.length - 1].attributes['version'] = updatedWorkItem.attributes['version'];
-      this.treeList.update();
-      this.listContainer.nativeElement.scrollTop = this.workItems.length * this.contentItemHeight;
+      .subscribe((updatedWorkItem) => {
+        let currentIndex = this.workItems.findIndex((item) => item.id === updatedWorkItem.id);
+        //move the item as the last of the loaded list
+        this.workItems.splice((this.workItems.length), 0, this.workItems[currentIndex]);
+        //remove the duplicate element
+        this.workItems.splice(currentIndex, 1);
+        // remove duplicate from datatable
+        this.datatableWorkitems.splice(currentIndex, 1);
+        this.workItems[this.workItems.length - 1].attributes['version'] = updatedWorkItem.attributes['version'];
+        
+        // Update datatable WorkItems
+        this.datatableWorkitems = [...this.datatableWorkitems, ...this.tableWorkitem([this.workItems[this.workItems.length - 1]])]
+        this.listContainer.nativeElement.scrollTop = this.workItems.length * this.contentItemHeight;
+      });
+    });
+  }
+
+  onAssociateIteration(id: string): void {
+    this.workItemDataService.getItem(id).subscribe((item) => {
+    this.currentWorkItem = item;
+    this.associateIterationModal.workItem = item;
+    this.associateIterationModal.open();
+    });
+  }
+
+  onOpen(id: string){
+    this.workItemDataService.getItem(id).subscribe((item) => {
+      let link = this.router.url.split('/list')[0] + '/detail/' + item.id;
+      this.router.navigateByUrl(link, { relativeTo: this.route });
+    });
+  }
+
+  onMoveToBacklog(id: string): void {
+    this.workItemDataService.getItem(id).subscribe((item) => {
+    item.relationships.iteration = {}
+    this.workItemService
+      .update(item)
+      .switchMap(item => {
+        return this.iterationService.getIteration(item.relationships.iteration)
+          .map(iteration => {
+            item.relationships.iteration.data = iteration;
+            return item;
+          });
+      })
+      .subscribe(workItem => {
+        //update only the relevant fields
+        let index = this.workItems.findIndex(wi => wi.id === item.id)
+        this.workItems[index].relationships.iteration.data = workItem.relationships.iteration.data;
+        this.workItems[index].attributes['version'] = workItem.attributes['version'];
+        try {
+          this.notifications.message({
+            message: workItem.attributes['system.title'] + ' has been moved to the Backlog.',
+            type: NotificationType.SUCCESS
+          } as Notification);
+        } catch (e) {
+          console.log('Error displaying notification. Iteration was moved to Backlog.')
+        }
+      },
+      (err) => {
+        try {
+          this.notifications.message({
+            message: item.attributes['system.title'] + ' could not be moved to the Backlog.',
+            type: NotificationType.DANGER
+          } as Notification);
+        } catch (e) {
+          console.log('Error displaying notification. Error moving Iteration to Backlog.')
+        }
+      });
     });
   }
 
@@ -667,88 +808,96 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
           this.loggedIn = false;
           this.authUser = null;
           //this.treeListOptions['allowDrag'] = false;
-      })
+        })
     );
 
     this.eventListeners.push(
       this.broadcaster.on<string>('detail_close')
-      .subscribe(()=>{
-        // this.selectedWorkItemEntryComponent.deselect();
-      })
+        .subscribe(() => {
+          // this.selectedWorkItemEntryComponent.deselect();
+        })
     );
 
     this.eventListeners.push(
       this.workItemService.addWIObservable
-      .map(item => this.workItemService.resolveWorkItems(
-        [item],
-        this.iterations,
-        [],
-        this.workItemTypes,
-        this.labels
-      )[0])
-      .subscribe(item => {
-        if(this.selectedWI === null ) {
-          //add a work item to the top level list
-          this.workItems.splice(0, 0, item);
-        } else {
-          if (this.expandedNode === null) {
-            //A  WI has been selected - add the new WI as a child under that
-            this.selectedWI.hasChildren = true;
-            item.relationships.parent = { data: {} as WorkItem }
-            item.relationships.parent.data = this.selectedWI;
+        .map(item => this.workItemService.resolveWorkItems(
+          [item],
+          this.iterations,
+          [],
+          this.workItemTypes,
+          this.labels
+        )[0])
+        .subscribe(item => {
+          // Resolve creator
+          item.relationships.creator.data = this.loggedInUser as User;
+          if (this.selectedWI === null) {
+            //add a work item to the top level list
+            this.onCreateWorkItem(item);
           } else {
-            let index = this.workItems.findIndex(wi => wi.id === this.selectedWI.id)
-            if(this.selectedWI.id === this.expandedNode.node.data.id) {
-              //if the selected node is expanded
+            if (this.expandedNode === null) {
+              //A  WI has been selected - add the new WI as a child under that
+              this.selectedWI.hasChildren = true;
               item.relationships.parent = { data: {} as WorkItem }
               item.relationships.parent.data = this.selectedWI;
-              this.expandedNode.node.data.children.push(item);
-              if(index > -1) {
-                //this means selectedWI is a not a child WI - top level WI
-                this.workItems[index] = this.expandedNode.node.data;
-              } else {
-                //index < 0 means wi not found in workItems
-                //the selected WI is a child node and a child is being added
-                this.selectedWI = this.expandedNode.node.data;
-              }
             } else {
-              //selected WI and expanded WI are different
-              this.selectedWI.hasChildren = true;
+              let index = this.workItems.findIndex(wi => wi.id === this.selectedWI.id)
+              if (this.selectedWI.id === this.expandedNode.node.data.id) {
+                //if the selected node is expanded
+                item.relationships.parent = { data: {} as WorkItem }
+                item.relationships.parent.data = this.selectedWI;
+                this.expandedNode.node.data.children.push(item);
+                if (index > -1) {
+                  //this means selectedWI is a not a child WI - top level WI
+                  this.workItems[index] = this.expandedNode.node.data;
+                } else {
+                  //index < 0 means wi not found in workItems
+                  //the selected WI is a child node and a child is being added
+                  this.selectedWI = this.expandedNode.node.data;
+                }
+              } else {
+                //selected WI and expanded WI are different
+                this.selectedWI.hasChildren = true;
+              }
             }
           }
-        }
-        if(this.filterService.doesMatchCurrentFilter(item)){
-          try {
-            this.notifications.message({
-              message: item.attributes['system.title'] + ' created.',
-              type: NotificationType.SUCCESS
-            } as Notification);
-          } catch (e) {
-            console.log('Error displaying notification. Added WI matches the applied filters.')
+          if (this.filterService.doesMatchCurrentFilter(item)) {
+            try {
+              this.notifications.message({
+                message: item.attributes['system.title'] + ' created.',
+                type: NotificationType.SUCCESS
+              } as Notification);
+            } catch (e) {
+              console.log('Error displaying notification. Added WI matches the applied filters.')
+            }
+          } else {
+            try {
+              this.notifications.message({
+                message: item.attributes['system.title'] + ' created. Added WI does not match the applied filters',
+                type: NotificationType.SUCCESS
+              } as Notification);
+            } catch (e) {
+              console.log('Error displaying notification. Added WI does not match the applied filters.')
+            }
           }
-        } else {
-          try {
-            this.notifications.message({
-              message: item.attributes['system.title'] + ' created. Added WI does not match the applied filters',
-              type: NotificationType.SUCCESS
-            } as Notification);
-          } catch (e) {
-            console.log('Error displaying notification. Added WI does not match the applied filters.')
-          }
-        }
-        if( this.workItems.length > 0 )
-          this.treeList.update();
-      })
+        })
     );
 
     this.eventListeners.push(
       this.workItemService.editWIObservable.subscribe(updatedItem => {
         let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
-        if(this.filterService.doesMatchCurrentFilter(updatedItem)){
+        if (this.filterService.doesMatchCurrentFilter(updatedItem)) {
           updatedItem.hasChildren = updatedItem.relationships.children.meta.hasChildren;
           updatedItem.relationships['parent'] = this.workItems[index].relationships.parent;
           if (index > -1) {
             this.workItems[index] = updatedItem;
+            let updatedTableItem = this.tableWorkitem([updatedItem], this.datatableWorkitems[index].parentId)[0];
+            updatedTableItem.treeStatus = this.datatableWorkitems[index].treeStatus;
+            updatedTableItem.childrenLoaded = this.datatableWorkitems[index].childrenLoaded;
+            this.datatableWorkitems = [
+              ...this.datatableWorkitems.slice(0, index),
+              updatedTableItem,
+              ...this.datatableWorkitems.slice(index + 1)
+            ];
           } else {
             //Scenario: work item detail panel is open.
             //Change a value so that it does not match the applied filter and gets removed from the list
@@ -759,30 +908,29 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
             if (!this.children.find(c => c === updatedItem.id)) {
               // If the item is not a child of any other item
               this.workItems.splice(0, 0, updatedItem);
+              this.datatableWorkitems = [...this.tableWorkitem([updatedItem]), ...this.datatableWorkitems];
             }
           }
           try {
             this.notifications.message({
-            message: updatedItem.attributes['system.title'] + ' updated.',
-            type: NotificationType.SUCCESS
+              message: updatedItem.attributes['system.title'] + ' updated.',
+              type: NotificationType.SUCCESS
             } as Notification);
           } catch (e) {
             console.log('Error displaying notification. Updated WI matches the applied filters.')
           }
-          this.treeList.update();
         } else {
           //Remove the work item from the current displayed list
           if (index > -1) {
             try {
               this.notifications.message({
-              message: updatedItem.attributes['system.title'] + ' updated. This work item no longer matches the applied filters.',
-              type: NotificationType.SUCCESS
+                message: updatedItem.attributes['system.title'] + ' updated. This work item no longer matches the applied filters.',
+                type: NotificationType.SUCCESS
               } as Notification);
             } catch (e) {
               console.log('Error displaying notification. Updated WI does not match the applied filters.')
             }
             this.workItems.splice(index, 1);
-            this.treeList.update();
           }
         }
       })
@@ -792,17 +940,17 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
       this.router.events
         .filter(event => event instanceof NavigationStart)
         .subscribe(
-          (event: any) => {
-            if (event.url.indexOf('/plan/detail/') > -1) {
-                // It's going to the detail page
-                let url = location.pathname;
-                let query = location.href.split('?');
-                if (query.length == 2) {
-                  url = url + '?' + query[1];
-                }
-                this.urlService.recordLastListOrBoard(url);
-              }
+        (event: any) => {
+          if (event.url.indexOf('/plan/detail/') > -1) {
+            // It's going to the detail page
+            let url = location.pathname;
+            let query = location.href.split('?');
+            if (query.length == 2) {
+              url = url + '?' + query[1];
+            }
+            this.urlService.recordLastListOrBoard(url);
           }
+        }
         )
     );
 
@@ -810,7 +958,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
     this.eventListeners.push(
       this.broadcaster.on<string>('backend_query_start')
         .subscribe((context: string) => {
-          switch (context){
+          switch (context) {
             case 'workitems':
               this.uiLockedList = true;
               break;
@@ -823,14 +971,14 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
             default:
               break;
           }
-      })
+        })
     );
 
     // unlock the ui when a complex query is completed in the background
     this.eventListeners.push(
       this.broadcaster.on<string>('backend_query_end')
         .subscribe((context: string) => {
-          switch (context){
+          switch (context) {
             case 'workitems':
               this.uiLockedList = false;
               break;
@@ -843,7 +991,7 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
             default:
               break;
           }
-      })
+        })
     );
 
     this.eventListeners.push(
@@ -858,121 +1006,77 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
     );
   }
 
-  //Patternfly-ng's tree list component
-  handleMoveNode($event) {
-    let movedWI = $event.node;
-    let prevWI = $event.to.parent.children[$event.to.index - 1];
-    let nextWI = $event.to.parent.children[$event.to.index + 1];
+  //ngx-datatable methods
 
-    if (typeof prevWI !== 'undefined') {
-      this.workItemService.reOrderWorkItem(movedWI, prevWI.id, 'below')
-          .subscribe((workItem) => {
-            this.workItems.find((item) => item.id === workItem.id).attributes['version'] = workItem.attributes['version'];
-          });
-    }
-    else {
-      this.workItemService.reOrderWorkItem(movedWI, nextWI.id, 'above')
-          .subscribe((workItem) => {
-            this.workItems.find((item) => item.id === workItem.id).attributes['version'] = workItem.attributes['version'];
-          });
-    }
-  }
-
-  handleAction($event: Action, item: any): void {
-    switch($event.id){
-      case 'createWI':
-        // Empty state's Create Work Item button
-        this.onCreateFromContext()
-      break;
-      case 'move2top':
-        this.workItemToMove = item.data;
-        this.onMoveToTop(item);
-      break;
-      case 'move2bottom':
-        this.workItemToMove = item.data;
-        this.onMoveToBottom(item);
-      break;
-      case 'associateIteration':
-        this.currentWorkItem = item.data;
-        this.associateIterationModal.workItem = item.data;
-        this.associateIterationModal.open();
-      break;
-      case 'open':
-        let link = this.router.url.split('/list')[0] + '/detail/' + item.data.id;
-        this.router.navigateByUrl(link, { relativeTo: this.route });
-      break;
-      case 'preview':
-        this.onPreview(item.data);
-      break;
-      case 'move2backlog':
-        item.data.relationships.iteration = {}
-        this.workItemService
-          .update(item.data)
-          .switchMap(item => {
-            return this.iterationService.getIteration(item.relationships.iteration)
-            .map(iteration => {
-              item.relationships.iteration.data = iteration;
-              return item;
-            });
-          })
-          .subscribe(workItem => {
-          //update only the relevant fields
-          let index = this.workItems.findIndex(wi => wi.id === item.data.id)
-          this.workItems[index].relationships.iteration.data = workItem.relationships.iteration.data;
-          this.workItems[index].attributes['version'] = workItem.attributes['version'];
-          this.treeList.update();
-          try {
-            this.notifications.message({
-              message: workItem.attributes['system.title'] + ' has been moved to the Backlog.',
-              type: NotificationType.SUCCESS
-            } as Notification);
-          } catch (e) {
-            console.log('Error displaying notification. Iteration was moved to Backlog.')
-          }
-        },
-        (err) => {
-          try{
-            this.notifications.message({
-            message: item.data.attributes['system.title'] + ' could not be moved to the Backlog.',
-            type: NotificationType.DANGER
-          } as Notification);
-        } catch (e) {
-          console.log('Error displaying notification. Error moving Iteration to Backlog.')
-        }
+  onDetailPreview(id): void {
+    event.stopPropagation();
+    this.workItemDataService.getItem(id).subscribe(workItem => {
+       this.router.navigateByUrl(this.router.url.split('/list')[0] + '/detail/' + workItem.id, { relativeTo: this.route });
     });
-
-      break;
-    }
   }
 
-  handleSelectionChange($event): void {
-    if($event.item.selected === true) {
-      this.selectedWI = $event.item;
-      if(this.expandedNode != null && ($event.item.id !== this.expandedNode.node.item.id)) {
-        this.expandedNode = null;
+  tableWorkitem(workItems: WorkItem[], parentId: string | null = null): any {
+    return workItems.map(element => {
+       return {
+        id: element.id,
+        number: element.attributes['system.number'],
+        type: element.relationships.baseType ? element.relationships.baseType : '',
+        title: element.attributes['system.title'],
+        labels: element.relationships.labels.data,
+        creator: element.relationships.creator.data,
+        assignees: element.relationships.assignees.data,
+        status: element.attributes['system.state'],
+        // Extra items for table
+        treeStatus: element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled',
+        parentId: parentId,
+        childrenLoaded: false
       }
+    });
+  }
+
+  // Settings dropdown
+
+  toggleAvailable(event, col) {
+    if(event.target.checked) {
+      col.selected = true;
     } else {
-      this.selectedWI = null;
-      //reset the quick add context to allowed WIT for the selected group
-      this.logger.log('Reset work item types as per the work item type group.');
-      this.logger.log(this.initialGroup);
-      this.groupTypesService.setCurrentGroupType(this.initialGroup);
+      col.selected = false;
+    }
+
+  }
+  moveToDisplay() {
+    const selected = this.isSelected();
+    selected.forEach(col => {
+      if(col.display === true) return;
+      col.selected = false;
+      col.display = true;
+      col.available = false;
+    })
+    this.columns = [...this.checkableColumn]
+  }
+
+  moveToAvailable() {
+    const selected = this.isSelected();
+    selected.forEach(col => {
+      if(col.available === true) return;
+      col.selected = false;
+      col.display = false;
+      col.available = true;
+    });
+    this.columns = [...this.checkableColumn]
+  }
+
+  toggleDisplay(event, col) {
+    if(event.target.checked) {
+      col.selected = true;
+    } else {
+      col.selected = false;
     }
   }
 
-  handleClick($event): void {
-    this.workItemService.emitSelectedWI($event.item);
-    this.groupTypesService.getAllowedChildWits($event.item);
+  isSelected() {
+    return this.checkableColumn.filter(col => col.selected);
   }
-
-  handleToggleExpanded($event: any): void {
-    if($event.isExpanded) {
-      this.expandedNode = $event;
-    } else {
-      this.expandedNode = null;
-    }
-  }
-
 
   togglePanelState(event: any): void {
     if (event === 'out') {
@@ -1001,4 +1105,37 @@ export class PlannerListComponent implements OnInit, AfterViewInit, AfterViewChe
     this.router.navigate([], navigationExtras);
   }
 
+  onScroll(event) {
+    if (event.path &&
+        this._lastCheckedScrollHeight < event.path[0].scrollHeight) {
+      let scrollLeft = ((event.path[0].scrollHeight -
+        (event.path[0].offsetHeight + event.path[0].scrollTop)) * 100) /
+        event.path[0].scrollHeight;
+      if (scrollLeft <= this._scrollTrigger) {
+        this._lastCheckedScrollHeight = event.path[0].scrollHeight;
+        this.fetchMoreWiItems();
+      }
+    }
+  }
+
+  onTreeAction(event: any) {
+    const index = event.rowIndex;
+    const row = event.row;
+    if (this.datatableWorkitems[index].treeStatus === 'collapsed') {
+      this.datatableWorkitems[index].treeStatus = 'loading';
+      if (!this.datatableWorkitems[index].childrenLoaded) {
+        this.loadChildren(this.workItems[index])
+          .subscribe((wis) => {
+            this.datatableWorkitems[index].childrenLoaded = true;
+            this.datatableWorkitems[index].treeStatus = 'expanded';
+          })
+      } else {
+        this.datatableWorkitems[index].treeStatus = 'expanded';
+        this.datatableWorkitems = [...this.datatableWorkitems];
+      }
+    } else {
+      this.datatableWorkitems[index].treeStatus = 'collapsed';
+      this.datatableWorkitems = [...this.datatableWorkitems];
+    }
+  }
 }

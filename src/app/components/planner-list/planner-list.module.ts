@@ -20,9 +20,15 @@ import {
   WidgetsModule
 } from 'ngx-widgets';
 
+import { NgxDatatableModule } from '../../../../node_modules/rh-ngx-datatable';
+// import { NgxDatatableModule } from 'rh-ngx-datatable';
+
+import { FilterColumn } from '../../pipes/column-filter.pipe';
+
 import { ActionModule, ListModule } from 'patternfly-ng';
 import { Logger } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
+
 
 import { GlobalSettings } from '../../shared/globals';
 import {
@@ -39,7 +45,6 @@ import { UrlService } from './../../services/url.service';
 import { WorkItemDetailModule } from '../work-item-detail/work-item-detail.module';
 import { WorkItemDetailAddTypeSelectorModule } from '../work-item-create/work-item-create.module';
 import { PlannerListComponent } from './planner-list.component';
-import { WorkItemListEntryComponent } from '../work-item-list-entry/work-item-list-entry.component';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 import { PlannerLayoutModule } from './../../widgets/planner-layout/planner-layout.module';
 import { WorkItemService } from '../../services/work-item.service';
@@ -47,6 +52,7 @@ import { MockHttp } from '../../mock/mock-http';
 import { HttpService } from '../../services/http-service';
 import { LabelService } from '../../services/label.service';
 import { AssigneesModule } from './../assignee/assignee.module';
+import { WorkItemCellComponent } from '../work-item-cell/work-item-cell.component';
 
 let providers = [];
 
@@ -112,11 +118,13 @@ if (process.env.ENV == 'inmemory') {
     WorkItemDetailModule,
     WorkItemQuickAddModule,
     WorkItemDetailAddTypeSelectorModule,
-    PlannerModalModule
+    PlannerModalModule,
+    NgxDatatableModule
   ],
   declarations: [
     PlannerListComponent,
-    WorkItemListEntryComponent
+    WorkItemCellComponent,
+    FilterColumn
   ],
   providers: providers,
   exports: [ PlannerListComponent ]

@@ -1,6 +1,7 @@
 <div class="container-fluid f8-wi-container"
   #containerHeight>
-  <div class="lock-overlay-list" *ngIf="uiLockedAll">
+  <div class="lock-overlay-list"
+    *ngIf="uiLockedAll">
     <div class="spinner-container">
       <h2 class="spinner"></h2>
       <h2>Loading ...</h2>
@@ -8,8 +9,7 @@
     </div>
   </div>
   <main class="row">
-    <alm-planner-layout
-      #sidePanel
+    <alm-planner-layout #sidePanel
       (sidePanelStateChange)="togglePanelState($event)"
       [sidePanelContent]="sidePanel"
       [sectionContent]="sectionPanel">
@@ -18,7 +18,8 @@
 </div>
 <ng-template #sidePanel>
   <aside class="f8-sidepanel">
-    <div class="lock-overlay-list" *ngIf="uiLockedSidebar">
+    <div class="lock-overlay-list"
+      *ngIf="uiLockedSidebar">
       <div class="spinner-container">
         <h2 class="spinner"></h2>
         <h2>Loading ...</h2>
@@ -29,15 +30,15 @@
       <span class="fa f8-sidepanel--toggle-icon fa-lg"
         [class.fa-angle-double-left]="sidePanelOpen"
         [class.fa-angle-double-right]="!sidePanelOpen"
-        (click)="togglePanel()"
-        tooltip="{{sidePanelOpen ?
+        (click)="togglePanel()" tooltip="{{sidePanelOpen ?
           'Hide Panel' : 'Show Panel'}}"
         placement="right">
       </span>
     </a>
     <side-panel
       [sidePanelOpen]="sidePanelOpen"
-      [iterations]="iterations"></side-panel>
+      [iterations]="iterations">
+    </side-panel>
   </aside>
 </ng-template>
 <ng-template #sectionPanel>
@@ -54,46 +55,185 @@
       </toolbar-panel>
     </div>
     <div class="f8-wi-list">
-      <div #listContainer
-        almInfiniteScroll
-        class="f8-wi-list-wrap"
-        [eachElementHeightInPx]='contentItemHeight'
-        (initItems)='initWiItems($event)'
-        (fetchMore)='fetchMoreWiItems()'>
-        <pfng-tree-list #treeList
-          [actionTemplate]="actionTemplate"
-          [config]="treeListConfig"
-          [itemTemplate]="itemTemplate"
-          [items]="workItems"
-          [loadTemplate]="loadTemplate"
-          (onActionSelect)="handleAction($event)"
-          (onClick)="handleClick($event)"
-          (onDblClick)="handleDblClick($event)"
-          (onMoveNode)="handleMoveNode($event)"
-          (onSelectionChange)="handleSelectionChange($event)"
-          (onToggleExpanded)="handleToggleExpanded($event)">
-          <ng-template #loadTemplate let-node="node" let-index="index">
-            <span>Loading...</span>
-          </ng-template>
-          <ng-template #itemTemplate let-node="node" let-index="index">
-            <alm-work-item-list-entry
-              id="{{'workItemList_OuterWrap_' + index}}"
-              class="work-item-list-entry"
-              [workItem]="node.data"
-              [iterations]="iterations"
-              (detailEvent)="onDetail($event)"
-              (previewEvent)="onPreview($event)"
-              (clickLabel)="onClickLabel($event)">
-            </alm-work-item-list-entry>
-          </ng-template>
-          <ng-template #actionTemplate let-node="node" let-index="index">
-            <pfng-action class="list-pf-actions"
-              [config]="actionConfig"
-              (onActionSelect)="handleAction($event, node)">
-            </pfng-action>
-          </ng-template>
-        </pfng-tree-list>
-        <div class="lock-overlay-list" *ngIf="uiLockedList">
+      <div class="f8-wi-list-wrap"
+        #listContainer>
+        <!-- ngx-datatable -->
+        <ngx-datatable
+          class="datatable-height"
+          [columnMode]="'flex'"
+          [scrollbarH]="true"
+          [scrollbarV]="true"
+          [rows]="datatableWorkitems"
+          [rowHeight]="contentItemHeight"
+          [treeFromRelation]="'parentId'"
+          [treeToRelation]="'id'"
+          (scroll)="onScroll($event)"
+          (treeAction)="onTreeAction($event)">
+          <ngx-datatable-column
+            *ngFor="let c of (columns | filterColumn:'display')"
+            [isTreeColumn]="c.name==='Title'"
+            [name]="c.name"
+            [flexGrow]="c.flexGrow"
+            [resizeable]="false">
+              <ng-template ngx-datatable-cell-tree-expander *ngIf="c.name==='Title'">
+                <i class="fa fa-angle-right tree-icon"></i>
+              </ng-template>
+
+              <ng-template ngx-datatable-cell-tree-collapser *ngIf="c.name==='Title'">
+                <i class="fa fa-angle-down tree-icon"></i>
+              </ng-template>
+
+              <ng-template ngx-datatable-cell-tree-disabled *ngIf="c.name==='Title'">
+                <i class="fa fa-angle-right tree-icon tree-icon__disabled"></i>
+              </ng-template>
+
+              <ng-template ngx-datatable-cell-tree-loader *ngIf="c.name==='Title'">
+                <div class="spinner spinner-xs margin-top-5"></div>
+              </ng-template>
+
+              <ng-template let-row="row"
+                ngx-datatable-cell-template>
+                  <work-item-cell
+                    [row]="row"
+                    [col]="c.prop"
+                    (onDetailPreview)="onDetailPreview($event)"
+                    (clickLabel)="onClickLabel($event)"
+                    [class.planner-hack-dropdown]="c.prop=='label'"
+                    [class.planner-hack-title-truncate]="c.prop=='title'">
+                  </work-item-cell>
+              </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column
+            [flexGrow]="0.6"
+            [headerTemplate]="headerTemplateN">
+            <ng-template let-row="row"
+              ngx-datatable-cell-template>
+              <div class="dropdown-kebab-pf planner-hack-dropdown
+                          pull-right dropdown margin-left-10"
+                dropdown>
+                <button class="btn btn-link dropdown-toggle"
+                  type="button"
+                  dropdownToggle>
+                  <span class="fa fa-ellipsis-v"></span>
+                </button>
+                <ul class="dropdown-menu-right dropdown-menu"
+                  *dropdownMenu>
+                  <li>
+                    <a class="pointer"
+                      (click)="onMoveToTop(row['id'])">
+                      Move to Top
+                    </a>
+                  </li>
+                  <li>
+                    <a class="pointer"
+                      (click)="onMoveToBottom(row['id'])">
+                      Move to Bottom
+                    </a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a class="pointer"
+                      (click)="onAssociateIteration(row['id'])">
+                      Associate with Iteration...
+                    </a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a class="pointer"
+                      (click)="onOpen(row['id'])">
+                      Open
+                    </a>
+                  </li>
+                  <li>
+                    <a class="pointer"
+                      (click)="onPreview($event, row['id'])">
+                      Preview
+                    </a>
+                  </li>
+                  <li>
+                    <a class="pointer"
+                      (click)="onMoveToBacklog(row['id'])">
+                      Move to Backlog
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="pull-right margin-right-15 padding-top-2" placement="left">
+                <a class="fa fa-columns f8-action-icon pointer"
+                  (click)="onPreview($event, row['id'])">
+                </a>
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+        </ngx-datatable>
+        <!-- settings -->
+        <div class="f8-wi-list__settings">
+          <div class="dropdown-kebab-pf pull-right dropdown margin-left-10"
+                dropdown [autoClose]="false">
+            <button class="btn btn-link dropdown-toggle" type="button" dropdownToggle>
+              <span class="fa fa-cog"></span>
+            </button>
+            <div class="dropdown-menu-right dropdown-menu f8-wi-list__settings-dropdown">
+              <aside>
+                <i class="db text-right fa fa-close"></i>
+                <span class="db text-right fa fa-angle-double-up"
+                  tooltip="Move to top"
+                  (click)="moveToDisplay()">
+                </span>
+                <span class="db text-right fa fa-angle-up"
+                  tooltip="Move to top"
+                  (click)="moveToDisplay()">
+                </span>
+                <span class="db text-right fa fa-angle-down"
+                  tooltip="Move to Down"
+                  (click)="moveToAvailable()">
+                </span>
+                <span class="db text-right fa fa-angle-double-down"
+                  tooltip="Move to Down"
+                  (click)="moveToAvailable()">
+                </span>
+              </aside>
+              <aside>
+                <small>Displayed Atrributes</small>
+                <ul class="f8-wi-list__settings-column">
+                  <li *ngFor='let col of (columns | filterColumn: "display")'>
+                    <input
+                      type='checkbox'
+                      [id]="col.name"
+                      (change)='toggleDisplay($event, col)'/>
+                    <label [attr.for]="col.name">{{col.name}}</label>
+                  </li>
+                </ul>
+              </aside>
+              <aside>
+                <span class="db fa fa-angle-right"
+                  tooltip="Move to Displayed Attributes"
+                  (click)="moveToDisplay()">
+                </span>
+                <span class="db fa fa-angle-left"
+                  tooltip="Move to Available Attributes"
+                  (click)="moveToAvailable()">
+                </span>
+              </aside>
+              <aside>
+                <small>Available Atrributes</small>
+                <ul class="f8-wi-list__settings-column">
+                  <li *ngFor='let col of (columns | filterColumn: "available")'>
+                    <input
+                      type='checkbox'
+                      [id]="col.name"
+                      (change)='toggleAvailable($event, col)'/>
+                    <label [attr.for]="col.name">
+                      {{col.name}}
+                    </label>
+                  </li>
+                </ul>
+              </aside>
+            </div>
+          </div>
+        </div>
+        <div class="lock-overlay-list"
+          *ngIf="uiLockedList">
           <div class="spinner-container">
             <h2 class="spinner"></h2>
             <h2>Loading Work Items ...</h2>
@@ -101,23 +241,26 @@
           </div>
         </div>
       </div>
-
       <div class="error"
         id="workItemList_Error"
-        *ngIf="error">{{error}}
+        *ngIf="error">
+        {{error}}
       </div>
-
       <div class="f8-wi-list__quick-add width-100 pull-left"
         id="workItemList_quickAdd"
-        *ngIf="loggedIn">
+        *ngIf="loggedIn"
+        #quickaddHeight>
         <alm-work-item-quick-add
           [wilistview]="'wi-list-view'"
           (close)="close($event)"
-          (workItemCreate)="onCreateWorkItem($event)"></alm-work-item-quick-add>
+          (workItemCreate)="onCreateWorkItem($event)">
+        </alm-work-item-quick-add>
       </div>
     </div>
   </section>
-  <work-item-preview #detailPreview></work-item-preview>
+  <work-item-preview
+    #detailPreview>
+  </work-item-preview>
 </ng-template>
 <!-- <router-outlet></router-outlet> -->
 

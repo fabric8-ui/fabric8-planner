@@ -1,5 +1,8 @@
 @import (reference) '../../../assets/stylesheets/_base';
 @import '../../../assets/stylesheets/_planner-layout';
+//@import '../../../../node_modules/@swimlane/ngx-datatable/release/index.css';
+//@import '../../../../node_modules/@swimlane/ngx-datatable/release/themes/material.css';
+//@import '../../../../node_modules/@swimlane/ngx-datatable/release/assets/icons.css';
 
 .f8-wi-container {
   .lock-overlay-list {
@@ -40,10 +43,13 @@
     width: 100%;
     height: 100%;
     &-wrap {
+      position: relative;
       width: 100%;
      // height: ~"calc(e('100% - 120px'))";
       // to avoid overflown scroll height should be there
-      overflow-y: scroll;
+      overflow-y: hidden;
+      border-top: 1px solid;
+      border-top-color: @color-pf-black-300;
       >.list-group {
         border-top-width: 0 !important;
       }
@@ -53,6 +59,55 @@
       }
       .tree-node-level-3 .list-pf-item {
         padding-left: 40px;
+      }
+    }
+    &__settings {
+      position: absolute;
+      top: 2px;
+      right: 15px;
+      &-dropdown {
+        width: 100%;
+        min-width: 400px;
+        height: 200px;
+        background-color: @color-pf-black-150;
+        &::after {
+          border-bottom-color: @color-pf-black-150;
+        }
+        aside {
+          float: right;
+          width: ~"calc(e('45% - 30px'))";
+          height: 100%;
+          padding-left: (@grid-gutter-width/6);
+          padding-right: (@grid-gutter-width/6);
+          &:first-child, &:nth-child(3) {
+            width: 10%;
+            padding: 0 (@grid-gutter-width/3);
+            span.fa {
+              width: 100%;
+              text-align: center;
+              padding: (@grid-gutter-width/6) 0;
+              margin: (@grid-gutter-width/6) 0;
+              font-size: @pf-icon-2x;
+            }
+            &:nth-child(3) {
+              margin-top: ((@grid-gutter-width/3) * 5);
+            }
+          }
+        }
+      }
+      &-column {
+        float: left;
+        width: 100%;
+        height: ~"calc(e('100% - 30px'))";
+        padding: (@grid-gutter-width/3);
+        list-style: none;
+        background-color: @color-pf-white;
+        border: 1px solid;
+        border-color: @color-pf-black-300;
+        overflow-y: scroll;
+        li {
+          width: 100%;
+        }
       }
     }
     .card-pf {
@@ -137,5 +192,57 @@
   .tree-list-item {
     display: inline-flex;
     align-items: inherit;
+  }
+}
+
+button.btn.btn-link.dropdown-toggle:focus {
+  outline: none;
+}
+
+.planner-hack-title-truncate {
+  display: inline-grid;
+  margin-left: 4px;
+}
+
+/// ng x-datatables css
+.datatable-header-inner,
+.datatable-row-center,
+.datatable-row-wrapper,
+.datatable-body-row,
+.datatable-scroll {
+  width: 100% !important;
+}
+.datatable-header-cell {
+  border-bottom: 1px solid;
+  border-bottom-color: @color-pf-black-300;
+}
+.datatable-body-cell ,
+.datatable-header-cell {
+  border-right: 1px solid;
+  border-right-color: @color-pf-black-300;
+  &:last-child {
+    border-right-width: 0;
+  }
+}
+.datatable-row-wrapper {
+  &:last-child {
+    border-bottom: 1px solid;
+    border-bottom-color: @color-pf-black-300;
+  }
+}
+.datatable-header-cell,
+.datatable-body-cell {
+  padding: ((@grid-gutter-width/10)) ((@grid-gutter-width/3)) ;
+}
+.datatable-body-cell {
+  overflow-x: visible !important;
+}
+.datatable-height {
+  height: inherit;
+}
+.tree-icon {
+  min-width: 15px;
+  &.tree-icon__disabled {
+    opacity: 0.4;
   }
 }
