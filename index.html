@@ -35,7 +35,6 @@
     <div id="repoInfo">
       <h1 class="display-4">Fabric8 Planner</h1>
       <p class="lead">Prepare to launch, one plan at a time...</p>
-      <div class="spinner"></div>
       <div id="repoDetails">
 
         <div class="repoStats" title="Repo Watches">
@@ -60,10 +59,37 @@
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
   </section-->
 
-  <section class="container">
-    <h2 id="contribTitle">Folks who make it happen</h2>
-    <div id="repoContrib" class="card-deck"></div>
+  <section id="contributors" class="container">
+    <h2 id="contributorTitle">Folks who make it happen</h2>
+    <div id="contributorList" class="card-deck"></div>
+
+    <div class="btn-toolbar">
+      <a class="btn btn-lg btn-outline-primary" href="https://github.com/fabric8-ui/fabric8-planner/graphs/contributors" role="button">
+        Checkout all contributors
+      </a>
+      <a class="btn btn-lg btn-primary" href="https://github.com/fabric8-ui/fabric8-planner/issues" role="button">
+        Want in?
+      </a>
+    </div>
   </section>
+
+  <section id="noContributors" class="container">
+    <div class="loading"></div>
+    <h2 class="display-4 text-muted">loading...</h2>
+  </section>
+
+  <footer class="footer bd-footer text-muted">
+    <div class="container">
+      <a class="footer-links" href="https://github.com/fabric8-ui/fabric8-planner">GitHub Repo</a>
+      <a class="footer-links" href="https://github.com/fabric8-ui/fabric8-planner/tree/master/docs">Documentations</a>
+      <a class="footer-links" href="https://fabric8.io/">Fabric8 Project</a>
+
+      <p>
+        With ♥ from Fabric8 Planner Team<br/>
+        <a href="https://github.com/fabric8-ui/fabric8-planner/blob/master/LICENSE" target="_blank">Apache License 2.0</a>
+      </p>
+    </div>
+  </footer>
 
   <template id="contributorCardTemplate">
     <div class="contributor card border-light">

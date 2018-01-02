@@ -41,7 +41,18 @@ a.nav-link:hover {
 }
 
 /* Contributor Stats */
-#contribTitle {
+#contributors {
+  display: none;
+}
+#contributors .btn-toolbar {
+  align-items: center;
+  justify-content: center;
+}
+#contributors .btn {
+  margin: auto 1rem;
+  padding: 1rem 4rem;                   /* @mediaquery */
+}
+#contributorTitle {
   color: #666;
   margin: 4rem auto 2rem;
   text-align: center;
@@ -65,4 +76,45 @@ a.nav-link:hover {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+#noContributors {
+  display: flex;
+  min-height: 20rem;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#noContributors .loading {
+  margin-bottom: 1rem;
+}
+
+/* Spinner */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: .5rem solid rgba(0,0,0,0.25);
+  border-top-color: rgba(0,0,0,0.75);
+  animation: spin 1s infinite linear;
+}
+
+/* Footer */
+footer {
+  margin: 4rem auto 0;
+  padding: 2rem 1rem;
+  text-align: center;
+  background: #e9ecef;
+}
+footer .footer-links {
+  margin: 1rem;
+  display: inline-block;
 }

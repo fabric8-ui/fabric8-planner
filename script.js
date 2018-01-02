@@ -9,7 +9,6 @@ $.get("https://api.github.com/repos/fabric8-ui/fabric8-planner", function (respo
     $("#repoStars").text(stars);
     $("#repoForks").text(forks);
 
-    $("#repoInfo .spinner").remove();
     $("#repoDetails").css({ display: "flex" });
   });
 })
@@ -35,9 +34,12 @@ $.get("https://api.github.com/repos/fabric8-ui/fabric8-planner/contributors", fu
         theirWorks.innerText = "" + contributor.contributions + " Contributions";
 
         var templateClone = document.importNode(contribCard.content, true);
-        document.getElementById("repoContrib").appendChild(templateClone);
+        document.getElementById("contributorList").appendChild(templateClone);
       }
     } // @TODO: else {}
+
+    $("#noContributors").remove();
+    $("#contributors").show();
   })
 
 });
