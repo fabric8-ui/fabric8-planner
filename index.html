@@ -55,12 +55,25 @@
     </div>
   </section>
 
-  <section class="container">
+  <!--section class="container">
     <p class="lead pitch">Fabric8 Planner is an all-round planning tool, designed to fit your projects' methodologies.</p>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </section-->
+
+  <section class="container">
+    <h2 id="contribTitle">Folks who make it happen</h2>
+    <div id="repoContrib" class="card-deck"></div>
   </section>
 
-  <section id="repoContrib" class="container"></section>
+  <template id="contributorCardTemplate">
+    <div class="contributor card border-light">
+      <div class="card-body">
+        <img class="rounded-circle float-left" alt="avatar" src="https://www.gravatar.com/avatar/#>" />
+        <h5 class="card-title"><a href="#" target="_blank">username</a></h5>
+        <p class="card-subtitle text-muted">XYZ Contributions</p>
+      </div>
+    </div>
+  </template>
 
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>

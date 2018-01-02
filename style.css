@@ -40,7 +40,29 @@ a.nav-link:hover {
   margin-right: 0.5rem;                 /* @mediaquery */
 }
 
-.lead.pitch {
-  margin-top: 5rem;
+/* Contributor Stats */
+#contribTitle {
+  color: #666;
+  margin: 4rem auto 2rem;
   text-align: center;
+  text-transform: uppercase;
+}
+.card-deck .card {
+  flex: 1 0 20%;                        /* @mediaquery */
+  margin-bottom: 1rem;
+  transition: all 300ms ease;
+}
+.card-deck .card:hover {
+  background: #f8f8f8;
+  border-color: #e3e6e9!important;
+}
+.card-body img.rounded-circle {
+  width: 50px;
+  margin-right: 1rem;
+}
+.card-body .card-title {
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
