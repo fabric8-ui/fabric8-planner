@@ -32,14 +32,33 @@
   <section class="jumbotron">
     <div class="container">
       <img src="./images/planner_logo.svg" alt="Fabric8 Planner Logo" />
-      <h1>Fabric8 Planner</h1>
-      <p>Prepare to launch, one plan at a time...</p>
+      <div id="repoInfo">
+        <h1>Fabric8 Planner</h1>
+        <p>Prepare to launch, one plan at a time...</p>
+        <div id="repoDetails">
+
+          <div class="repoStats" title="Repo Watches">
+            <img src="images/octicons/eye.svg" alt="watches" />
+            <span id="repoWatches"></span>
+          </div>
+          <div class="repoStats" title="Repo Stars">
+            <img src="images/octicons/star.svg" alt="watches" />
+            <span id="repoStars"></span>
+          </div>
+          <div class="repoStats" title="Repo Forks">
+            <img src="images/octicons/repo-forked.svg" alt="watches" />
+            <span id="repoForks"></span>
+          </div>
+
+        </div>
+      </div>
     </div>
   </section>
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/js/patternfly.min.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>

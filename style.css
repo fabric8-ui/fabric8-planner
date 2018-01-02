@@ -6,5 +6,25 @@ a.navbar-brand {
 
 /* Jumbotron */
 .jumbotron {
-  text-align: center;
+}
+
+.jumbotron .container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#repoDetails {
+  display: none;
+}
+
+.repoStats {
+  margin-right: 2em; /* @mediaquery */
+  font-size: 2rem;
+}
+
+.repoStats img {
+  height: 1.5em;
+  opacity: 0.5;
+  margin-right: 0.5em; /* @mediaquery */
 }
