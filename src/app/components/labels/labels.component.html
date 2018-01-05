@@ -1,30 +1,30 @@
 <div class="label-wrapper">
-  <span *ngFor="let label of labels | slice:0:truncateAfter;" class="label"
+  <span *ngFor="let label of _labels | slice:0:truncateAfter;" class="label"
     [ngStyle]="{
       'background-color': label?.attributes['background-color'],
       'color': label.attributes['text-color']
     }"
     (click)="clickLabel(label, $event)">
-    <span class="pointer">
+    <span class="label-name pointer">
         {{label.attributes?.name}}
     </span>
     <span class="close-icon-wrapper" *ngIf="allowDelete">
       <i class="pficon-close pointer" (click)="removeLabel(label, $event)"></i>
     </span>
   </span>
-  <span dropdown class="dropdown" placement="right">
-    <span dropdownToggle (click)="moreClick($event)" class="dropdown-toggle"
-      *ngIf="truncateAfter!==undefined && labels.length > 4">
-        {{ labels.length - truncateAfter }} more...
+  <span dropdown class="pull-left margin-h-5 dropdown" placement="right">
+    <span dropdownToggle (click)="moreClick($event)" class="dib dropdown-toggle pointer"
+      *ngIf="truncateAfter!==undefined && _labels.length > 4">
+        {{ _labels.length - truncateAfter }}+
       </span>
       <ul *dropdownMenu class="dropdown-menu label-dropdown dropdown-menu-right">
-        <li *ngFor="let label of labels | slice:truncateAfter;">
+        <li *ngFor="let label of _labels | slice:truncateAfter;">
           <span class="label" [ngStyle]="{
               'background-color': label?.attributes['background-color'],
               'color': label.attributes['text-color']
             }"
             (click)="clickLabel(label, $event)">
-            <span class="pointer">
+            <span class="label-name pointer">
                 {{label.attributes?.name}}
             </span>
             <span class="close-icon-wrapper" *ngIf="allowDelete">

@@ -240,7 +240,7 @@ class WorkItemListPage {
   }
 
   clickQuickAddSave () {
-    browser.wait(until.visibilityOf(this.saveButton), constants.LONGER_WAIT, 'Failed to find the saveButton'); 
+    browser.wait(until.visibilityOf(this.saveButton), constants.LONGER_WAIT, 'Failed to find the saveButton');
     browser.wait(until.presenceOf(this.saveButton), constants.WAIT, 'Failed to find the saveButton');
     return this.saveButton.click();
   }
@@ -257,34 +257,34 @@ class WorkItemListPage {
   /* Page elements - work item list */
 
   get allWorkItems () {
-    return element.all(by.css(".work-item-list-entry"));
+    return $$("datatable-body-row");
   }
 
-  /* xpath = //alm-work-item-list-entry[.//text()[contains(.,'Some Title 6')]]   */
+  /* This function is used to fetch a workitem based on its "Title"   */
   workItemByTitle (titleString) {
-    // return element(by.xpath("//alm-work-item-list-entry[.//text()[contains(.,'" + titleString + "')]]"));
-    return element(by.xpath("//tree-node[.//text()='" + titleString + "']"));
+    return element(by.xpath("//datatable-body-row[.//p[contains(text(), '" + titleString + "')]]"));
   }
 
   get firstWorkItem () {
-    return element.all(by.css(".work-item-list-entry")).first();
+    return $$("datatable-body-row").first();
   }
 
   get lastWorkItem () {
-    return element.all(by.css(".work-item-list-entry")).last();
+    return $$("datatable-body-row").last();
   }
 
   /* Title element relative to a workitem */
   workItemTitle (workItemElement) {
-    return workItemElement.element(by.css(".f8-wi__list-title")).element(by.css("p")).getText();
+    return workItemElement.$("p").getText();
   }
 
   clickWorkItemTitle (title) {
-    return this.clickWorkItem(this.workItemByTitle(title));
+    this.clickWorkItem(this.workItemByTitle(title)) 
+    return new WorkItemDetailPage();
   }
 
   clickWorkItem(workItemElement) {
-    workItemElement.$$(".f8-wi__list-description").first().element(by.css("p")).click()
+    workItemElement.$("p").click();
     return new WorkItemDetailPage();
   }
 
