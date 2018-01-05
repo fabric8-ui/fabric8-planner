@@ -99,8 +99,10 @@ export class HeaderComponent implements OnInit {
   }
 
   onSelectRecentContext(context: Context) {
-    // TODO Integration: this should just switch the space, not leave Planner (or at least for certain options in the recent dropdown)
-    this.goToExternal(this.getBaseURL() + context.path);
+    // TODO Integration: this may need to switch to platform in some cases (it looks like there are not only spaces in the recentContexts)
+    if (context.space)
+      this.spacesService.setCurrent(context.space);
+    // this.goToExternal(this.getBaseURL() + context.path);
   }
 
   onSelectViewAllSpaces() {
