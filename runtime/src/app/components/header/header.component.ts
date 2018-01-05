@@ -54,49 +54,69 @@ export class HeaderComponent implements OnInit {
     }
   } 
 
+  private getBaseURL() {
+    // TODO Integration: this might change (and possibly be a runtime configuration) as we might want to use subdomains: planner.os.io etc.
+    let l = document.createElement("a");
+    l.href = location.href;
+    return l.protocol + '//' + l.host + '/';
+  }
+
   private goToInternal(path: string) {
     this.logger.log('[PlannerHeader] Switching to internal route: ' + path);
-    // TODO: do navigation using this.router
+    this.router.navigate([path]);
   }
 
   private goToExternal(path: string) {
     this.logger.log('[PlannerHeader] Switching to external route: ' + path);   
-    // TODO: do navigation window.url (or similar)
-  }
-
-  onSelectRecentContext(context: Context) {
+    window.location.href = path;
   }
 
   onSelectMenuItem(menuItem: MenuItem) {
     this.goTo(menuItem);
   }    
 
-  onSelectViewAllSpaces() {
-  }
-
-  onSelectAccountHome() {
-  }
-
-  onSelectUserProfile() {
-  }
-      
-  onSelectCreateSpace() {
-  }
-
   onSelectLogout() {
+    this.logger.log('[PlannerHeader] Logging out user.');   
     this.auth.logout();
     this.loggedInUser = null as User;
     this.headerService.clean();
   }
 
   onSelectLogin() {
-    this.router.navigate(['login']);
+    this.router.navigate(['/login']);
   }
 
   onSelectAbout() {
+    this.logger.log('[PlannerHeader] Showing about modal.');       
+    // TODO Integration: this currently opens a modal dialog
+    // This should be part of the header, or at least a common component in a library
+  }
+
+  onSelectCreateSpace() {
+    this.logger.log('[PlannerHeader] Showing create new space.');       
+    // TODO Integration: this currently opens a modal dialog
+    // This should either be a common component from a library OR an external link to a platform dialog
+  }
+
+  onSelectRecentContext(context: Context) {
+    // TODO Integration: this should just switch the space, not leave Planner (or at least for certain options in the recent dropdown)
+    this.goToExternal(this.getBaseURL() + context.path);
+  }
+
+  onSelectViewAllSpaces() {
+    this.goToExternal(this.getBaseURL() + this.loggedInUser.id + '/_spaces');
+  }
+
+  onSelectAccountHome() {
+    this.goToExternal(this.getBaseURL() + '_home');
+  }
+
+  onSelectUserProfile() {
+    this.goToExternal(this.getBaseURL() + this.loggedInUser.id);
   }
 
   onFollowedLink(url: string) {
+    // NOP
   }
   
   ngOnInit(): void {    
