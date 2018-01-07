@@ -34,6 +34,14 @@ def ciBuildDownstreamProject(project){
     }
 }
 
+def ciBuildPlannerProject(project){
+    stage('build standalone fabric8-planner npm run build:prod'){
+        return buildSnapshotStandalonePlanner{
+            pullRequestProject = project
+        }
+    }
+}
+
 def buildImage(imageName){
     stage('build snapshot image'){
         sh "cd fabric8-ui && docker build -t ${imageName} -f Dockerfile.deploy ."
@@ -41,6 +49,16 @@ def buildImage(imageName){
 
     stage('push snapshot image'){
         sh "cd fabric8-ui && docker push ${imageName}"
+    }
+}
+
+def buildStandalonePlannerImage(imageName){
+    stage('build standalone snapshot image'){
+        sh "cd fabric8-planner/runtime && docker build -t ${imageName} -f Dockerfile.deploy ."
+    }
+
+    stage('push standalone snapshot image'){
+        sh "docker push ${imageName}"
     }
 }
 
