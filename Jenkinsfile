@@ -40,11 +40,11 @@ fabric8UITemplate{
 
                     // create image for standalone
                     imageName = "fabric8/fabric8-planner:standalone"
-                    sh "echo building standalone image now $$$"
+                    sh "echo building standalone image now"
                     container('docker') {
                         pipeline.buildStandalonePlannerImage(imageName)
                     }
-                    sh "echo image building done $$$"
+                    sh "echo image building done"
 
                     ciDeploy = true
 
