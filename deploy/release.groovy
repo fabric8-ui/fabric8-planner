@@ -54,9 +54,9 @@ def buildImage(imageName){
 
 def buildStandalonePlannerImage(imageName){
     stage('build standalone snapshot image'){
-        dir('runtime'){
-            sh "docker build -t ${imageName} -f ./Dockerfile.deploy ."
-        }
+        // dir('runtime'){
+            sh "docker build -t ${imageName} -f ./runtime/Dockerfile.deploy ."
+        // }
     }
 
     stage('push standalone snapshot image'){
