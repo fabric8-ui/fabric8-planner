@@ -33,12 +33,6 @@ fabric8UITemplate{
 
                     // ciDeploy = true
 
-                    echo "run npm install at root"
-                    container('ui'){
-                        sh 'npm install'
-                        sh 'npm run build'
-                        sh 'npm pack dist/'
-                    }
                     // build planner
                     container('ui'){
                         tempVersion = pipeline.ciBuildPlannerProject(project)
