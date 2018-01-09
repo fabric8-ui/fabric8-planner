@@ -52,13 +52,17 @@ def ciBuildPlannerProject(project){
 
     imageName = "fabric8/fabric8-planner:standalone"
     stage('build standalone snapshot image'){
-        sh 'pwd'
-        sh "docker build -t ${imageName} -f ./Dockerfile.deploy.runtime ."
+        container('docker'){
+            sh 'pwd'
+            sh "docker build -t ${imageName} -f ./Dockerfile.deploy.runtime ."
+        }
     }
 
     stage('push standalone snapshot image'){
-        sh 'pwd'
-        sh "docker push ${imageName}"
+        container('docker'){
+            sh 'pwd'
+            sh "docker push ${imageName}"
+        }
     }
 
     // stage('build standalone fabric8-planner npm run build:prod'){
