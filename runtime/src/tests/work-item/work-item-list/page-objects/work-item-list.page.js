@@ -870,6 +870,15 @@ class WorkItemListPage {
     return $('#workItemList_up_quickAdd').$$('.dropdown-kebab-pf');
   }
 
+  clickSortByTitle() {
+    element(by.xpath('//span[@class="datatable-header-cell-label draggable" and contains(text(), "Title")]'))
+      .click();
+  }
+
+  get workItemTitleList() {
+    return $$('.planner-hack-title-truncate').getText();
+  }
+
   clickWorkItemQADropDown() {
     return this.workItemQuickAdd().click();
   }

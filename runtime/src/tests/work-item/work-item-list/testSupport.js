@@ -98,6 +98,32 @@ clickElement (theElement, theElementName, thePageName) {
     console.log(thePageName + " - clicked element: " + theElementName);
   });
   return;
-}
+},
 
+  /*
+  * Check if the array is sorted.
+  * Param array: The array which is to be checked
+  * Param order: Ascending/Decending order.
+  *              Acceptable values: asc, desc
+  */
+  isArraySorted: function(array, order){
+    // Remove invalid entries like ''
+    array = array.filter(function(item){
+      return item;
+    });
+    if(order == 'asc') {
+      for(var i = 0; i < array.length - 1; i++) {
+        if(array[i] > array[i + 1])
+          return false;
+      }
+    } else if (order == 'desc') {
+      for(var i = 0; i < array.length - 1; i++) {
+        if(array[i] < array[i + 1])
+          return false;
+      }
+    } else {
+      throw("Invalid value for argument 'order'. Allowed values - asc/desc ")
+    }
+    return true;
+  }
 };

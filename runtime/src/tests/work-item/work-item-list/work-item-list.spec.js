@@ -90,4 +90,30 @@ describe('Work item list', function () {
       page.clickInlineQuickAddCancel(WORK_ITEM_TITLE);
     });
   });
+
+  it('should support sorting WI by title', function() {
+    page.workItemTitleList.then(function(arr){
+      // By default the first 10 WI in mock data are sorted in ascending order
+      expect(testSupport.isArraySorted(arr, 'asc')).toBe(true);
+      expect(testSupport.isArraySorted(arr, 'desc')).toBe(false);
+    });
+    // Sort *all* workitems in ascending order
+    page.clickSortByTitle();
+    page.workItemTitleList.then(function(arr){
+      expect(testSupport.isArraySorted(arr, 'asc')).toBe(true);
+    });
+    // Sort *all* workitems in descending order
+    page.clickSortByTitle();
+    page.workItemTitleList.then(function(arr){
+      expect(testSupport.isArraySorted(arr, 'desc')).toBe(true);
+    });
+    // Create new WI, and check if sorting works
+    page.typeQuickAddWorkItemTitle('Test workitem');
+    page.clickQuickAddSave().then(function(){
+      page.clickSortByTitle();
+      page.workItemTitleList.then(function(arr){
+        expect(testSupport.isArraySorted(arr, 'asc')).toBe(true);
+      });
+    });
+  })
 });
