@@ -55,7 +55,7 @@ def buildImage(imageName){
 def buildStandalonePlannerImage(imageName){
     stage('build standalone snapshot image'){
         // dir('runtime'){
-            sh "cd fabric8-planner && docker build -t ${imageName} -f ./Dockerfile.deploy.runtime ."
+            sh "pwd && cd fabric8-planner && pwd && docker build -t ${imageName} -f ./Dockerfile.deploy.runtime ."
         // }
     }
 
