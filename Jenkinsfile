@@ -34,6 +34,7 @@ fabric8UITemplate{
                     // ciDeploy = true
 
                     // build planner
+                    imageName = "fabric8/fabric8-planner:standalone"
                     container('ui'){
                         tempVersion = pipeline.ciBuildPlannerProject(project)
                     }
