@@ -38,18 +38,18 @@ def ciBuildPlannerProject(project){
      stage('build planner npm'){
         sh 'pwd'
         sh 'npm install'
-        sh 'npm run build:prod'
-        sh 'npm pack dist/'
+        sh 'npm run build'
     }
 
     stage('build runtime npm'){
         dir('runtime'){
             sh 'pwd'
             sh 'npm install'
-            sh 'npm run build:prod'
-            sh 'npm pack dist/'
+            sh 'npm link ../dist/'
+            sh 'npm run build'
         }
     }
+
     imageName = "fabric8/fabric8-planner:standalone"
     stage('build standalone snapshot image'){
         sh 'pwd'
