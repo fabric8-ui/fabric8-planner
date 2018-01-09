@@ -38,7 +38,7 @@ def ciBuildPlannerProject(project){
      stage('build planner npm'){
         sh 'pwd'
         sh 'npm install'
-        sh 'npm run build'
+        sh 'npm run build:prod'
         sh 'npm pack dist/'
     }
 
@@ -46,7 +46,7 @@ def ciBuildPlannerProject(project){
         dir('runtime'){
             sh 'pwd'
             sh 'npm install'
-            sh 'npm run build'
+            sh 'npm run build:prod'
             sh 'npm pack dist/'
         }
     }
