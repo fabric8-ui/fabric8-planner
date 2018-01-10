@@ -1,0 +1,22 @@
+name: fabric8-planner
+containers:
+- image: "pgore/planner:standalone"
+  env:
+  - name: FORGE_URL
+    value: https://forge.api.prod-preview.openshift.io/
+  - name: FABRIC8_REALM
+    value: fabric8-test
+  - name: FABRIC8_WIT_API_URL
+    value: https://api.prod-preview.openshift.io/api/
+  - name: FABRIC8_SSO_API_URL
+    value: https://sso.prod-preview.openshift.io/
+  - name: FABRIC8_AUTH_API_URL
+    value: https://auth.prod-preview.openshift.io/api/
+  - name: PROXY_PASS_URL
+    value: https://api.free-int.openshift.com
+services:
+- name: planner
+  type: NodePort
+  ports:
+    - port: 8080
+      nodePort: 31200
