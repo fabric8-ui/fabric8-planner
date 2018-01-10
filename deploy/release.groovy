@@ -37,7 +37,7 @@ def ciBuildDownstreamProject(project){
 def ciBuildPlannerProject(project){
      stage('build planner npm'){
         sh 'pwd'
-        sh 'npm cache clean'
+        sh 'npm cache clean --force'
         sh 'npm install'
         sh 'npm run build'
     }
@@ -45,7 +45,7 @@ def ciBuildPlannerProject(project){
     stage('build runtime npm'){
         dir('runtime'){
             sh 'pwd'
-            sh 'npm cache clean'
+            sh 'npm cache clean --force'
             sh 'npm install'
             sh 'npm link ../dist/'
             sh '''

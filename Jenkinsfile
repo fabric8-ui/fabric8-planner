@@ -47,7 +47,7 @@ fabric8UITemplate{
                     // }
                     // sh "echo image building done"
 
-                    ciDeploy = true
+                    // ciDeploy = true
 
                 } else if (utils.isCD()){
                     sh "git checkout master"
