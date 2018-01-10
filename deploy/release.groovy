@@ -59,7 +59,7 @@ def ciBuildPlannerProject(project){
             sh 'npm install'
             // sh 'npm link ../dist/'
             sh 'env'
-            sh 'npm run build:prod'
+            sh 'npm run build'
         }
     }
 
