@@ -19,6 +19,8 @@ a.nav-link:hover {
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  border-bottom: solid 1px #c3c6c9;
+  border-radius: 0;
 }
 .jumbotron img {
   margin-right: 2rem;
@@ -114,10 +116,17 @@ footer {
   padding: 2rem 1rem;
   text-align: center;
   background: #e9ecef;
+  border-top: solid 1px #c3c6c9;
 }
 footer .footer-links {
   margin: 1rem;
   display: inline-block;
+}
+footer a {
+  color: #69c;
+}
+footer a:hover {
+  color: #468;
 }
 
 /* Responsive breakpoints */
