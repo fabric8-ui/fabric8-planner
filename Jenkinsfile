@@ -14,7 +14,7 @@ node{
 fabric8UITemplate{
     dockerNode{
         ws {
-            timeout(time: 10, unit: 'SECONDS') {
+            timeout(time: 10, unit: SECONDS) {
                 checkout scm
                 readTrusted 'deploy/release.groovy'
                 def pipeline = load 'deploy/release.groovy'
