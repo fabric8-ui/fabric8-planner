@@ -48,6 +48,7 @@ def ciBuildPlannerProject(project){
             export PROXY_PASS_URL=https://api.free-int.openshift.com
         '''
         sh 'npm install'
+        sh 'env'
         sh 'npm run build'
     }
 
@@ -57,6 +58,7 @@ def ciBuildPlannerProject(project){
             sh 'npm cache clean --force'
             sh 'npm install'
             // sh 'npm link ../dist/'
+            sh 'env'
             sh 'npm run build:prod'
         }
     }
