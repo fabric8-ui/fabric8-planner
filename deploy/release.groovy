@@ -36,9 +36,8 @@ def ciBuildDownstreamProject(project){
 
 def ciBuildPlannerProject(project){
      stage('build planner npm'){
-        sh 'pwd'
-        sh 'npm cache clean --force'
         sh '''
+            npm cache clean --force
             export API_URL=https://api.prod-preview.openshift.io/api/
             export FORGE_URL=https://forge.api.prod-preview.openshift.io/
             export FABRIC8_REALM=fabric8-test
@@ -46,10 +45,10 @@ def ciBuildPlannerProject(project){
             export FABRIC8_SSO_API_URL=https://sso.prod-preview.openshift.io/
             export FABRIC8_AUTH_API_URL=https://auth.prod-preview.openshift.io/api/
             export PROXY_PASS_URL=https://api.free-int.openshift.com
+            npm install
+            env
+            npm run build
         '''
-        sh 'npm install'
-        sh 'env'
-        sh 'npm run build'
     }
 
     stage('build runtime npm'){
@@ -59,7 +58,16 @@ def ciBuildPlannerProject(project){
             sh 'npm install'
             // sh 'npm link ../dist/'
             sh 'env'
-            sh 'npm run build'
+            sh '''
+                export API_URL=https://api.prod-preview.openshift.io/api/
+                export FORGE_URL=https://forge.api.prod-preview.openshift.io/
+                export FABRIC8_REALM=fabric8-test
+                export FABRIC8_WIT_API_URL=https://api.prod-preview.openshift.io/api/
+                export FABRIC8_SSO_API_URL=https://sso.prod-preview.openshift.io/
+                export FABRIC8_AUTH_API_URL=https://auth.prod-preview.openshift.io/api/
+                export PROXY_PASS_URL=https://api.free-int.openshift.com
+                npm run build
+            '''
         }
     }
 
