@@ -1109,9 +1109,11 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   onDetailPreview(id): void {
     event.stopPropagation();
-    this.workItemDataService.getItem(id).subscribe(workItem => {
-      this.router.navigateByUrl(this.router.url.split('/plan')[0] + '/plan/detail/' + workItem.id);
-    });
+    this.router.navigateByUrl(
+      this.router.url.split('plan')[0] + 'plan/detail/' + id,
+      { relativeTo: this.route }
+    );
+
   }
 
   tableWorkitem(workItems: WorkItem[], parentId: string | null = null): any {
