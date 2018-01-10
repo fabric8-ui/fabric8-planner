@@ -44,6 +44,8 @@ import {
 } from 'ngx-login-client';
 import { Space, Spaces } from 'ngx-fabric8-wit';
 
+import { EmptyStateConfig } from 'patternfly-ng';
+
 // import for column
 import { datatableColumn } from './datatable-config';
 
@@ -92,6 +94,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
   datatableWorkitems: any[] = [];
   columns: any[];
   isTableConfigOpen: boolean = false;
+  emptyStateConfig: any = {};
   workItems: WorkItem[] = [];
   prevWorkItemLength: number = 0;
   workItemTypes: WorkItemType[] = [];
@@ -185,6 +188,12 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
       let temp = this.cookieService.getCookie(datatableColumn.length)
       this.columns = temp.array;
     }
+
+    this.emptyStateConfig = {
+      iconStyleClass: 'pficon-warning-triangle-o',
+      info: 'There are no Work Items for your selected criteria',
+      title: 'No Work Items Available'
+    } as EmptyStateConfig;
   }
 
   ngAfterViewChecked() {
