@@ -57,7 +57,7 @@
     }
     &__settings {
       position: absolute;
-      top: 2px;
+      top: 10px;
       right: 15px;
       &-dropdown {
         width: 100%;
@@ -113,7 +113,7 @@
     }
     &__quick-add {
       position: absolute;
-      bottom: 0;
+      bottom: 10px;
     }
     &__quick-add-table {
       position: absolute;
@@ -203,8 +203,11 @@ button.btn.btn-link.dropdown-toggle:focus {
 /// ng x-datatables css
 
 
-.cell-overflow {
+.cell-class {
   overflow: visible !important;
+  padding-top: 3px !important;
+  padding-bottom: 4px !important;
+  line-height: 44px !important;
 }
 
 .header-cell{
@@ -292,4 +295,8 @@ a.quick-add-icon, .f8-action-icon {
     opacity: .4;
     cursor: not-allowed;
   }
+}
+.icon-loader {
+  margin-left: -4px;
+  margin-right: 6px;
 }
