@@ -1,6 +1,6 @@
 name: fabric8-planner
 containers:
-- image: "pgore/planner:standalone"
+- image: "fabric8/fabric8-planner:standalone"
   env:
   - name: FORGE_URL
     value: https://forge.api.prod-preview.openshift.io/
