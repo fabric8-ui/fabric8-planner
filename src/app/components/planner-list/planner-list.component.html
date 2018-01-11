@@ -37,7 +37,8 @@
     </a>
     <side-panel
       [sidePanelOpen]="sidePanelOpen"
-      [iterations]="iterations">
+      [iterations]="iterations"
+      [groupTypes]="groupTypes">
     </side-panel>
   </aside>
 </ng-template>
@@ -63,6 +64,7 @@
         <alm-work-item-quick-add
           [WITypes]="workItemTypes"
           [wilistview]="'wi-table-view-top'"
+          [quickAddContext]="quickAddContext"
           (close)="close($event)">
         </alm-work-item-quick-add>
       </div>
@@ -167,6 +169,9 @@
                     row?.type?.data?.relationships?.guidedChildTypes?.data
                   )"
                   [wilistview]="'wi-table-view'"
+                  [quickAddContext]="getChildWorkItemTypes(
+                    row?.type?.data?.relationships?.guidedChildTypes?.data
+                  )"
                   [parentWorkItemId]="row.id"
                   (close)="close($event)"
                   (workItemCreate)="onCreateWorkItemStart($event)">
