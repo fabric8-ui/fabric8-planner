@@ -1085,7 +1085,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
   }
 
   toggleExpandRow(row, quickAddEnabled = true) {
-    if (quickAddEnabled) {
+    if (quickAddEnabled && this.loggedIn) {
       const index = this.detailExpandedRows.findIndex(r => r.id === row.id);
       if (index > -1) {
         // For collapsing

@@ -181,7 +181,6 @@
           </ngx-datatable-row-detail>
           <!-- First Column -->
           <ngx-datatable-column
-              *ngIf="loggedIn"
               [width]="50"
               [resizeable]="false"
               [sortable]="false"
@@ -192,7 +191,7 @@
                   href="javascript:void(0)"
                   [class.pficon-add-circle-o]="!expanded"
                   [class.pficon-close]="expanded"
-                  [class.disabled]="!!!row?.type?.data?.relationships?.guidedChildTypes"
+                  [class.disabled]="!!!row?.type?.data?.relationships?.guidedChildTypes || !loggedIn"
                   (click)="toggleExpandRow(
                     row,
                     !!row?.type?.data?.relationships?.guidedChildTypes
