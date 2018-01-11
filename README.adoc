@@ -64,7 +64,7 @@ The following table lists some of the most useful or frequently used scripts and
 |Description
 
 |Clean
-|`$ npm run clean:all`
+|`$ npm run clean -- --all`
 |Cleans the project directory
 
 |Reinstall

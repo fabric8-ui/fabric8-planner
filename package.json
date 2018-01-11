@@ -7,13 +7,9 @@
   "typings": "index.d.ts",
   "scripts": {
     "build": "gulp build",
-    "build:library": "gulp build:library",
-    "watch:library": "gulp watch",
-    "clean:dist": "gulp clean:dist",
-    "clean:all": "gulp clean:all",
-    "reinstall": "rimraf node_modules && npm --force cache clean && npm install",
-    "test:unit": "gulp test:unit",
-    "semantic-release": "semantic-release pre && gulp build && cp -r .git dist && npm publish dist/ && semantic-release post"
+    "clean": "gulp clean",
+    "setup": "gulp setup",
+    "tests": "gulp tests"
   },
   "license": "Apache-2.0",
   "contributors": [

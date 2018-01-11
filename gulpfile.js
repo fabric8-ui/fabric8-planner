@@ -1,56 +1,71 @@
 
 /*
- * Main build file for fabric8-planner. Use the commands here to build and deploy
- * the library. See the commands below for detailed documentation.
+ * Main build file for fabric8-planner.
+ * ---
+ * Each main task has parametric handlers to achieve different result.
+ * Check out the sections for task variants & accepted task arguments.
  */
 
-var gulp = require('gulp'),
-  less = require('gulp-less'),
-  LessAutoprefix = require('less-plugin-autoprefix'),
-  autoprefix = new LessAutoprefix({ browsers: ['last 2 versions'] }),
-  lesshint = require('gulp-lesshint'),
-  concat = require('gulp-concat-css'),
-  del = require('del'),
-  replace = require('gulp-string-replace'),
-  sourcemaps = require('gulp-sourcemaps'),
-  cp = require('child_process'),
-  exec = require('gulp-exec'),
-  ngc = require('gulp-ngc'),
-  changed = require('gulp-changed'),
-  runSequence = require('run-sequence'),
-  argv = require('yargs').argv,
-  path = require('path'),
-  util = require('gulp-util'),
-  KarmaServer = require('karma').Server;
+// Require primitives
+var del = require('del')
+  , path = require('path')
+  , argv = require('yargs').argv
+  , process = require('child_process')
+  , runSequence = require('run-sequence')
+  ;
 
+// Require gulp extension modules
+var gulp = require('gulp')
+  , ngc = require('gulp-ngc')
+  , less = require('gulp-less')
+  , util = require('gulp-util')
+  , changed = require('gulp-changed')
+  , lesshint = require('gulp-lesshint')
+  , concat = require('gulp-concat-css')
+  , sourcemaps = require('gulp-sourcemaps')
+  , replace = require('gulp-string-replace')
+  ;
+
+// Requirements with special treatments
+var KarmaServer = require('karma').Server
+  , LessAutoprefix = require('less-plugin-autoprefix')
+  , autoprefix = new LessAutoprefix({ browsers: ['last 2 versions'] })
+  ;
+
+// Not sure if var or const
 var appSrc = 'src';
-var libraryDist = 'dist';
-var watchDist = 'dist-watch';
+var distPath = 'dist';
+var distWatch = 'watch';
 
 /*
- * FUNCTION LIBRARY
+ * Utility functions
  */
 
-// copies files to the libraryDist directory.
-function copyToDist(srcArr) {
+// Global namespace to contain the utility functions
+let utils = {};
+
+// Copy files to the distPath
+utils.copyToDist = function (srcArr) {
   return gulp.src(srcArr)
     .pipe(gulp.dest(function (file) {
-      return libraryDist + file.base.slice(__dirname.length + 'src/'.length); // save directly to dist
+      // Save directly to dist; @TODO: rethink the path evaluation strategy
+      return distPath + file.base.slice(__dirname.length + 'src/'.length);
     }));
 }
 
-// copies files from the libraryDist to the watchDist.
-function updateWatchDist() {
+// Copy files from the distPath to the distWatch.
+utils.updateDistWatch = function () {
   return gulp
-    .src(libraryDist + '/**')
-    .pipe(changed(watchDist))
-    .pipe(gulp.dest(watchDist));
+    .src(distPath + '/**')
+    .pipe(changed(distWatch))
+    .pipe(gulp.dest(distWatch));
 }
 
-// transpiles a given LESS source set to CSS, storing results to libraryDist.
-function transpileLESS(src, debug) {
+// Transpile given LESS source(s) to CSS, storing results to distPath.
+utils.transpileLESS = function (src, debug) {
   var opts = {
-   // paths: [ path.join(__dirname, 'less', 'includes') ], //THIS NEEDED FOR REFERENCE
+    // THIS IS NEEDED FOR REFERENCE
+    // paths: [ path.join(__dirname, 'less', 'includes') ]
   }
   return gulp.src(src)
     .pipe(less({
@@ -66,33 +81,101 @@ function transpileLESS(src, debug) {
     //.pipe(concat('styles.css'))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest(function (file) {
-      return libraryDist + file.base.slice(__dirname.length + 'src/'.length);
+      return distPath + file.base.slice(__dirname.length + 'src/'.length);
   }));
- }
+}
 
 /*
- * TASKS
+ * Global namespace to contain reusable routines
  */
 
-// Deletes dist directories.
-gulp.task('clean:dist', function () {
-  return del([
-    'dist-watch',
-    'dist'
-  ]);
+let mach = {};
+
+
+/*
+ * Task declarations
+ */
+
+// Clean
+gulp.task('build', function () {
+
+  // app (default)
+
+  // image
+
+  // release
+
+  // tarball
+
+  // validate
+
+  // watch
+
 });
 
-// Deletes npm cache.
-gulp.task('clean:npmcache', function () {
-  return cp.execFile('npm cache clean');
-});
+// Clean
+gulp.task('clean', function () {
 
-// Deletes and cleans all.
-gulp.task('clean:all', ['clean:dist', 'clean:npmcache'], function () {
-  return del([
-    'node_modules',
-    'coverage'
-  ]);
+  // all (default): set flags to validate following conditional cleanups
+  if (
+    !argv.cache &&
+    !argv.config &&
+    !argv.dist &&
+    !argv.images &&
+    !argv.modules &&
+    !argv.temp) {
+      // if none of the known sub-task parameters for `clean` was provided
+      // i.e. only `gulp clean` was called, then set default --all flag ON
+      console.log(argv.all);
+      argv.all = true;
+      console.log(argv.all);
+  }
+
+  if (argv.all) {
+    // Exclusively set all subroutine parameters ON for `gulp clean --all`
+    argv.cache = argv.config = argv.dist = argv.images = argv.modules = argv.temp = true;
+  }
+
+  // cache
+  if (argv.cache) process.exec('npm cache clean');
+
+  // config
+  // if (argv.config) { subroutine to clean config - not yet needed }
+
+  // dist
+  if (argv.dist) del([distPath, distWatch]);
+
+  // images
+  if (argv.images) {
+    // Get ID of the images having 'fabric8-planner' in its name
+    process.exec('sudo docker ps -aq --filter "name=fabric8-planner"', function (e, containerID) {
+      if (e) {
+        console.log(e);
+        return;
+      }
+
+      // @TODO: wrap this in a try-catch block to avoid unexpected behavior
+      process.exec('sudo docker stop ' + containerID);
+      process.exec('sudo docker rm '   + containerID);
+
+      // Container has been killed, safe to remove image(s) with 'fabric8-planner-*' as part of their ref
+      process.exec('sudo docker images -aq --filter "reference=fabric8-planner-*"', function (e, imageID) {
+        if (e) {
+          console.log(e);
+          return;
+        }
+
+        // @TODO: wrap this in a try-catch block to avoid unexpected behavior
+        process.exec('sudo docker rmi ' + imageID);
+      });
+    });
+  }
+
+  // modules
+  if (argv.modules) del(['node_modules']);
+
+  // temp
+  if (argv.temp) del(['tmp', 'coverage', 'typings', '.sass-cache']);
 });
 
 // Deletes and re-installs dependencies.
@@ -121,9 +204,9 @@ gulp.task('post-transpile', ['transpile'], function () {
     }));
 });
 
-// Transpile and minify less, storing results in libraryDist.
+// Transpile and minify less, storing results in distPath.
 gulp.task('transpile-less', function () {
-  return transpileLESS(appSrc + '/**/*.less');
+  return utils.transpileLESS(appSrc + '/**/*.less');
 });
 
 // transpiles the ts sources to js using the tsconfig.
@@ -131,20 +214,20 @@ gulp.task('transpile', function () {
   return ngc('tsconfig.json')
 });
 
-// copies the template html files to libraryDist.
+// copies the template html files to distPath.
 gulp.task('copy-html', function () {
-  return copyToDist([
+  return utils.copyToDist([
     'src/**/*.html'
   ]);
 });
 
-// copies the static asset files to libraryDist.
+// copies the static asset files to distPath.
 gulp.task('copy-static-assets', function () {
   return gulp.src([
     'LICENSE',
     'README.adoc',
     'package.json',
-  ]).pipe(gulp.dest(libraryDist));
+  ]).pipe(gulp.dest(distPath));
 });
 
 // Put the less files back to normal
@@ -167,11 +250,11 @@ gulp.task('build', function(callback) {
 // Watch Tasks follow.
 
 gulp.task('copy-watch', ['post-transpile'], function () {
-  return updateWatchDist();
+  return utils.updateDistWatch();
 });
 
 gulp.task('copy-watch-all', ['build:library'], function () {
-  return updateWatchDist();
+  return utils.updateDistWatch();
 });
 
 gulp.task('watch', ['build:library', 'copy-watch-all'], function () {
@@ -180,17 +263,17 @@ gulp.task('watch', ['build:library', 'copy-watch-all'], function () {
   });
   gulp.watch([appSrc + '/app/**/*.less']).on('change', function (e) {
     util.log(util.colors.cyan(e.path) + ' has been changed. Updating.');
-    transpileLESS(e.path);
-    updateWatchDist();
+    utils.transpileLESS(e.path);
+    utils.updateDistWatch();
   });
   gulp.watch([appSrc + '/app/**/*.html']).on('change', function (e) {
     util.log(util.colors.cyan(e.path) + ' has been changed. Updating.');
-    copyToDist(e.path);
-    updateWatchDist();
+    utils.copyToDist(e.path);
+    utils.updateDistWatch();
   });
   util.log('Now run');
   util.log('');
-  util.log(util.colors.red('    npm link', path.resolve(watchDist)));
+  util.log(util.colors.red('    npm link', path.resolve(distWatch)));
   util.log('');
   util.log('in the npm module you want to link this one to');
 });
