@@ -20,33 +20,62 @@ fabric8UITemplate{
                 def pipeline = load 'deploy/release.groovy'
                 if (utils.isCI()){
 
-                    // pipeline.ci()
-
-                    // container('ui'){
-                    //     tempVersion = pipeline.ciBuildDownstreamProject(project)
-                    // }
-
-                    // imageName = "fabric8/fabric8-ui:${tempVersion}"
-                    // container('docker'){
-                    //     pipeline.buildImage(imageName)
-                    // }
-
-                    // ciDeploy = true
-
-                    // build planner
+                    // build standalone planner
                     imageName = "fabric8/fabric8-planner:standalone"
-                    container('ui'){
-                        tempVersion = pipeline.ciBuildPlannerProject(project)
+                    // container('ui'){
+                    //     tempVersion = pipeline.ciBuildPlannerProject(project)
+                    // }
+
+                    stage('build planner npm'){
+                        sh '''
+                            npm cache clean --force
+                            export API_URL=https://api.prod-preview.openshift.io/api/
+                            export FORGE_URL=https://forge.api.prod-preview.openshift.io/
+                            export FABRIC8_REALM=fabric8-test
+                            export FABRIC8_WIT_API_URL=https://api.prod-preview.openshift.io/api/
+                            export FABRIC8_SSO_API_URL=https://sso.prod-preview.openshift.io/
+                            export FABRIC8_AUTH_API_URL=https://auth.prod-preview.openshift.io/api/
+                            export PROXY_PASS_URL=https://api.free-int.openshift.com
+                            npm install
+                            env
+                            npm run build
+                        '''
                     }
 
-                    // create image for standalone
-                    // imageName = "fabric8/fabric8-planner:standalone"
-                    // sh "echo building standalone image now"
-                    // container('docker') {
-                    //     pipeline.buildStandalonePlannerImage(imageName)
-                    // }
-                    // sh "echo image building done"
+                    stage('build runtime npm'){
+                        dir('runtime'){
+                            sh 'pwd'
+                            sh 'npm cache clean --force'
+                            sh 'npm install'
+                            // sh 'npm link ../dist/'
+                            sh 'env'
+                            sh '''
+                                export API_URL=https://api.prod-preview.openshift.io/api/
+                                export FORGE_URL=https://forge.api.prod-preview.openshift.io/
+                                export FABRIC8_REALM=fabric8-test
+                                export FABRIC8_WIT_API_URL=https://api.prod-preview.openshift.io/api/
+                                export FABRIC8_SSO_API_URL=https://sso.prod-preview.openshift.io/
+                                export FABRIC8_AUTH_API_URL=https://auth.prod-preview.openshift.io/api/
+                                export PROXY_PASS_URL=https://api.free-int.openshift.com
+                                npm run build
+                            '''
+                        }
+                    }
 
+                    imageName = "fabric8/fabric8-planner:standalone"
+                    stage('build standalone snapshot image'){
+                        container('docker'){
+                            sh 'pwd'
+                            sh "docker build -t ${imageName} -f ./Dockerfile.deploy.runtime ."
+                        }
+                    }
+
+                    stage('push standalone snapshot image'){
+                        container('docker'){
+                            sh 'pwd'
+                            sh "docker push ${imageName}"
+                        }
+                    }
                     // ciDeploy = true
 
                 } else if (utils.isCD()){
