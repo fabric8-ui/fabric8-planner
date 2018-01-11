@@ -41,11 +41,11 @@ var distWatch = 'watch';
  * Utility functions
  */
 
-// Global namespace to contain the utility functions
-let utils = {};
+// Global namespace to contain the reusable utility routines
+let mach = {};
 
 // Copy files to the distPath
-utils.copyToDist = function (srcArr) {
+mach.copyToDist = function (srcArr) {
   return gulp.src(srcArr)
     .pipe(gulp.dest(function (file) {
       // Save directly to dist; @TODO: rethink the path evaluation strategy
@@ -54,15 +54,31 @@ utils.copyToDist = function (srcArr) {
 }
 
 // Copy files from the distPath to the distWatch.
-utils.updateDistWatch = function () {
+mach.updateDistWatch = function () {
   return gulp
     .src(distPath + '/**')
     .pipe(changed(distWatch))
     .pipe(gulp.dest(distWatch));
 }
 
+// Transpile TypeScript source(s) to JS, storing results to distPath.
+mach.transpileTS = function () {
+  ngc('tsconfig.json');
+
+  // FIXME: why do we need that?
+  // Replace templateURL/styleURL with require statements in js.
+  gulp.src(['dist/app/**/*.js'])
+  .pipe(replace(/templateUrl:\s/g, "template: require("))
+  .pipe(replace(/\.html',/g, ".html'),"))
+  .pipe(replace(/styleUrls: \[/g, "styles: [require("))
+  .pipe(replace(/\.less']/g, ".css').toString()]"))
+  .pipe(gulp.dest(function (file) {
+    return file.base; // because of Angular 2's encapsulation, it's natural to save the css where the less-file was
+  }));
+}
+
 // Transpile given LESS source(s) to CSS, storing results to distPath.
-utils.transpileLESS = function (src, debug) {
+mach.transpileLESS = function (src, debug) {
   var opts = {
     // THIS IS NEEDED FOR REFERENCE
     // paths: [ path.join(__dirname, 'less', 'includes') ]
@@ -86,20 +102,17 @@ utils.transpileLESS = function (src, debug) {
 }
 
 /*
- * Global namespace to contain reusable routines
- */
-
-let mach = {};
-
-
-/*
  * Task declarations
  */
 
-// Clean
+// Build
 gulp.task('build', function () {
 
   // app (default)
+  mach.transpileTS(); // Transpile ts sources to js using the tsconfig
+  mach.transpileLESS(appSrc + '/**/*.less'); // Transpile and minify less, storing results in distPath.
+  mach.copyToDist(['src/**/*.html']); // Copy template html files to distPath
+  gulp.src(['LICENSE', 'README.adoc', 'package.json']).pipe(gulp.dest(distPath)); // Copy static assets to distPath
 
   // image
 
@@ -110,6 +123,29 @@ gulp.task('build', function () {
   // validate
 
   // watch
+  if (argv.watch) {
+    gulp.watch([appSrc + '/app/**/*.ts', '!' + appSrc + '/app/**/*.spec.ts']).on('change', function (e) {
+      util.log(util.colors.cyan(e.path) + ' has been changed. Compiling TypeScript.');
+      mach.transpileTS();
+      mach.updateDistWatch();
+    });
+    gulp.watch([appSrc + '/app/**/*.less']).on('change', function (e) {
+      util.log(util.colors.cyan(e.path) + ' has been changed. Compiling LESS.');
+      mach.transpileLESS(e.path);
+      mach.updateDistWatch();
+    });
+    gulp.watch([appSrc + '/app/**/*.html']).on('change', function (e) {
+      util.log(util.colors.cyan(e.path) + ' has been changed. Compiling HTML.');
+      mach.copyToDist(e.path);
+      mach.updateDistWatch();
+    });
+    util.log('Now run');
+    util.log('');
+    util.log(util.colors.red('    npm link', path.resolve(distWatch)));
+    util.log('');
+    util.log('in the npm module you want to link this one to');
+    mach.updateDistWatch();
+  }
 
 });
 
@@ -189,91 +225,4 @@ gulp.task('test:unit', function (done) {
     configFile: __dirname + '/karma.conf.js',
     singleRun: true
   }, done).start();
-});
-
-// FIXME: why do we need that?
-// replaces templateURL/styleURL with require statements in js.
-gulp.task('post-transpile', ['transpile'], function () {
-  return gulp.src(['dist/app/**/*.js'])
-    .pipe(replace(/templateUrl:\s/g, "template: require("))
-    .pipe(replace(/\.html',/g, ".html'),"))
-    .pipe(replace(/styleUrls: \[/g, "styles: [require("))
-    .pipe(replace(/\.less']/g, ".css').toString()]"))
-    .pipe(gulp.dest(function (file) {
-      return file.base; // because of Angular 2's encapsulation, it's natural to save the css where the less-file was
-    }));
-});
-
-// Transpile and minify less, storing results in distPath.
-gulp.task('transpile-less', function () {
-  return utils.transpileLESS(appSrc + '/**/*.less');
-});
-
-// transpiles the ts sources to js using the tsconfig.
-gulp.task('transpile', function () {
-  return ngc('tsconfig.json')
-});
-
-// copies the template html files to distPath.
-gulp.task('copy-html', function () {
-  return utils.copyToDist([
-    'src/**/*.html'
-  ]);
-});
-
-// copies the static asset files to distPath.
-gulp.task('copy-static-assets', function () {
-  return gulp.src([
-    'LICENSE',
-    'README.adoc',
-    'package.json',
-  ]).pipe(gulp.dest(distPath));
-});
-
-// Put the less files back to normal
-gulp.task('build:library',
-  [
-    'transpile',
-    'post-transpile',
-    'transpile-less',
-    'copy-html',
-    'copy-static-assets'
-  ]);
-
-// Main build goal, builds the release library.
-gulp.task('build', function(callback) {
-  runSequence('clean:dist',
-              'build:library',
-              callback);
-});
-
-// Watch Tasks follow.
-
-gulp.task('copy-watch', ['post-transpile'], function () {
-  return utils.updateDistWatch();
-});
-
-gulp.task('copy-watch-all', ['build:library'], function () {
-  return utils.updateDistWatch();
-});
-
-gulp.task('watch', ['build:library', 'copy-watch-all'], function () {
-  gulp.watch([appSrc + '/app/**/*.ts', '!' + appSrc + '/app/**/*.spec.ts'], ['transpile', 'post-transpile', 'copy-watch']).on('change', function (e) {
-    util.log(util.colors.cyan(e.path) + ' has been changed. Compiling.');
-  });
-  gulp.watch([appSrc + '/app/**/*.less']).on('change', function (e) {
-    util.log(util.colors.cyan(e.path) + ' has been changed. Updating.');
-    utils.transpileLESS(e.path);
-    utils.updateDistWatch();
-  });
-  gulp.watch([appSrc + '/app/**/*.html']).on('change', function (e) {
-    util.log(util.colors.cyan(e.path) + ' has been changed. Updating.');
-    utils.copyToDist(e.path);
-    utils.updateDistWatch();
-  });
-  util.log('Now run');
-  util.log('');
-  util.log(util.colors.red('    npm link', path.resolve(distWatch)));
-  util.log('');
-  util.log('in the npm module you want to link this one to');
 });
