@@ -77,7 +77,7 @@ fabric8UITemplate{
                             }
                         }
                     }
-                    // ciDeploy = true
+                    ciDeploy = true
 
                 } else if (utils.isCD()){
                     sh "git checkout master"
