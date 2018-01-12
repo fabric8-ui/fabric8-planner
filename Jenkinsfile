@@ -146,7 +146,7 @@ if (ciDeploy){
             prj = prj.toLowerCase()
             stage("deploy ${prj}"){
                 route = deployPlannerSnapshot{
-                    mavenRepo = 'https://github.com/pranavgore09/fabric8-pipeline-library/blob/standalone-planner/planner-openshift.yml'
+                    mavenRepo = 'https://raw.githubusercontent.com/pranavgore09/fabric8-pipeline-library/standalone-planner/planner-openshift.yml'
                     githubRepo = 'fabric8-planner'
                     originalImageName = 'fabric8/fabric8-planner@sha256:3ec108c095febe1fb5d54d27e595f38408736c2e0ab37bba26cf138f5674d861'
                     newImageName = imageName
