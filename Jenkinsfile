@@ -37,7 +37,6 @@ fabric8UITemplate{
                                 export FABRIC8_AUTH_API_URL=https://auth.prod-preview.openshift.io/api/
                                 export PROXY_PASS_URL=https://api.free-int.openshift.com
                                 npm install
-                                env
                                 npm run build
                             '''
                         }
@@ -48,7 +47,6 @@ fabric8UITemplate{
                                 sh 'npm cache clean --force'
                                 sh 'npm install'
                                 // sh 'npm link ../dist/'
-                                sh 'env'
                                 sh '''
                                     export API_URL=https://api.prod-preview.openshift.io/api/
                                     export FORGE_URL=https://forge.api.prod-preview.openshift.io/
@@ -146,10 +144,10 @@ if (ciDeploy){
         prj = 'fabric8-planner-'+ env.BRANCH_NAME
         prj = prj.toLowerCase()
         stage("deploy ${prj}"){
-           route = deployOpenShiftSnapshot{
-               mavenRepo = 'http://central.maven.org/maven2/io/fabric8/online/apps/fabric8-planner'
+           route = deployPlannerSnapshot{
+               mavenRepo = 'https://github.com/pranavgore09/fabric8-pipeline-library/blob/standalone-planner/planner-openshift.yml'
                githubRepo = 'fabric8-planner'
-               originalImageName = 'docker.io/almightyui/almighty-ui:demo'
+               originalImageName = 'fabric8/fabric8-planner@sha256:3ec108c095febe1fb5d54d27e595f38408736c2e0ab37bba26cf138f5674d861'
                newImageName = imageName
                openShiftProject = prj
                githubProject = project
