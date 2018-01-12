@@ -28,7 +28,6 @@ describe('Work item list', function () {
 
   /* User can read, update, remove assignee on a workitem  */
   it('User can read, update, remove assignee', function() {
-    page.clickWorkItemQuickAdd();
     page.typeQuickAddWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
     page.clickQuickAddSave().then(function() {
       var detailPage = page.clickWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
@@ -51,7 +50,6 @@ describe('Work item list', function () {
   /* Create a new workitem, fill in the details, save, retrieve, update, save, verify updates are saved */
   it('should find and update the workitem through its detail page', function() {
     /* Create a new workitem */
-    page.clickWorkItemQuickAdd();
     page.typeQuickAddWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_2);
     page.clickQuickAddSave().then(function() {
       /* Fill in/update the new work item's title and details field */
