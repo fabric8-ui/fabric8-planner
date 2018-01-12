@@ -1,6 +1,6 @@
 #!/usr/bin/groovy
 def ci (){
-    stage('build planner npm'){
+    stage('Setup & Build'){
         container('ui'){
             sh '''
             npm cache clean --force
@@ -11,13 +11,13 @@ def ci (){
         }
     }
 
-    stage('unit test'){
+    stage('Unit Tests'){
         container('ui'){
-            sh 'npm run test:unit'
+            sh 'npm run tests -- --unit'
         }
     }
 
-    stage('func test'){
+    stage('Functional Tests'){
         dir('runtime'){
             container('ui'){
                 sh '''
@@ -32,7 +32,7 @@ def ci (){
 }
 
 def ciBuildDownstreamProject(project){
-    stage('build fabric8-ui npm'){
+    stage('Build fabric8-ui'){
         return buildSnapshotFabric8UI{
             pullRequestProject = project
         }
@@ -40,30 +40,27 @@ def ciBuildDownstreamProject(project){
 }
 
 def buildImage(imageName){
-    stage('build snapshot image'){
+    stage('Snapshot Image'){
         sh "cd fabric8-ui && docker build -t ${imageName} -f Dockerfile.deploy ."
-    }
-
-    stage('push snapshot image'){
         sh "cd fabric8-ui && docker push ${imageName}"
     }
 }
 
 def cd (b){
-    stage('fix git repo'){
+    stage('Repo Fix'){
         sh './scripts/fix-git-repo.sh'
     }
 
-    stage('build'){
+    stage('Setup & Build'){
         sh 'npm install'
         sh 'npm run build'
     }
 
-    stage('unit test'){
-        sh 'npm run test:unit'
+    stage('Unit Tests'){
+        sh 'npm run tests -- --unit'
     }
 
-    stage('func test'){
+    stage('Functional Tests'){
         dir('runtime'){
             container('ui'){
                 sh '''
@@ -76,7 +73,7 @@ def cd (b){
         }
     }
 
-    stage('release'){
+    stage('Release'){
         def published = npmRelease{
             branch = b
         }

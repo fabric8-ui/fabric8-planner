@@ -7,34 +7,34 @@
  */
 
 // Require primitives
-var del = require('del')
+var del  = require('del')
   , path = require('path')
   , argv = require('yargs').argv
-  , process = require('child_process')
-  , runSequence = require('run-sequence')
+  , proc = require('child_process')
   ;
 
-// Require gulp extension modules
+// Require gulp & its extension modules
 var gulp = require('gulp')
-  , ngc = require('gulp-ngc')
+  , ngc  = require('gulp-ngc')
   , less = require('gulp-less')
   , util = require('gulp-util')
-  , changed = require('gulp-changed')
-  , lesshint = require('gulp-lesshint')
-  , concat = require('gulp-concat-css')
-  , sourcemaps = require('gulp-sourcemaps')
-  , replace = require('gulp-string-replace')
+
+  , changed   = require('gulp-changed')
+  , lesshint  = require('gulp-lesshint')
+  , concat    = require('gulp-concat-css')
+  , srcmaps   = require('gulp-sourcemaps')
+  , replace   = require('gulp-string-replace')
   ;
 
 // Requirements with special treatments
-var KarmaServer = require('karma').Server
-  , LessAutoprefix = require('less-plugin-autoprefix')
-  , autoprefix = new LessAutoprefix({ browsers: ['last 2 versions'] })
+var KarmaServer     = require('karma').Server
+  , LessAutoprefix  = require('less-plugin-autoprefix')
+  , autoprefix      = new LessAutoprefix({ browsers: ['last 2 versions'] })
   ;
 
 // Not sure if var or const
-var appSrc = 'src';
-var distPath = 'dist';
+var appSrc    = 'src';
+var distPath  = 'dist';
 var distWatch = 'watch';
 
 /*
@@ -92,10 +92,10 @@ mach.transpileLESS = function (src, debug) {
     }))
     .pipe(lesshint.reporter()) // Leave empty to use the default, "stylish"
     .pipe(lesshint.failOnError()) // Use this to fail the task on lint errors
-    .pipe(sourcemaps.init())
+    .pipe(srcmaps.init())
     .pipe(less(opts))
     //.pipe(concat('styles.css'))
-    .pipe(sourcemaps.write())
+    .pipe(srcmaps.write())
     .pipe(gulp.dest(function (file) {
       return distPath + file.base.slice(__dirname.length + 'src/'.length);
   }));
@@ -109,7 +109,7 @@ mach.transpileLESS = function (src, debug) {
 gulp.task('build', function () {
 
   // app (default)
-  mach.transpileTS(); // Transpile ts sources to js using the tsconfig
+  mach.transpileTS(); // Transpile *.ts sources to *.js using the tsconfig
   mach.transpileLESS(appSrc + '/**/*.less'); // Transpile and minify less, storing results in distPath.
   mach.copyToDist(['src/**/*.html']); // Copy template html files to distPath
   gulp.src(['LICENSE', 'README.adoc', 'package.json']).pipe(gulp.dest(distPath)); // Copy static assets to distPath
@@ -173,7 +173,7 @@ gulp.task('clean', function () {
   }
 
   // cache
-  if (argv.cache) process.exec('npm cache clean');
+  if (argv.cache) proc.exec('npm cache clean');
 
   // config
   // if (argv.config) { subroutine to clean config - not yet needed }
@@ -184,25 +184,25 @@ gulp.task('clean', function () {
   // images
   if (argv.images) {
     // Get ID of the images having 'fabric8-planner' in its name
-    process.exec('sudo docker ps -aq --filter "name=fabric8-planner"', function (e, containerID) {
+    proc.exec('sudo docker ps -aq --filter "name=fabric8-planner"', function (e, containerID) {
       if (e) {
         console.log(e);
         return;
       }
 
       // @TODO: wrap this in a try-catch block to avoid unexpected behavior
-      process.exec('sudo docker stop ' + containerID);
-      process.exec('sudo docker rm '   + containerID);
+      proc.exec('sudo docker stop ' + containerID);
+      proc.exec('sudo docker rm '   + containerID);
 
       // Container has been killed, safe to remove image(s) with 'fabric8-planner-*' as part of their ref
-      process.exec('sudo docker images -aq --filter "reference=fabric8-planner-*"', function (e, imageID) {
+      proc.exec('sudo docker images -aq --filter "reference=fabric8-planner-*"', function (e, imageID) {
         if (e) {
           console.log(e);
           return;
         }
 
         // @TODO: wrap this in a try-catch block to avoid unexpected behavior
-        process.exec('sudo docker rmi ' + imageID);
+        proc.exec('sudo docker rmi ' + imageID);
       });
     });
   }
@@ -214,15 +214,21 @@ gulp.task('clean', function () {
   if (argv.temp) del(['tmp', 'coverage', 'typings', '.sass-cache']);
 });
 
-// Deletes and re-installs dependencies.
-gulp.task('reinstall', ['clean:all'], function () {
-  return cp.execFile('npm install');
-});
+// Test
+gulp.task('tests', function () {
 
-// Run unit tests.
-gulp.task('test:unit', function (done) {
-  new KarmaServer({
-    configFile: __dirname + '/karma.conf.js',
-    singleRun: true
-  }, done).start();
+  // unit
+  if (argv.unit) {
+    new KarmaServer({
+      configFile: __dirname + '/karma.conf.js',
+      singleRun: true
+    }, function (code) {
+      process.exit(code);
+    }).start();
+  }
+
+  // func
+  if (argv.unit) {
+    // subroutine to run functional tests
+  }
 });
