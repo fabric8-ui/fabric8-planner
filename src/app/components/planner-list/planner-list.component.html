@@ -56,8 +56,8 @@
       </toolbar-panel>
     </div>
     <!-- tableConfig Dropdown -->
-    <div class="col-md-12" style="height: 50px;">
-        <div class="f8-wi-list__quick-add width-100 pull-left"
+    <div class="width-100 pull-left padding-10 posRel">
+      <div class="f8-wi-list__quick-add width-100 pull-left"
         id="workItemList_up_quickAdd"
         *ngIf="loggedIn"
         #quickaddHeight>
@@ -68,7 +68,7 @@
           (close)="close($event)">
         </alm-work-item-quick-add>
       </div>
-        <div class="f8-wi-list__settings planner-hack-dropdown">
+      <div class="f8-wi-list__settings planner-hack-dropdown">
             <div class="dropdown-kebab-pf pull-right dropdown margin-left-10"
                   dropdown
                   [autoClose]="false"
@@ -297,7 +297,7 @@
                   </li>
                 </ul>
               </div>
-              <div class="pull-right margin-right-15 padding-top-2" 
+              <div class="pull-right margin-right-15 padding-top-2"
                 placement="left">
                 <a class="fa fa-columns f8-action-icon pointer"
                   (click)="onPreview(row['id'])">
@@ -306,8 +306,8 @@
             </ng-template>
           </ngx-datatable-column>
         </ngx-datatable>
-        <pfng-empty-state 
-          *ngIf="datatableWorkitems?.length <= 0 && !uiLockedList" 
+        <pfng-empty-state
+          *ngIf="datatableWorkitems?.length <= 0 && !uiLockedList"
           [config]="emptyStateConfig"></pfng-empty-state>
         <div class="lock-overlay-list"
           *ngIf="uiLockedList">
