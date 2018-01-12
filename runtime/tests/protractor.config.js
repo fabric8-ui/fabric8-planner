@@ -10,8 +10,8 @@ function validate_config(){
     process.env.SPACE_NAME || throwErr("SPACE_NAME variable not set");
     process.env.USER || throwErr("USER variable not set")
     process.env.USER_FULLNAME || throwErr("USER_FULLNAME variable not set")
-    process.env.AUTH_TOKEN ||throwErr("AUTH_TOKEN variable not set");
-    process.env.REFRESH_TOKEN || throwErr("REFRESH_TOKEN variable not set");
+    process.env.TOKEN || throwErr("TOKEN (Auth token) variable not set");
+    process.env.OFFLINE_TOKEN || throwErr("OFFLINE_TOKEN (Refresh token) variable not set");
   }
 }
 
@@ -71,10 +71,9 @@ exports.config = {
         global.PLANNER_URL = browser.baseUrl + '/' + process.env.USER + '/' + process.env.SPACE_NAME + '/plan';
       }
       token = encodeURIComponent(JSON.stringify({
-        access_token: process.env.AUTH_TOKEN || "somerandomtoken",
+        access_token: process.env.TOKEN  || "somerandomtoken",
         expires_in: 1800,
-        refresh_expires_in: 1800,
-        refresh_token: process.env.REFRESH_TOKEN || "somerandomtoken",
+        refresh_token: process.env.OFFLINE_TOKEN || "somerandomtoken",
         token_type: "bearer"
       }));
       // Bypass login by supplying auth and refresh token
