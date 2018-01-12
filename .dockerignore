@@ -1,3 +1,5 @@
-node_modules
+# Exclude files and directories whose names start with node_modules in any
+# immediate subdirectory of the base project. see https://docs.docker.com/engine/reference/builder/#dockerignore-file
+*/node_modules*
 *~
 *.swp
