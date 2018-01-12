@@ -6,10 +6,10 @@ function validate_config(){
     // Mysteriously, NODE_ENV is set to "test". NODE_ENV should not have been set to "test"
     // Unset NODE_ENV variable.
     process.env.NODE_ENV = '';
-
+    console.log(process.env)
     process.env.SPACE_NAME || throwErr("SPACE_NAME variable not set");
     process.env.USER || throwErr("USER variable not set")
-    process.env.FULL_NAME || throwErr("FULL_NAME variable not set")
+    process.env.USER_FULLNAME || throwErr("USER_FULLNAME variable not set")
     process.env.AUTH_TOKEN ||throwErr("AUTH_TOKEN variable not set");
     process.env.REFRESH_TOKEN || throwErr("REFRESH_TOKEN variable not set");
   }

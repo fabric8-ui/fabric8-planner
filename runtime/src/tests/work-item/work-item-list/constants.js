@@ -66,5 +66,5 @@ if(process.env.NODE_ENV == "inmemory") {
     define("LINK_TYPE", "is related to");
     define("USER_IMAGE", "https://www.gravatar.com/avatar/6c96128e82945d7f89ff253c1bfd5353.jpg&s=20");
     define("COMMENT_1", "Comment # 2")
-    define("EXAMPLE_USER", process.env.FULL_NAME);
+    define("EXAMPLE_USER", process.env.USER_FULLNAME);
 }
