@@ -19,17 +19,15 @@ var WorkItemListPage = require('./page-objects/work-item-list.page'),
   constants = require('./constants');
 
 describe('Link item ', function () {
-  var page, items, browserMode;
-  var until = protractor.ExpectedConditions;
+  var page, until = protractor.ExpectedConditions;
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);
-    testSupport.setTestSpace(page);
+    page = new WorkItemListPage()
   });
 
   it('Create a link item planner to planner - Desktop', function () {
-    var detailPage = page.clickWorkItemTitle("Title Text 2");
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE_2);
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
 
@@ -37,35 +35,35 @@ describe('Link item ', function () {
     detailPage.linkItemHeaderCaret().click();
     detailPage.clickCreateLinkButton();
     detailPage.clickLinkDropDown();
-    detailPage.linkTypeDropDownListString("tests").click();
+    detailPage.linkTypeDropDownListString(constants.LINK_TYPE).click();
 
-    detailPage.setSearchLinkItem("id0");
+    detailPage.setSearchLinkItem(constants.WORK_ITEM_TITLE_1);
     detailPage.clickOnLinkBind();
-    expect(detailPage.linkTitle()).toBe('Title Text 0');
+    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE_1);
     expect(detailPage.linkclose("0").isPresent()).toBe(true);
     expect(detailPage.linkTotalByTypes()).toBe("1");
    });
 
   it('Read a link item - Desktop', function () {
-    var detailPage = page.clickWorkItemTitle("Title Text 0");
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE_1);
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
 
     browser.wait(until.elementToBeClickable(detailPage.linkItemHeaderCaret()), constants.WAIT, 'Link icon is not clickable');
     detailPage.linkItemHeaderCaret().click();
-    expect(detailPage.linkTitle()).toBe('Title Text 1');
+    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE);
     expect(detailPage.linkItemTotalCount().getText()).toBe('1');
     expect(detailPage.linkclose("0").isPresent()).toBe(true);
    });
 
   it('Delete link and check if it exists in list or not - Desktop', function () {
-    var detailPage = page.clickWorkItemTitle("Title Text 0");
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE_1);
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
 
     browser.wait(until.elementToBeClickable(detailPage.linkItemHeaderCaret()), constants.WAIT, 'Link icon is not clickable');
     detailPage.linkItemHeaderCaret().click();
-    expect(detailPage.linkTitle()).toBe('Title Text 1');
+    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE);
     expect(detailPage.linkclose("0").isPresent()).toBe(true);
     detailPage.linkclose("0").click();
     expect(detailPage.linkclose("0").isPresent()).toBe(false);
@@ -73,16 +71,16 @@ describe('Link item ', function () {
    });
 
   it('Update link child and check if it exists in list or not - Desktop', function () {
-    var detailPage = page.clickWorkItemTitle("Title Text 0");
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
     detailPage.clickWorkItemDetailTitleClick();
     detailPage.setWorkItemDetailTitle("0", true); // Update title
     detailPage.clickWorkItemTitleSaveIcon();
     detailPage.clickWorkItemDetailCloseButton();
-    var detailPage = page.clickWorkItemTitle("Title Text 1");
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE_1);
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
     detailPage.linkItemHeaderCaret().click();
-    expect(detailPage.linkTitle()).toBe('Title Text 00'); // Verify new title
+    expect(detailPage.linkTitle()).toBe(constants.WORK_ITEM_TITLE + '0'); // Verify new title
     expect(detailPage.linkclose("0").isPresent()).toBe(true);
     detailPage.linkclose("0").click();
     expect(detailPage.linkclose("0").isPresent()).toBe(false);
@@ -90,13 +88,13 @@ describe('Link item ', function () {
    });
 
   it('Check the elements of link item div are visible - Desktop', function () {
-    var detailPage = page.clickWorkItemTitle("Title Text 0");
+    var detailPage = page.clickWorkItemTitle(constants.WORK_ITEM_TITLE);
     expect(detailPage.commentDiv().isPresent()).toBe(true);
     expect(detailPage.linkItemHeaderCaret().isPresent()).toBe(true);
 
     browser.wait(until.elementToBeClickable(detailPage.linkItemHeaderCaret()), constants.WAIT, 'Link icon is not clickable');
     detailPage.linkItemHeaderCaret().click();
-    expect(detailPage.linkItemTitle()).toBe("This item, Title Text 0");
+    expect(detailPage.linkItemTitle()).toBe("This item, " + constants.WORK_ITEM_TITLE);
     expect(detailPage.checkLinkDropDown.isPresent()).toBe(true);
    });
 

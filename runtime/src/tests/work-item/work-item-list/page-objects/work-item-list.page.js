@@ -21,29 +21,19 @@ let until = protractor.ExpectedConditions;
 
 /* Icons displayed after the detailed dialog button is clicked */
 let detailedWorkItemIcons = [];
-detailedWorkItemIcons["userstory"] = ".card-pf-icon-circle.fa.fa-bookmark";
-detailedWorkItemIcons["valueproposition"] = ".card-pf-icon-circle.fa.fa-gift";
-detailedWorkItemIcons["fundamental"] = ".card-pf-icon-circle.fa.fa-bank";
+detailedWorkItemIcons["papercut"] = ".card-pf-icon-circle.fa.fa-scissors";
+detailedWorkItemIcons["valueproposition"] = ".card-pf-icon-circle.fa.fa-diamond";
+detailedWorkItemIcons["fundamental"] = ".card-pf-icon-circle.fa.fa-university";
 detailedWorkItemIcons["experience"] = ".card-pf-icon-circle.fa.fa-map";
-detailedWorkItemIcons["feature"] = ".card-pf-icon-circle.fa.fa-mouse-pointer";
-detailedWorkItemIcons["bug"] = ".card-pf-icon-circle.fa.fa-bug ";
+detailedWorkItemIcons["feature"] = ".card-pf-icon-circle.fa.fa-puzzle-piece";
+detailedWorkItemIcons["bug"] = ".card-pf-icon-circle.fa.fa-bug";
+detailedWorkItemIcons["task"] = ".card-pf-icon-circle.fa.fa-tasks";
+detailedWorkItemIcons["scenario"] = ".card-pf-icon-circle.fa.fa-bolt";
 
 class WorkItemListPage {
 
- constructor(login) {
-   if(login==true) {
-    let url = encodeURIComponent(JSON.stringify({
-      access_token: 'somerandomtoken',
-      expires_in: 1800,
-      refresh_expires_in: 1800,
-      refresh_token: 'somerandomtoken',
-      token_type: "bearer"
-    }));
-    browser.get(browser.baseUrl + "/?token_json="+url);
-  }
-   else {
-     browser.get(browser.baseUrl);
-   }
+  constructor(){
+    browser.get(PLANNER_URL);
  };
 
  /* Select the space in which the tests will be run */
@@ -118,12 +108,31 @@ class WorkItemListPage {
 
  /* Login functions */
 
+ get localLoginButton() {
+  return element(by.id("login_githubLoginBtn"));
+ }
+
+ clicklocalLoginButton () {
+  browser.wait(until.presenceOf(this.localLoginButton), constants.WAIT, 'Failed to find Login Button');
+  this.localLoginButton.click().then(function(){
+    console.log("Clicked Button: localLoginButton");
+  });
+ }
+
+ // Login button when planner is running in standalone mode
  clickLoginButton () {
-   return element(by.id('header_rightDropdown')).all(By.tagName('a')).get(0).click();
+   return element(by.id('header_rightDropdown')).all(By.tagName('a')).get(1).click();
+ }
+
+ get topNavBar() {
+   return $('#header_rightDropdown > li.pull-right.dropdown.user-dropdown-menu');
  }
 
  clickLogoutButton () {
-   return element(by.linkText('Logout'));
+   browser.wait(until.presenceOf(this.topNavBar));
+   this.topNavBar.click().then(function(){
+    return element(by.linkText('Log Out')).click();
+  });
  }
 
  signInGithub (gitusername,gitpassword) {
@@ -137,7 +146,7 @@ class WorkItemListPage {
  }
 
   /* Access the Kebab element relative to its parent workitem */
-  workItemKebabDeleteButton (parentElement) {
+  KebabDeleteButton (parentElement) {
     browser.wait(until.presenceOf(parentElement.element(by.css('.workItemList_Delete'))), constants.WAIT, 'Failed to find clickWorkItemKebabButton');
     return parentElement.element(by.css('.workItemList_Delete'));
   }
@@ -185,6 +194,11 @@ class WorkItemListPage {
     return this.parentIterationDropDown().sendKeys(text);
   }
 
+  selectParentIterationByName(name) {
+    this.searchParentIteration(name);
+    return element(by.xpath(
+      '//*[contains(@class, "f8-iteration-modal-list")]//*[contains(text(), "'+ name +'")]')).click();
+  }
   selectParentIterationById  (ids){
     return this.parentIterationById(ids).click();
   }
@@ -264,6 +278,7 @@ class WorkItemListPage {
   }
 
   clickWorkItem(workItemElement) {
+    browser.executeScript('arguments[0].scrollIntoView(true)', workItemElement.getWebElement());
     workItemElement.$("p").click();
     return new WorkItemDetailPage();
   }
@@ -369,7 +384,7 @@ class WorkItemListPage {
 
   get filterByArea () {
     browser.wait(until.presenceOf(element(by.xpath("//li[3]/a[@class='filter-field dropdown-item']"))), constants.WAIT, 'Failed to filter by Area Type');
-    return element(by.xpath("//li[3]/a[@class='filter-field dropdown-item']"));
+    return element(by.xpath("//li[4]/a[@class='filter-field dropdown-item']"));
   }
   clickFilterByArea () {
     return this.filterByArea.click();
@@ -418,12 +433,13 @@ class WorkItemListPage {
   }
 
     /* Access the Area assignment filter dropdown - 'Area 0' filter*/
-  get filterAssignArea () {
-    browser.wait(until.presenceOf(element(by.xpath(".//*//li//text()[contains(.,'Area 0')]/.."))), constants.WAIT, 'Failed to find assign Area');
-    return element(by.xpath(".//*//li//text()[contains(.,'Area 0')]/.."));
+  filterAssignArea (area) {
+    browser.wait(until.presenceOf(element(by.xpath(
+      ".//*//li//text()[contains(.,'"+ area +"')]/.."))), constants.WAIT, 'Failed to find assign Area');
+    return element(by.xpath(".//*//li//text()[contains(.,'" + area +"')]/.."));
   }
-  clickFilterAssignArea () {
-    this.filterAssignArea.click();
+  clickFilterAssignArea (area) {
+    this.filterAssignArea(area).click();
   }
 
     /* Access the Workitem Type assignment filter dropdown - 'WI Type - Experience' filter*/
@@ -602,6 +618,12 @@ class WorkItemListPage {
     return element(by.xpath(".//*[contains (@id, 'iterationList_OuterWrap_" + index + "')]/..")).click();
     //   .//*[contains (@id, 'iterationList_OuterWrap_
   }
+  clickIterationKebabByIndex(index) {
+    var ele = $$('.f8-itr__panel pfng-action.list-pf-actions').get(index);
+    // The iteration might not be in view. Scroll to the element
+    browser.executeScript('arguments[0].scrollIntoView(true)', ele.getWebElement())
+    return ele.click();
+  }
   clickEditIterationKebab (){
     return element(by.linkText ("Edit")).click();
   }
@@ -661,7 +683,9 @@ class WorkItemListPage {
   }
 
   IterationByName(name){
-    return element(by.xpath(".//text()[contains(.,'" + name + "')]/../../../.."));
+    var ele = element(by.xpath(".//*[contains(text(),'" + name + "')]/../../../.."));
+    browser.executeScript('arguments[0].scrollIntoView(true)', ele.getWebElement());
+    return ele;
   }
 
   get lastFutureIteration () {

@@ -18,16 +18,14 @@ var WorkItemListPage = require('./page-objects/work-item-list.page'),
   constants = require('./constants'),
   testSupport = require('./testSupport');
 
-fdescribe('Work item list', function () {
-  var page;
-  var until = protractor.ExpectedConditions;
-  var workItemTitle = "The test workitem title";
-  var EXAMPLE_USER_1 = "Example User 1";
-  var EXAMPLE_USER_2 = "Example User 2";
+describe('Work item list', function () {
+  var page, until = protractor.ExpectedConditions,
+    workItemTitle = "The test workitem title",
+    EXAMPLE_USER_2 = "Example User 2";
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);
+    page = new WorkItemListPage();
     testSupport.setTestSpace(page);
     browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find first work item');
   });
@@ -38,29 +36,35 @@ fdescribe('Work item list', function () {
     page.typeQuickAddWorkItemTitle(workItemTitle);
     page.clickQuickAddSave().then(function () {
       var detailPage = page.clickWorkItemTitle(workItemTitle);
-      browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find detail page close Icon');
+      browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton),
+                   constants.WAIT,
+                   'Failed to find detail page close Icon');
       expect(detailPage.AddAssigneeButton.isDisplayed()).toBe(true);
       detailPage.clickAddAssigneeButton();
       expect(detailPage.AssigneeDropdown.isDisplayed()).toBe(true);
       expect(detailPage.AssigneeSearch.isDisplayed()).toBe(true);
       // to check assignee list items
-      expect(detailPage.AssigneeDropdownListItem.getText()).toContain(EXAMPLE_USER_1);
+      expect(detailPage.AssigneeDropdownListItem.getText()).toContain(constants.EXAMPLE_USER + ' (me)');
       //to Verify that workitems cannot be assigned to non-existent users
       expect(detailPage.AssigneeDropdownListItem.getText()).not.toContain("some user");
 
-      detailPage.setAssigneeSearch((EXAMPLE_USER_1, false));
-      expect(detailPage.AssigneeDropdownListItem.getText()).toContain(EXAMPLE_USER_1);
+      expect(detailPage.AssigneeDropdownListItem.getText()).toContain(constants.EXAMPLE_USER + ' (me)');
       expect(detailPage.AssigneeDropdownListItem.getText()).not.toContain("some user");
 
-      //to  user has been clicked
-      detailPage.clickAssigneeListItem(EXAMPLE_USER_1);
-      detailPage.clickAssigneeListItem(EXAMPLE_USER_2);
+      detailPage.clickAssigneeListItem(constants.EXAMPLE_USER);
+
+      // This works only in mock testing. The production DB has only 1 user
+      if(process.env.NODE_ENV) {
+        detailPage.clickAssigneeListItem(EXAMPLE_USER_2);
+      }
       detailPage.clickCloseAssigneeDropdown();
       expect(detailPage.AssigneeDropdown.isDisplayed()).toBe(false);
 
       //Verify assignee has been assigned
-      expect(detailPage.AssignUsers.getText()).toContain(EXAMPLE_USER_1);
-      expect(detailPage.AssignUsers.getText()).toContain(EXAMPLE_USER_2);
+      expect(detailPage.AssignUsers.getText()).toContain(constants.EXAMPLE_USER);
+      if(process.env.NODE_ENV) {
+        expect(detailPage.AssignUsers.getText()).toContain(EXAMPLE_USER_2);
+      }
     });
   });
 
@@ -70,23 +74,29 @@ fdescribe('Work item list', function () {
     page.typeQuickAddWorkItemTitle(workItemTitle);
     page.clickQuickAddSave().then(function () {
       var detailPage = page.clickWorkItemTitle(workItemTitle);
-      browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find detail page close Icon');
+      browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton),
+                   constants.WAIT,
+                   'Failed to find detail page close Icon');
       detailPage.clickAddAssigneeButton();
       // to unassign same user by double click
-      detailPage.clickAssigneeListItem(EXAMPLE_USER_1);
-      detailPage.clickAssigneeListItem(EXAMPLE_USER_1);
+      detailPage.clickAssigneeListItem(constants.EXAMPLE_USER);
+      detailPage.clickAssigneeListItem(constants.EXAMPLE_USER);
       detailPage.clickCloseAssigneeDropdown();
       //assign user to wi
       detailPage.clickAddAssigneeButton();
-      detailPage.clickAssigneeListItem(EXAMPLE_USER_1)
-      detailPage.clickAssigneeListItem(EXAMPLE_USER_2);
+      detailPage.clickAssigneeListItem(constants.EXAMPLE_USER)
+      if(process.env.NODE_ENV) {
+        detailPage.clickAssigneeListItem(EXAMPLE_USER_2);
+      }
       detailPage.clickCloseAssigneeDropdown();
       //to unassign user to wi
       detailPage.clickAddAssigneeButton();
-      detailPage.clickAssigneeListItem(EXAMPLE_USER_1);
+      detailPage.clickAssigneeListItem(constants.EXAMPLE_USER);
       detailPage.clickCloseAssigneeDropdown();
-      expect(detailPage.AssignUsers.getText()).not.toContain(EXAMPLE_USER_1);
-      expect(detailPage.AssignUsers.getText()).toContain(EXAMPLE_USER_2);
+      expect(detailPage.AssignUsers.getText()).not.toContain(constants.EXAMPLE_USER);
+      if(process.env.NODE_ENV) {
+        expect(detailPage.AssignUsers.getText()).toContain(EXAMPLE_USER_2);
+      }
     });
   });
 
@@ -96,7 +106,9 @@ fdescribe('Work item list', function () {
     page.typeQuickAddWorkItemTitle(workItemTitle);
     page.clickQuickAddSave().then(function () {
       var detailPage = page.clickWorkItemTitle(workItemTitle);
-      browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton), constants.WAIT, 'Failed to find detail page close Icon');
+      browser.wait(until.elementToBeClickable(detailPage.workItemDetailCloseButton),
+                   constants.WAIT,
+                   'Failed to find detail page close Icon');
       expect(detailPage.AssignUsers.isPresent()).toBe(false);
       detailPage.clickAddAssigneeButton();
       detailPage.clickCloseAssigneeDropdown();

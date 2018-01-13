@@ -14,15 +14,11 @@ var WorkItemListPage = require('./page-objects/work-item-list.page'),
   testSupport = require('./testSupport');
 
 describe('Comments tests :: ', function () {
-  var page, items, browserMode;
-
-var until = protractor.ExpectedConditions;
-var waitTime = 30000;
+  var page, until = protractor.ExpectedConditions;
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);
-    testSupport.setTestSpace(page);
+    page = new WorkItemListPage()
   });
 
   it('Verify comments text area, username, comment,time is present -desktop ', function() {

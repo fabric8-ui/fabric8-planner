@@ -363,11 +363,11 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   }
 
   get AssigneeDropdownListItem() {
-    return element(by.xpath('.//f8-select-dropdown[@id="f8-add-assignee-dropdown"]//li'));
+    return element.all(by.xpath('.//f8-select-dropdown[@id="f8-add-assignee-dropdown"]//li'));
   }
 
   clickAssigneeListItem(username) {
-    element(by.xpath('.//f8-select-dropdown[@id="f8-add-assignee-dropdown"]//b[text()="'+ username +'"]')).click();
+    element(by.xpath('.//f8-select-dropdown[@id="f8-add-assignee-dropdown"]//*[contains(text(), "'+ username +'")]')).click();
   }
 
   get closeAssigneeDropdown () {
@@ -575,6 +575,8 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
     return element(by.id("create-link-button"));
   }
   clickCreateLinkButton (){
+    browser.executeScript('arguments[0].scrollIntoView(true)',
+                          this.createLinkButton.getWebElement());
     return this.createLinkButton.click();
   }
   get checkLinkDropDown (){
@@ -633,18 +635,21 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
     // return element(by.id('area_label'));
     return element(by.css('.detail-area-wrap > #area_label'));
   }
-  AreaSelect (){
+  get AreaSelect (){
     return element(by.css('#area-dropdown .details-dropdown'));
     //#area-dropdown > div.typeahead-dropdown.combobox-container > span.pointer.details-dropdown
   }
   clickAreaSelect (){
-    return this.AreaSelect().click();
+    return this.AreaSelect.click();
   }
   searchAreaInput (AreaInput) {
-    return element(by.id("areaSearchInput")).sendKeys(AreaInput).click();
+    return element(by.id("valueSearchInput")).sendKeys(AreaInput).click();
   }
-  clickAreas  (areaid){
-    return element(by.id('area-'+ areaid)).click();
+  clickAreas (areaid){
+    return element(by.xpath(areaid)).click();
+  }
+  selectArea(areaName) {
+    return element(by.xpath('.//typeahead-dropdown//span//b[contains(text(), "'+ areaName+'")]/../..')).click();
   }
   saveAreasButton (){
     return element(by.css('#area-dropdown .save-button'));
@@ -687,6 +692,11 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   }
   associateIterationById(iterationid){
     return element(by.id('iteration-'+ iterationid)).click();
+  }
+  associateIterationByName(name) {
+    return element(
+      by.xpath("//*[@class='detail-itr-content']//*[@class='item-li']//*[contains(text(), '"+name+"')]/.."))
+      .click();
   }
   genericLinkseach(text){
     return element(by.linkText(text)).click();
@@ -998,7 +1008,7 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
 
   /* UI elements for Label */
   get addLabelButton() {
-    return $('.clickable.add-label');
+    return $('.label-selector-wrapper .clickable.add-label');
   }
 
   clickAddLabelButton(){
@@ -1033,6 +1043,7 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   }
 
   clickCreateLabelButton(){
+    browser.executeScript('arguments[0].scrollIntoView(true)', this.createLabelButton.getWebElement());
     return this.createLabelButton.click();
   }
 
@@ -1057,7 +1068,7 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   }
 
   get labelCloseIcon() {
-    return $('.select-dropdown-header .pull-right.pficon-close.close-pointer');
+    return $('.label-selector-wrapper .select-dropdown-header .pull-right.pficon-close.close-pointer');
   }
 
   clickLabelClose() {
@@ -1073,7 +1084,7 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   }
 
   listOfLabels() {
-    return $$('.select-dropdown-menu li').first();
+    return $$('.label-selector-wrapper .select-dropdown-menu li').first();
   }
 
   attachedLabels() {

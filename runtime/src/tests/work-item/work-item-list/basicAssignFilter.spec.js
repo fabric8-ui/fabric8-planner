@@ -23,22 +23,18 @@ var WorkItemListPage = require('./page-objects/work-item-list.page'),
   constants = require('./constants');
 
 describe('Basic filter workitems by assignee Test', function () {
-  var page;
-  var until = protractor.ExpectedConditions;
-  var EXAMPLE_USER_0 = "example 0";
-  var EXAMPLE_USER_0_VERIFY = "Example User 0";
-  var WORK_ITEM_TITLE = "Quick Add WI in Current Context";
-  var AREA_0_TITLE = "Area 0";
-  var WORK_ITEM_TYPE = "Experience";
+  var page, until = protractor.ExpectedConditions;
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);
-    testSupport.setTestSpace(page);
-    //browser.wait(until.elementToBeClickable(page.firstWorkItem), constants.WAIT, 'Failed to find first work item');   
+    page = new WorkItemListPage()
   });
 
-    it ('should add workitems in the context of current Assignee filter', function() {
+  it ('should add workitems in the context of current Assignee filter', function() {
+    // Skip test if running in inmemory mode. The mock data doesn't support filtering
+    if(process.env.NODE_ENV){
+      return
+    }
     /*Set filter by Assignee*/
     page.clickWorkItemFilterFieldsPulldown();
     page.clickFilterByAssignee();
@@ -46,38 +42,34 @@ describe('Basic filter workitems by assignee Test', function () {
     page.clickFilterAssignToMe();
 
     browser.wait(until.presenceOf(page.currentActiveFilter), constants.WAIT, 'Failed to find active filter');  
-    expect (page.allWorkItems.count()).toBe(0).then(function(){
-      page.clickWorkItemQuickAdd();
-      page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
-      page.clickQuickAddSave().then(function() {
-        page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
-          var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
-          expect(detailPage.details_assigned_user().getText()).toContain(EXAMPLE_USER_0_VERIFY);
-          detailPage.clickWorkItemDetailCloseButton();
-        })
-      })
+    page.clickWorkItemQuickAdd();
+    page.typeQuickAddWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
+    page.clickQuickAddSave().then(function() {
+      var detailPage = page.clickWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
+      expect(detailPage.details_assigned_user().getText()).toContain(constants.EXAMPLE_USER);
+      detailPage.clickWorkItemDetailCloseButton();
     })
   });
 
-    it ('should add workitems in the context of current Area filter', function() {
+  it ('should add workitems in the context of current Area filter', function() {
+    // Skip test if running in inmemory mode. The mock data doesn't support filtering
+    if(process.env.NODE_ENV){
+      return
+    }
     /*Set filter by Area*/
     page.clickWorkItemFilterFieldsPulldown();
     page.clickFilterByArea();
     page.clickWorkItemFilterPulldownEdited();
-    page.clickFilterAssignArea();
+    page.clickFilterAssignArea('Area_1');
 
     browser.wait(until.presenceOf(page.currentActiveFilter), constants.WAIT, 'Failed to find active filter');  
-    expect (page.allWorkItems.count()).not.toBe(0).then(function(){
       page.clickWorkItemQuickAdd();
-      page.typeQuickAddWorkItemTitle(WORK_ITEM_TITLE);
+      page.typeQuickAddWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
       page.clickQuickAddSave().then(function() {
-        page.workItemViewId(page.workItemByTitle(WORK_ITEM_TITLE)).getText().then(function (text) {
-          var detailPage = page.clickWorkItemTitle(WORK_ITEM_TITLE);
-          expect(detailPage.AreaSelect().getText()).toContain(AREA_0_TITLE);
-          detailPage.clickWorkItemDetailCloseButton();
-        })
+        var detailPage = page.clickWorkItemTitle(constants.NEW_WORK_ITEM_TITLE_1);
+        expect(detailPage.AreaSelect.getText()).toContain(constants.AREA_1_TITLE);
+        detailPage.clickWorkItemDetailCloseButton();
       })
-    })
   });
 
     /* The following 2 tests are commented out due to bug where quick add button is not displayed  

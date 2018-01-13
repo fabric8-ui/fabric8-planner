@@ -19,16 +19,14 @@ var WorkItemListPage = require('./page-objects/work-item-list.page'),
   testSupport = require('./testSupport');
 
 describe('Quickadd - Work item list', function () {
-  var page, items, browserMode;
+  var page, until = protractor.ExpectedConditions;
 //  var char255 = '<div *ngFor=let comment of workItem.relationalData.comments; let counter = index" class="comments-wrap">   +            <div *ngFor="let comment of workItem.relationalData?.comments?.slice().reverse()" class="comments-wrap">                  <div>                      <div class="user-avatar pull-left">                          <img id="{{"comment_avatar_" + counter}}" -                        class="user-assign-avatar pull-left"  +                               />';
   var char255 = 'abcde1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890';
   var char255Expected = '<div *ngFor=let comment of workItem.relationalData.comments; let counter = index" class="comments-wrap"> + <div *ngFor="let comment of workItem.relationalData?.comments?.slice().reverse()" class="comments-wrap"> <div> <div class="user-avatar pull-left"> <img id="{{"comment_avatar_" + counter}}" - class="user-assign-avatar pull-left" + />';
-  var until = protractor.ExpectedConditions;
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
-    page = new WorkItemListPage(true);
-    testSupport.setTestSpace(page);
+    page = new WorkItemListPage()
   });
 
 // March 28 - Failing due to: https://github.com/fabric8-ui/fabric8-planner/issues/1348
