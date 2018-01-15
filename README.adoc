@@ -72,7 +72,7 @@ The following table lists some of the most useful or frequently used scripts and
 |Cleans the dependencies and reinstalls them
 
 |Unit Tests
-|`$ npm run test:unit`
+|`$ npm run tests -- --unit`
 |Runs the unit tests
 
 |Semantic Release
@@ -80,7 +80,7 @@ The following table lists some of the most useful or frequently used scripts and
 |Builds the library and performs a semantic release to npmjs
 
 |Continuous Build
-|`$ npm run watch:library`
+|`$ npm run build -- --watch`
 |Runs the build in watch mode, watches for changes and rebuilds source
 |===
 
