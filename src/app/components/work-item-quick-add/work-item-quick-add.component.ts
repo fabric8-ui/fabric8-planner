@@ -39,8 +39,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   @ViewChild('quickAddDesc') qaDesc: any;
   @ViewChildren('quickAddTitle', {read: ElementRef}) qaTitleRef: QueryList<ElementRef>;
   @ViewChild('quickAddSubmit') qaSubmit: any;
-  @ViewChild('quickAddWidth') quickAddWidth: ElementRef;
-  @ViewChild('inlinequickAddWidth') inlinequickAddWidth: ElementRef;
+  @ViewChild('quickAddElement') quickAddElement: ElementRef;
+  @ViewChild('inlinequickAddElement') inlinequickAddElement: ElementRef;
 
   @Input() parentWorkItemId: string = null;
   @Input() quickAddContext: any[] = [];
@@ -186,14 +186,14 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   ngAfterViewChecked() {
-    if(this.quickAddWidth) {
-      let quickaddWdth:number =  0;
-      if(document.getElementsByClassName('f8-wi-list__quick-add').length > 0) {
+    if (this.quickAddElement) {
+      let quickaddWdth: number =  0;
+      if (document.getElementsByClassName('f8-wi-list__quick-add').length > 0) {
         quickaddWdth = (document.getElementsByClassName('f8-wi-list__quick-add')[0] as HTMLElement).offsetWidth;
       }
       let targetWidth: number = quickaddWdth + 20;
-      if(this.quickAddWidth.nativeElement.classList.contains('f8-quick-add-inline')) {
-        this.renderer.setStyle(this.quickAddWidth.nativeElement, 'max-width', targetWidth + "px");
+      if (this.quickAddElement.nativeElement.classList.contains('f8-quick-add-inline')) {
+        this.renderer.setStyle(this.quickAddElement.nativeElement, 'max-width', targetWidth + "px");
       }
     }
   }

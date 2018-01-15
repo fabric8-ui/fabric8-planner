@@ -1,10 +1,10 @@
 <!-- Table Inline Quick Add -->
-<div class="col-xs-12 col-sm-12 col-md-12 f8-quickadd__wiblk" #quickAddWidth
+<div class="col-xs-12 col-sm-12 col-md-12 f8-quickadd__wiblk" #quickAddElement
   *ngIf="wilistview === 'wi-table-view' || wilistview === 'wi-table-view-top'"
   [ngClass]="{'f8-quick-add-inline' : wilistview === 'wi-table-view'}">
   <div class="pull-left">
     <b class="pull-left padding-right-15">
-      {{wilistview === 'wi-table-view'? 'Add Child Work Item' : 'Add Work Item'}}
+      {{wilistview === 'wi-table-view' ? 'Add Child Work Item' : 'Add Work Item'}}
     </b>
     <!-- type dropdown -->
     <div class="pull-left">
@@ -13,7 +13,12 @@
           type="button"
           dropdownToggle>
           <i class="fa dib"
-            [ngClass]="selectedType?selectedType.attributes.icon:''"></i>&nbsp;{{selectedType?selectedType.attributes.name:''}}
+            [ngClass]="selectedType ?
+            selectedType.attributes.icon :
+            '' ">
+          </i>
+          &nbsp;
+          {{selectedType?selectedType.attributes.name:''}}
           <span class="fa fa-angle-down"></span>
         </button>
         <ul class="dropdown-menu"
@@ -48,7 +53,9 @@
     </button>
   </div>
   <div class="f8-quickadd__wiblk-story">
-    <div [ngClass]="wilistview === 'wi-table-view'? 'col-xs-12 col-sm-12 col-md-12' : 'col-xs-12 col-sm-12 col-md-12'"
+    <div [ngClass]="wilistview === 'wi-table-view' ?
+      'col-xs-12 col-sm-12 col-md-12'
+      : 'col-xs-12 col-sm-12 col-md-12'"
       class="f8-quickadd__wiblk-storyinput">
       <input class="form-control col-xs-12 col-sm-12
         col-md-12 f8-quickadd-input"
@@ -89,7 +96,9 @@
           type="button"
           dropdownToggle>
           <i class="fa dib"
-            [ngClass]="selectedType?selectedType.attributes.icon:''"></i>
+            [ngClass]="selectedType?selectedType.attributes.icon :
+            '' ">
+          </i>
           <span class="fa fa-angle-down"></span>
         </button>
         <ul class="dropdown-menu"
@@ -97,11 +106,12 @@
           aria-labelledby="dropdownKebab"
           *dropdownMenu>
           <li *ngFor="let type of availableTypes"
-              role="menuitem"
-              (click)="selectType($event, type)">
+            role="menuitem"
+            (click)="selectType($event, type)">
             <a class="dropdown-item" href="#">
               <i class="fa pull-left"
-                [ngClass]="type.attributes.icon"></i>&nbsp;{{type.attributes.name}}
+                [ngClass]="type.attributes.icon"></i>
+                &nbsp;{{type.attributes.name}}
             </a>
           </li>
         </ul>
