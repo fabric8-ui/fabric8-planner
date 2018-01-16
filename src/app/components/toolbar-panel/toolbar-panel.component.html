@@ -1,12 +1,11 @@
 <header class="toolbar-header">
-  <div class="width-100 pull-left">
-    <pfng-toolbar
-      [config]="toolbarConfig"
-      [actionTemplate]="actionsTemplate"
-      [viewTemplate]="addTemplate"
-      (onFilterChange)="filterChange($event)"
-      (onFilterFieldSelect)="selectFilterType($event)"
-      (onFilterTypeAhead)="filterQueries($event)">
+  <pfng-toolbar
+    [config]="toolbarConfig"
+    [actionTemplate]="actionsTemplate"
+    [viewTemplate]="addTemplate"
+    (onFilterChange)="filterChange($event)"
+    (onFilterFieldSelect)="selectFilterType($event)"
+    (onFilterTypeAhead)="filterQueries($event)">
       <ng-template #actionsTemplate>
       </ng-template>
       <ng-template #addTemplate>
@@ -17,6 +16,5 @@
           <span class="add-button-text">Create</span>
         </button>
       </ng-template>
-    </pfng-toolbar>
-  </div>
+  </pfng-toolbar>
 </header>
