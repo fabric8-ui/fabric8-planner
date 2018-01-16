@@ -117,6 +117,9 @@ gulp.task('build', function () {
   // image
 
   // release
+  if (argv.release) {
+    proc.exec('node_modules/.bin/semantic-release');
+  }
 
   // tarball
 
