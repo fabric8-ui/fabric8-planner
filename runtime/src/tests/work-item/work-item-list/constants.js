@@ -48,8 +48,8 @@ if(process.env.NODE_ENV == "inmemory") {
     define("COMMENT_1", "Some Comment 0");
     define("EXAMPLE_USER", "Example User 0");
 } else {
-    define("WORK_ITEM_TITLE", "Workitem_Title_20");
-    define("WORK_ITEM_TITLE_1", "Workitem_Title_19");
+    define("WORK_ITEM_TITLE", "Workitem_Title_10");
+    define("WORK_ITEM_TITLE_1", "Workitem_Title_9");
     define("WORK_ITEM_TITLE_2", "Workitem_Title_18");
     define("WORK_ITEM_TITLE_3", "Workitem_Title_17");
     define("WORK_ITEM_TITLE_4", "Workitem_Title_11");

@@ -256,6 +256,9 @@ class WorkItemListPage {
 
   /* This function is used to fetch a workitem based on its "Title"   */
   workItemByTitle (titleString) {
+    browser.wait(until.presenceOf(
+      element(by.xpath("//datatable-body-row[.//p[contains(text(), '" + titleString + "')]]"))
+    ), constants.WAIT, "Failed to find the work item by title " + titleString);
     return element(by.xpath("//datatable-body-row[.//p[contains(text(), '" + titleString + "')]]"));
   }
 

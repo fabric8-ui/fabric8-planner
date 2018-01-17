@@ -8,9 +8,11 @@ cleanup() {
     unset "$key";
   done
 
+  # Remove fabric8-test repo
   rm -rf $DIR
 }
 
+# Exit handler
 trap cleanup EXIT
 
 clone_fabric8_test() {
@@ -20,15 +22,14 @@ clone_fabric8_test() {
   fi
   log "Cloning fabric8-test to $DIR"
   git clone https://github.com/fabric8io/fabric8-test.git $DIR
-  cd $DIR/EE_API_automation/pytest
-  git fetch origin pull/375/head:pr-375 && git checkout pr-375
 }
 
 generate_db() {
+  cd $DIR/EE_API_automation/pytest
   log "Installing all the required packages..."
   pip install pytest requests jmespath
-  log "Running the EE_API_Tests (DB Generation)"
-  sh run_me.sh "$FABRIC8_WIT_API_URL" "$USERNAME" "$REFRESH_TOKEN"
+  log "Running the EE_API_Automation Tests (DB Generation)"
+  sh run_me.sh "$FABRIC8_WIT_API_URL" "$USER_NAME" "$REFRESH_TOKEN"
 }
 
 log() {
@@ -50,10 +51,31 @@ run_tests() {
 setup_environment() {
   log "Setting up required environment variables"
   eval $(cat launch_info_dump.json | ./json2env)
-  env
 }
+
+# Make sure required variables are set
+validate_env() {
+  err=''
+  if [[ -z ${FABRIC8_WIT_API_URL+x} ]]; then
+    err="$err\nFABRIC8_WIT_API_URL not set. Please set the variable and try again."
+  fi
+  if [[ -z ${USER_NAME+x} ]]; then
+    err="$err\nUSER_NAME not set. Please set the variable and try again."
+  fi
+  if [[ -z ${REFRESH_TOKEN+x} ]]; then
+    err="$err\nREFRESH_TOKEN not set. Please set the variable and try again."
+  fi
+  if [[ $err ]]; then
+    echo -e "\e[31m=============================================================="
+    printf "$err\n"
+    echo -e "==============================================================\e[0m"
+    exit
+  fi
+}
+
 main() {
   SCRIPT_DIR=$(cd $(dirname "$0") && pwd)
+  validate_env
   clone_fabric8_test
   generate_db
   setup_environment

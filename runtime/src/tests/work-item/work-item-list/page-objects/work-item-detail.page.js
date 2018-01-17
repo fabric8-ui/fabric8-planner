@@ -537,17 +537,22 @@ testSupport.clickElement(this.workItemDescriptionCancelIcon, "workItemDescriptio
   clickCreatorDefaultIcon (){
     return element(by.id('user_creator_icon')).click();
   }
-  getCreatorAvatar  (){
+  getCreatorAvatar (){
     return element(by.id('WI_details_reporter_img'));
   }
-  clickCreatorAvatar  (){
+  clickCreatorAvatar (){
     return element(by.id('WI_details_reporter_img')).click();
   }
-  get creatorUsername  (){
+  get creatorUsername (){
     return element(by.id('WI_details_reporter_user'));
   }
-  getCreatorUsername  (){
-    return element(by.id('WI_details_reporter_user')).getText();
+  getCreatorUsername (){
+    // Make sure the span contains a valid value before returning it
+    browser.wait(until.presenceOf(
+      element(by.cssContainingText('.detail-creator-wrap > .control-label', 'Creator'))
+    ), constants.WAIT);
+    browser.sleep(1000);
+    return this.creatorUsername.getText();
   }
   getImageURL (){
     return element(by.id('WI_details_reporter_img')).getAttribute('src');

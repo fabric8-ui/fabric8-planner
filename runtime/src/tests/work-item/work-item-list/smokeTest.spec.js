@@ -23,6 +23,7 @@ describe('Work item list', function () {
 
   beforeEach(function () {
     testSupport.setBrowserMode('desktop');
+    browser.get(browser.baseUrl + "/?token_json=" + TOKEN);
     page = new WorkItemListPage()
   });
 
@@ -63,7 +64,6 @@ describe('Work item list', function () {
       detailPage.clickWorkItemDetailDescription()
       detailPage.setWorkItemDetailDescription (constants.WORK_ITEM_UPDATED_DESCRIPTION, false);
       detailPage.clickWorkItemDescriptionSaveIcon();
-      detailPage.clickWorkItemDetailCloseButton();
       browser.wait(until.presenceOf(page.workItemByTitle(constants.WORK_ITEM_UPDATED_TITLE)), constants.WAIT, 'Failed to find workItemList');
       expect(page.workItemByTitle(constants.WORK_ITEM_UPDATED_TITLE).isPresent()).toBe(true);
     });
