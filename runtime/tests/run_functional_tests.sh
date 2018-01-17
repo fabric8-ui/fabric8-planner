@@ -45,10 +45,10 @@ main() {
   # Return test result
   if [ $TEST_RESULT -eq 0 ]; then
     echo 'Functional tests OK'
-    exit 0
+    #exit 0
   else
     echo 'Functional tests FAIL'
-    exit 1
+    #exit 1
   fi
 }
 
