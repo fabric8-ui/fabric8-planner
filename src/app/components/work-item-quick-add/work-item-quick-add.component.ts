@@ -1,6 +1,7 @@
 import { Space, Spaces } from 'ngx-fabric8-wit';
 import {
   AfterViewInit,
+  AfterViewChecked,
   Component,
   EventEmitter,
   ElementRef,
@@ -9,6 +10,7 @@ import {
   OnDestroy,
   OnChanges,
   Output,
+  Renderer2,
   SimpleChanges,
   ViewChild,
   ViewChildren,
@@ -32,14 +34,42 @@ import { WorkItemService } from '../../services/work-item.service';
   templateUrl: './work-item-quick-add.component.html',
   styleUrls: ['./work-item-quick-add.component.less']
 })
-export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
+export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
   @ViewChild('quickAddTitle') qaTitle: any;
   @ViewChild('quickAddDesc') qaDesc: any;
   @ViewChildren('quickAddTitle', {read: ElementRef}) qaTitleRef: QueryList<ElementRef>;
   @ViewChild('quickAddSubmit') qaSubmit: any;
+  @ViewChild('quickAddElement') quickAddElement: ElementRef;
+  @ViewChild('inlinequickAddElement') inlinequickAddElement: ElementRef;
+
+  @Input() parentWorkItemId: string = null;
+  @Input() quickAddContext: any[] = [];
+
+  @Input('WITypes') set WITypeSetter(val: WorkItemType[]) {
+    if (JSON.stringify(val) !== JSON.stringify(this.allWorkItemTypes)) {
+      this.allWorkItemTypes = val;
+      this.availableTypes = cloneDeep(this.allWorkItemTypes);
+      this.allowedWITs = this.allWorkItemTypes.filter(entry => {
+        return this.quickAddContext.findIndex(i => i.id === entry.id) >= 0;
+      });
+      if(this.availableTypes.length){
+        //this.selectedType = this.availableTypes[0];
+        this.selectedType = this.allowedWITs[0];
+        if (this.wilistview === 'wi-table-view-top') {
+          this.createWorkItemObj();
+        }
+      }
+    }
+  };
 
   @Input() wilistview: string = 'wi-list-view';
-  @Input() forcedType: WorkItemType = null;
+
+  @Input() set forcedType(val: WorkItemType) {
+    if (this.forcedType) {
+      this.logger.log('Updated forcedType on quick add component to ' + this.forcedType.attributes.name);
+      this.selectedType = this.forcedType;
+    }
+  };
   @Output('workItemCreate') workItemCreate = new EventEmitter();
 
   error: any = false;
@@ -57,8 +87,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
   eventListeners: any[] = [];
   allWorkItemTypes: WorkItemType[] = null;
   linkObject: object;
-  selectedWorkItem: WorkItem = null;
   childLinkType: any = null;
+  allowedWITs: WorkItemType[] = [];
 
   constructor(
     private workItemService: WorkItemService,
@@ -69,44 +99,18 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
     private filterService:FilterService,
     private groupTypesService: GroupTypesService,
     private route: ActivatedRoute,
-    private spaces: Spaces) {}
+    private spaces: Spaces,
+    private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.createWorkItemObj();
     this.showQuickAdd = false;
     this.showQuickAddBtn = this.auth.isLoggedIn();
     this.listenToEvents();
-    this.spaceSubscription = this.spaces.current.subscribe(space => {
-      if (space) {
-        this.showQuickAddBtn = true;
-        // get the available types for this space
-        this.workItemService.getWorkItemTypes().first().subscribe((workItemTypes: WorkItemType[]) => {
-          this.allWorkItemTypes = workItemTypes;
-          this.availableTypes = cloneDeep(this.allWorkItemTypes);
-          if (this.forcedType) {
-            this.selectedType = this.forcedType;
-          } else {
-            // the first entry is the default entry for now
-            this.selectedType = this.availableTypes[0];
-          }
-        });
-      } else {
-        this.showQuickAddBtn = false;
-      }
-    });
-
   }
 
   ngOnDestroy() {
     // prevent memory leak when component is destroyed
-    this.spaceSubscription.unsubscribe();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.forcedType) {
-      this.logger.log('Updated forcedType on quick add component to ' + changes.forcedType.currentValue.attributes.name);
-      this.selectedType = changes.forcedType.currentValue;
-    }
   }
 
   setTypeContext(type: any) {
@@ -181,6 +185,18 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
     });
   }
 
+  ngAfterViewChecked() {
+    if (this.quickAddElement) {
+      let quickaddWdth: number =  0;
+      if (document.getElementsByClassName('f8-wi-list__quick-add').length > 0) {
+        quickaddWdth = (document.getElementsByClassName('f8-wi-list__quick-add')[0] as HTMLElement).offsetWidth;
+      }
+      let targetWidth: number = quickaddWdth + 20;
+      if (this.quickAddElement.nativeElement.classList.contains('f8-quick-add-inline')) {
+        this.renderer.setStyle(this.quickAddElement.nativeElement, 'max-width', targetWidth + "px");
+      }
+    }
+  }
   selectType(event: any, type: WorkItemType) {
     if (event)
       event.preventDefault();
@@ -195,7 +211,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
       this.workItem.attributes['system.description'] = wiDescription;
   }
 
-  createLinkObject(workItem: WorkItem, childWI: WorkItem, linkId: string) : void {
+  createLinkObject(parentWorkItemId: string, childWorkItemId: string, linkId: string) : void {
     this.linkObject = {
       'type': 'workitemlinks',
       'attributes': {
@@ -210,13 +226,13 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
         },
         'source': {
           'data': {
-            'id': workItem.id,
+            'id': parentWorkItemId,
             'type': 'workitems'
           }
         },
         'target': {
           'data': {
-            'id': childWI.id,
+            'id': childWorkItemId,
             'type': 'workitems'
           }
         }
@@ -227,6 +243,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
   save(event: any = null): void {
     if (event)
       event.preventDefault();
+
+    this.workItemCreate.emit({parentId: this.parentWorkItemId});
 
     // Setting type in relationship
     // this.workItem.relationships = {
@@ -267,14 +285,17 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
           return workItem;
         })
         .subscribe(workItem => {
-          if(this.selectedWorkItem != null) {
-            this.createLinkObject(this.selectedWorkItem, workItem, '25c326a7-6d03-4f5a-b23b-86a9ee4171e9');
+          if(this.parentWorkItemId != null) {
+            this.createLinkObject(this.parentWorkItemId, workItem.id, '25c326a7-6d03-4f5a-b23b-86a9ee4171e9');
             let tempLinkObject = {'data': this.linkObject};
-            this.workItemService.createLink(tempLinkObject, this.selectedWorkItem.id)
-              .subscribe(([link, includes]) => {})
+            this.workItemService.createLink(tempLinkObject)
+              .subscribe(([link, includes]) => {
+                this.workItemService.emitAddWIChild(this.parentWorkItemId);
+              })
+          } else {
+            this.workItemService.emitAddWI(workItem);
           }
           this.workItem = workItem; // saved workItem, w/ id if new
-          this.workItemService.emitAddWI(this.workItem);
           this.resetQuickAdd();
           this.qaSubmit.nativeElement.removeAttribute('disabled');
           this.qaTitle.nativeElement.removeAttribute('disabled');
@@ -315,31 +336,25 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
     this.qaTitle.nativeElement.focus();
   }
 
-  toggleQuickAdd(): void {
-    this.showQuickAdd = !this.showQuickAdd;
-    this.showQuickAddBtn = !this.showQuickAddBtn;
-    if (!this.showQuickAdd) {
-      this.workItem.attributes['system.description'] = '';
-      this.workItem.attributes['system.title'] = '';
-      this.validTitle = false;
-      this.descHeight = this.initialDescHeight ? this.initialDescHeight : 'inherit';
-    } else {
-      this.createWorkItemObj();
-    }
-  }
 
   preventDef(event: any) {
     event.preventDefault();
   }
 
   setGuidedWorkItemType(wiTypeCollection) {
+    //if (this.wilistview === 'wi-list-view' || this.wilistview === 'wi-card-view')
     if (wiTypeCollection.length > 0) {
+      let currentGT = this.groupTypesService.getCurrentGroupType();
+      this.allowedWITs = this.allWorkItemTypes.filter(entry => {
+        return currentGT.findIndex(i => i.id === entry.id) >= 0;
+      });
       this.availableTypes = cloneDeep(this.allWorkItemTypes);
       let setWITCollection = new Set(wiTypeCollection);
       let setAvailableTypes = new Set(this.availableTypes);
       let intersection = new Set([...Array.from(setAvailableTypes)].filter(x => setWITCollection.has(x.id)));
       this.availableTypes = [...Array.from(intersection)];
-      this.selectedType = this.availableTypes[0];
+      //this.selectedType = this.availableTypes[0];
+      this.selectedType = this.allowedWITs[0];
       this.showQuickAdd = false
       this.showQuickAddBtn = true;
     } else {
@@ -366,16 +381,5 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, OnChanges, 
         this.setGuidedWorkItemType(wiTypeCollection);
       })
     );
-
-    this.eventListeners.push(
-      this.workItemService.selectedWIObservable.subscribe(workItem => {
-        this.selectedWorkItem = workItem;
-        this.workItemService.getAllLinkTypes(this.selectedWorkItem).subscribe(item => {
-          this.childLinkType = item.json().data.find(linkType =>
-            linkType.id === '25c326a7-6d03-4f5a-b23b-86a9ee4171e9');
-        });
-      })
-    );
   }
-
 }

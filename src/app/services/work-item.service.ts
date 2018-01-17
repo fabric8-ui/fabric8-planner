@@ -64,6 +64,7 @@ export class WorkItemService {
   private selfId;
 
   public addWIObservable: Subject<WorkItem> = new Subject();
+  public addWIChildObservable: Subject<string> = new Subject();
   public editWIObservable: Subject<WorkItem> = new Subject();
   public selectedWIObservable: Subject<WorkItem> = new Subject();
 
@@ -113,7 +114,7 @@ export class WorkItemService {
   //   this.logger.log('WorkItemService using url ' + this.workItemUrl);
   // }
 
-  getChildren(parent: WorkItem): Promise<WorkItem[]> {
+  getChildren(parent: WorkItem): Observable<WorkItem[]> {
     // TODO: it looks like the children are not retrieved with paging. This may cause problems in the future.
     if (parent.relationships.children) {
       this.logger.log('Requesting children for work item ' + parent.id);
@@ -137,10 +138,10 @@ export class WorkItemService {
         }).catch((error: Error | any) => {
           this.notifyError('Getting children of work item failed.', error);
           return Observable.throw(new Error(error.message));
-        }).toPromise();
+        });
     } else {
       this.logger.log('Work item does not have child related link, skipping: ' + parent.id);
-      return Observable.of([]).toPromise();
+      return Observable.of([]);
     }
   }
 
@@ -216,23 +217,13 @@ export class WorkItemService {
 
   resolveWorkItems(workItems, iterations, users, wiTypes, labels, included: WorkItem[] = []): WorkItem[] {
     let resolvedWorkItems = workItems.map((item) => {
-      // put the hasChildren on the root level for the tree
-      if (item.relationships.children && item.relationships.children.meta)
-        item.hasChildren = item.relationships.children.meta.hasChildren;
-        //Resolve parents using included
-      if (included.length > 0 ){
-        if (item.relationships.parent != undefined && item.relationships.parent.data !=undefined) {
-          let wi = included.find(inclwi => inclwi.id === item.relationships.parent.data.id);
-          item.relationships.parent.data = wi;
-          let parentWITID = item.relationships.parent.data.relationships.baseType.data.id;
-          item.relationships.parent.data.relationships.baseType.data = wiTypes.find((type) => type.id === parentWITID);
-        }
-      }
       // Resolve assignnees
-      let assignees = item.relationships.assignees.data ? cloneDeep(item.relationships.assignees.data) : [];
-      item.relationships.assignees.data = assignees.map((assignee) => {
-        return users.find((user) => user.id === assignee.id) || assignee;
-      });
+      if (item.relationships.assignees && item.relationships.assignees.data) {
+        let assignees = item.relationships.assignees.data ? cloneDeep(item.relationships.assignees.data) : [];
+        item.relationships.assignees.data = assignees.map((assignee) => {
+          return users.find((user) => user.id === assignee.id) || assignee;
+        });
+      }
 
       // Resolve creator
       let creator = cloneDeep(item.relationships.creator.data);
@@ -717,6 +708,10 @@ export class WorkItemService {
     this.addWIObservable.next(workItem);
   }
 
+  emitAddWIChild(parentWorkItemId: string) {
+    this.addWIChildObservable.next(parentWorkItemId);
+  }
+
   /**
    * Usage: This method emit a new work item created event
    * The list view and board view listens to this event
@@ -956,10 +951,9 @@ export class WorkItemService {
    * Resolves and add the new link to the workItem
    *
    * @param link: Link - The new link object for request params
-   * @param currentWiId: string - The work item ID where the link is created
    * @returns Promise<Link>
    */
-  createLink(link: Object, currentWiId: string): Observable<any> {
+  createLink(link: Object): Observable<any> {
     if (this._currentSpace) {
       // FIXME: make the URL great again (when we know the right API URL for this)!
       this.linksUrl = this.baseApiUrl + 'workitemlinks';
