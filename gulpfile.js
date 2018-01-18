@@ -35,7 +35,6 @@ var KarmaServer     = require('karma').Server
 // Not sure if var or const
 var appSrc    = 'src';
 var distPath  = 'dist';
-var distWatch = 'watch';
 
 /*
  * Utility functions
@@ -51,14 +50,6 @@ mach.copyToDist = function (srcArr) {
       // Save directly to dist; @TODO: rethink the path evaluation strategy
       return distPath + file.base.slice(__dirname.length + 'src/'.length);
     }));
-}
-
-// Copy files from the distPath to the distWatch.
-mach.updateDistWatch = function () {
-  return gulp
-    .src(distPath + '/**')
-    .pipe(changed(distWatch))
-    .pipe(gulp.dest(distWatch));
 }
 
 // Transpile TypeScript source(s) to JS, storing results to distPath.
@@ -118,7 +109,7 @@ gulp.task('build', function () {
 
   // release
   if (argv.release) {
-    proc.exec('node_modules/.bin/semantic-release');
+    proc.exec('$(npm bin)/semantic-release');
   }
 
   // tarball
@@ -130,24 +121,20 @@ gulp.task('build', function () {
     gulp.watch([appSrc + '/app/**/*.ts', '!' + appSrc + '/app/**/*.spec.ts']).on('change', function (e) {
       util.log(util.colors.cyan(e.path) + ' has been changed. Compiling TypeScript.');
       mach.transpileTS();
-      mach.updateDistWatch();
     });
     gulp.watch([appSrc + '/app/**/*.less']).on('change', function (e) {
       util.log(util.colors.cyan(e.path) + ' has been changed. Compiling LESS.');
       mach.transpileLESS(e.path);
-      mach.updateDistWatch();
     });
     gulp.watch([appSrc + '/app/**/*.html']).on('change', function (e) {
       util.log(util.colors.cyan(e.path) + ' has been changed. Compiling HTML.');
       mach.copyToDist(e.path);
-      mach.updateDistWatch();
     });
     util.log('Now run');
     util.log('');
-    util.log(util.colors.red('    npm link', path.resolve(distWatch)));
+    util.log(util.colors.red('    npm link', path.resolve(dist)));
     util.log('');
     util.log('in the npm module you want to link this one to');
-    mach.updateDistWatch();
   }
 
 });
@@ -182,7 +169,7 @@ gulp.task('clean', function () {
   // if (argv.config) { subroutine to clean config - not yet needed }
 
   // dist
-  if (argv.dist) del([distPath, distWatch]);
+  if (argv.dist) del([distPath]);
 
   // images
   if (argv.images) {

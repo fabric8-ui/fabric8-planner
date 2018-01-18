@@ -82,7 +82,7 @@ npm install
 +
 [sh]
 ----
-npm link ../dist-watch
+npm link ../dist
 ----
 
 . Set the execution environment on build time using the `NODE_ENV` variable.
@@ -144,7 +144,7 @@ npm install
 +
 [sh]
 ----
-npm link/<path to fabric8-planner>/dist-watch
+npm link/<path to fabric8-planner>/dist
 ----
 
 . Run *Fabric8 UI* in development mode.

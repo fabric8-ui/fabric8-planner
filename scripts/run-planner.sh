@@ -49,13 +49,13 @@ function reinstallStandalone {
 # links planner to platform
 function linkPlannerToPlatform {
   echo "Linking Planner to Platform in $PLATFORM_HOME"
-  cd $PLATFORM_HOME && npm link $PLANNER_HOME/dist-watch
+  cd $PLATFORM_HOME && npm link $PLANNER_HOME/dist
 } 
 
 # links planner to runtime
 function linkPlannerToRuntime {
   echo "Linking Planner to Runtime in $PLANNER_HOME/runtime"
-  cd $PLANNER_HOME/runtime && npm link $PLANNER_HOME/dist-watch
+  cd $PLANNER_HOME/runtime && npm link $PLANNER_HOME/dist
 } 
 
 # runs the platform
@@ -73,9 +73,7 @@ function runStandalone {
 # runs the planner in watch mode
 function runPlanner {
   echo "Running Planner in $PLANNER_HOME"
-  # as the watch task has to be started in the backgound, we need to create a minimal
-  # dist-watch directory befor launching it otherwise the following linking gets confused.
-  cd $PLANNER_HOME && mkdir -p dist-watch && cp package.json dist-watch/ && npm run build -- --watch &
+  cd $PLANNER_HOME && npm run build -- --watch &
 } 
 
 # extract options and their arguments into variables.
