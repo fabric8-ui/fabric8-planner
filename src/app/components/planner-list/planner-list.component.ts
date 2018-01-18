@@ -466,17 +466,25 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         this.logger.log('Got work item list.');
         this.logger.log(workItemResp.workItems);
         const workItems = workItemResp.workItems;
+        console.log("####", workItemResp);
         this.nextLink = workItemResp.nextLink;
-        this.included = workItemResp.included;
+        const included = workItemResp.included;
+        this.included = this.workItemService.resolveWorkItems(
+          included,
+          this.iterations,
+          [], // We don't want to static resolve user at this point
+          this.workItemTypes,
+          this.labels
+        );
         this.workItems = this.workItemService.resolveWorkItems(
           workItems,
           this.iterations,
           [], // We don't want to static resolve user at this point
           this.workItemTypes,
-          this.labels,
-          this.included
+          this.labels
         );
-        this.datatableWorkitems = this.tableWorkitem(this.workItems);
+        this.datatableWorkitems = [...this.tableWorkitem(this.workItems, null, true), ...this.tableWorkitem(this.included, null, false)];
+        this.workItems = [...this.workItems, ...this.included];
         this.workItemDataService.setItems(this.workItems);
         // Resolve assignees
         const t3 = performance.now();
@@ -547,9 +555,11 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
       .getMoreWorkItems(this.nextLink)
       .subscribe((newWiItemResp) => {
         const t2 = performance.now();
+        console.log("###2", newWiItemResp);
         const workItems = newWiItemResp.workItems.filter((workItem: WorkItem) => {
           return !!!Object.keys(workItem.relationships.parent).length;
         });
+        console.log("###3", workItems);
         this.nextLink = newWiItemResp.nextLink;
         const wiLength = this.workItems.length;
         const newItems = this.workItemService.resolveWorkItems(
@@ -942,12 +952,13 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     this.eventListeners.push(
       this.workItemService.editWIObservable.subscribe(updatedItem => {
         let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
+        let bold = this.datatableWorkitems.filter((item) => item.id === updatedItem.id)[0].bold;
         if (this.filterService.doesMatchCurrentFilter(updatedItem)) {
           updatedItem.hasChildren = updatedItem.relationships.children.meta.hasChildren;
           updatedItem.relationships['parent'] = this.workItems[index].relationships.parent;
           if (index > -1) {
             this.workItems[index] = updatedItem;
-            let updatedTableItem = this.tableWorkitem([updatedItem], this.datatableWorkitems[index].parentId)[0];
+            let updatedTableItem = this.tableWorkitem([updatedItem], this.datatableWorkitems[index].parentId, bold)[0];
             updatedTableItem.treeStatus = this.datatableWorkitems[index].treeStatus;
             updatedTableItem.childrenLoaded = this.datatableWorkitems[index].childrenLoaded;
             this.datatableWorkitems = [
@@ -1117,23 +1128,24 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     });
   }
 
-  tableWorkitem(workItems: WorkItem[], parentId: string | null = null): any {
+  tableWorkitem(workItems: WorkItem[], parentId: string | null = null, matchingQuery: boolean | null = null): any {
     return workItems.map(element => {
-       return {
-        id: element.id,
-        number: element.attributes['system.number'],
-        type: element.relationships.baseType ? element.relationships.baseType : '',
-        title: element.attributes['system.title'],
-        labels: element.relationships.labels.data,
-        iteration: element.relationships.iteration.data,
-        creator: element.relationships.creator.data,
-        assignees: element.relationships.assignees.data,
-        status: element.attributes['system.state'],
-        // Extra items for table
-        treeStatus: element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled',
-        parentId: parentId,
-        childrenLoaded: false
-      }
+        return {
+          id: element.id,
+          number: element.attributes['system.number'],
+          type: element.relationships.baseType ? element.relationships.baseType : '',
+          title: element.attributes['system.title'],
+          labels: element.relationships.labels.data,
+          iteration: element.relationships.iteration.data,
+          creator: element.relationships.creator.data,
+          assignees: element.relationships.assignees.data,
+          status: element.attributes['system.state'],
+          // Extra items for table
+          treeStatus: matchingQuery ? element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled' : 'expanded',
+          parentId: element.relationships.parent && element.relationships.parent.data ? element.relationships.parent.data.id : parentId,
+          childrenLoaded: matchingQuery ? false : true,
+          bold: matchingQuery 
+        }
     });
   }
 
