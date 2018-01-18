@@ -172,9 +172,3 @@ describe('Work item list', function () {
     });
   });
 });
-
-/* Compare an expected and actual work item - the offset values enable us to track
-   workitems after they have been moved. */
-  var compareWorkitems = function(page, targetIndex, expectedTitle) {
-    expect(page.workItemTitle(page.workItemByIndex(targetIndex))).toBe(expectedTitle);
-  }
