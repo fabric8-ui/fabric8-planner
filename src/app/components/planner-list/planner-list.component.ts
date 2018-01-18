@@ -215,14 +215,27 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
       }
       let expHeight: number = 0;
-      if (document.getElementsByClassName('experimental-bar').length > 0) {
+      let targetHeight: number;
+      let targetContHeight: number;
+      if (document.getElementsByClassName('experimental-bar').length > 0){
         expHeight = (document.getElementsByClassName('experimental-bar')[0] as HTMLElement).offsetHeight;
       }
-      let targetHeight: number = window.innerHeight - toolbarHt - quickaddHt - hdrHeight - expHeight;
-      this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
-
-      let targetContHeight: number = window.innerHeight - hdrHeight - expHeight;
-      this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight + "px");
+      targetHeight = window.innerHeight - (toolbarHt + quickaddHt + hdrHeight + expHeight);
+      this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight - 23 + "px");
+      targetContHeight = window.innerHeight - (hdrHeight + expHeight);
+      this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight - 3 + "px");
+      if (document.getElementsByClassName('experimental-bar').length > 0 &&
+      !document.getElementsByClassName('experimental-bar')[0].classList.contains('experimental-bar-minimal')) {
+        expHeight = (document.getElementsByClassName('experimental-bar')[0] as HTMLElement).offsetHeight;
+        targetHeight = window.innerHeight - (toolbarHt + quickaddHt + hdrHeight + expHeight);
+        this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight - 23 + "px");
+        targetContHeight = window.innerHeight - (hdrHeight + expHeight);
+        this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight - 3 + "px");
+      } else if (document.getElementsByClassName('experimental-bar').length > 0 &&
+          document.getElementsByClassName('experimental-bar')[0].classList.contains('experimental-bar-minimal')) {
+            targetHeight = window.innerHeight - (toolbarHt + quickaddHt + hdrHeight);
+            this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight - 48 + "px");
+      }
 
       if (this._lastTagetContentHeight !== targetContHeight) {
         this._lastTagetContentHeight = targetContHeight;
