@@ -171,4 +171,24 @@ describe('Work item list', function () {
       expect(detailPage.getCommentBody('0')).toBe('Some Comment 0');
     });
   });
+
+  // Copied from workItemTypeGroup.spec.js
+  it("Scenario-Quick Add should support Scenario, papercuts and fundamentals", function() {
+    page.clickScenario();
+    page.clickWorkItemQADropDown();
+    expect(page.getWorkItemType().count()).toBe(3);
+    expect(page.getWorkItemType().get(0).getText()).toContain(' Scenario');
+    expect(page.getWorkItemType().get(1).getText()).toContain(' Papercuts');
+    expect(page.getWorkItemType().get(2).getText()).toContain(' Fundamental');
+  });
+
+  // Copied from workItemTypeGroup.spec.js
+  it("Experiences-Quick Add should support Experience and Value proposition", function() {
+    page.clickExperience();
+    page.clickWorkItemQADropDown();
+    expect(page.getWorkItemType().count()).toBe(2);
+    expect(page.getWorkItemType().get(0).getText()).toContain(' Experience');
+    expect(page.getWorkItemType().get(1).getText()).toContain(' Value Proposition');
+  });
+
 });
