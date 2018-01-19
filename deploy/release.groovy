@@ -1,13 +1,20 @@
 #!/usr/bin/groovy
-def ci (){
+def ci (project){
+    def tempVersion
+
     stage('Setup & Build'){
         container('ui'){
-            sh '''
-            npm cache clean --force
-            npm install
-            npm run build
-            npm pack dist/
-        '''
+            sh 'npm install'
+            sh 'npm run build'
+            sh 'npm pack dist/'
+        }
+    }
+
+    stage('Build fabric8-ui'){
+        container('ui'){
+            tempVersion = buildSnapshotFabric8UI{
+                pullRequestProject = project
+            }
         }
     }
 
@@ -29,14 +36,8 @@ def ci (){
             }
         }
     }
-}
 
-def ciBuildDownstreamProject(project){
-    stage('Build fabric8-ui'){
-        return buildSnapshotFabric8UI{
-            pullRequestProject = project
-        }
-    }
+    return tempVersion
 }
 
 def buildImage(imageName){
