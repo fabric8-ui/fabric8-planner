@@ -48,14 +48,14 @@ class WorkItemListPage {
 
  /* Select the space in which the tests will be run */
  get spaceDropdown (){
-   return element(by.css(".ng-valid"));
+   return element(by.css(".recent-items-toggle"));
  }
  clickOnSpaceDropdown (){
    return this.spaceDropdown.click();
  }
  selectSpaceDropDownValue  (index) {
    index++;
-   return element(by.xpath("//select[contains(@class,'ng-valid')]/option[" + index + "]")).click();
+   return element(by.xpath("//ul[contains(@class,'recent-items')]/li[" + index + "]/a")).click();
  }
 
  workItemByURLId (workItemId) {
@@ -84,7 +84,7 @@ class WorkItemListPage {
  }
 
  get userToggle () {
-     return element(by.id("header_dropdownToggle"));
+     return element(by.id("header_dropdownToggle2"));
  }
 
  clickUserToggle () {
@@ -123,7 +123,9 @@ class WorkItemListPage {
  }
 
  clickLogoutButton () {
-   return element(by.linkText('Logout'));
+   element(by.id("header_dropdownToggle2")).click()
+   browser.wait(until.presenceOf(element(by.linkText('Log Out'))), constants.WAIT, 'Failed to find logout option in user dropdown');
+   return element(by.linkText('Log Out'));
  }
 
  signInGithub (gitusername,gitpassword) {
@@ -755,25 +757,126 @@ class WorkItemListPage {
     return this.activeIterationButton.element(by.css('input')).getAttribute('checked');
   }
 
-  getPortfolio() {
-    return element(by.id('portfolio'));
+  /* data table Page object model */
+  getdataTableHeaderCell() {
+    return $$('datatable-header-cell');
   }
 
-  clickPortfolio() {
-    return this.getPortfolio().click();
+  getHeaderCellText() {
+    return this.getdataTableHeaderCell().getText();
+  }
+  
+  getDataTableHeaderCellCount() {
+    return this.getdataTableHeaderCell().count();
   }
 
-  getRequirements() {
-    return element(by.id('requirements'));
+  getSettingButton() {
+    return $('.f8-wi-list__settings');
+  }
+
+  clickSettingButton() {
+    return this.getSettingButton().click();
+  }
+
+  /* setting dropdown */
+  settingDropdown() {
+    return $('.f8-wi-list__settings-dropdown');
+  }
+
+  getMoveToDisplayAttribute() {
+    return $("span[tooltip='Move to Displayed Attributes']");
+  }
+
+  clickMoveToAvailableAttribute() {
+    return $("span[tooltip='Move to Available Attributes']").click();
+  }
+
+  clickMoveToDisplayAttribute() {
+    return this.getMoveToDisplayAttribute().click();
+  }
+
+  getCancelButton() {
+    return element(By.css('.fa-close.btn'));
+  }
+
+  clickCancelButton() {
+    return this.getCancelButton().click();
+  }
+  
+  selectAttributeCheckBox(AttributeValue) {
+    return element(By.xpath("//input[@id= '"+ AttributeValue + "']")).click();
+  }
+
+  /* inline quick-add */
+  clickInlineQuickAdd(titleString) {
+    return element(by.xpath("//datatable-body-row[.//p[contains(text(), '" + titleString + "')]]")).$('.quick-add-icon').click();
+  }
+
+  treeIconDisable(titleString) {
+    return element(by.xpath("//datatable-body-row[.//p[contains(text(), '" + titleString + "')]]")).$('.tree-icon__disabled');
+  }
+
+  inlineQuickAddWorkItem() {
+    return $('#workItemList_quickAdd_inline');
+  }
+
+  typeInlineQuickAddWorkItemTitle(titleString) {
+    return this.inlineQuickAddWorkItem().$('.f8-quickadd-input ').sendKeys(titleString);
+  }
+
+  getInlineQuickAddBtn() {
+    return this.inlineQuickAddWorkItem().$('#quickadd-save');
+  }
+
+  clickInlineQuickAddButton() {
+    this.getInlineQuickAddBtn().click();
+  }
+  
+  clickInlineQuickAddandOpenButton() {
+     return this.inlineQuickAddWorkItem().element(By.xpath("//button[text()=' Add and Open ']")).click();
+  }
+
+  clickInlineQuickAddCancel(titleString) {
+    return element(by.xpath("//datatable-body-row[.//p[contains(text(), '" + titleString + "')]]")).$('.pficon-close').click();
+  }
+
+  /* side panel*/
+  getWorkItemGroup() {
+    browser.wait(until.presenceOf(this.getHidePanel()), constants.WAIT, 'Failed to find Hide panel button');    
+    return $$('.f8-group-filter');
+  }
+
+  clickScenario() {
+    return this.getWorkItemGroup().get(0).click();
+  }
+
+  clickExperience() {
+    return this.getWorkItemGroup().get(1).click();
   }
 
   clickRequirements() {
-    return this.getRequirements().click();
+    return this.getWorkItemGroup().get(2).click();
   }
 
-  getExecution() {
-    return element(by.id('execution'));
+  getHidePanel() {
+    return $('.f8-sidepanel--toggle-icon');
   }
+
+  clickHidePanelBtn() {
+    return $('.f8-sidepanel--toggle-icon').click();
+  }
+
+  workItemQuickAdd() {
+    return $('#workItemList_up_quickAdd').$$('.dropdown-kebab-pf');
+  }
+
+  clickWorkItemQADropDown() {
+    return this.workItemQuickAdd().click();
+  }
+
+  getWorkItemType() {
+    return $$('.dropdown-menu>li>a');
+  }
+
 }
-
 module.exports = WorkItemListPage;

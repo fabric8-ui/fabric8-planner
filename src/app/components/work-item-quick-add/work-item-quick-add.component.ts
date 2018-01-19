@@ -1,6 +1,7 @@
 import { Space, Spaces } from 'ngx-fabric8-wit';
 import {
   AfterViewInit,
+  AfterViewChecked,
   Component,
   EventEmitter,
   ElementRef,
@@ -9,6 +10,7 @@ import {
   OnDestroy,
   OnChanges,
   Output,
+  Renderer2,
   SimpleChanges,
   ViewChild,
   ViewChildren,
@@ -32,20 +34,27 @@ import { WorkItemService } from '../../services/work-item.service';
   templateUrl: './work-item-quick-add.component.html',
   styleUrls: ['./work-item-quick-add.component.less']
 })
-export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewInit {
+export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
   @ViewChild('quickAddTitle') qaTitle: any;
   @ViewChild('quickAddDesc') qaDesc: any;
   @ViewChildren('quickAddTitle', {read: ElementRef}) qaTitleRef: QueryList<ElementRef>;
   @ViewChild('quickAddSubmit') qaSubmit: any;
+  @ViewChild('quickAddElement') quickAddElement: ElementRef;
+  @ViewChild('inlinequickAddElement') inlinequickAddElement: ElementRef;
 
   @Input() parentWorkItemId: string = null;
+  @Input() quickAddContext: any[] = [];
 
   @Input('WITypes') set WITypeSetter(val: WorkItemType[]) {
     if (JSON.stringify(val) !== JSON.stringify(this.allWorkItemTypes)) {
       this.allWorkItemTypes = val;
       this.availableTypes = cloneDeep(this.allWorkItemTypes);
+      this.allowedWITs = this.allWorkItemTypes.filter(entry => {
+        return this.quickAddContext.findIndex(i => i.id === entry.id) >= 0;
+      });
       if(this.availableTypes.length){
-        this.selectedType = this.availableTypes[0];
+        //this.selectedType = this.availableTypes[0];
+        this.selectedType = this.allowedWITs[0];
         if (this.wilistview === 'wi-table-view-top') {
           this.createWorkItemObj();
         }
@@ -79,6 +88,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   allWorkItemTypes: WorkItemType[] = null;
   linkObject: object;
   childLinkType: any = null;
+  allowedWITs: WorkItemType[] = [];
 
   constructor(
     private workItemService: WorkItemService,
@@ -89,7 +99,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     private filterService:FilterService,
     private groupTypesService: GroupTypesService,
     private route: ActivatedRoute,
-    private spaces: Spaces) {}
+    private spaces: Spaces,
+    private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.createWorkItemObj();
@@ -174,6 +185,18 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     });
   }
 
+  ngAfterViewChecked() {
+    if (this.quickAddElement) {
+      let quickaddWdth: number =  0;
+      if (document.getElementsByClassName('f8-wi-list__quick-add').length > 0) {
+        quickaddWdth = (document.getElementsByClassName('f8-wi-list__quick-add')[0] as HTMLElement).offsetWidth;
+      }
+      let targetWidth: number = quickaddWdth + 20;
+      if (this.quickAddElement.nativeElement.classList.contains('f8-quick-add-inline')) {
+        this.renderer.setStyle(this.quickAddElement.nativeElement, 'max-width', targetWidth + "px");
+      }
+    }
+  }
   selectType(event: any, type: WorkItemType) {
     if (event)
       event.preventDefault();
@@ -220,7 +243,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   save(event: any = null): void {
     if (event)
       event.preventDefault();
-    
+
     this.workItemCreate.emit({parentId: this.parentWorkItemId});
 
     // Setting type in relationship
@@ -319,14 +342,19 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   setGuidedWorkItemType(wiTypeCollection) {
-    if (this.wilistview === 'wi-list-view' || this.wilistview === 'wi-card-view')
+    //if (this.wilistview === 'wi-list-view' || this.wilistview === 'wi-card-view')
     if (wiTypeCollection.length > 0) {
+      let currentGT = this.groupTypesService.getCurrentGroupType();
+      this.allowedWITs = this.allWorkItemTypes.filter(entry => {
+        return currentGT.findIndex(i => i.id === entry.id) >= 0;
+      });
       this.availableTypes = cloneDeep(this.allWorkItemTypes);
       let setWITCollection = new Set(wiTypeCollection);
       let setAvailableTypes = new Set(this.availableTypes);
       let intersection = new Set([...Array.from(setAvailableTypes)].filter(x => setWITCollection.has(x.id)));
       this.availableTypes = [...Array.from(intersection)];
-      this.selectedType = this.availableTypes[0];
+      //this.selectedType = this.availableTypes[0];
+      this.selectedType = this.allowedWITs[0];
       this.showQuickAdd = false
       this.showQuickAddBtn = true;
     } else {
