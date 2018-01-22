@@ -88,6 +88,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
   @ViewChild('containerHeight') containerHeight: ElementRef;
   @ViewChild('myTable') table: any;
 
+  wiParentIds: Array<string> = [];
   selectedRows: any = [];
   detailExpandedRows: any = [];
   expanded: any = {};
@@ -465,8 +466,8 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         console.log('Performance :: Fetching the initial list - ' + (t2 - t1) + ' milliseconds.');
         this.logger.log('Got work item list.');
         this.logger.log(workItemResp.workItems);
-        const workItems = workItemResp.workItems;
         console.log("####", workItemResp);
+        const workItems = workItemResp.workItems;
         this.nextLink = workItemResp.nextLink;
         const included = workItemResp.included;
         this.included = this.workItemService.resolveWorkItems(
@@ -483,7 +484,15 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           this.workItemTypes,
           this.labels
         );
-        this.datatableWorkitems = [...this.tableWorkitem(this.workItems, null, true), ...this.tableWorkitem(this.included, null, false)];
+        this.wiParentIds = [
+          ...this.getParentIdsAll(this.workItems),
+          ...this.getParentIdsAll(this.included)
+        ];
+        console.log('####1', this.wiParentIds);
+        this.datatableWorkitems = [
+          ...this.tableWorkitem(this.workItems, null, true),
+          ...this.tableWorkitem(this.included, null, false)
+        ];
         this.workItems = [...this.workItems, ...this.included];
         this.workItemDataService.setItems(this.workItems);
         // Resolve assignees
@@ -556,9 +565,10 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
       .subscribe((newWiItemResp) => {
         const t2 = performance.now();
         console.log("###2", newWiItemResp);
-        const workItems = newWiItemResp.workItems.filter((workItem: WorkItem) => {
-          return !!!Object.keys(workItem.relationships.parent).length;
-        });
+        // const workItems = newWiItemResp.workItems.filter((workItem: WorkItem) => {
+          // return !!!Object.keys(workItem.relationships.parent).length;
+        // });
+        const workItems = newWiItemResp.workItems;
         console.log("###3", workItems);
         this.nextLink = newWiItemResp.nextLink;
         const wiLength = this.workItems.length;
@@ -567,16 +577,30 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           this.iterations,
           [],
           this.workItemTypes,
-          this.labels,
-          newWiItemResp.included
+          this.labels
         );
-        this.workItems = [
-          ...this.workItems,
-          ...newItems
+        const newIncluded = this.workItemService.resolveWorkItems(
+          newWiItemResp.included,
+          this.iterations,
+          [],
+          this.workItemTypes,
+          this.labels
+        );
+        this.wiParentIds = [
+          ...this.wiParentIds,
+          ...this.getParentIdsAll(newItems),
+          ...this.getParentIdsAll(newIncluded)
         ];
         this.datatableWorkitems = [
           ...this.datatableWorkitems,
-          ...this.tableWorkitem(newItems)
+          ...this.tableWorkitem(newItems, null, true),
+          ...this.tableWorkitem(newIncluded, null, false)
+        ];
+        this.included = [...this.included, ...newIncluded];
+        this.workItems = [
+          ...this.workItems,
+          ...newItems,
+          ...newIncluded
         ];
         this.workItemDataService.setItems(this.workItems);
         console.log('Performance :: Fetching more list items - ' + (t2 - t1) + ' milliseconds.');
@@ -741,6 +765,17 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
         return values.workItems;
       })
+  }
+
+  getParentIdsAll(items) {
+    return items.reduce((parentIds, item) => {
+      const parentid = item.relationships.parent && item.relationships.parent.data ?
+        item.relationships.parent.data.id : null;
+      if (parentid && parentIds.findIndex(i => i === parentid) > -1) {
+        return [...parentIds, parentid];
+      }
+      return parentIds;
+    }, [])
   }
 
   onPreview(id: string): void {
@@ -1128,8 +1163,10 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     });
   }
 
-  tableWorkitem(workItems: WorkItem[], parentId: string | null = null, matchingQuery: boolean | null = null): any {
+  tableWorkitem(workItems: WorkItem[], parentId: string | null = null, matchingQuery: boolean = false): any {
+    
     return workItems.map(element => {
+        const treeStatus = this.setTreeStatus(element, matchingQuery);
         return {
           id: element.id,
           number: element.attributes['system.number'],
@@ -1141,12 +1178,25 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           assignees: element.relationships.assignees.data,
           status: element.attributes['system.state'],
           // Extra items for table
-          treeStatus: matchingQuery ? element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled' : 'expanded',
+          treeStatus: treeStatus,
           parentId: element.relationships.parent && element.relationships.parent.data ? element.relationships.parent.data.id : parentId,
-          childrenLoaded: matchingQuery ? false : true,
+          childrenLoaded: treeStatus === 'expanded' ? true : false,
           bold: matchingQuery 
         }
     });
+  }
+
+
+  setTreeStatus(element, matchingQuery) {
+    if(matchingQuery) {
+      if (this.wiParentIds.findIndex(i => i === element.id) > -1)
+        return 'expanded';
+      return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
+    } else {
+      if (this.included.findIndex(i => i.id === element.id) > -1) 
+        return 'expanded';
+      return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
+    }
   }
 
   // Start: Settings(tableConfig) dropdown
