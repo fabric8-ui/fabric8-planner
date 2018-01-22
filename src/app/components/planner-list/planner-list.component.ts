@@ -271,8 +271,11 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           //Join type and space query
           const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query );
           const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+          //const view_query = this.filterService.queryBuilder('tree-view', this.filterService.equal_notation, 'true');
+          //const third_join = this.filterService.queryJoiner(second_join);
           //second_join gives json object
           let query = this.filterService.jsonToQuery(second_join);
+          console.log('query is ', query);
           // { queryParams : {q: query}
           this.router.navigate([], {
             relativeTo: this.route,
@@ -439,12 +442,15 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
           let filterQuery = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
           let exp = this.filterService.queryJoiner(existingQuery, this.filterService.and_notation, filterQuery);
+          exp['$OPTS'] = {'tree-view': true};
           Object.assign(payload, {
             expression: exp
           });
         } else {
+          let exp = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
+          exp['$OPTS'] = {'tree-view': true}; 
           Object.assign(payload, {
-            expression: this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj))
+            expression: exp
           });
         }
         return Observable.forkJoin(
@@ -771,7 +777,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     return items.reduce((parentIds, item) => {
       const parentid = item.relationships.parent && item.relationships.parent.data ?
         item.relationships.parent.data.id : null;
-      if (parentid && parentIds.findIndex(i => i === parentid) > -1) {
+      if (parentid && parentIds.findIndex(i => i === parentid) === -1) { 
         return [...parentIds, parentid];
       }
       return parentIds;
