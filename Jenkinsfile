@@ -72,7 +72,7 @@ if (ciDeploy){
     def prj = 'fabric8-ui-'+ env.BRANCH_NAME
     prj = prj.toLowerCase()
     def route
-    timeout(time: 1, unit: 'SECONDS') {
+    timeout(time: 20, unit: 'MINUTES') {
         deployOpenShiftNode(openshiftConfigSecretName: 'fabric8-intcluster-config'){
             stage("deploy ${prj}"){
                 route = deployOpenShiftSnapshot{
