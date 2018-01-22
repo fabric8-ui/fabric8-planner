@@ -570,12 +570,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
       .getMoreWorkItems(this.nextLink)
       .subscribe((newWiItemResp) => {
         const t2 = performance.now();
-        console.log("###2", newWiItemResp);
-        // const workItems = newWiItemResp.workItems.filter((workItem: WorkItem) => {
-          // return !!!Object.keys(workItem.relationships.parent).length;
-        // });
         const workItems = newWiItemResp.workItems;
-        console.log("###3", workItems);
         this.nextLink = newWiItemResp.nextLink;
         const wiLength = this.workItems.length;
         const newItems = this.workItemService.resolveWorkItems(
@@ -597,12 +592,12 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           ...this.getParentIdsAll(newItems),
           ...this.getParentIdsAll(newIncluded)
         ];
+        this.included = [...this.included, ...newIncluded];
         this.datatableWorkitems = [
           ...this.datatableWorkitems,
           ...this.tableWorkitem(newItems, null, true),
           ...this.tableWorkitem(newIncluded, null, false)
         ];
-        this.included = [...this.included, ...newIncluded];
         this.workItems = [
           ...this.workItems,
           ...newItems,
@@ -610,7 +605,6 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         ];
         this.workItemDataService.setItems(this.workItems);
         console.log('Performance :: Fetching more list items - ' + (t2 - t1) + ' milliseconds.');
-
         // Resolve assignees
         const t3 = performance.now();
         for (let i = wiLength; i < this.workItems.length; i++) {
