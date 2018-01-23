@@ -289,8 +289,11 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
             this.createLinkObject(this.parentWorkItemId, workItem.id, '25c326a7-6d03-4f5a-b23b-86a9ee4171e9');
             let tempLinkObject = {'data': this.linkObject};
             this.workItemService.createLink(tempLinkObject)
-              .subscribe(([link, includes]) => {                
-                this.workItemService.emitAddWIChild({pwid: this.parentWorkItemId, wid: workItem.id, status: openStatus});
+              .subscribe(([link, includes]) => {
+                this.workItemService.emitAddWIChild({
+                  pwid: this.parentWorkItemId,
+                  wid: workItem.id, status: openStatus
+                  });
               })
           } else {
             this.workItemService.emitAddWI({wi: workItem, status: openStatus});
