@@ -472,7 +472,6 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         console.log('Performance :: Fetching the initial list - ' + (t2 - t1) + ' milliseconds.');
         this.logger.log('Got work item list.');
         this.logger.log(workItemResp.workItems);
-        console.log("####", workItemResp);
         const workItems = workItemResp.workItems;
         this.nextLink = workItemResp.nextLink;
         const included = workItemResp.included;
@@ -494,7 +493,6 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           ...this.getParentIdsAll(this.workItems),
           ...this.getParentIdsAll(this.included)
         ];
-        console.log('####1', this.wiParentIds);
         this.datatableWorkitems = [
           ...this.tableWorkitem(this.workItems, null, true),
           ...this.tableWorkitem(this.included, null, false)
@@ -579,14 +577,18 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           [],
           this.workItemTypes,
           this.labels
-        );
+        ).filter((item) => {
+          return this.workItems.findIndex(i => i.id === item.id) === -1;
+        });
         const newIncluded = this.workItemService.resolveWorkItems(
           newWiItemResp.included,
           this.iterations,
           [],
           this.workItemTypes,
           this.labels
-        );
+        ).filter((item) => {
+          return this.included.findIndex(i => i.id === item.id) === -1;
+        });
         this.wiParentIds = [
           ...this.wiParentIds,
           ...this.getParentIdsAll(newItems),
@@ -779,7 +781,6 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
   }
 
   onPreview(id: string): void {
-    console.log(id);
     this.workItemDataService.getItem(id).subscribe(workItem => {
       this.detailPreview.openPreview(workItem);   });
   }
