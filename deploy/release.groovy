@@ -2,6 +2,7 @@
 def ci (){
     stage('build planner npm'){
         container('ui'){
+            sh 'npm cache clean --force'
             sh 'npm install'
             sh 'npm run build'
             sh 'npm pack dist/'
@@ -18,6 +19,7 @@ def ci (){
         dir('runtime'){
             container('ui'){
                 sh '''
+        npm cache clean --force
         npm install
         HEADLESS_MODE=true ./tests/run_functional_tests.sh smokeTest
 '''
