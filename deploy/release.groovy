@@ -2,10 +2,12 @@
 def ci (){
     stage('build planner npm'){
         container('ui'){
-            sh 'npm cache clean --force'
-            sh 'npm install'
-            sh 'npm run build'
-            sh 'npm pack dist/'
+            sh '''
+            npm cache clean --force
+            npm install
+            npm run build
+            npm pack dist/
+        '''
         }
     }
 
