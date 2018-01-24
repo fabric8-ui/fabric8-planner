@@ -1,0 +1,135 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: f8planner
+  creationTimestamp: null
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    generation: 1
+    labels:
+      service: f8planner
+    name: f8planner
+  spec:
+    replicas: 3
+    selector:
+      service: f8planner
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          service: f8planner
+      spec:
+        containers:
+        - image: fabric8/fabric8-planner:${IMAGE_TAG}
+          imagePullPolicy: Always
+          name: f8planner
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          env:
+          - name: WS_K8S_API_SERVER
+            value: ${WS_K8S_API_SERVER}
+          - name: K8S_API_SERVER_PROTOCOL
+            value: ${K8S_API_SERVER_PROTOCOL}
+          - name: K8S_API_SERVER_BASE_PATH
+            value: ${K8S_API_SERVER_BASE_PATH}
+          - name: OAUTH_ISSUER
+            value: ${OAUTH_ISSUER}
+          - name: OAUTH_CLIENT_ID
+            value: ${OAUTH_CLIENT_ID}
+          - name: OAUTH_SCOPE
+            value: ${OAUTH_SCOPE}
+          - name: OAUTH_AUTHORIZE_URI
+            value: ${OAUTH_AUTHORIZE_URI}
+          - name: AUTH_LOGOUT_URI
+            value: ${AUTH_LOGOUT_URI}
+          - name: FABRIC8_PIPELINES_NAMESPACE
+            value: ${FABRIC8_PIPELINES_NAMESPACE}
+          - name: PROXIED_K8S_API_SERVER
+            value: ${PROXIED_K8S_API_SERVER}
+          - name: PROXY_PASS_URL
+            value: ${PROXY_PASS_URL}
+          - name: FABRIC8_WIT_API_URL
+            value: ${FABRIC8_WIT_API_URL}
+          - name: FABRIC8_RECOMMENDER_API_URL
+            value: ${FABRIC8_RECOMMENDER_API_URL}
+          - name: FABRIC8_FORGE_API_URL
+            value: ${FABRIC8_FORGE_API_URL}
+          - name: FABRIC8_SSO_API_URL
+            value: ${FABRIC8_SSO_API_URL}
+          - name: FABRIC8_AUTH_API_URL
+            value: ${FABRIC8_AUTH_API_URL}
+          - name: OPENSHIFT_CONSOLE_URL
+            value: ${OPENSHIFT_CONSOLE_URL}
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            timeoutSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 10
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      service: f8planner
+    name: f8planner
+  spec:
+    ports:
+    - name: "8080"
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      service: f8planner
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      service: f8planner
+    name: f8planner-pp
+  spec:
+    host: ''
+    port:
+      targetPort: "8080"
+    to:
+      kind: Service
+      name: f8planner
+      weight: 100
+    wildcardPolicy: None
+  status: {}
+parameters:
+- name: IMAGE_TAG
+  value: standalone
+- name: FABRIC8_PIPELINES_NAMESPACE
