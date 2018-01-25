@@ -248,6 +248,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   ngOnDestroy() {
     console.log('Destroying all the listeners in list component');
+    this.iterationService.resetIterations();
     this.eventListeners.forEach(subscriber => subscriber.unsubscribe());
     if (this.spaceSubscription) {
       this.spaceSubscription.unsubscribe();
@@ -347,7 +348,15 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     if ( this.route.snapshot.queryParams['q'] ) {
       let urlArray = this.route.snapshot.queryParams['q'].split('WITGROUP:');
       if (urlArray.length > 1 ) {
-        let witGroupName = urlArray[1].replace(')','');
+        //If wit group is one of the parameters
+        let ind = urlArray[1].indexOf(' $AND ');
+        let witGroupName = '';
+        if (ind >= 0) {
+          witGroupName = urlArray[1].substring(0,ind);
+        } else {
+          //if wit group is the last query
+          witGroupName = urlArray[1].replace(')','');
+        }
         let witGroupList = this.groupTypesService.getWitGroupList();
         if( witGroupList.length > 0 ) {
           let selectedWitGroup = witGroupList.find(witg => witg.attributes.name === witGroupName);
@@ -937,21 +946,21 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
     this.eventListeners.push(
       this.workItemService.addWIObservable
-        .map(item => this.workItemService.resolveWorkItems(
-          [item],
-          this.iterations,
-          [],
-          this.workItemTypes,
-          this.labels
-        )[0])
         .subscribe(item => {
+          let resolvedworkItem = this.workItemService.resolveWorkItems(
+            [item.wi],
+            this.iterations,
+            [],
+            this.workItemTypes,
+            this.labels
+          )[0];
           // Resolve creator
-          item.relationships.creator.data = this.loggedInUser as User;
-          this.onCreateWorkItem(item);
-          if (this.filterService.doesMatchCurrentFilter(item)) {
+          resolvedworkItem.relationships.creator.data = this.loggedInUser as User;
+          this.onCreateWorkItem(resolvedworkItem);
+          if (this.filterService.doesMatchCurrentFilter(resolvedworkItem)) {
             try {
               this.notifications.message({
-                message: item.attributes['system.title'] + ' created.',
+                message: resolvedworkItem.attributes['system.title'] + ' created.',
                 type: NotificationType.SUCCESS
               } as Notification);
             } catch (e) {
@@ -960,20 +969,23 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           } else {
             try {
               this.notifications.message({
-                message: item.attributes['system.title'] + ' created. Added WI does not match the applied filters',
+                message: resolvedworkItem.attributes['system.title'] + ' created. Added WI does not match the applied filters',
                 type: NotificationType.SUCCESS
               } as Notification);
             } catch (e) {
               console.log('Error displaying notification. Added WI does not match the applied filters.')
             }
           }
+          if (item.status) {
+            this.onDetailPreview(resolvedworkItem.id);
+          }
         })
     );
 
     this.eventListeners.push(
       this.workItemService.addWIChildObservable
-        .subscribe((parentWorkItemId: string) => {
-          let parentIndex = this.datatableWorkitems.findIndex(i => i.id === parentWorkItemId);
+        .subscribe((workitemDetail) => {
+          let parentIndex = this.datatableWorkitems.findIndex(i => i.id === workitemDetail.pwid);
           if (parentIndex > -1) {
             this.datatableWorkitems[parentIndex].treeStatus = 'collapsed';
             this.datatableWorkitems[parentIndex].childrenLoaded = false;
@@ -981,6 +993,9 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
               rowIndex: parentIndex,
               row: this.datatableWorkitems[parentIndex]
             });
+          }
+          if (workitemDetail.status) {
+            this.onDetailPreview(workitemDetail.wid);
           }
         })
     );
@@ -1156,12 +1171,10 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   onDetailPreview(id): void {
     event.stopPropagation();
-    this.workItemDataService.getItem(id).subscribe(workItem => {
-      this.router.navigateByUrl(
-        this.router.url.split('plan')[0] + 'plan/detail/' + workItem.id,
-        { relativeTo: this.route }
-      );
-    });
+    this.router.navigateByUrl(
+      this.router.url.split('plan')[0] + 'plan/detail/' + id,
+      { relativeTo: this.route }
+    );
   }
 
   tableWorkitem(workItems: WorkItem[], parentId: string | null = null, matchingQuery: boolean = false): any {
