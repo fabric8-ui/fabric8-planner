@@ -247,6 +247,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   ngOnDestroy() {
     console.log('Destroying all the listeners in list component');
+    this.iterationService.resetIterations();
     this.eventListeners.forEach(subscriber => subscriber.unsubscribe());
     if (this.spaceSubscription) {
       this.spaceSubscription.unsubscribe();
@@ -343,7 +344,15 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     if ( this.route.snapshot.queryParams['q'] ) {
       let urlArray = this.route.snapshot.queryParams['q'].split('WITGROUP:');
       if (urlArray.length > 1 ) {
-        let witGroupName = urlArray[1].replace(')','');
+        //If wit group is one of the parameters
+        let ind = urlArray[1].indexOf(' $AND ');
+        let witGroupName = '';
+        if (ind >= 0) {
+          witGroupName = urlArray[1].substring(0,ind);
+        } else {
+          //if wit group is the last query
+          witGroupName = urlArray[1].replace(')','');
+        }
         let witGroupList = this.groupTypesService.getWitGroupList();
         if( witGroupList.length > 0 ) {
           let selectedWitGroup = witGroupList.find(witg => witg.attributes.name === witGroupName);
