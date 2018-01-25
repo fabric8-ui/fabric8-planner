@@ -1,0 +1,52 @@
+= Test Runner
+
+This project contains a simple test runner for Protractor Angular tests. The intention is to have an 
+isolated test runner that does not share dependencies with code under test. This test runner works
+standalone and just needs to be pointed at a set of Typescript test specs and an URL to test them on.
+
+Please note that this test runner is for **black box tests** only!
+
+== Preparing the Test Runner
+
+You need to get dependencies before running the test runner:
+
+```
+npm install
+```
+
+You will also need to have `curl` and `bash` installed on your system and available in the path.
+
+== Providing Test Specs
+
+To run a test suite, you need to create a set of test specs (which may include page objects). The
+test specs source directory needs to include a `tsconfig.json` configuration file. The path to the 
+spec source directory has to be provided using the env variable `TEST_SOURCE_PATH`:
+
+== Running Tests
+
+Next, you need to provide a URL of the system under test using the env variable `BASE_URL`. If 
+`BASE_URL` is not set, `http://localhost:8088/` is used.
+
+Tests can then be run with:
+
+```
+npm test
+```
+
+This will compile the specs, add dependencies and runs the test specs.
+
+== Additional Configuration
+
+The test runner supports the following env variables to configure behaviour:
+
+|=======
+|`BASE_URL` | URL of the system under test. Defaults to `http://localhost:8088/`.
+|`TEST_SOURCE_PATH` | Path to the spec source directory. Defaults to the included examples in `example-test-src`.
+|`TEMP_DIR` | Temporary directory for the test run. Defaults to a generated temporary directory.
+|`SPECS_PATTERN` | File pattern for the Protractor run. This should never be modified/set.
+|=======
+
+The test runner uses a fixed set of dependencies defined in `package.json` of the test runner. The specs will
+run with the same dependencies. If you need additional dependencies, you may have to modify the test runner's 
+`package.json`.
+

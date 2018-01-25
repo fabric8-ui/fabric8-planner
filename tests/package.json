@@ -1,0 +1,33 @@
+{
+  "name": "osio-testrunner",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [
+    "angular2",
+    "fabric8",
+    "openshift.io"
+  ],
+  "author": "Michael Kleinhenz <kleinhenz@redhat.com>",
+  "license": "Apache 2",
+  "scripts": {
+    "tsc": "tsc",
+    "webdriver:update": "webdriver-manager update",
+    "webdriver:start": "webdriver-manager start",
+    "protractor": "protractor tmp/protractor.conf.js",
+    "test": "./run.sh"
+  },
+  "dependencies": {
+    "@types/jasmine": "2.8.5",
+    "@types/jasminewd2": "2.0.3",
+    "jasmine": "2.9.0",
+    "npm-run-all": "^4.1.2",
+    "protractor": "5.2.2",
+    "typescript": "2.6.2"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "@types/jasmine": "2.8.5",
+    "@types/jasminewd2": "2.0.3",
+    "ts-node": "4.1.0"
+  }
+}
