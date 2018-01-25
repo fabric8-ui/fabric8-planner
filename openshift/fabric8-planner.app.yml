@@ -126,7 +126,7 @@ objects:
       service: f8planner
       app: fabric8-planner
       provider: fabric8
-    name: f8planner-pp
+    name: fabric8-planner
   spec:
     host: ''
     port:
