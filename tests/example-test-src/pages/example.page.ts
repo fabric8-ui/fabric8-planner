@@ -6,13 +6,8 @@ export class OSIOPlannerMain {
 
   constructor(login: boolean) {
     if (login) {
-      let url = encodeURIComponent(JSON.stringify({
-        access_token: 'somerandomtoken',
-        expires_in: 1800,
-        refresh_expires_in: 1800,
-        refresh_token: 'somerandomtoken',
-        token_type: "bearer"
-      }));
+      console.log(browser.params.accessToken);
+      let url = encodeURIComponent(JSON.stringify(JSON.parse(browser.params.accessToken)));
       browser.get(browser.baseUrl + "/?token_json=" + url);
     } else {
       browser.get(browser.baseUrl);

@@ -30,9 +30,13 @@ main() {
   local temp_dir=${TEMP_DIR:-$(mktemp -d)}
   local specs_pattern=${SPECS_PATTERN:-"${temp_dir}/**/*.spec.js"}
   local test_source_path=${TEST_SOURCE_PATH:-"example-test-src"}
+  local access_token=${ACCESS_TOKEN:-"{\"access_token\":\"somerandomtoken\",\"expires_in\":1800,\"refresh_expires_in\":1800,\"refresh_token\":\"somerandomtoken\",\"token_type\":\"bearer\"}"}
   local protractor="$(npm bin)/protractor"
   local typescript="$(npm bin)/tsc"
   local suite=${1:-fullTest}
+
+  echo "Getting local dependencies.."
+  npm install
 
   echo "Using ${temp_dir} as working directory"
 
@@ -45,13 +49,12 @@ main() {
   ${typescript} --outDir "${temp_dir}" --project "${test_source_path}"
   ${typescript} --outDir "${temp_dir}" --project "."
 
-  echo "Get dependencies.."
+  echo "Getting test context dependencies.."
   cp "package.json" "${temp_dir}/"
   cd "${temp_dir}" && npm install
 
-  if [[ -z ${BASE_URL+x} ]]; then
-    echo "BASE_URL is not set, using ${base_url}"
-  fi
+  echo "Using base url ${base_url}"
+  echo "Using token ${access_token}"
 
   if [[ ${DIRECT_CONNECT:-false} == false ]]; then
     echo "DIRECT_CONNECT not set; Using webdriver. Tests may run slow .. checking webdriver status"
@@ -71,7 +74,7 @@ main() {
   fi
 
   #$protractor --baseUrl "${base_url}" "tmp/protractor.conf.js" --suite "${suite}"
-  $protractor --baseUrl "${base_url}" --specs "${specs_pattern}" --exclude "node_modules/**/*.spec.js" "${temp_dir}/protractor.conf.js"
+  $protractor --baseUrl "${base_url}" --specs "${specs_pattern}" --exclude "node_modules/**/*.spec.js" --params.accessToken "${access_token}" "${temp_dir}/protractor.conf.js"
 
   TEST_RESULT=$?
 
