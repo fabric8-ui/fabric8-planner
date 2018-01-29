@@ -52,7 +52,8 @@
         (onCreateNewWorkItemSelected)="onCreateFromContext()"
         [currentBoardType]="currentBoardType"
         [areas]="areas"
-        [loggedInUser]="loggedInUser">
+        [loggedInUser]="loggedInUser"
+        (onShowTree)="setShowTree($event)">
       </toolbar-panel>
     </div>
     <!-- tableConfig Dropdown -->
@@ -202,26 +203,26 @@
           <!-- columns id-assignees -->
           <ngx-datatable-column
             *ngFor="let c of (columns | filterColumn:'display')"
-            [isTreeColumn]="c.name==='Title'"
+            [isTreeColumn]="c?.isTreeColumn"
             [name]="c.name"
             [resizeable]="false"
             [width]="c.width"
             [sortable]="c.name === 'Title'"
             [cellClass]="'cell-class'"
             [headerClass]="'header-cell'">
-              <ng-template ngx-datatable-cell-tree-expander *ngIf="c.name==='Title'">
+              <ng-template ngx-datatable-cell-tree-expander *ngIf="c.name==='Title' && showTree">
                 <i class="fa fa-angle-right tree-icon"></i>
               </ng-template>
 
-              <ng-template ngx-datatable-cell-tree-collapser *ngIf="c.name==='Title'">
+              <ng-template ngx-datatable-cell-tree-collapser *ngIf="c.name==='Title' && showTree">
                 <i class="fa fa-angle-down tree-icon"></i>
               </ng-template>
 
-              <ng-template ngx-datatable-cell-tree-disabled *ngIf="c.name==='Title'">
+              <ng-template ngx-datatable-cell-tree-disabled *ngIf="c.name==='Title' && showTree">
                 <i class="fa fa-angle-right tree-icon tree-icon__disabled"></i>
               </ng-template>
 
-              <ng-template ngx-datatable-cell-tree-loader *ngIf="c.name==='Title'">
+              <ng-template ngx-datatable-cell-tree-loader *ngIf="c.name==='Title' && showTree">
                 <div class="spinner spinner-xs icon-loader margin-top-15"></div>
               </ng-template>
 

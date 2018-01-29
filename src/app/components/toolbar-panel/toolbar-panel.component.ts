@@ -56,6 +56,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() currentBoardType: WorkItemType | Object = {};
 
   @Output() onCreateNewWorkItemSelected: EventEmitter<any | null> = new EventEmitter();
+  @Output() onShowTree: EventEmitter<any> = new EventEmitter();
 
   loggedIn: boolean = false;
   editEnabled: boolean = false;
@@ -588,5 +589,11 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-
+  // show tree feature
+  checkboxToggle(event) {
+    console.log("#### - 1", event);
+     this.onShowTree.emit({
+       showTree: event.target.checked
+     })
+  }
 }

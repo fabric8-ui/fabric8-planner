@@ -87,6 +87,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
   @ViewChild('containerHeight') containerHeight: ElementRef;
   @ViewChild('myTable') table: any;
 
+  showTree: boolean = true;
   wiParentIds: Array<string> = [];
   selectedRows: any = [];
   detailExpandedRows: any = [];
@@ -181,7 +182,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     this.loggedIn = this.auth.isLoggedIn();
 
     // Cookie for datatableColumn config
-    if(!this.cookieService.getCookie(datatableColumn.length).status) {
+    if(this.cookieService.getCookie(datatableColumn.length).status) {
       this.cookieService.setCookie('datatableColumn', datatableColumn);
       this.columns = datatableColumn;
     } else {
@@ -456,13 +457,13 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
           let filterQuery = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
           let exp = this.filterService.queryJoiner(existingQuery, this.filterService.and_notation, filterQuery);
-          exp['$OPTS'] = {'tree-view': true};
+          exp['$OPTS'] = {'tree-view': this.showTree};
           Object.assign(payload, {
             expression: exp
           });
         } else {
           let exp = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
-          exp['$OPTS'] = {'tree-view': true};
+          exp['$OPTS'] = {'tree-view': this.showTree}; 
           Object.assign(payload, {
             expression: exp
           });
@@ -489,13 +490,6 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         const workItems = workItemResp.workItems;
         this.nextLink = workItemResp.nextLink;
         const included = workItemResp.included;
-        this.included = this.workItemService.resolveWorkItems(
-          included,
-          this.iterations,
-          [], // We don't want to static resolve user at this point
-          this.workItemTypes,
-          this.labels
-        );
         this.workItems = this.workItemService.resolveWorkItems(
           workItems,
           this.iterations,
@@ -503,15 +497,26 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           this.workItemTypes,
           this.labels
         );
-        this.wiParentIds = [
-          ...this.getParentIdsAll(this.workItems),
-          ...this.getParentIdsAll(this.included)
-        ];
-        this.datatableWorkitems = [
-          ...this.tableWorkitem(this.workItems, null, true),
-          ...this.tableWorkitem(this.included, null, false)
-        ];
-        this.workItems = [...this.workItems, ...this.included];
+        if (this.showTree) {
+          this.included = this.workItemService.resolveWorkItems(
+            included,
+            this.iterations,
+            [], // We don't want to static resolve user at this point
+            this.workItemTypes,
+            this.labels
+          );
+          this.wiParentIds = [
+            ...this.getParentIdsAll(this.workItems),
+            ...this.getParentIdsAll(this.included)
+          ];
+          this.datatableWorkitems = [
+            ...this.tableWorkitem(this.workItems, null, true),
+            ...this.tableWorkitem(this.included, null, false)
+          ];
+          this.workItems = [...this.workItems, ...this.included];
+        } else {
+          this.datatableWorkitems = [...this.tableWorkitem(this.workItems)]
+        }
         this.workItemDataService.setItems(this.workItems);
         // Resolve assignees
         const t3 = performance.now();
@@ -1185,6 +1190,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
   tableWorkitem(workItems: WorkItem[], parentId: string | null = null, matchingQuery: boolean = false): any {
 
     return workItems.map(element => {
+      if (this.showTree) {
         const treeStatus = this.setTreeStatus(element, matchingQuery);
         return {
           id: element.id,
@@ -1202,6 +1208,19 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           childrenLoaded: treeStatus === 'expanded' ? true : false,
           bold: matchingQuery
         }
+      } else {
+        return {
+          id: element.id,
+          number: element.attributes['system.number'],
+          type: element.relationships.baseType ? element.relationships.baseType : '',
+          title: element.attributes['system.title'],
+          labels: element.relationships.labels.data,
+          iteration: element.relationships.iteration.data,
+          creator: element.relationships.creator.data,
+          assignees: element.relationships.assignees.data,
+          status: element.attributes['system.state'],
+        }
+      }
     });
   }
 
@@ -1216,6 +1235,13 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         return 'expanded';
       return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
     }
+  }
+
+  setShowTree(event){
+    this.showTree = event.showTree;
+    this.columns[2] = event.showTree;
+    console.log("set", this.showTree, this.columns[2]);
+    this.loadWorkItems();
   }
 
   // Start: Settings(tableConfig) dropdown
