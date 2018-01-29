@@ -95,7 +95,7 @@ v|`npm run build \-- --watch`
 
 | *[default]* all
 v|`npm run clean` or
-`npm run build \-- --app`
+`npm run build \-- --all`
 | Fully resets the project
 
 | cache
