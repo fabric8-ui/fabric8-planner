@@ -28,6 +28,7 @@ import { GroupTypesService } from '../../services/group-types.service';
 import { WorkItemType } from '../../models/work-item-type';
 import { WorkItem, WorkItemRelations } from '../../models/work-item';
 import { WorkItemService } from '../../services/work-item.service';
+import { setTimeout } from 'core-js/library/web/timers';
 
 @Component({
   selector: 'alm-work-item-quick-add',
@@ -289,8 +290,6 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
           }
           this.workItem = workItem; // saved workItem, w/ id if new
           this.resetQuickAdd();
-          this.qaSubmit.nativeElement.removeAttribute('disabled');
-          this.qaTitle.nativeElement.removeAttribute('disabled');
         },
         error => {
           this.error = error;
@@ -325,6 +324,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     this.showQuickAddBtn = false;
     this.showQuickAdd = true;
     this.descHeight = this.initialDescHeight ? this.initialDescHeight : '26px';
+    this.qaSubmit.nativeElement.removeAttribute('disabled');
+    this.qaTitle.nativeElement.removeAttribute('disabled');
     this.qaTitle.nativeElement.focus();
   }
 
