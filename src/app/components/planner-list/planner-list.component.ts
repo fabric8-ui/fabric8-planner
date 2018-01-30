@@ -88,6 +88,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
   @ViewChild('containerHeight') containerHeight: ElementRef;
   @ViewChild('myTable') table: any;
 
+  wiParentIds: Array<string> = [];
   selectedRows: any = [];
   detailExpandedRows: any = [];
   expanded: any = {};
@@ -260,6 +261,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   ngOnDestroy() {
     console.log('Destroying all the listeners in list component');
+    this.iterationService.resetIterations();
     this.eventListeners.forEach(subscriber => subscriber.unsubscribe());
     if (this.spaceSubscription) {
       this.spaceSubscription.unsubscribe();
@@ -283,8 +285,11 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           //Join type and space query
           const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query );
           const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+          //const view_query = this.filterService.queryBuilder('tree-view', this.filterService.equal_notation, 'true');
+          //const third_join = this.filterService.queryJoiner(second_join);
           //second_join gives json object
           let query = this.filterService.jsonToQuery(second_join);
+          console.log('query is ', query);
           // { queryParams : {q: query}
           this.router.navigate([], {
             relativeTo: this.route,
@@ -356,7 +361,15 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     if ( this.route.snapshot.queryParams['q'] ) {
       let urlArray = this.route.snapshot.queryParams['q'].split('WITGROUP:');
       if (urlArray.length > 1 ) {
-        let witGroupName = urlArray[1].replace(')','');
+        //If wit group is one of the parameters
+        let ind = urlArray[1].indexOf(' $AND ');
+        let witGroupName = '';
+        if (ind >= 0) {
+          witGroupName = urlArray[1].substring(0,ind);
+        } else {
+          //if wit group is the last query
+          witGroupName = urlArray[1].replace(')','');
+        }
         let witGroupList = this.groupTypesService.getWitGroupList();
         if( witGroupList.length > 0 ) {
           let selectedWitGroup = witGroupList.find(witg => witg.attributes.name === witGroupName);
@@ -451,12 +464,15 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
           let filterQuery = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
           let exp = this.filterService.queryJoiner(existingQuery, this.filterService.and_notation, filterQuery);
+          exp['$OPTS'] = {'tree-view': true};
           Object.assign(payload, {
             expression: exp
           });
         } else {
+          let exp = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
+          exp['$OPTS'] = {'tree-view': true}; 
           Object.assign(payload, {
-            expression: this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj))
+            expression: exp
           });
         }
         return Observable.forkJoin(
@@ -480,16 +496,30 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         this.logger.log(workItemResp.workItems);
         const workItems = workItemResp.workItems;
         this.nextLink = workItemResp.nextLink;
-        this.included = workItemResp.included;
+        const included = workItemResp.included;
+        this.included = this.workItemService.resolveWorkItems(
+          included,
+          this.iterations,
+          [], // We don't want to static resolve user at this point
+          this.workItemTypes,
+          this.labels
+        );
         this.workItems = this.workItemService.resolveWorkItems(
           workItems,
           this.iterations,
           [], // We don't want to static resolve user at this point
           this.workItemTypes,
-          this.labels,
-          this.included
+          this.labels
         );
-        this.datatableWorkitems = this.tableWorkitem(this.workItems);
+        this.wiParentIds = [
+          ...this.getParentIdsAll(this.workItems),
+          ...this.getParentIdsAll(this.included)
+        ];
+        this.datatableWorkitems = [
+          ...this.tableWorkitem(this.workItems, null, true),
+          ...this.tableWorkitem(this.included, null, false)
+        ];
+        this.workItems = [...this.workItems, ...this.included];
         this.workItemDataService.setItems(this.workItems);
         // Resolve assignees
         const t3 = performance.now();
@@ -560,9 +590,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
       .getMoreWorkItems(this.nextLink)
       .subscribe((newWiItemResp) => {
         const t2 = performance.now();
-        const workItems = newWiItemResp.workItems.filter((workItem: WorkItem) => {
-          return !!!Object.keys(workItem.relationships.parent).length;
-        });
+        const workItems = newWiItemResp.workItems;
         this.nextLink = newWiItemResp.nextLink;
         const wiLength = this.workItems.length;
         const newItems = this.workItemService.resolveWorkItems(
@@ -570,20 +598,37 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           this.iterations,
           [],
           this.workItemTypes,
-          this.labels,
-          newWiItemResp.included
-        );
-        this.workItems = [
-          ...this.workItems,
-          ...newItems
+          this.labels
+        ).filter((item) => {
+          return this.workItems.findIndex(i => i.id === item.id) === -1;
+        });
+        const newIncluded = this.workItemService.resolveWorkItems(
+          newWiItemResp.included,
+          this.iterations,
+          [],
+          this.workItemTypes,
+          this.labels
+        ).filter((item) => {
+          return this.included.findIndex(i => i.id === item.id) === -1;
+        });
+        this.wiParentIds = [
+          ...this.wiParentIds,
+          ...this.getParentIdsAll(newItems),
+          ...this.getParentIdsAll(newIncluded)
         ];
+        this.included = [...this.included, ...newIncluded];
         this.datatableWorkitems = [
           ...this.datatableWorkitems,
-          ...this.tableWorkitem(newItems)
+          ...this.tableWorkitem(newItems, null, true),
+          ...this.tableWorkitem(newIncluded, null, false)
+        ];
+        this.workItems = [
+          ...this.workItems,
+          ...newItems,
+          ...newIncluded
         ];
         this.workItemDataService.setItems(this.workItems);
         console.log('Performance :: Fetching more list items - ' + (t2 - t1) + ' milliseconds.');
-
         // Resolve assignees
         const t3 = performance.now();
         for (let i = wiLength; i < this.workItems.length; i++) {
@@ -746,8 +791,18 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
       })
   }
 
+  getParentIdsAll(items) {
+    return items.reduce((parentIds, item) => {
+      const parentid = item.relationships.parent && item.relationships.parent.data ?
+        item.relationships.parent.data.id : null;
+      if (parentid && parentIds.findIndex(i => i === parentid) === -1) { 
+        return [...parentIds, parentid];
+      }
+      return parentIds;
+    }, [])
+  }
+
   onPreview(id: string): void {
-    console.log(id);
     this.workItemDataService.getItem(id).subscribe(workItem => {
       this.detailPreview.openPreview(workItem);   });
   }
@@ -904,21 +959,21 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
     this.eventListeners.push(
       this.workItemService.addWIObservable
-        .map(item => this.workItemService.resolveWorkItems(
-          [item],
-          this.iterations,
-          [],
-          this.workItemTypes,
-          this.labels
-        )[0])
         .subscribe(item => {
+          let resolvedworkItem = this.workItemService.resolveWorkItems(
+            [item.wi],
+            this.iterations,
+            [],
+            this.workItemTypes,
+            this.labels
+          )[0];
           // Resolve creator
-          item.relationships.creator.data = this.loggedInUser as User;
-          this.onCreateWorkItem(item);
-          if (this.filterService.doesMatchCurrentFilter(item)) {
+          resolvedworkItem.relationships.creator.data = this.loggedInUser as User;
+          this.onCreateWorkItem(resolvedworkItem);
+          if (this.filterService.doesMatchCurrentFilter(resolvedworkItem)) {
             try {
               this.notifications.message({
-                message: item.attributes['system.title'] + ' created.',
+                message: resolvedworkItem.attributes['system.title'] + ' created.',
                 type: NotificationType.SUCCESS
               } as Notification);
             } catch (e) {
@@ -927,20 +982,23 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           } else {
             try {
               this.notifications.message({
-                message: item.attributes['system.title'] + ' created. Added WI does not match the applied filters',
+                message: resolvedworkItem.attributes['system.title'] + ' created. Added WI does not match the applied filters',
                 type: NotificationType.SUCCESS
               } as Notification);
             } catch (e) {
               console.log('Error displaying notification. Added WI does not match the applied filters.')
             }
           }
+          if (item.status) {
+            this.onDetailPreview(resolvedworkItem.id);
+          }
         })
     );
 
     this.eventListeners.push(
       this.workItemService.addWIChildObservable
-        .subscribe((parentWorkItemId: string) => {
-          let parentIndex = this.datatableWorkitems.findIndex(i => i.id === parentWorkItemId);
+        .subscribe((workitemDetail) => {
+          let parentIndex = this.datatableWorkitems.findIndex(i => i.id === workitemDetail.pwid);
           if (parentIndex > -1) {
             this.datatableWorkitems[parentIndex].treeStatus = 'collapsed';
             this.datatableWorkitems[parentIndex].childrenLoaded = false;
@@ -949,18 +1007,22 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
               row: this.datatableWorkitems[parentIndex]
             });
           }
+          if (workitemDetail.status) {
+            this.onDetailPreview(workitemDetail.wid);
+          }
         })
     );
 
     this.eventListeners.push(
       this.workItemService.editWIObservable.subscribe(updatedItem => {
         let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
+        let bold = this.datatableWorkitems.filter((item) => item.id === updatedItem.id)[0].bold;
         if (this.filterService.doesMatchCurrentFilter(updatedItem)) {
           updatedItem.hasChildren = updatedItem.relationships.children.meta.hasChildren;
           updatedItem.relationships['parent'] = this.workItems[index].relationships.parent;
           if (index > -1) {
             this.workItems[index] = updatedItem;
-            let updatedTableItem = this.tableWorkitem([updatedItem], this.datatableWorkitems[index].parentId)[0];
+            let updatedTableItem = this.tableWorkitem([updatedItem], this.datatableWorkitems[index].parentId, bold)[0];
             updatedTableItem.treeStatus = this.datatableWorkitems[index].treeStatus;
             updatedTableItem.childrenLoaded = this.datatableWorkitems[index].childrenLoaded;
             this.datatableWorkitems = [
@@ -1122,32 +1184,46 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   onDetailPreview(id): void {
     event.stopPropagation();
-    this.workItemDataService.getItem(id).subscribe(workItem => {
-      this.router.navigateByUrl(
-        this.router.url.split('plan')[0] + 'plan/detail/' + workItem.id,
-        { relativeTo: this.route }
-      );
+    this.router.navigateByUrl(
+      this.router.url.split('plan')[0] + 'plan/detail/' + id,
+      { relativeTo: this.route }
+    );
+  }
+
+  tableWorkitem(workItems: WorkItem[], parentId: string | null = null, matchingQuery: boolean = false): any {
+    
+    return workItems.map(element => {
+        const treeStatus = this.setTreeStatus(element, matchingQuery);
+        return {
+          id: element.id,
+          number: element.attributes['system.number'],
+          type: element.relationships.baseType ? element.relationships.baseType : '',
+          title: element.attributes['system.title'],
+          labels: element.relationships.labels.data,
+          iteration: element.relationships.iteration.data,
+          creator: element.relationships.creator.data,
+          assignees: element.relationships.assignees.data,
+          status: element.attributes['system.state'],
+          // Extra items for table
+          treeStatus: treeStatus,
+          parentId: element.relationships.parent && element.relationships.parent.data ? element.relationships.parent.data.id : parentId,
+          childrenLoaded: treeStatus === 'expanded' ? true : false,
+          bold: matchingQuery 
+        }
     });
   }
 
-  tableWorkitem(workItems: WorkItem[], parentId: string | null = null): any {
-    return workItems.map(element => {
-       return {
-        id: element.id,
-        number: element.attributes['system.number'],
-        type: element.relationships.baseType ? element.relationships.baseType : '',
-        title: element.attributes['system.title'],
-        labels: element.relationships.labels.data,
-        iteration: element.relationships.iteration.data,
-        creator: element.relationships.creator.data,
-        assignees: element.relationships.assignees.data,
-        status: element.attributes['system.state'],
-        // Extra items for table
-        treeStatus: element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled',
-        parentId: parentId,
-        childrenLoaded: false
-      }
-    });
+
+  setTreeStatus(element, matchingQuery) {
+    if(matchingQuery) {
+      if (this.wiParentIds.findIndex(i => i === element.id) > -1)
+        return 'expanded';
+      return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
+    } else {
+      if (this.included.findIndex(i => i.id === element.id) > -1) 
+        return 'expanded';
+      return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
+    }
   }
 
   // Start: Settings(tableConfig) dropdown
