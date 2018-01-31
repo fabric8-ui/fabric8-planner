@@ -1239,7 +1239,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   setShowTree(event){
     this.showTree = event.showTree;
-    this.columns[2] = event.showTree;
+    //this.columns[2] = event.showTree;
     console.log("set", this.showTree, this.columns[2]);
     this.loadWorkItems();
   }

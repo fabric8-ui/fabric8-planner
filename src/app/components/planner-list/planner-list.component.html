@@ -203,7 +203,7 @@
           <!-- columns id-assignees -->
           <ngx-datatable-column
             *ngFor="let c of (columns | filterColumn:'display')"
-            [isTreeColumn]="c?.isTreeColumn"
+            [isTreeColumn]="c.name === 'Title' && showTree"
             [name]="c.name"
             [resizeable]="false"
             [width]="c.width"
