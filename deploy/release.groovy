@@ -2,6 +2,7 @@
 def ci (){
     stage('build planner npm'){
         container('ui'){
+            sh 'npm cache clean --force'
             sh 'npm install'
             sh 'npm run build'
             sh 'npm pack dist/'
@@ -41,6 +42,26 @@ def buildImage(imageName){
 
     stage('push snapshot image'){
         sh "cd fabric8-ui && docker push ${imageName}"
+    }
+}
+
+def getStandaloneImage(imageName){
+    stage('build standalone npm') {
+        dir('runtime'){
+            container('ui'){
+               sh 'npm cache clean --force'
+               sh 'npm install'
+               sh 'npm run build'
+            }
+        }
+    }
+
+    stage('build standalone snapshot image'){
+        sh "docker build -t ${imageName} -f ./Dockerfile.deploy.runtime ."
+    }
+
+    stage('push standalone snapshot image'){
+        sh "docker push ${imageName}"
     }
 }
 

@@ -1,10 +1,11 @@
-@Library('github.com/fabric8io/fabric8-pipeline-library@master')
+@Library('github.com/pranavgore09/fabric8-pipeline-library@standalone-planner')
 def utils = new io.fabric8.Utils()
 def flow = new io.fabric8.Fabric8Commands()
 def project = 'fabric8-ui/fabric8-planner'
 def ciDeploy = false
 def tempVersion
 def imageName
+def standaloneImageName
 node{
     properties([
         disableConcurrentBuilds()
@@ -31,8 +32,11 @@ fabric8UITemplate{
                         pipeline.buildImage(imageName)
                     }
 
+                    standaloneImageName = "fabric8/fabric8-planner:${tempVersion}"
+                    container('docker'){
+                        pipeline.getStandaloneImage(standaloneImageName)
+                    }
                     ciDeploy = true
-
 
                 } else if (utils.isCD()){
                     sh "git checkout master"
@@ -97,5 +101,36 @@ if (ciDeploy){
                flow.addCommentToPullRequest(message, pr, project)
            }
        }
+   }
+   prj = 'fabric8-planner-standalone'+ env.BRANCH_NAME
+   prj = prj.toLowerCase()
+   timeout(time: 5, unit: 'MINUTES') {
+        deployOpenShiftNode(openshiftConfigSecretName: 'fabric8-intcluster-config'){
+            stage("deploy ${prj}"){
+                route = deployPlannerSnapshot{
+                    openShiftProject = prj
+                    openShiftTemplate = 'https://raw.githubusercontent.com/pranavgore09/fabric8-planner/standalone-planner-cd/openshift/fabric8-planner.app.yml'
+                    openShiftConfig  = 'https://raw.githubusercontent.com/pranavgore09/fabric8-planner/standalone-planner-cd/openshift/config'
+                    originalImageName = 'fabric8/fabric8-planner:${IMAGE_TAG}'
+                    newImageName = standaloneImageName
+                    githubRepo = 'fabric8-planner'
+                    githubProject = project
+                }
+            }
+            stage("notify for ${prj}"){
+                def changeAuthor = env.CHANGE_AUTHOR
+                if (!changeAuthor){
+                    error "no commit author found so cannot comment on PR"
+                }
+                def pr = env.CHANGE_ID
+                if (!pr){
+                    error "no pull request number found so cannot comment on PR"
+                }
+                def message = "@${changeAuthor} ${imageName} is deployed and available for testing at https://${route}"
+                container('clients'){
+                    flow.addCommentToPullRequest(message, pr, project)
+                }
+            }
+        }
    }
 }
