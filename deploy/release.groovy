@@ -2,15 +2,13 @@
 def ci (){
     stage('build planner npm'){
         container('ui'){
-            sh 'npm install'
-            sh 'npm run build'
-            sh 'npm pack dist/'
+            sh 'npm run build-planner'
         }
     }
 
     stage('unit test'){
         container('ui'){
-            sh 'npm run test:unit'
+            sh 'npm run unit-test'
         }
     }
 
