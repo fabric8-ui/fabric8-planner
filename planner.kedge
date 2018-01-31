@@ -1,0 +1,12 @@
+name: fabric8-planner
+containers:
+- image: "fabric8/fabric8-planner:standalone"
+  env:
+  - name: PROXY_PASS_URL
+    value: https://api.free-int.openshift.com
+services:
+- name: planner
+  type: NodePort
+  ports:
+    - port: 8080
+      nodePort: 31200

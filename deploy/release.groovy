@@ -34,6 +34,65 @@ def ciBuildDownstreamProject(project){
     }
 }
 
+def ciBuildPlannerProject(project){
+     stage('build planner npm'){
+        sh '''
+            npm cache clean --force
+            export API_URL=https://api.prod-preview.openshift.io/api/
+            export FORGE_URL=https://forge.api.prod-preview.openshift.io/
+            export FABRIC8_REALM=fabric8-test
+            export FABRIC8_WIT_API_URL=https://api.prod-preview.openshift.io/api/
+            export FABRIC8_SSO_API_URL=https://sso.prod-preview.openshift.io/
+            export FABRIC8_AUTH_API_URL=https://auth.prod-preview.openshift.io/api/
+            export PROXY_PASS_URL=https://api.free-int.openshift.com
+            npm install
+            env
+            npm run build
+        '''
+    }
+
+    stage('build runtime npm'){
+        dir('runtime'){
+            sh 'pwd'
+            sh 'npm cache clean --force'
+            sh 'npm install'
+            // sh 'npm link ../dist/'
+            sh 'env'
+            sh '''
+                export API_URL=https://api.prod-preview.openshift.io/api/
+                export FORGE_URL=https://forge.api.prod-preview.openshift.io/
+                export FABRIC8_REALM=fabric8-test
+                export FABRIC8_WIT_API_URL=https://api.prod-preview.openshift.io/api/
+                export FABRIC8_SSO_API_URL=https://sso.prod-preview.openshift.io/
+                export FABRIC8_AUTH_API_URL=https://auth.prod-preview.openshift.io/api/
+                export PROXY_PASS_URL=https://api.free-int.openshift.com
+                npm run build
+            '''
+        }
+    }
+
+    imageName = "fabric8/fabric8-planner:standalone"
+    stage('build standalone snapshot image'){
+        container('docker'){
+            sh 'pwd'
+            sh "docker build -t ${imageName} -f ./Dockerfile.deploy.runtime ."
+        }
+    }
+
+    stage('push standalone snapshot image'){
+        container('docker'){
+            sh 'pwd'
+            sh "docker push ${imageName}"
+        }
+    }
+
+    // stage('build standalone fabric8-planner npm run build:prod'){
+    //     return buildSnapshotStandalonePlanner{
+    //         pullRequestProject = project
+    //     }
+    // }
+}
+
 def buildImage(imageName){
     stage('build snapshot image'){
         sh "cd fabric8-ui && docker build -t ${imageName} -f Dockerfile.deploy ."
@@ -41,6 +100,18 @@ def buildImage(imageName){
 
     stage('push snapshot image'){
         sh "cd fabric8-ui && docker push ${imageName}"
+    }
+}
+
+def buildStandalonePlannerImage(imageName){
+    stage('build standalone snapshot image'){
+        // dir('runtime'){
+            sh "pwd && cd fabric8-planner && pwd && docker build -t ${imageName} -f ./Dockerfile.deploy.runtime ."
+        // }
+    }
+
+    stage('push standalone snapshot image'){
+        sh "docker push ${imageName}"
     }
 }
 
