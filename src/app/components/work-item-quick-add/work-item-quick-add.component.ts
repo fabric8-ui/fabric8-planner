@@ -28,7 +28,6 @@ import { GroupTypesService } from '../../services/group-types.service';
 import { WorkItemType } from '../../models/work-item-type';
 import { WorkItem, WorkItemRelations } from '../../models/work-item';
 import { WorkItemService } from '../../services/work-item.service';
-import { setTimeout } from 'core-js/library/web/timers';
 
 @Component({
   selector: 'alm-work-item-quick-add',
@@ -199,6 +198,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
       event.preventDefault();
     this.logger.log('Selected type ' + type.attributes.name + ' for quick add.');
     this.selectedType = type;
+    this.qaTitle.nativeElement.focus();
   }
 
   createLinkObject(parentWorkItemId: string, childWorkItemId: string, linkId: string) : void {
