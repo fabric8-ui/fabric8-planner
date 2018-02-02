@@ -152,9 +152,7 @@ gulp.task('clean', function () {
     !argv.temp) {
       // if none of the known sub-task parameters for `clean` was provided
       // i.e. only `gulp clean` was called, then set default --all flag ON
-      console.log(argv.all);
       argv.all = true;
-      console.log(argv.all);
   }
 
   if (argv.all) {
@@ -218,7 +216,12 @@ gulp.task('tests', function () {
   }
 
   // func
-  if (argv.unit) {
+  if (argv.func) {
     // subroutine to run functional tests
+  }
+
+  // smok
+  if (argv.smok) {
+    // subroutine to run smoke tests
   }
 });

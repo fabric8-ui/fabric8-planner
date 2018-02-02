@@ -95,7 +95,7 @@ v|`npm run build \-- --watch`
 
 | *[default]* all
 v|`npm run clean` or
-`npm run build \-- --all`
+`npm run clean \-- --all`
 | Fully resets the project
 
 | cache
@@ -123,7 +123,7 @@ v|`npm run clean \-- --temp`
 | Removes temp files and artifacts
 
 
-.2+| Tests
+.3+| Tests
 
 | unit
 v|`npm run tests \-- --unit`
@@ -132,6 +132,10 @@ v|`npm run tests \-- --unit`
 | [line-through]#func#
 v|`npm run tests \-- --func`
 | Runs the functional tests
+
+| [line-through]#smok#
+v|`npm run tests \-- --smok`
+| Runs the smoke tests
 
 4+| Commands with [line-through]#strikethroughs# aren't yet implemented.
 
