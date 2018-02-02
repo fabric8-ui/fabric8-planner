@@ -73,7 +73,7 @@ fabric8UITemplate{
 
 // deploy a snapshot fabric8-ui pod and notify pull request of details
 if (ciDeploy){
-   timeout(time: 10, unit: 'MINUTES') {
+   timeout(time: 50, unit: 'MINUTES') {
         def prj = 'fabric8-ui-'+ env.BRANCH_NAME
         prj = prj.toLowerCase()
         def route
