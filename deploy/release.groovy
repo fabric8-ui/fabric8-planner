@@ -3,11 +3,17 @@ def ci (){
     stage('build planner npm'){
         container('ui'){
             sh '''
+            top -n2
+            free -m
             npm cache clean --force
             npm install
+            top -n2
+            free -m
             npm run build
             npm pack dist/
-        '''
+            top -n2
+            free -m
+            '''
         }
     }
 
@@ -21,10 +27,20 @@ def ci (){
         dir('runtime'){
             container('ui'){
                 sh '''
+            top -n2
+            free -m
         npm cache clean --force
+        top -n2
+        free -m
         npm install
+        top -n2
+        free -m
         cd src/tests/functionalTests
+        top -n2
+        free -m
         DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest
+        top -n2
+        free -m
 '''
             }
         }
