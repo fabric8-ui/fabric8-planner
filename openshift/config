@@ -11,7 +11,6 @@ PROXY_PASS_URL=https://api.free-stg.openshift.com:443
 K8S_API_SERVER_BASE_PATH=/
 OAUTH_AUTHORIZE_URI=https://api.free-stg.openshift.com:443/oauth/authorize
 AUTH_LOGOUT_URI=https://api.free-stg.openshift.com:443/connect/endsession?id_token={{id_token}}
-IMAGE_TAG=standalone
 K8S_API_SERVER_PROTOCOL=https
 OAUTH_CLIENT_ID=fabric8
 OAUTH_SCOPE=user:full
