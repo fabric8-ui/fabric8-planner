@@ -77,6 +77,10 @@ objects:
             value: ${FABRIC8_AUTH_API_URL}
           - name: OPENSHIFT_CONSOLE_URL
             value: ${OPENSHIFT_CONSOLE_URL}
+          - name: FABRIC8_REALM
+            value: ${FABRIC8_REALM}
+          - name: API_URL
+            value: ${API_URL}
           resources: {}
           terminationMessagePath: /dev/termination-log
           readinessProbe:
@@ -171,3 +175,7 @@ parameters:
   value: https://sso.prod-preview.openshift.io/
 - name: FABRIC8_AUTH_API_URL
   value: https://auth.prod-preview.openshift.io/api/
+- name: API_URL
+  value: https://api.prod-preview.openshift.io/api/
+- name: FABRIC8_REALM
+  value: fabric8-test
