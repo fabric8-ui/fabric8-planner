@@ -103,7 +103,7 @@ if (ciDeploy){
                 }
             }
         }
-        prj = 'fabric8-planner-standalone'+ env.BRANCH_NAME
+        prj = 'f8-plan-std'+ env.BRANCH_NAME
         prj = prj.toLowerCase()
         deployOpenShiftNode(openshiftConfigSecretName: 'fabric8-intcluster-config'){
             stage("deploy ${prj}"){
@@ -126,7 +126,7 @@ if (ciDeploy){
                 if (!pr){
                     error "no pull request number found so cannot comment on PR"
                 }
-                def message = "@${changeAuthor} ${imageName} standalone planner UI is deployed and available for testing at https://${route}"
+                def message = "@${changeAuthor} ${imageName} standalone planner UI is deployed and available for testing at http://${route}"
                 container('clients'){
                     flow.addCommentToPullRequest(message, pr, project)
                 }
