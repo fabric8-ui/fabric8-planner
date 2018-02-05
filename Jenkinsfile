@@ -26,7 +26,7 @@ fabric8UITemplate{
                     container('ui'){
                         // tempVersion = pipeline.ciBuildDownstreamProject(project)
                     }
-
+                    tempVersion = "standalon-cleanup"
                     imageName = "fabric8/fabric8-ui:${tempVersion}"
                     container('docker'){
                         // pipeline.buildImage(imageName)
