@@ -110,8 +110,7 @@ if (ciDeploy){
                 route = deployPlannerSnapshot{
                     openShiftProject = prj
                     openShiftTemplate = 'https://raw.githubusercontent.com/pranavgore09/fabric8-planner/standalone-plannerUI-snapshot/openshift/fabric8-planner.app.yml'
-                    openShiftConfig  = 'https://raw.githubusercontent.com/pranavgore09/fabric8-planner/standalone-plannerUI-snapshot/openshift/config'
-                    originalImageName = 'fabric8/fabric8-planner'
+                    originalImageName = 'fabric8/fabric8-planner:standalone'
                     newImageName = standaloneImageName
                     githubRepo = 'fabric8-planner'
                     githubProject = project
