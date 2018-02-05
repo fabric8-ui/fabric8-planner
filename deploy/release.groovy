@@ -50,6 +50,11 @@ def buildImage(imageName){
 
 def getStandaloneImage(imageName){
     stage('build standalone npm') {
+        sh '''
+            npm install
+            npm run build
+            npm pack dist/
+        '''
         dir('runtime'){
             container('ui'){
                sh 'npm cache clean --force'
@@ -69,10 +74,7 @@ def getStandaloneImage(imageName){
     }
 
     stage('build standalone snapshot image'){
-        sh '''
-        ls
-        docker build -t ${imageName} -f ./Dockerfile.deploy.runtime .
-        '''
+        sh "docker build -t ${imageName} -f ./Dockerfile.deploy.runtime ."
     }
 
     stage('push standalone snapshot image'){
