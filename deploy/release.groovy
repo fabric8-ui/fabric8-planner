@@ -50,11 +50,13 @@ def buildImage(imageName){
 
 def getStandaloneImage(imageName){
     stage('build standalone npm') {
-        sh '''
-            npm install
-            npm run build
-            npm pack dist/
-        '''
+        container('ui'){
+            sh '''
+                npm install
+                npm run build
+                npm pack dist/
+            '''
+        }
         dir('runtime'){
             container('ui'){
                sh 'npm cache clean --force'
