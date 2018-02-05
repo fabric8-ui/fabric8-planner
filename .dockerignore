@@ -2,3 +2,4 @@ node_modules
 *~
 *.swp
 runtime/node_modules
+fabric8-ui

@@ -69,7 +69,10 @@ def getStandaloneImage(imageName){
     }
 
     stage('build standalone snapshot image'){
-        sh "docker build -t ${imageName} -f ./Dockerfile.deploy.runtime ."
+        sh '''
+        ls
+        docker build -t ${imageName} -f ./Dockerfile.deploy.runtime .
+        '''
     }
 
     stage('push standalone snapshot image'){
