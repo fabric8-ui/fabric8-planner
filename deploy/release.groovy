@@ -23,7 +23,8 @@ def ci (){
                 sh '''
         npm cache clean --force
         npm install
-        HEADLESS_MODE=true ./tests/run_functional_tests.sh smokeTest
+        cd src/tests/functionalTests
+        DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest
 '''
             }
         }

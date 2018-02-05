@@ -24,6 +24,7 @@
     "preversion": "npm test",
     "rimraf": "rimraf",
     "server:dev": "webpack-dev-server --host 0.0.0.0 --config config/webpack.dev.js --progress --profile --watch --content-base src/",
+    "server:test": "webpack-dev-server --host 0.0.0.0 --config config/webpack.dev.js --bail",
     "server:prod": "http-server dist -c-1 --cors",
     "server": "npm run server:dev",
     "start": "npm run server:dev",
@@ -38,8 +39,8 @@
     "webpack-dev-server": "webpack-dev-server",
     "webpack": "webpack",
     "test:unit": "karma start tests/karma.conf.js",
-    "test:func": "./tests/run_functional_tests.sh",
-    "test:funcsmoke": "./tests/run_functional_tests.sh smokeTest"
+    "test:func": "./src/tests/functionalTests/run_ts_functional_tests.sh",
+    "test:funcsmoke": "./src/tests/functionalTests/run_ts_functional_tests.sh smokeTest"
   },
   "dependencies": {
     "@angular/animations": "4.4.4",
