@@ -88,6 +88,8 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
   @ViewChild('myTable') table: any;
 
   showTree: boolean = true;
+  resolvedWorkItems: WorkItem[] = [];
+  nonMatchingParentIds: Array<string>;
   wiParentIds: Array<string> = [];
   selectedRows: any = [];
   detailExpandedRows: any = [];
@@ -182,7 +184,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     this.loggedIn = this.auth.isLoggedIn();
 
     // Cookie for datatableColumn config
-    if(this.cookieService.getCookie(datatableColumn.length).status) {
+    if(!this.cookieService.getCookie(datatableColumn.length).status) {
       this.cookieService.setCookie('datatableColumn', datatableColumn);
       this.columns = datatableColumn;
     } else {
@@ -489,8 +491,9 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         this.logger.log(workItemResp.workItems);
         const workItems = workItemResp.workItems;
         this.nextLink = workItemResp.nextLink;
+        this.nonMatchingParentIds = workItemResp.ancestorIDs;
         const included = workItemResp.included;
-        this.workItems = this.workItemService.resolveWorkItems(
+        this.resolvedWorkItems = this.workItemService.resolveWorkItems(
           workItems,
           this.iterations,
           [], // We don't want to static resolve user at this point
@@ -505,17 +508,18 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
             this.workItemTypes,
             this.labels
           );
-          this.wiParentIds = [
-            ...this.getParentIdsAll(this.workItems),
+           this.wiParentIds = [
+            ...this.getParentIdsAll(this.resolvedWorkItems),
             ...this.getParentIdsAll(this.included)
           ];
           this.datatableWorkitems = [
-            ...this.tableWorkitem(this.workItems, null, true),
+            ...this.tableWorkitem(this.resolvedWorkItems, null, true),
             ...this.tableWorkitem(this.included, null, false)
           ];
-          this.workItems = [...this.workItems, ...this.included];
+          this.workItems = [...this.resolvedWorkItems, ...this.included];
         } else {
-          this.datatableWorkitems = [...this.tableWorkitem(this.workItems)]
+          this.datatableWorkitems = [...this.tableWorkitem(this.resolvedWorkItems)];
+          this.workItems = [...this.resolvedWorkItems];
         }
         this.workItemDataService.setItems(this.workItems);
         // Resolve assignees
@@ -590,6 +594,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         const workItems = newWiItemResp.workItems;
         this.nextLink = newWiItemResp.nextLink;
         const wiLength = this.workItems.length;
+        const ancestorIDs = newWiItemResp.ancestorIDs;
         const newItems = this.workItemService.resolveWorkItems(
           workItems,
           this.iterations,
@@ -599,31 +604,43 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         ).filter((item) => {
           return this.workItems.findIndex(i => i.id === item.id) === -1;
         });
-        const newIncluded = this.workItemService.resolveWorkItems(
-          newWiItemResp.included,
-          this.iterations,
-          [],
-          this.workItemTypes,
-          this.labels
-        ).filter((item) => {
-          return this.included.findIndex(i => i.id === item.id) === -1;
-        });
-        this.wiParentIds = [
-          ...this.wiParentIds,
-          ...this.getParentIdsAll(newItems),
-          ...this.getParentIdsAll(newIncluded)
-        ];
-        this.included = [...this.included, ...newIncluded];
-        this.datatableWorkitems = [
-          ...this.datatableWorkitems,
-          ...this.tableWorkitem(newItems, null, true),
-          ...this.tableWorkitem(newIncluded, null, false)
-        ];
-        this.workItems = [
-          ...this.workItems,
-          ...newItems,
-          ...newIncluded
-        ];
+        if (this.showTree) {
+          const newIncluded = this.workItemService.resolveWorkItems(
+            newWiItemResp.included,
+            this.iterations,
+            [],
+            this.workItemTypes,
+            this.labels
+          ).filter((item) => {
+            return this.included.findIndex(i => i.id === item.id) === -1;
+          });
+          this.wiParentIds = [
+            ...this.wiParentIds,
+            ...this.getParentIdsAll(newItems),
+            ...this.getParentIdsAll(newIncluded)
+          ];
+          this.nonMatchingParentIds = [...this.nonMatchingParentIds, ...ancestorIDs];
+          this.included = [...this.included, ...newIncluded];
+          this.datatableWorkitems = [
+            ...this.datatableWorkitems,
+            ...this.tableWorkitem(newItems, null, true),
+            ...this.tableWorkitem(newIncluded, null, false)
+          ];
+          this.workItems = [
+            ...this.workItems,
+            ...newItems,
+            ...newIncluded
+          ];
+        } else {
+          this.datatableWorkitems = [
+            ...this.datatableWorkitems,
+            ...this.tableWorkitem(newItems)
+          ];
+          this.workItems = [
+            ...this.workItems,
+            ...newItems
+          ];
+        }
         this.workItemDataService.setItems(this.workItems);
         console.log('Performance :: Fetching more list items - ' + (t2 - t1) + ' milliseconds.');
         // Resolve assignees
@@ -1133,6 +1150,19 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         }
       })
     );
+
+    this.eventListeners.push(
+      this.workItemService.showTree.subscribe(status => {
+        this.showTree = status;
+        if (this.showTree && this.included.length === 0) {
+          this.loadWorkItems();
+        } else {
+          this.datatableWorkitems = [...this.tableWorkitem(this.resolvedWorkItems)]
+          this.workItems = [...this.resolvedWorkItems];
+          this.included = [];
+        }
+      })
+    );
   }
 
   //ngx-datatable methods
@@ -1231,17 +1261,10 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         return 'expanded';
       return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
     } else {
-      if (this.included.findIndex(i => i.id === element.id) > -1)
+      if (this.nonMatchingParentIds.findIndex(i => i === element.id) > -1) 
         return 'expanded';
       return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
     }
-  }
-
-  setShowTree(event){
-    this.showTree = event.showTree;
-    //this.columns[2] = event.showTree;
-    console.log("set", this.showTree, this.columns[2]);
-    this.loadWorkItems();
   }
 
   // Start: Settings(tableConfig) dropdown
