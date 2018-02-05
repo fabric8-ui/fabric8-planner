@@ -21,15 +21,14 @@ fabric8UITemplate{
                 def pipeline = load 'deploy/release.groovy'
                 if (utils.isCI()){
 
-                    // pipeline.ci()
+                    pipeline.ci()
 
                     container('ui'){
-                        // tempVersion = pipeline.ciBuildDownstreamProject(project)
+                        tempVersion = pipeline.ciBuildDownstreamProject(project)
                     }
-                    tempVersion = "standalon-cleanup"
                     imageName = "fabric8/fabric8-ui:${tempVersion}"
                     container('docker'){
-                        // pipeline.buildImage(imageName)
+                        pipeline.buildImage(imageName)
                     }
 
                     standaloneImageName = "fabric8/fabric8-planner:${tempVersion}"
@@ -77,32 +76,32 @@ if (ciDeploy){
         def prj = 'fabric8-ui-'+ env.BRANCH_NAME
         prj = prj.toLowerCase()
         def route
-        // deployOpenShiftNode(openshiftConfigSecretName: 'fabric8-intcluster-config'){
-        //     stage("deploy ${prj}"){
-        //         route = deployOpenShiftSnapshot{
-        //             mavenRepo = 'http://central.maven.org/maven2/io/fabric8/online/apps/fabric8-ui'
-        //             githubRepo = 'fabric8-ui'
-        //             originalImageName = 'registry.devshift.net/fabric8-ui/fabric8-ui'
-        //             newImageName = imageName
-        //             openShiftProject = prj
-        //             githubProject = project
-        //         }
-        //     }
-        //     stage('notify'){
-        //         def changeAuthor = env.CHANGE_AUTHOR
-        //         if (!changeAuthor){
-        //             error "no commit author found so cannot comment on PR"
-        //         }
-        //         def pr = env.CHANGE_ID
-        //         if (!pr){
-        //             error "no pull request number found so cannot comment on PR"
-        //         }
-        //         def message = "@${changeAuthor} ${imageName} is deployed and available for testing at https://${route}"
-        //         container('clients'){
-        //             flow.addCommentToPullRequest(message, pr, project)
-        //         }
-        //     }
-        // }
+        deployOpenShiftNode(openshiftConfigSecretName: 'fabric8-intcluster-config'){
+            stage("deploy ${prj}"){
+                route = deployOpenShiftSnapshot{
+                    mavenRepo = 'http://central.maven.org/maven2/io/fabric8/online/apps/fabric8-ui'
+                    githubRepo = 'fabric8-ui'
+                    originalImageName = 'registry.devshift.net/fabric8-ui/fabric8-ui'
+                    newImageName = imageName
+                    openShiftProject = prj
+                    githubProject = project
+                }
+            }
+            stage('notify'){
+                def changeAuthor = env.CHANGE_AUTHOR
+                if (!changeAuthor){
+                    error "no commit author found so cannot comment on PR"
+                }
+                def pr = env.CHANGE_ID
+                if (!pr){
+                    error "no pull request number found so cannot comment on PR"
+                }
+                def message = "@${changeAuthor} ${imageName} is deployed and available for testing at https://${route}"
+                container('clients'){
+                    flow.addCommentToPullRequest(message, pr, project)
+                }
+            }
+        }
         prj = 'f8-plan-std'+ env.BRANCH_NAME
         prj = prj.toLowerCase()
         deployOpenShiftNode(openshiftConfigSecretName: 'fabric8-intcluster-config'){
