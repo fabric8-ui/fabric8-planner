@@ -459,13 +459,13 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
           let filterQuery = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
           let exp = this.filterService.queryJoiner(existingQuery, this.filterService.and_notation, filterQuery);
-          exp['$OPTS'] = {'tree-view': this.showTree};
+          exp['$OPTS'] = {'tree-view': true};
           Object.assign(payload, {
             expression: exp
           });
         } else {
           let exp = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
-          exp['$OPTS'] = {'tree-view': this.showTree}; 
+          exp['$OPTS'] = {'tree-view': true}; 
           Object.assign(payload, {
             expression: exp
           });
@@ -500,7 +500,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           this.workItemTypes,
           this.labels
         );
-        if (this.showTree) {
+        
           this.included = this.workItemService.resolveWorkItems(
             included,
             this.iterations,
@@ -512,15 +512,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
             ...this.getParentIdsAll(this.resolvedWorkItems),
             ...this.getParentIdsAll(this.included)
           ];
-          this.datatableWorkitems = [
-            ...this.tableWorkitem(this.resolvedWorkItems, null, true),
-            ...this.tableWorkitem(this.included, null, false)
-          ];
-          this.workItems = [...this.resolvedWorkItems, ...this.included];
-        } else {
-          this.datatableWorkitems = [...this.tableWorkitem(this.resolvedWorkItems)];
-          this.workItems = [...this.resolvedWorkItems];
-        }
+          this.updateTableWorkitems();
         this.workItemDataService.setItems(this.workItems);
         // Resolve assignees
         const t3 = performance.now();
@@ -604,7 +596,8 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         ).filter((item) => {
           return this.workItems.findIndex(i => i.id === item.id) === -1;
         });
-        if (this.showTree) {
+        this.resolvedWorkItems = [...this.resolvedWorkItems, ...newItems];
+        
           const newIncluded = this.workItemService.resolveWorkItems(
             newWiItemResp.included,
             this.iterations,
@@ -621,26 +614,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           ];
           this.nonMatchingParentIds = [...this.nonMatchingParentIds, ...ancestorIDs];
           this.included = [...this.included, ...newIncluded];
-          this.datatableWorkitems = [
-            ...this.datatableWorkitems,
-            ...this.tableWorkitem(newItems, null, true),
-            ...this.tableWorkitem(newIncluded, null, false)
-          ];
-          this.workItems = [
-            ...this.workItems,
-            ...newItems,
-            ...newIncluded
-          ];
-        } else {
-          this.datatableWorkitems = [
-            ...this.datatableWorkitems,
-            ...this.tableWorkitem(newItems)
-          ];
-          this.workItems = [
-            ...this.workItems,
-            ...newItems
-          ];
-        }
+          this.updateTableWorkitems();
         this.workItemDataService.setItems(this.workItems);
         console.log('Performance :: Fetching more list items - ' + (t2 - t1) + ' milliseconds.');
         // Resolve assignees
@@ -697,6 +671,19 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         //this.treeList.update();
       },
       (e) => console.log(e));
+  }
+
+  updateTableWorkitems() {
+    if (this.showTree) {
+      this.datatableWorkitems = [
+        ...this.tableWorkitem(this.resolvedWorkItems, null, true),
+        ...this.tableWorkitem(this.included, null, false)
+      ];
+      this.workItems = [...this.resolvedWorkItems, ...this.included];
+    } else {
+      this.datatableWorkitems = [...this.tableWorkitem(this.resolvedWorkItems)];
+      this.workItems = [...this.resolvedWorkItems];
+    }
   }
 
   loadChildren(workItem: WorkItem): Observable<WorkItem[]> {
@@ -1154,13 +1141,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     this.eventListeners.push(
       this.workItemService.showTree.subscribe(status => {
         this.showTree = status;
-        if (this.showTree && this.included.length === 0) {
-          this.loadWorkItems();
-        } else {
-          this.datatableWorkitems = [...this.tableWorkitem(this.resolvedWorkItems)]
-          this.workItems = [...this.resolvedWorkItems];
-          this.included = [];
-        }
+        this.updateTableWorkitems();
       })
     );
   }
