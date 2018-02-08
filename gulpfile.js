@@ -52,22 +52,6 @@ mach.copyToDist = function (srcArr) {
     }));
 }
 
-// Transpile TypeScript source(s) to JS, storing results to distPath.
-mach.transpileTS = function () {
-  ngc('tsconfig.json');
-
-  // FIXME: why do we need that?
-  // Replace templateURL/styleURL with require statements in js.
-  gulp.src(['dist/app/**/*.js'])
-  .pipe(replace(/templateUrl:\s/g, "template: require("))
-  .pipe(replace(/\.html',/g, ".html'),"))
-  .pipe(replace(/styleUrls: \[/g, "styles: [require("))
-  .pipe(replace(/\.less']/g, ".css').toString()]"))
-  .pipe(gulp.dest(function (file) {
-    return file.base; // because of Angular 2's encapsulation, it's natural to save the css where the less-file was
-  }));
-}
-
 // Transpile given LESS source(s) to CSS, storing results to distPath.
 mach.transpileLESS = function (src, debug) {
   var opts = {
@@ -97,10 +81,26 @@ mach.transpileLESS = function (src, debug) {
  */
 
 // Build
-gulp.task('build', function () {
+gulp.task('build', function (done) {
 
   // app (default)
-  mach.transpileTS(); // Transpile *.ts sources to *.js using the tsconfig
+
+  // Transpile *.ts to *.js; _then_ post-process require statements to load templates
+  (gulp.series(function () {
+    return ngc('tsconfig.json');
+  }, function () {
+    // FIXME: why do we need that?
+    // Replace templateURL/styleURL with require statements in js.
+    return gulp.src(['dist/app/**/*.js'])
+    .pipe(replace(/templateUrl:\s/g, "template: require("))
+    .pipe(replace(/\.html',/g, ".html'),"))
+    .pipe(replace(/styleUrls: \[/g, "styles: [require("))
+    .pipe(replace(/\.less']/g, ".css').toString()]"))
+    .pipe(gulp.dest(function (file) {
+      return file.base; // because of Angular 2's encapsulation, it's natural to save the css where the less-file was
+    }));
+  }))();
+
   mach.transpileLESS(appSrc + '/**/*.less'); // Transpile and minify less, storing results in distPath.
   mach.copyToDist(['src/**/*.html']); // Copy template html files to distPath
   gulp.src(['LICENSE', 'README.adoc', 'package.json']).pipe(gulp.dest(distPath)); // Copy static assets to distPath
@@ -137,10 +137,12 @@ gulp.task('build', function () {
     util.log('in the npm module you want to link this one to');
   }
 
+  done();
+
 });
 
 // Clean
-gulp.task('clean', function () {
+gulp.task('clean', function (done) {
 
   // all (default): set flags to validate following conditional cleanups
   if (
@@ -200,10 +202,12 @@ gulp.task('clean', function () {
 
   // temp
   if (argv.temp) del(['tmp', 'coverage', 'typings', '.sass-cache']);
+
+  done();
 });
 
 // Test
-gulp.task('tests', function () {
+gulp.task('tests', function (done) {
 
   // unit
   if (argv.unit) {
@@ -224,4 +228,6 @@ gulp.task('tests', function () {
   if (argv.smok) {
     // subroutine to run smoke tests
   }
+
+  done();
 });
