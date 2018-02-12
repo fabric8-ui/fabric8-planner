@@ -56,7 +56,6 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() currentBoardType: WorkItemType | Object = {};
 
   @Output() onCreateNewWorkItemSelected: EventEmitter<any | null> = new EventEmitter();
-  @Output() onShowTree: EventEmitter<any> = new EventEmitter();
 
   loggedIn: boolean = false;
   editEnabled: boolean = false;
