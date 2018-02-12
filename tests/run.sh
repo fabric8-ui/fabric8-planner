@@ -29,7 +29,7 @@ main() {
   local base_url=${BASE_URL:-"http://localhost:8080/"}
   local temp_dir=${TEMP_DIR:-$(mktemp -d)}
   local specs_pattern=${SPECS_PATTERN:-"${temp_dir}/**/*.spec.js"}
-  local test_source_path=${TEST_SOURCE_PATH:-"example-test-src"}
+  local test_source_path=${TEST_SOURCE_PATH:-"../src/tests"}
   local access_token=${ACCESS_TOKEN:-"{\"access_token\":\"somerandomtoken\",\"expires_in\":1800,\"refresh_expires_in\":1800,\"refresh_token\":\"somerandomtoken\",\"token_type\":\"bearer\"}"}
   local protractor="$(npm bin)/protractor"
   local typescript="$(npm bin)/tsc"
