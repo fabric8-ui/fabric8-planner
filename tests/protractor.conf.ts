@@ -1,43 +1,54 @@
-import { Config } from 'protractor';
+import { Config } from "protractor";
+import { SpecReporter } from "jasmine-spec-reporter";
 
-let SpecReporter = require('jasmine-spec-reporter').SpecReporter;
+// Full protractor configuration file reference could be found here:
+// https://github.com/angular/protractor/blob/master/lib/config.ts
+let conf: Config = {
+  framework: "jasmine2",
 
-export let config: Config = {
-  useAllAngular2AppRoots: true,
-  getPageTimeout: 30000,
-  directConnect: process.env.DIRECT_CONNECT === 'true',
-  framework: 'jasmine',
   jasmineNodeOpts: {
-    isVerbose: true,
     showColors: true,
-    includeStackTrace: true,
-    defaultTimeoutInterval: 300000,
-    print: function () {
-    }
+    silent: true,
+    isVerbose: true,
+    defaultTimeoutInterval: 60 * 60 * 1000 // 60 mins for spec to run
   },
-  troubleshoot: true,
+
+  directConnect: process.env.DIRECT_CONNECTION === "true",
+  useAllAngular2AppRoots: true,
+  getPageTimeout: 3 * 60 * 1000, // must load within 3 min
+  seleniumAddress: "http://localhost:4444/wd/hub",
+
+  // Ref: https://github.com/angular/protractor/tree/master/exampleTypescript/asyncAwait
+  SELENIUM_PROMISE_MANAGER: false,
+
+  specs: ["specs/*.js", "specs/**/*.js"],
+
+  suites: {
+    smokeTest: ["specs/**/*.spec.js"]
+  },
+
+  // see: https://github.com/angular/protractor/blob/master/docs/timeouts.md
   capabilities: {
-    browserName: 'chrome',
-    shardTestFiles: true,
-    loggingPrefs: {
-      driver: 'WARNING',
-      server: 'WARNING',
-      browser: 'INFO'
-    },
+    browserName: "chrome",
     chromeOptions: {
-        args: process.env.HEADLESS_MODE === 'true'? ['--no-sandbox', '--headless'] : ['--no-sandbox']
+      args: process.env.HEADLESS_MODE === 'true'? ['--no-sandbox', '--headless'] : ['--no-sandbox']
     }
   },
-  seleniumAddress: 'http://localhost:4444/wd/hub',
-  onPrepare: function () {
-    jasmine.getEnv().addReporter(new SpecReporter({
-    spec: {
-        displayStacktrace: true,
-        displayDuration: true,
-    },
-    summary: {
-        displayDuration: true
-    }
-    }));
-  }
+
+  // Assign the test reporter to each running instance
+  onPrepare: function() {
+    jasmine.getEnv().addReporter(
+      new SpecReporter({
+        spec: {
+          displayStacktrace: true,
+          displayDuration: true
+        },
+        summary: {
+          displayDuration: true
+        }
+      })
+    );
+  },
 };
+
+exports.config = conf;
