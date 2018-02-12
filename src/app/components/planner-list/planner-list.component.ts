@@ -62,7 +62,6 @@ import { LabelModel } from '../../models/label.model';
 import { UrlService } from './../../services/url.service';
 import { CookieService } from './../../services/cookie.service';
 import { WorkItemDetailAddTypeSelectorComponent } from './../work-item-create/work-item-create.component';
-import { setTimeout } from 'core-js/library/web/timers';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -88,6 +87,10 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
   @ViewChild('containerHeight') containerHeight: ElementRef;
   @ViewChild('myTable') table: any;
 
+  showTree: boolean = true;
+  resolvedWorkItems: WorkItem[] = [];
+  nonMatchingParentIds: Array<string>;
+  wiParentIds: Array<string> = [];
   selectedRows: any = [];
   detailExpandedRows: any = [];
   expanded: any = {};
@@ -207,22 +210,37 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     if(this.toolbarHeight) {
       let toolbarHt:number =  this.toolbarHeight.nativeElement.offsetHeight;
       let quickaddHt:number =  0;
-      if(document.getElementsByClassName('f8-wi-list__quick-add').length > 0) {
-        quickaddHt = (document.getElementsByClassName('f8-wi-list__quick-add')[0] as HTMLElement).offsetHeight;
+      if(document.getElementsByClassName('f8-wi-list__quick-add-wrapper').length > 0) {
+        quickaddHt = (document.getElementsByClassName('f8-wi-list__quick-add-wrapper')[0] as HTMLElement).offsetHeight;
       }
       let hdrHeight:number = 0;
       if(document.getElementsByClassName('navbar-pf').length > 0) {
         hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
       }
       let expHeight: number = 0;
-      if (document.getElementsByClassName('experimental-bar').length > 0) {
+      let targetHeight: number;
+      let targetContHeight: number;
+      if (document.getElementsByClassName('experimental-bar').length > 0){
         expHeight = (document.getElementsByClassName('experimental-bar')[0] as HTMLElement).offsetHeight;
+      } else if (document.getElementsByClassName('system-error-bar').length > 0) {
+        expHeight = (document.getElementsByClassName('system-error-bar')[0] as HTMLElement).offsetHeight;
       }
-      let targetHeight: number = window.innerHeight - toolbarHt - quickaddHt - hdrHeight - expHeight;
+      targetHeight = window.innerHeight - (toolbarHt + quickaddHt + hdrHeight + expHeight);
       this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
-
-      let targetContHeight: number = window.innerHeight - hdrHeight - expHeight;
-      this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight + "px");
+      targetContHeight = window.innerHeight - (hdrHeight + expHeight);
+      this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight - 3 + "px");
+      if (document.getElementsByClassName('experimental-bar').length > 0 &&
+      !document.getElementsByClassName('experimental-bar')[0].classList.contains('experimental-bar-minimal')) {
+        expHeight = (document.getElementsByClassName('experimental-bar')[0] as HTMLElement).offsetHeight;
+        targetHeight = window.innerHeight - (toolbarHt + quickaddHt + hdrHeight + expHeight);
+        this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
+        targetContHeight = window.innerHeight - (hdrHeight + expHeight);
+        this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight - 3 + "px");
+      } else if (document.getElementsByClassName('experimental-bar').length > 0 &&
+          document.getElementsByClassName('experimental-bar')[0].classList.contains('experimental-bar-minimal')) {
+            targetHeight = window.innerHeight - (toolbarHt + quickaddHt + hdrHeight);
+            this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight - 25 + "px");
+      }
 
       if (this._lastTagetContentHeight !== targetContHeight) {
         this._lastTagetContentHeight = targetContHeight;
@@ -271,8 +289,11 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           //Join type and space query
           const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query );
           const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+          //const view_query = this.filterService.queryBuilder('tree-view', this.filterService.equal_notation, 'true');
+          //const third_join = this.filterService.queryJoiner(second_join);
           //second_join gives json object
           let query = this.filterService.jsonToQuery(second_join);
+          console.log('query is ', query);
           // { queryParams : {q: query}
           this.router.navigate([], {
             relativeTo: this.route,
@@ -435,24 +456,20 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           newFilterObj[item.id] = item.value;
         })
         newFilterObj['space'] = this.currentSpace.id;
-        let showFlatList = false;
-        if (this.groupTypesService.groupName === 'execution' || this.groupTypesService.groupName === 'requirements')
-          showFlatList = true;
-        //console.log('showFlatList', this.groupTypesService.groupName);
-        let payload = {
-          //for execution level set this to true
-          //parentexists: true
-        };
+        let payload = {};
         if (this.route.snapshot.queryParams['q']) {
           let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
           let filterQuery = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
           let exp = this.filterService.queryJoiner(existingQuery, this.filterService.and_notation, filterQuery);
+          exp['$OPTS'] = {'tree-view': true};
           Object.assign(payload, {
             expression: exp
           });
         } else {
+          let exp = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
+          exp['$OPTS'] = {'tree-view': true}; 
           Object.assign(payload, {
-            expression: this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj))
+            expression: exp
           });
         }
         return Observable.forkJoin(
@@ -476,16 +493,27 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         this.logger.log(workItemResp.workItems);
         const workItems = workItemResp.workItems;
         this.nextLink = workItemResp.nextLink;
-        this.included = workItemResp.included;
-        this.workItems = this.workItemService.resolveWorkItems(
+        this.nonMatchingParentIds = workItemResp.ancestorIDs;
+        const included = workItemResp.included;
+        this.resolvedWorkItems = this.workItemService.resolveWorkItems(
           workItems,
           this.iterations,
           [], // We don't want to static resolve user at this point
           this.workItemTypes,
-          this.labels,
-          this.included
+          this.labels
+        );       
+        this.included = this.workItemService.resolveWorkItems(
+          included,
+          this.iterations,
+          [], // We don't want to static resolve user at this point
+          this.workItemTypes,
+          this.labels
         );
-        this.datatableWorkitems = this.tableWorkitem(this.workItems);
+        this.wiParentIds = [
+          ...this.getParentIdsAll(this.resolvedWorkItems),
+          ...this.getParentIdsAll(this.included)
+        ];
+        this.updateTableWorkitems();
         this.workItemDataService.setItems(this.workItems);
         // Resolve assignees
         const t3 = performance.now();
@@ -556,30 +584,40 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
       .getMoreWorkItems(this.nextLink)
       .subscribe((newWiItemResp) => {
         const t2 = performance.now();
-        const workItems = newWiItemResp.workItems.filter((workItem: WorkItem) => {
-          return !!!Object.keys(workItem.relationships.parent).length;
-        });
+        const workItems = newWiItemResp.workItems;
         this.nextLink = newWiItemResp.nextLink;
         const wiLength = this.workItems.length;
+        const ancestorIDs = newWiItemResp.ancestorIDs;
         const newItems = this.workItemService.resolveWorkItems(
           workItems,
           this.iterations,
           [],
           this.workItemTypes,
-          this.labels,
-          newWiItemResp.included
-        );
-        this.workItems = [
-          ...this.workItems,
-          ...newItems
-        ];
-        this.datatableWorkitems = [
-          ...this.datatableWorkitems,
-          ...this.tableWorkitem(newItems)
-        ];
+          this.labels
+        ).filter((item) => {
+          return this.workItems.findIndex(i => i.id === item.id) === -1;
+        });
+        this.resolvedWorkItems = [...this.resolvedWorkItems, ...newItems];
+        
+          const newIncluded = this.workItemService.resolveWorkItems(
+            newWiItemResp.included,
+            this.iterations,
+            [],
+            this.workItemTypes,
+            this.labels
+          ).filter((item) => {
+            return this.included.findIndex(i => i.id === item.id) === -1;
+          });
+          this.wiParentIds = [
+            ...this.wiParentIds,
+            ...this.getParentIdsAll(newItems),
+            ...this.getParentIdsAll(newIncluded)
+          ];
+          this.nonMatchingParentIds = [...this.nonMatchingParentIds, ...ancestorIDs];
+          this.included = [...this.included, ...newIncluded];
+          this.updateTableWorkitems();
         this.workItemDataService.setItems(this.workItems);
         console.log('Performance :: Fetching more list items - ' + (t2 - t1) + ' milliseconds.');
-
         // Resolve assignees
         const t3 = performance.now();
         for (let i = wiLength; i < this.workItems.length; i++) {
@@ -634,6 +672,19 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         //this.treeList.update();
       },
       (e) => console.log(e));
+  }
+
+  updateTableWorkitems() {
+    if (this.showTree) {
+      this.datatableWorkitems = [
+        ...this.tableWorkitem(this.resolvedWorkItems, null, true),
+        ...this.tableWorkitem(this.included, null, false)
+      ];
+      this.workItems = [...this.resolvedWorkItems, ...this.included];
+    } else {
+      this.datatableWorkitems = [...this.tableWorkitem(this.resolvedWorkItems)];
+      this.workItems = [...this.resolvedWorkItems];
+    }
   }
 
   loadChildren(workItem: WorkItem): Observable<WorkItem[]> {
@@ -742,8 +793,18 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
       })
   }
 
+  getParentIdsAll(items) {
+    return items.reduce((parentIds, item) => {
+      const parentid = item.relationships.parent && item.relationships.parent.data ?
+        item.relationships.parent.data.id : null;
+      if (parentid && parentIds.findIndex(i => i === parentid) === -1) {
+        return [...parentIds, parentid];
+      }
+      return parentIds;
+    }, [])
+  }
+
   onPreview(id: string): void {
-    console.log(id);
     this.workItemDataService.getItem(id).subscribe(workItem => {
       this.detailPreview.openPreview(workItem);   });
   }
@@ -957,12 +1018,13 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     this.eventListeners.push(
       this.workItemService.editWIObservable.subscribe(updatedItem => {
         let index = this.workItems.findIndex((item) => item.id === updatedItem.id);
+        let bold = this.datatableWorkitems.filter((item) => item.id === updatedItem.id)[0].bold;
         if (this.filterService.doesMatchCurrentFilter(updatedItem)) {
           updatedItem.hasChildren = updatedItem.relationships.children.meta.hasChildren;
           updatedItem.relationships['parent'] = this.workItems[index].relationships.parent;
           if (index > -1) {
             this.workItems[index] = updatedItem;
-            let updatedTableItem = this.tableWorkitem([updatedItem], this.datatableWorkitems[index].parentId)[0];
+            let updatedTableItem = this.tableWorkitem([updatedItem], this.datatableWorkitems[index].parentId, bold)[0];
             updatedTableItem.treeStatus = this.datatableWorkitems[index].treeStatus;
             updatedTableItem.childrenLoaded = this.datatableWorkitems[index].childrenLoaded;
             this.datatableWorkitems = [
@@ -1076,6 +1138,14 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         }
       })
     );
+
+    this.eventListeners.push(
+      this.workItemService.showTree.subscribe(status => {
+        this.showTree = status;
+        this.detailExpandedRows = [];        
+        this.updateTableWorkitems();
+      })
+    );
   }
 
   //ngx-datatable methods
@@ -1100,7 +1170,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
   }
 
   toggleExpandRow(row, quickAddEnabled = true) {
-    if (quickAddEnabled && this.loggedIn) {
+    if (quickAddEnabled && this.loggedIn && this.showTree) {
       const index = this.detailExpandedRows.findIndex(r => r.id === row.id);
       if (index > -1) {
         // For collapsing
@@ -1130,24 +1200,54 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     );
   }
 
-  tableWorkitem(workItems: WorkItem[], parentId: string | null = null): any {
+  tableWorkitem(workItems: WorkItem[], parentId: string | null = null, matchingQuery: boolean = false): any {
+
     return workItems.map(element => {
-       return {
-        id: element.id,
-        number: element.attributes['system.number'],
-        type: element.relationships.baseType ? element.relationships.baseType : '',
-        title: element.attributes['system.title'],
-        labels: element.relationships.labels.data,
-        iteration: element.relationships.iteration.data,
-        creator: element.relationships.creator.data,
-        assignees: element.relationships.assignees.data,
-        status: element.attributes['system.state'],
-        // Extra items for table
-        treeStatus: element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled',
-        parentId: parentId,
-        childrenLoaded: false
+      if (this.showTree) {
+        const treeStatus = this.setTreeStatus(element, matchingQuery);
+        return {
+          id: element.id,
+          number: element.attributes['system.number'],
+          type: element.relationships.baseType ? element.relationships.baseType : '',
+          title: element.attributes['system.title'],
+          labels: element.relationships.labels.data,
+          iteration: element.relationships.iteration.data,
+          creator: element.relationships.creator.data,
+          assignees: element.relationships.assignees.data,
+          status: element.attributes['system.state'],
+          // Extra items for table
+          treeStatus: treeStatus,
+          parentId: element.relationships.parent && element.relationships.parent.data ? element.relationships.parent.data.id : parentId,
+          childrenLoaded: treeStatus === 'expanded' ? true : false,
+          bold: matchingQuery
+        }
+      } else {
+        return {
+          id: element.id,
+          number: element.attributes['system.number'],
+          type: element.relationships.baseType ? element.relationships.baseType : '',
+          title: element.attributes['system.title'],
+          labels: element.relationships.labels.data,
+          iteration: element.relationships.iteration.data,
+          creator: element.relationships.creator.data,
+          assignees: element.relationships.assignees.data,
+          status: element.attributes['system.state'],
+        }
       }
     });
+  }
+
+
+  setTreeStatus(element, matchingQuery) {
+    if(matchingQuery) {
+      if (this.wiParentIds.findIndex(i => i === element.id) > -1)
+        return 'expanded';
+      return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
+    } else {
+      if (this.nonMatchingParentIds.findIndex(i => i === element.id) > -1) 
+        return 'expanded';
+      return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
+    }
   }
 
   // Start: Settings(tableConfig) dropdown
