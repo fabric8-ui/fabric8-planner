@@ -25,6 +25,7 @@ def ci (){
         npm cache clean --force
         npm cache verify
         npm install
+        cd ..
         DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh smokeTest
 '''
             }
