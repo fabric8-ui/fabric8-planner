@@ -68,6 +68,7 @@ def cd (b){
             container('ui'){
                 sh '''
         npm cache clean --force
+        npm cache verify
         npm install
         cd src/tests/functionalTests
         DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest
