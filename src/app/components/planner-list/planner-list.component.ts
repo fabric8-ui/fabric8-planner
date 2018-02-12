@@ -499,20 +499,19 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           [], // We don't want to static resolve user at this point
           this.workItemTypes,
           this.labels
+        );       
+        this.included = this.workItemService.resolveWorkItems(
+          included,
+          this.iterations,
+          [], // We don't want to static resolve user at this point
+          this.workItemTypes,
+          this.labels
         );
-        
-          this.included = this.workItemService.resolveWorkItems(
-            included,
-            this.iterations,
-            [], // We don't want to static resolve user at this point
-            this.workItemTypes,
-            this.labels
-          );
-           this.wiParentIds = [
-            ...this.getParentIdsAll(this.resolvedWorkItems),
-            ...this.getParentIdsAll(this.included)
-          ];
-          this.updateTableWorkitems();
+        this.wiParentIds = [
+          ...this.getParentIdsAll(this.resolvedWorkItems),
+          ...this.getParentIdsAll(this.included)
+        ];
+        this.updateTableWorkitems();
         this.workItemDataService.setItems(this.workItems);
         // Resolve assignees
         const t3 = performance.now();
@@ -1141,6 +1140,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     this.eventListeners.push(
       this.workItemService.showTree.subscribe(status => {
         this.showTree = status;
+        this.detailExpandedRows = [];        
         this.updateTableWorkitems();
       })
     );
