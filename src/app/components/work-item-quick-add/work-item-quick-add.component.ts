@@ -329,6 +329,18 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     this.qaTitle.nativeElement.focus();
   }
 
+  toggleQuickAdd(): void {
+    this.showQuickAdd = !this.showQuickAdd;
+    this.showQuickAddBtn = !this.showQuickAddBtn;
+    if (!this.showQuickAdd) {
+      this.workItem.attributes['system.description'] = '';
+      this.workItem.attributes['system.title'] = '';
+      this.validTitle = false;
+      this.descHeight = this.initialDescHeight ? this.initialDescHeight : 'inherit';
+    } else {
+      this.createWorkItemObj();
+    }
+  }
 
   preventDef(event: any) {
     event.preventDefault();
