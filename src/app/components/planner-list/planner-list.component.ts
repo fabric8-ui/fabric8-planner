@@ -62,7 +62,6 @@ import { LabelModel } from '../../models/label.model';
 import { UrlService } from './../../services/url.service';
 import { CookieService } from './../../services/cookie.service';
 import { WorkItemDetailAddTypeSelectorComponent } from './../work-item-create/work-item-create.component';
-import { setTimeout } from 'core-js/library/web/timers';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -208,22 +207,37 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     if(this.toolbarHeight) {
       let toolbarHt:number =  this.toolbarHeight.nativeElement.offsetHeight;
       let quickaddHt:number =  0;
-      if(document.getElementsByClassName('f8-wi-list__quick-add').length > 0) {
-        quickaddHt = (document.getElementsByClassName('f8-wi-list__quick-add')[0] as HTMLElement).offsetHeight;
+      if(document.getElementsByClassName('f8-wi-list__quick-add-wrapper').length > 0) {
+        quickaddHt = (document.getElementsByClassName('f8-wi-list__quick-add-wrapper')[0] as HTMLElement).offsetHeight;
       }
       let hdrHeight:number = 0;
       if(document.getElementsByClassName('navbar-pf').length > 0) {
         hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
       }
       let expHeight: number = 0;
-      if (document.getElementsByClassName('experimental-bar').length > 0) {
+      let targetHeight: number;
+      let targetContHeight: number;
+      if (document.getElementsByClassName('experimental-bar').length > 0){
         expHeight = (document.getElementsByClassName('experimental-bar')[0] as HTMLElement).offsetHeight;
+      } else if (document.getElementsByClassName('system-error-bar').length > 0) {
+        expHeight = (document.getElementsByClassName('system-error-bar')[0] as HTMLElement).offsetHeight;
       }
-      let targetHeight: number = window.innerHeight - toolbarHt - quickaddHt - hdrHeight - expHeight;
+      targetHeight = window.innerHeight - (toolbarHt + quickaddHt + hdrHeight + expHeight);
       this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
-
-      let targetContHeight: number = window.innerHeight - hdrHeight - expHeight;
-      this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight + "px");
+      targetContHeight = window.innerHeight - (hdrHeight + expHeight);
+      this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight - 3 + "px");
+      if (document.getElementsByClassName('experimental-bar').length > 0 &&
+      !document.getElementsByClassName('experimental-bar')[0].classList.contains('experimental-bar-minimal')) {
+        expHeight = (document.getElementsByClassName('experimental-bar')[0] as HTMLElement).offsetHeight;
+        targetHeight = window.innerHeight - (toolbarHt + quickaddHt + hdrHeight + expHeight);
+        this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
+        targetContHeight = window.innerHeight - (hdrHeight + expHeight);
+        this.renderer.setStyle(this.containerHeight.nativeElement, 'height', targetContHeight - 3 + "px");
+      } else if (document.getElementsByClassName('experimental-bar').length > 0 &&
+          document.getElementsByClassName('experimental-bar')[0].classList.contains('experimental-bar-minimal')) {
+            targetHeight = window.innerHeight - (toolbarHt + quickaddHt + hdrHeight);
+            this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight - 25 + "px");
+      }
 
       if (this._lastTagetContentHeight !== targetContHeight) {
         this._lastTagetContentHeight = targetContHeight;
@@ -439,14 +453,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           newFilterObj[item.id] = item.value;
         })
         newFilterObj['space'] = this.currentSpace.id;
-        let showFlatList = false;
-        if (this.groupTypesService.groupName === 'execution' || this.groupTypesService.groupName === 'requirements')
-          showFlatList = true;
-        //console.log('showFlatList', this.groupTypesService.groupName);
-        let payload = {
-          //for execution level set this to true
-          //parentexists: true
-        };
+        let payload = {};
         if (this.route.snapshot.queryParams['q']) {
           let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
           let filterQuery = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
@@ -457,7 +464,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           });
         } else {
           let exp = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
-          exp['$OPTS'] = {'tree-view': true}; 
+          exp['$OPTS'] = {'tree-view': true};
           Object.assign(payload, {
             expression: exp
           });
@@ -782,7 +789,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     return items.reduce((parentIds, item) => {
       const parentid = item.relationships.parent && item.relationships.parent.data ?
         item.relationships.parent.data.id : null;
-      if (parentid && parentIds.findIndex(i => i === parentid) === -1) { 
+      if (parentid && parentIds.findIndex(i => i === parentid) === -1) {
         return [...parentIds, parentid];
       }
       return parentIds;
@@ -1178,7 +1185,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
   }
 
   tableWorkitem(workItems: WorkItem[], parentId: string | null = null, matchingQuery: boolean = false): any {
-    
+
     return workItems.map(element => {
         const treeStatus = this.setTreeStatus(element, matchingQuery);
         return {
@@ -1195,7 +1202,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           treeStatus: treeStatus,
           parentId: element.relationships.parent && element.relationships.parent.data ? element.relationships.parent.data.id : parentId,
           childrenLoaded: treeStatus === 'expanded' ? true : false,
-          bold: matchingQuery 
+          bold: matchingQuery
         }
     });
   }
@@ -1207,7 +1214,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         return 'expanded';
       return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
     } else {
-      if (this.included.findIndex(i => i.id === element.id) > -1) 
+      if (this.included.findIndex(i => i.id === element.id) > -1)
         return 'expanded';
       return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
     }
