@@ -102,7 +102,7 @@ main() {
     log.info "Starting planner locally (inmemory mode) ..."
 
     log.info "Installing Dependencies..."
-    #npm install
+    npm install
 
     log.info "Building Planner..."
     mkdir -p dist && cp package.json dist/ && npm run build
@@ -110,7 +110,7 @@ main() {
     log.info "Installing Runtime Dependencies..."
     log.info "Entering $SCRIPT_DIR/../runtime"
     cd $SCRIPT_DIR/../runtime
-    #npm install
+    npm install
 
     start_planner
     wait_for_planner

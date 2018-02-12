@@ -93,7 +93,7 @@ main() {
   local suite=${1:-fullTest}
 
   echo "Getting local dependencies.."
-  #npm install
+  npm install
 
   echo "Using ${temp_dir} as working directory"
 
