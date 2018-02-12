@@ -79,7 +79,6 @@ clean_up() {
   fi
   cd $CURRENT_DIR
 }
-
 trap clean_up EXIT
 
 main() {
@@ -144,9 +143,7 @@ main() {
     exit 1
   fi
 
-  # Note: we do not shutdown Selenium/Webdriver because clean shutdown is not supported anymore 
-  # with Selenium 3 standalone. See https://github.com/angular/webdriver-manager/issues/199
-  # Running instances will be re-used when restarting the tests.
+  clean_up
 }
 
 main "$@"
