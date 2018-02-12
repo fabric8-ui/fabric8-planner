@@ -212,19 +212,19 @@
               [sortable]="c.name === 'Title'"
               [cellClass]="'cell-class'"
               [headerClass]="'header-cell'">
-                <ng-template ngx-datatable-cell-tree-expander *ngIf="c.name==='Title'">
+                <ng-template ngx-datatable-cell-tree-expander *ngIf="c.name === 'Title'">
                   <i class="fa fa-angle-right tree-icon"></i>
                 </ng-template>
 
-                <ng-template ngx-datatable-cell-tree-collapser *ngIf="c.name==='Title'">
+                <ng-template ngx-datatable-cell-tree-collapser *ngIf="c.name === 'Title'">
                   <i class="fa fa-angle-down tree-icon"></i>
                 </ng-template>
 
-                <ng-template ngx-datatable-cell-tree-disabled *ngIf="c.name==='Title'">
+                <ng-template ngx-datatable-cell-tree-disabled *ngIf="c.name === 'Title'">
                   <i class="fa fa-angle-right tree-icon tree-icon__disabled"></i>
                 </ng-template>
 
-                <ng-template ngx-datatable-cell-tree-loader *ngIf="c.name==='Title'">
+                <ng-template ngx-datatable-cell-tree-loader *ngIf="c.name === 'Title'">
                   <div class="spinner spinner-xs icon-loader margin-top-15"></div>
                 </ng-template>
 
@@ -236,8 +236,8 @@
                       (onDetailPreview)="onDetailPreview($event)"
                       (onQuickPreview)="onPreview($event)"
                       (clickLabel)="onClickLabel($event)"
-                      [class.f8-wi__table-config]="c.prop=='label' || c.prop=='assignees'"
-                      [class.planner-hack-title-truncate]="c.prop=='title'">
+                      [class.f8-wi__table-config]="c.prop === 'label' || c.prop === 'assignees'"
+                      [class.planner-hack-title-truncate]="c.prop === 'title'">
                     </work-item-cell>
                 </ng-template>
             </ngx-datatable-column>
