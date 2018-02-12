@@ -1,29 +1,86 @@
 #!/usr/bin/env bash
 
+declare -r CURRENT_DIR=$(pwd)
+declare -r SCRIPT_PATH=$(readlink -f "$0")
+declare -r SCRIPT_DIR=$(cd $(dirname "$SCRIPT_PATH") && pwd)
+
+### Utility Functions
+
+declare -r RED='\e[31m'
+declare -r GREEN='\e[32m'
+declare -r YELLOW='\e[33m'
+declare -r BLUE='\e[34m'
+declare -r MAGENTA='\e[35m'
+declare -r CYAN='\e[36m'
+declare -r WHITE='\e[37m'
+declare -r BOLD='\e[1m'
+declare -r RESET='\e[0m'
+
+_log() {
+  local status="$1"; shift
+  echo -e "${status}:$RESET ${*}$RESET" >&2
+}
+
+log.debug() {
+  debug_enabled || return 0
+  local caller_file=${BASH_SOURCE[1]##*/}
+  local caller_line=${BASH_LINENO[0]}
+  local caller_info="${WHITE}$caller_file${BLUE}(${caller_line}${BLUE})"
+  local caller_fn=""
+  if [ ${#FUNCNAME[@]} != 2 ]; then
+      caller_fn="${FUNCNAME[1]:+${FUNCNAME[1]}}"
+      caller_info+=" ${GREEN}$caller_fn"
+  fi
+  _log "${caller_info}" "$*" >&2
+}
+
+log.info()  { _log "$GREEN${BOLD}INFO" "$*"; }
+log.warn()  { _log "${YELLOW}WARNING" "$*"; }
+log.error() { _log "${RED}ERROR" "$*"; }
+log.pass()  { _log "${GREEN}PASS" "$*"; }
+log.fail()  { _log "${RED}FAIL" "$*"; }
+
+wait_for() {
+# First arg is the command to execute
+  local WAIT_LIMIT=5
+  local NEXT_WAIT_TIME=0
+  until $1 || [ $NEXT_WAIT_TIME -eq $WAIT_LIMIT ]; do
+    sleep $(( NEXT_WAIT_TIME++ ))
+  done
+}
+
+## Process Control Functions
+
+start_webdriver() {
+  local log_file="./webdriver.log"; shift
+
+  # Start selenium server just for this test run
+  log.info "Starting Webdriver and Selenium..."
+  log.info "Webdriver will log to:$GREEN $log_file"
+  npm run webdriver:update
+  npm run webdriver:start >> "$log_file" 2>&1 &
+  webdriver_pid=$!
+}
+
 webdriver_running() {
   curl --output /dev/null --silent --head --fail 127.0.0.1:4444
 }
 
 wait_for_webdriver() {
-  echo "Waiting for the webdriver to start "
-  # Wait for port 4444 to be listening connections
-  until webdriver_running ; do
-    sleep 1
-    echo -n .
-  done
-  echo
-  echo "Webdriver manager up and running - OK"
-  echo
+  log.info "Waiting for the webdriver to start ..."
+  wait_for webdriver_running
+  log.info "Webdriver manager up and running - OK"
 }
 
-start_webdriver() {
-  # Update webdriver
-  echo "Updating Webdriver and Selenium..."
-  npm run webdriver:update
-  # Start selenium server just for this test run
-  echo "Starting Webdriver and Selenium..."
-  npm run webdriver:start >> /dev/null 2>&1 &
+clean_up() {
+  # Kill webdirver process.
+  if [[ -n ${webdriver_pid+x} ]]; then
+    kill $webdriver_pid
+  fi
+  cd $CURRENT_DIR
 }
+
+trap clean_up EXIT
 
 main() {
   local base_url=${BASE_URL:-"http://localhost:8080/"}
@@ -36,7 +93,7 @@ main() {
   local suite=${1:-fullTest}
 
   echo "Getting local dependencies.."
-  npm install
+  #npm install
 
   echo "Using ${temp_dir} as working directory"
 

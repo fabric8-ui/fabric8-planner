@@ -19,16 +19,13 @@ def ci (){
     }
 
     stage('func test'){
-        dir('runtime'){
-            container('ui'){
-                sh '''
-        npm cache clean --force
-        npm cache verify
-        npm install
-        cd ..
-        DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh smokeTest
-'''
-            }
+        container('ui'){
+            sh '''
+            npm cache clean --force
+            npm cache verify
+            npm install
+            DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
+        '''
         }
     }
 }
