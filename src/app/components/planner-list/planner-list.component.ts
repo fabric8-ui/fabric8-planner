@@ -193,7 +193,6 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     }
 
     this.emptyStateConfig = {
-      iconStyleClass: 'pficon-warning-triangle-o',
       info: 'There are no Work Items for your selected criteria',
       title: 'No Work Items Available'
     } as EmptyStateConfig;
@@ -289,12 +288,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           //Join type and space query
           const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query );
           const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
-          //const view_query = this.filterService.queryBuilder('tree-view', this.filterService.equal_notation, 'true');
-          //const third_join = this.filterService.queryJoiner(second_join);
-          //second_join gives json object
           let query = this.filterService.jsonToQuery(second_join);
-          console.log('query is ', query);
-          // { queryParams : {q: query}
           this.router.navigate([], {
             relativeTo: this.route,
             queryParams: { q: query }
@@ -358,6 +352,9 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
             this.datatableWorkitems = [];
           }
         });
+        this.filterService.getFilters().subscribe(filters =>
+          filters.forEach(f => this.filters.push(f.attributes.key))
+        );
   }
 
   getCurrentGroupType() {
@@ -417,57 +414,43 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
       this.getCurrentGroupType();
       //set the context for the quick add based on which type group is selected
       this.quickAddContext = this.groupTypesService.getCurrentGroupType();
-      // If there is an iteration filter on the URL
-      // const queryParams = this.route.snapshot.queryParams;
-      // if (Object.keys(queryParams).indexOf('iteration') > -1) {
-      //   const iteration = iterations.find(it => {
-      //     return it.attributes.resolved_parent_path + '/' + it.attributes.name
-      //       === queryParams['iteration'];
-      //   })
-      //   if (iteration) {
-      //     this.filterService.setFilterValues('iteration', iteration.id);
-      //   }
-      // } else {
-      //   this.filterService.clearFilters(['iteration']);
-      // }
     })
       .switchMap((items) => {
-        let appliedFilters = this.filterService.getAppliedFilters();
+        let appliedFilters = this.filterService.getAppliedFilters(true);
         // remove the filter item from the filters
         for (let f = 0; f < appliedFilters.length; f++) {
           if (appliedFilters[f].paramKey == 'filter[parentexists]') {
             appliedFilters.splice(f, 1);
           }
         }
-        // KNOWN ISSUE: if the tree is expanded when switching the mode, the user will experience
-        // some weird issues. Problem is there seems to be no way of force-collapsing the tree yet.
-        // TODO: collapse the tree here so it does not give weird effects when switching modes
-        // if (this.showHierarchyList) {
-        //   // we want to display the hierarchy, so filter out all items that are childs (have no parent)
-        //   // to do this, we need to append a filter: /spaces/{id}/workitems?filter[parentexists]=false
-        //   appliedFilters.push({ id: 'parentexists', paramKey: 'filter[parentexists]', value: 'false' });
-        // }
         this.logger.log('Requesting work items with filters: ' + JSON.stringify(appliedFilters));
-
-        // TODO Filter temp
-        // Take all the applied filters and prepare an object to make the query string
         let newFilterObj = {};
         appliedFilters.forEach(item => {
           newFilterObj[item.id] = item.value;
-        })
-        newFilterObj['space'] = this.currentSpace.id;
+        });
         let payload = {};
         if (this.route.snapshot.queryParams['q']) {
-          let existingQuery = this.filterService.queryToJson(this.route.snapshot.queryParams['q']);
-          let filterQuery = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
-          let exp = this.filterService.queryJoiner(existingQuery, this.filterService.and_notation, filterQuery);
+          let urlString = this.route.snapshot.queryParams['q']
+            .replace(' ','')
+            .replace('$AND',' ')
+            .replace('$OR',' ')
+            .replace('(','')
+            .replace(')','');
+          let temp_arr = urlString.split(' ');
+          for(let i = 0; i < temp_arr.length; i++) {
+            let arr = temp_arr[i].split(':')
+            //check if it belongs in filter array
+            if (this.filters.indexOf(arr[0]) < 0 && arr[1] !== undefined)
+              newFilterObj[arr[0]] = arr[1];
+          }
+          let exp = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
           exp['$OPTS'] = {'tree-view': true};
           Object.assign(payload, {
             expression: exp
           });
         } else {
           let exp = this.filterService.queryToJson(this.filterService.constructQueryURL('', newFilterObj));
-          exp['$OPTS'] = {'tree-view': true}; 
+          exp['$OPTS'] = {'tree-view': true};
           Object.assign(payload, {
             expression: exp
           });
@@ -501,7 +484,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           [], // We don't want to static resolve user at this point
           this.workItemTypes,
           this.labels
-        );       
+        );
         this.included = this.workItemService.resolveWorkItems(
           included,
           this.iterations,
@@ -598,7 +581,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           return this.workItems.findIndex(i => i.id === item.id) === -1;
         });
         this.resolvedWorkItems = [...this.resolvedWorkItems, ...newItems];
-        
+
           const newIncluded = this.workItemService.resolveWorkItems(
             newWiItemResp.included,
             this.iterations,
@@ -1142,7 +1125,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     this.eventListeners.push(
       this.workItemService.showTree.subscribe(status => {
         this.showTree = status;
-        this.detailExpandedRows = [];        
+        this.detailExpandedRows = [];
         this.updateTableWorkitems();
       })
     );
@@ -1244,7 +1227,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         return 'expanded';
       return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
     } else {
-      if (this.nonMatchingParentIds.findIndex(i => i === element.id) > -1) 
+      if (this.nonMatchingParentIds.findIndex(i => i === element.id) > -1)
         return 'expanded';
       return element.relationships.children.meta.hasChildren ? 'collapsed' : 'disabled';
     }
