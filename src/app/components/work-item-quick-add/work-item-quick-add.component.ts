@@ -55,7 +55,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
       if(this.availableTypes.length){
         //this.selectedType = this.availableTypes[0];
         this.selectedType = this.allowedWITs[0];
-        if (this.wilistview === 'wi-table-view-top') {
+        if (this.wilistview === 'wi-table-view-top' || this.wilistview === 'wi-card-view' ) {
           this.createWorkItemObj();
         }
       }
