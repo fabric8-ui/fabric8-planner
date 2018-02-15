@@ -390,7 +390,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   loadWorkItems(): void {
     const queryParams = this.route.snapshot.queryParams;
-    if(Object.keys(queryParams).length === 0 && process.env.ENV != 'inmemory')
+    if(Object.keys(queryParams).length === 0)
       this.setDefaultUrl();
     this.uiLockedList = true;
     if (this.wiSubscriber) {
