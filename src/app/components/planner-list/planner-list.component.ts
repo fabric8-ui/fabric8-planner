@@ -1007,6 +1007,12 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
           updatedItem.relationships['parent'] = this.workItems[index].relationships.parent;
           if (index > -1) {
             this.workItems[index] = updatedItem;
+            let resolvedWorkItemsIndex = this.resolvedWorkItems.findIndex((item) => item.id === updatedItem.id);
+            let includedIndex = this.included.findIndex((item) => item.id === updatedItem.id);
+            if(resolvedWorkItemsIndex > -1)
+              this.resolvedWorkItems[resolvedWorkItemsIndex] = updatedItem;
+            if(includedIndex > -1)
+              this.included[includedIndex] = updatedItem;
             let updatedTableItem = this.tableWorkitem([updatedItem], this.datatableWorkitems[index].parentId, bold)[0];
             updatedTableItem.treeStatus = this.datatableWorkitems[index].treeStatus;
             updatedTableItem.childrenLoaded = this.datatableWorkitems[index].childrenLoaded;
