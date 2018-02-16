@@ -18,24 +18,24 @@ def ci (project){
         }
     }
 
-    stage('Unit Tests'){
-        container('ui'){
-            sh 'npm run tests -- --unit'
-        }
-    }
+    // stage('Unit Tests'){
+    //     container('ui'){
+    //         sh 'npm run tests -- --unit'
+    //     }
+    // }
 
-    stage('Functional Tests'){
-        dir('runtime'){
-            container('ui'){
-                sh '''
-        npm cache clean --force
-        npm install
-        cd src/tests/functionalTests
-        DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest
-'''
-            }
-        }
-    }
+//     stage('Functional Tests'){
+//         dir('runtime'){
+//             container('ui'){
+//                 sh '''
+//         npm cache clean --force
+//         npm install
+//         cd src/tests/functionalTests
+//         DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest
+// '''
+//             }
+//         }
+//     }
 
     return tempVersion
 }
