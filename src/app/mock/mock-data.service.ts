@@ -99,13 +99,13 @@ export class MockDataService {
   // work items and dependend entities (comments, ..)
 
   /* Filter the workitems */
-  public getWorkItemsFiltered(pathParams: any): any {
+  public  getWorkItemsFiltered(pathParams: any): any {
 
     let assigneeFilter = pathParams['filter[assignee]'];
     let creatorFilter = pathParams['filter[creator]'];
     let areaFilter = pathParams['filter[area]'];
     let workItemTypeFilter = pathParams['filter[workitemtype]'];
-    let workItemStateFilter = pathParams['filter[workitemstate]'];
+    let workItemStateFilter = pathParams['filter[state]'];
     let iterationFilter = pathParams['filter[iteration]'];
     let hasParentFilter = pathParams['filter[parentexists]'];
 
