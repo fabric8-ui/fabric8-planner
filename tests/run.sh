@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# This runs the tests
+
 declare -r CURRENT_DIR=$(pwd)
 declare -r SCRIPT_PATH=$(readlink -f "$0")
 declare -r SCRIPT_DIR=$(cd $(dirname "$SCRIPT_PATH") && pwd)
