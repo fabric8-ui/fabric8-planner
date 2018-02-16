@@ -60,8 +60,8 @@ import {
 
 @Component({
   selector: 'work-item-preview',
-  templateUrl: './work-item-detail.component.html',
-  styleUrls: ['./work-item-detail.component.less'],
+  template: require('./work-item-detail.component.html'),
+  styles: [require('./work-item-detail.component.css').toString()],
   animations: [
     trigger('slideInOut', [
       state('in', style({

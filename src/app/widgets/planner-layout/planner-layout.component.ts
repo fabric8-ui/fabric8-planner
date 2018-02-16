@@ -17,8 +17,8 @@ import {
 
 @Component({
   selector: 'alm-planner-layout',
-  templateUrl: './planner-layout.component.html',
-  styleUrls: ['./planner-layout.component.less'],
+  template: require('./planner-layout.component.html'),
+  styles: [require('./planner-layout.component.css').toString()],
   animations:
   [
     trigger('slideInOut', [

@@ -32,8 +32,8 @@ import { IterationModel } from '../../models/iteration.model';
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'iteration-list-entry',
-  templateUrl: './iteration-list-entry.component.html',
-  styleUrls: ['./iteration-list-entry.component.less'],
+  template: require('./iteration-list-entry.component.html'),
+  styles: [require('./iteration-list-entry.component.css').toString()]
 })
 export class IterationListEntryComponent implements OnInit, OnDestroy {
   //@Input() listItem: TreeListItemComponent;

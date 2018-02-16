@@ -17,8 +17,8 @@ import { WorkItemType } from '../../models/work-item-type';
 
 @Component({
   selector: 'group-types',
-  templateUrl: './group-types-panel.component.html',
-  styleUrls: ['./group-types-panel.component.less']
+  template: require('./group-types-panel.component.html'),
+  styles: [require('./group-types-panel.component.css').toString()]
 })
 export class GroupTypesComponent implements OnInit, OnDestroy {
 

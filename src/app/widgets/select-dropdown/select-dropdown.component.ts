@@ -10,8 +10,8 @@ import {
 
 @Component({
   selector: 'f8-select-dropdown',
-  templateUrl: './select-dropdown.component.html',
-  styleUrls: ['./select-dropdown.component.less']
+  template: require('./select-dropdown.component.html'),
+  styles: [require('./select-dropdown.component.css').toString()]
 })
 export class SelectDropdownComponent implements OnInit {
   @Input() headerText: string = 'This is default header';

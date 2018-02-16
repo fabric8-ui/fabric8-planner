@@ -14,8 +14,8 @@ import { WorkItemService } from '../../services/work-item.service';
 
 @Component({
   selector: 'alm-work-item-link',
-  templateUrl: './work-item-link.component.html',
-  styleUrls: ['./work-item-link.component.less'],
+  template: require('./work-item-link.component.html'),
+  styles: [require('./work-item-link.component.css').toString()]
   // styles:['.completer-input {width:100%;float:left;};.completer-dropdown-holder {width:100%;float:left;}']
 })
 export class WorkItemLinkComponent implements OnInit, OnChanges, DoCheck, OnDestroy {

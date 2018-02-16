@@ -11,7 +11,7 @@ import { IterationModel } from '../../models/iteration.model';
 
 @Component({
     selector: 'iteration-tree',
-    templateUrl: './iteration-tree.component.html',
+    template: require('./iteration-tree.component.html')
 })
 
 export class IterationTreeComponent {

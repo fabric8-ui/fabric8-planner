@@ -14,8 +14,8 @@ import {
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'f8-inlineinput',
-  templateUrl: './inlineinput.component.html',
-  styleUrls: ['./inlineinput.component.less']
+  template: require('./inlineinput.component.html'),
+  styles: [require('./inlineinput.component.css').toString()]
 })
 
 export class InlineInputComponent implements OnInit {

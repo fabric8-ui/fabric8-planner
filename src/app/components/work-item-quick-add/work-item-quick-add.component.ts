@@ -31,8 +31,8 @@ import { WorkItemService } from '../../services/work-item.service';
 
 @Component({
   selector: 'alm-work-item-quick-add',
-  templateUrl: './work-item-quick-add.component.html',
-  styleUrls: ['./work-item-quick-add.component.less']
+  template: require('./work-item-quick-add.component.html'),
+  styles: [require('./work-item-quick-add.component.css').toString()]
 })
 export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
   @ViewChild('quickAddTitle') qaTitle: any;

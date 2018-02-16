@@ -17,8 +17,8 @@ import { ModalService } from '../../services/modal.service';
 
 @Component({
     selector: 'alm-work-item-comment',
-    templateUrl: './work-item-comment.component.html',
-    styleUrls: ['./work-item-comment.component.less'],
+    template: require('./work-item-comment.component.html'),
+    styles: [require('./work-item-comment.component.css').toString()]
 })
 export class WorkItemCommentComponent implements OnInit {
     @Input() loadingComments: boolean = true;

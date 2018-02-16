@@ -69,8 +69,8 @@ import { WorkItemDetailAddTypeSelectorComponent } from './../work-item-create/wo
     'class': ''
   },
   selector: 'alm-work-item-list',
-  templateUrl: './planner-list.component.html',
-  styleUrls: ['./planner-list.component.less']
+  template: require('./planner-list.component.html'),
+  styles: [require('./planner-list.component.css').toString()]
 })
 export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChildren('activeFilters', { read: ElementRef }) activeFiltersRef: QueryList<ElementRef>;

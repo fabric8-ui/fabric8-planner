@@ -49,8 +49,8 @@ import { GroupTypesModel } from '../../models/group-types.model';
 @Component({
   // tslint:disable-next-line:use-host-property-decorator
   selector: 'alm-board',
-  templateUrl: './planner-board.component.html',
-  styleUrls: ['./planner-board.component.less']
+  template: require('./planner-board.component.html'),
+  styles: [require('./planner-board.component.css').toString()]
 })
 
 export class PlannerBoardComponent implements OnInit, OnDestroy, AfterViewChecked {

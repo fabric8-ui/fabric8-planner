@@ -23,7 +23,6 @@ var gulp = require('gulp')
   , lesshint  = require('gulp-lesshint')
   , concat    = require('gulp-concat-css')
   , srcmaps   = require('gulp-sourcemaps')
-  , replace   = require('gulp-string-replace')
   ;
 
 // Requirements with special treatments
@@ -45,20 +44,7 @@ let mach = {};
 
 // Serialized typescript compile and post-compile steps
 mach.transpileTS = function () {
-  return (gulp.series(function () {
-    return ngc('tsconfig.json');
-  }, function () {
-    // FIXME: why do we need that?
-    // Replace templateURL/styleURL with require statements in js.
-    return gulp.src(['dist/app/**/*.js'])
-    .pipe(replace(/templateUrl:\s/g, "template: require("))
-    .pipe(replace(/\.html',/g, ".html'),"))
-    .pipe(replace(/styleUrls: \[/g, "styles: [require("))
-    .pipe(replace(/\.less']/g, ".css').toString()]"))
-    .pipe(gulp.dest(function (file) {
-      return file.base; // because of Angular 2's encapsulation, it's natural to save the css where the less-file was
-    }));
-  }))();
+  return ngc('tsconfig.json');
 }
 
 // Copy files to the distPath
@@ -77,11 +63,11 @@ mach.transpileLESS = function (src, debug) {
     // paths: [ path.join(__dirname, 'less', 'includes') ]
   }
   return gulp.src(src)
-    .pipe(less({
-      plugins: [autoprefix]
-    }))
     .pipe(lesshint({
       configPath: './.lesshintrc' // Options
+    }))
+    .pipe(less({
+      plugins: [autoprefix]
     }))
     .pipe(lesshint.reporter()) // Leave empty to use the default, "stylish"
     .pipe(lesshint.failOnError()) // Use this to fail the task on lint errors

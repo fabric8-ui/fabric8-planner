@@ -53,8 +53,8 @@ import {
 
 @Component({
   selector: 'work-item-new-detail',
-  templateUrl: './work-item-new-detail.component.html',
-  styleUrls: [ './work-item-new-detail.component.less' ]
+  template: require('./work-item-new-detail.component.html'),
+  styles: [require('./work-item-new-detail.component.css').toString()]
 })
 
 export class WorkItemNewDetailComponent implements OnInit, OnDestroy, AfterViewChecked {
