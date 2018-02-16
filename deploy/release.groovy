@@ -1,24 +1,32 @@
 #!/usr/bin/groovy
-def ci (){
-    stage('build planner npm'){
+def ci (project){
+    def tempVersion
+
+    stage('Setup & Build'){
         container('ui'){
-            sh '''
-            npm cache clean --force
-            npm cache verify
-            npm install
-            npm run build
-            npm pack dist/
-        '''
+            sh 'npm cache clean --force'
+            sh 'npm cache verify'
+            sh 'npm install'
+            sh 'npm run build'
+            sh 'npm pack dist/'
         }
     }
 
-    stage('unit test'){
+    stage('Build fabric8-ui'){
         container('ui'){
-            sh 'npm run test:unit'
+            tempVersion = buildSnapshotFabric8UI{
+                pullRequestProject = project
+            }
         }
     }
 
-    stage('func test'){
+    stage('Unit Tests'){
+        container('ui'){
+            sh 'npm run tests -- --unit'
+        }
+    }
+
+    stage('Functional Tests'){
         container('ui'){
             sh '''
             npm cache clean --force
@@ -28,41 +36,32 @@ def ci (){
         '''
         }
     }
-}
 
-def ciBuildDownstreamProject(project){
-    stage('build fabric8-ui npm'){
-        return buildSnapshotFabric8UI{
-            pullRequestProject = project
-        }
-    }
+    return tempVersion
 }
 
 def buildImage(imageName){
-    stage('build snapshot image'){
+    stage('Snapshot Image'){
         sh "cd fabric8-ui && docker build -t ${imageName} -f Dockerfile.deploy ."
-    }
-
-    stage('push snapshot image'){
         sh "cd fabric8-ui && docker push ${imageName}"
     }
 }
 
 def cd (b){
-    stage('fix git repo'){
+    stage('Repo Fix'){
         sh './scripts/fix-git-repo.sh'
     }
 
-    stage('build'){
+    stage('Setup & Build'){
         sh 'npm install'
         sh 'npm run build'
     }
 
-    stage('unit test'){
-        sh 'npm run test:unit'
+    stage('Unit Tests'){
+        sh 'npm run tests -- --unit'
     }
 
-    stage('func test'){
+    stage('Functional Tests'){
         dir('runtime'){
             container('ui'){
                 sh '''
@@ -75,7 +74,7 @@ def cd (b){
         }
     }
 
-    stage('release'){
+    stage('Release'){
         def published = npmRelease{
             branch = b
         }
