@@ -772,6 +772,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   onCreateWorkItem(workItem) {
     this.workItems = [workItem, ...this.workItems];
+    this.resolvedWorkItems = [workItem, ...this.resolvedWorkItems];
     this.datatableWorkitems = [
       ...this.tableWorkitem([this.workItems[0]]),
       ...this.datatableWorkitems
