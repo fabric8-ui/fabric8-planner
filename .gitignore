@@ -2,18 +2,17 @@
 
 # compiled output
 /dist
-/dist-watch
+/watch
 /app/*.js
 /app/*.js.map
 /tmp
-/dist-library
-/dist
-/dist-watch
 /src/app/**/*.css
 /build
 /runtime/dll
 /runtime/dist
 /services/dist
+/runtime/src/tests/functionalTests/**/*.js
+/runtime/src/tests/functionalTests/**/*.js.map
 
 # dependencies
 /node_modules

@@ -17,14 +17,7 @@ import { WorkItemService }   from '../../services/work-item.service';
 import { IterationModel } from '../../models/iteration.model';
 import { WorkItem } from '../../models/work-item';
 import { FabPlannerIterationModalComponent } from '../iterations-modal/iterations-modal.component';
-import {
-  Action,
-  EmptyStateConfig,
-  ListBase,
-  ListEvent,
-  TreeListComponent,
-  TreeListConfig
-} from 'patternfly-ng';
+import { IterationTreeComponent } from '../iteration-tree/iteration-tree.component';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -38,10 +31,9 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   @Input() iterations: IterationModel[] = [];
   @Input() collection = [];
   @Input() sidePanelOpen: Boolean = true;
+  @Input() witGroup: string = '';
 
   @ViewChild('modal') modal: FabPlannerIterationModalComponent;
-  @ViewChild('treeList') treeList: TreeListComponent;
-
 
   authUser: any = null;
   loggedIn: Boolean = true;
@@ -51,12 +43,11 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   selectedIteration: IterationModel;
   allIterations: IterationModel[] = [];
   eventListeners: any[] = [];
-  currentSelectedIteration: string = '';
   masterIterations;
   treeIterations;
   activeIterations:IterationModel[] = [];
-  emptyStateConfig: EmptyStateConfig;
-  treeListConfig: TreeListConfig;
+  menuList: any[] = [];
+  spaceId: string = '';
 
   private spaceSubscription: Subscription = null;
 
@@ -79,10 +70,11 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     this.loggedIn = this.auth.isLoggedIn();
     this.getAndfilterIterations();
     this.editEnabled = true;
+    this.selectedIteration = {} as IterationModel;
     this.spaceSubscription = this.spaces.current.subscribe(space => {
       if (space) {
         console.log('[IterationComponent] New Space selected: ' + space.attributes.name);
-        console.log('collection is ', this.collection);
+        this.spaceId = space.id;
         this.editEnabled = true;
         this.getAndfilterIterations();
       } else {
@@ -92,29 +84,11 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
         this.activeIterations = [];
       }
     });
-    this.setTreeConfigs();
-  }
+    if( this.groupTypesService.getCurrentGroupName() === this.witGroup )
+      this.checkUrl();
+    else
+      this.clearSelected();
 
-  setTreeConfigs() {
-    this.emptyStateConfig = {
-      iconStyleClass: '',
-      title: 'No Iterations Available',
-      info: ''
-    } as EmptyStateConfig;
-
-    this.treeListConfig = {
-      dblClick: false,
-      emptyStateConfig: this.emptyStateConfig,
-      multiSelect: false,
-      selectItems: true,
-      selectionMatchProp: 'name',
-      showCheckbox: false,
-      treeOptions: {
-        allowDrag: false,
-        allowDrop: false,
-        isExpandedField: 'expanded'
-      }
-    } as TreeListConfig;
   }
 
   ngOnChanges() {
@@ -138,31 +112,19 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   constructURL(iterationId: string) {
-    //return this.filterService.constructQueryURL('', {iteration_id: iterationId});
-    //this.filterService.queryBuilder({}, '$IN',)
-    const it_key = 'iteration';
-    const it_compare = this.filterService.equal_notation;
-    const it_value = iterationId;
-    //Query for type
-    const it_query = this.filterService.queryBuilder(it_key, it_compare, it_value);
+    //Query for work item type group
+    const type_query = this.filterService.queryBuilder('$WITGROUP', this.filterService.equal_notation, this.witGroup);
     //Query for space
-    //const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, this.spaceId);
+    const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, this.spaceId);
+    //Query for iteration
+    const iteration_query = this.filterService.queryBuilder('iteration',this.filterService.equal_notation, iterationId);
     //Join type and space query
-    const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, it_query );
-
-    //Iterations should only show allowed work item types
-    const wi_key = 'workitemtype';
-    const wi_compare = this.filterService.in_notation;
-    const wi_value = this.collection.map(i => i.id);
-
-    //Query for type
-    const type_query = this.filterService.queryBuilder(wi_key, wi_compare, wi_value);
+    const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query );
     const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
-    //const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+    const third_join = this.filterService.queryJoiner(second_join, this.filterService.and_notation, iteration_query);
+    //this.setGroupType(witGroup);
     //second_join gives json object
-    return this.filterService.jsonToQuery(second_join);
-    //reverse function jsonToQuery(second_join);
-    //return '';
+    return this.filterService.jsonToQuery(third_join);
   }
 
   getAndfilterIterations() {
@@ -232,138 +194,27 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
     this.treeIterations = this.iterationService.getTopLevelIterations(this.allIterations);
-    this.treeList.update();
     this.clusterIterations();
     this.iterationService.emitCreateIteration(iteration);
-  }
-
-  getWorkItemsByIteration(iteration: IterationModel) {
-    let filters: any = [];
-    if (iteration) {
-      this.selectedIteration = iteration;
-      this.isBacklogSelected = false;
-      filters.push({
-        id:  iteration.id,
-        name: iteration.attributes.name,
-        paramKey: 'filter[iteration]',
-        active: true,
-        value: iteration.id
-      });
-      // emit event
-      this.broadcaster.broadcast('iteration_selected', iteration);
-    } else {
-      //This is to view the backlog
-      this.selectedIteration = null;
-      filters.push({
-        paramKey: 'filter[iteration]',
-        active: false,
-      });
-    }
-    this.broadcaster.broadcast('unique_filter', filters);
-  }
-
-  updateItemCounts() {
-    this.log.log('Updating item counts..');
-    this.iterationService.getIterations().first().subscribe((updatedIterations:IterationModel[]) => {
-      // updating the counts from the response. May not the best solution on performance right now.
-      updatedIterations.forEach((thisIteration:IterationModel) => {
-        for (let i=0; i<this.iterations.length; i++) {
-          if (this.iterations[i].id === thisIteration.id) {
-            this.iterations[i].relationships.workitems.meta.total = thisIteration.relationships.workitems.meta.total;
-            this.iterations[i].relationships.workitems.meta.closed = thisIteration.relationships.workitems.meta.closed;
-          }
-        }
-      });
-    }, err => console.log(err));
-  }
-
-  assignWIToIteration(workItemId: string, reqVersion: number, iterationID: string, selfLink: string) {
-    let workItemPayload: WorkItem = {
-      id: workItemId,
-      type: 'workitems',
-      attributes: {
-        'version': reqVersion
-      },
-      relationships: {
-        iteration: {
-          data: {
-            id: iterationID,
-            type: 'iteration'
-          }
-        }
-      },
-      links: {
-        self: selfLink
-      }
-    } as WorkItem;
-
-    this.workItemService.update(workItemPayload)
-      .switchMap(item => {
-        return this.iterationService.getIteration(item.relationships.iteration)
-          .map(iteration => {
-            item.relationships.iteration.data = iteration;
-            return item;
-          });
-      })
-      .subscribe(workItem => {
-        this.workItemDataService.setItem(workItem);
-        this.iterationService.emitDropWI(workItem);
-        this.updateItemCounts();
-        try {
-        this.notifications.message({
-            message: workItem.attributes['system.title']+' has been associated with '+workItem.relationships.iteration.data.attributes['name'],
-            type: NotificationType.SUCCESS
-          } as Notification);
-        } catch(error) {
-          console.log('Error in displaying notification. work item associated with iteration.');
-        }
-      },
-      (err) => {
-        this.iterationService.emitDropWI(workItemPayload, true);
-        try {
-          this.notifications.message({
-            message: 'Something went wrong. Please try again',
-            type: NotificationType.DANGER
-          } as Notification);
-        } catch(error) {
-          console.log('Error in displaying notification. Error in work item association with iteration.');
-        }
-      })
   }
 
   kebabMenuClick(event: Event) {
     event.stopPropagation();
   }
 
-  onEdit(event) {
-    let iteration = this.allIterations.find(item =>
-      item.id === event.id
-    );
+  onEdit(iteration) {
     this.modal.openCreateUpdateModal('update', iteration);
   }
 
-  onClose(event) {
-    let iteration = this.allIterations.find(item =>
-      item.id === event.id
-    );
+  onClose(iteration) {
     this.modal.openCreateUpdateModal('close', iteration);
   }
 
-  onCreateChild(event) {
-    let iteration = this.allIterations.find(item =>
-      item.id === event.id
-    );
+  onCreateChild(iteration) {
     this.modal.openCreateUpdateModal('createChild', iteration);
   }
 
   listenToEvents() {
-    this.eventListeners.push(
-      this.broadcaster.on<string>('backlog_selected')
-        .subscribe(message => {
-          this.selectedIteration = null;
-          this.isBacklogSelected = true;
-      })
-    );
     this.eventListeners.push(
       this.broadcaster.on<string>('logout')
         .subscribe(message => {
@@ -372,37 +223,39 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
       })
     );
     this.eventListeners.push(
-      this.broadcaster.on<string>('wi_change_state_it')
-        .subscribe((actions: any) => {
-          this.updateItemCounts();
-      })
-    );
-    this.eventListeners.push(
-      this.broadcaster.on<string>('associate_iteration')
-        .subscribe((data: any) => {
-          this.updateItemCounts();
-      })
-    );
-    this.eventListeners.push(
-      this.broadcaster.on<WorkItem>('delete_workitem')
-        .subscribe((data: WorkItem) => {
-          this.updateItemCounts();
-      })
-    );
-
-    this.eventListeners.push(
-      this.broadcaster.on<WorkItem>('create_workitem')
-        .subscribe((data: WorkItem) => {
-          this.updateItemCounts();
+      this.groupTypesService.groupTypeSelected.subscribe(wiTypeCollection => {
+        // console.log('listener for groupTypeSelected1', this.groupTypesService.getCurrentGroupName());
+        // console.log('listener for groupTypeSelected2', this.witGroup);
+        // if( this.groupTypesService.getCurrentGroupName() !== this.witGroup )
+        //   this.clearSelected();
+        // else
+        //   this.checkUrl();
       })
     );
   }
 
-  //Patternfly-ng's tree list related functions
-  handleClick($event: Action, item: any) {
+  setGuidedTypeWI(iteration) {
+    this.selectedIteration = iteration;
+    this.groupTypesService.setCurrentGroupType(this.collection, 'Execution');
   }
 
-  setGuidedTypeWI() {
-    this.groupTypesService.setCurrentGroupType(this.collection, 'execution');
+  clearSelected() {
+    this.selectedIteration = {} as IterationModel;
   }
- }
+
+  checkUrl() {
+    const queryParams = this.route.snapshot.queryParams;
+    let urlArray = this.route.snapshot.queryParams['q'].split('iteration:');
+    if (urlArray.length > 1 ) {
+      let ind = urlArray[1].indexOf(' $AND ');
+      let iterationId = '';
+      if (ind >= 0) {
+        iterationId = urlArray[1].substring(0,ind);
+      } else {
+        iterationId = urlArray[1].replace(')','');
+      }
+      let iteration = this.iterations.find( i => i.id === iterationId );
+      this.setGuidedTypeWI(iteration);
+    }
+  }
+}

@@ -1,22 +1,18 @@
 <header class="toolbar-header">
-  <div class="width-100 pull-left">
-    <pfng-toolbar
-      [config]="toolbarConfig"
-      [actionTemplate]="actionsTemplate"
-      [viewTemplate]="addTemplate"
-      (onFilterChange)="filterChange($event)"
-      (onFilterFieldSelect)="selectFilterType($event)"
-      (onFilterTypeAhead)="filterQueries($event)">
+  <pfng-toolbar
+    [config]="toolbarConfig"
+    [actionTemplate]="actionsTemplate"
+    [viewTemplate]="addTemplate"
+    (onFilterChange)="filterChange($event)"
+    (onFilterFieldSelect)="selectFilterType($event)"
+    (onFilterTypeAhead)="filterQueries($event)">
       <ng-template #actionsTemplate>
       </ng-template>
       <ng-template #addTemplate>
-        <button *ngIf="loggedIn && editEnabled && wiTypes.length"
-            class="btn btn-default primary-action add-button" type="button"
-            (click)="createNewWorkItem($event)">
-          <i class="pficon pficon-add-circle-o add-button-icon"></i>
-          <span class="add-button-text">Create</span>
-        </button>
+        <ng-container *ngIf="context === 'listview'">
+          <input type="checkbox" checked="checked" (change)="checkboxToggle($event)" name="Show Tree" id="showTree">
+          <label class="show-tree__label" for="showTree">&nbsp;Show Tree</label>
+        </ng-container>
       </ng-template>
-    </pfng-toolbar>
-  </div>
+  </pfng-toolbar>
 </header>

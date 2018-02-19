@@ -15,14 +15,16 @@ exports.config = {
         isVerbose: true,
         showColors: true,
         includeStackTrace: true,
-        defaultTimeoutInterval: 60000,
+        defaultTimeoutInterval: 300000,
         print: function () {
         }
     },
     troubleshoot: true,
+    maxSessions: 5,
     capabilities: {
         'browserName': 'chrome',
         'shardTestFiles': true,
+        'maxInstances': 5,
         'loggingPrefs': {
             'driver': 'WARNING',
             'server': 'WARNING',
