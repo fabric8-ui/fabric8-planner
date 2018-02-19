@@ -41,6 +41,7 @@ functional_tests.log
 unit_tests.log
 /linters
 browser_logs.log
+npm-debug.log*
 
 # e2e
 /e2e/*.js
