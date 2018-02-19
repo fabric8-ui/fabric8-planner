@@ -152,15 +152,19 @@ export class PlannerBoardComponent implements OnInit, OnDestroy, AfterViewChecke
     // BehaviorSubject so that we can compare
     // on update the value on URL
     const queryParams = this.route.snapshot.queryParams;
-    if (Object.keys(queryParams).indexOf('iteration') > -1) {
-      this.currentIteration = new BehaviorSubject(queryParams['iteration']);
+    if(Object.keys(queryParams).length === 0 && process.env.ENV != 'inmemory') {
+      this.setDefaultUrl();
     } else {
-      this.currentIteration = new BehaviorSubject(null);
-    }
-    if (Object.keys(queryParams).indexOf('workitemtype') > -1) {
-      this.currentWIType = new BehaviorSubject(queryParams['workitemtype']);
-    } else {
-      this.currentWIType = new BehaviorSubject(null);
+      if (Object.keys(queryParams).indexOf('iteration') > -1) {
+        this.currentIteration = new BehaviorSubject(queryParams['iteration']);
+      } else {
+        this.currentIteration = new BehaviorSubject(null);
+      }
+      if (Object.keys(queryParams).indexOf('workitemtype') > -1) {
+        this.currentWIType = new BehaviorSubject(queryParams['workitemtype']);
+      } else {
+        this.currentWIType = new BehaviorSubject(null);
+      }
     }
 
     this.listenToEvents();
@@ -214,8 +218,37 @@ export class PlannerBoardComponent implements OnInit, OnDestroy, AfterViewChecke
     }
     document.getElementsByTagName('body')[0].style.overflow = "auto";
   }
+  
+  setDefaultUrl() {
+    //redirect to default type group
+    //get space id
+    this.spaces.current.subscribe(space => {
+      if (space) {
+        const spaceId = space.id;
+        //get groupsgroups
+        this.groupTypesService.getGroupTypes().subscribe(groupTypes => {
+          const defaultGroupName = groupTypes[0].attributes.name;
+          //Query for work item type group
+          const type_query = this.filterService.queryBuilder('$WITGROUP', this.filterService.equal_notation, defaultGroupName);
+          //Query for space
+          const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, spaceId);
+          //Join type and space query
+          const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query );
+          const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+          let query = this.filterService.jsonToQuery(second_join);
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { q: query }
+          });
+        });
+      }
+    });
+  }
 
   initStuff() {
+    const queryParams = this.route.snapshot.queryParams;
+    if(Object.keys(queryParams).length === 0 && process.env.ENV != 'inmemory')
+      this.setDefaultUrl();
     this.uiLockedBoard = true;
     Observable.combineLatest(
       this.iterationService.getIterations(),
