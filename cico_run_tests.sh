@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This file is supposed to be executed by CICO build (ci.centos.org/view/Devtools/)
+#   1. Run tests for fabric8-planner
+#   2. Create snapshot with fabric8-ui's master and fabric8-planner's current changes
+
 # Show command before executing
 set -x
 
@@ -45,6 +49,7 @@ docker exec fabric8-planner npm run tests -- --unit
 docker exec fabric8-planner bash -c 'cd runtime; npm install'
 docker exec fabric8-planner bash -c 'cd runtime/src/tests/functionalTests; DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest'
 
+# Following steps will create a snapshot for testing
 
 # Build and integrate planner with fabric8-ui
 docker exec fabric8-planner npm pack dist/
@@ -83,7 +88,7 @@ else
 fi
 
 # Build and push image
-# Following code is not tested on local
+# Following code is not tested on local(remove this comment when tested with cico)
 pr_id="SNAPSHOT-PR-${ghprbPullId}"
 push_registry=registry.devshift.net
 image_repository=planner
