@@ -20,7 +20,8 @@ fabric8UITemplate{
                 def pipeline = load 'deploy/release.groovy'
                 if (utils.isCI()){
 
-                    tempVersion = pipeline.ci(project)
+                    pipeline.ci()
+                    tempVersion = pipeline.buildF8UI(project)
 
                     imageName = "fabric8/fabric8-ui:${tempVersion}"
                     container('docker'){
@@ -35,9 +36,7 @@ fabric8UITemplate{
                     sh "git pull"
                     sh "git remote set-url origin git@github.com:${project}.git"
 
-                    container('ui'){
-                        pipeline.ci()
-                    }
+                    pipeline.ci()
 
                     def branch
                     container('ui'){
