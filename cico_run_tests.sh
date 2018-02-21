@@ -35,7 +35,7 @@ mkdir -p fabric8-ui-dist
 docker build -t fabric8-planner-builder -f Dockerfile .
 # User root is required to run webdriver-manager update.
 # This shouldn't be a problem for CI containers
-docker run --detach=true --name=fabric8-planner -v $(pwd)/fabric8-ui-dist:fabric8-ui-dist:Z --cap-add=SYS_ADMIN -t fabric8-planner-builder
+docker run --detach=true --name=fabric8-planner -v $(pwd)/fabric8-ui-dist:/home/fabric8/fabric8-ui-dist:Z --cap-add=SYS_ADMIN -t fabric8-planner-builder
 
 
 # Build fabric8-planner
