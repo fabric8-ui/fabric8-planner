@@ -21,7 +21,7 @@ spec source directory has to be provided using the env variable `TEST_SOURCE_PAT
 == Running Tests
 
 Next, you need to provide a URL of the system under test using the env variable `BASE_URL`. If 
-`BASE_URL` is not set, `http://localhost:8088/` is used.
+`BASE_URL` is not set, `http://localhost:8090/` is used.
 
 Tests can then be run with:
 
@@ -29,7 +29,14 @@ Tests can then be run with:
 npm test
 ```
 
-This will get all local dependencies, compile the specs, add runtime dependencies and runs the test specs.
+This will get all local dependencies, compile the specs, add runtime dependencies and runs the test specs. You can
+also give a suite to run as the first argument.
+
+*Note*: if you are developing Planner, then is recommended to use the provided script 
+```
+$(PLANNER_ROOT)/scripts/run-functests.sh
+```
+to run the tests. This script will build and start the Planner debug server and then runs the tests.
 
 == Additional Configuration
 

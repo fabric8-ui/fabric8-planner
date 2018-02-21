@@ -38,9 +38,7 @@
     "webdriver:update": "webdriver-manager update --versions.chrome 2.33",
     "webpack-dev-server": "webpack-dev-server",
     "webpack": "webpack",
-    "test:unit": "karma start tests/karma.conf.js",
-    "test:func": "./tests/run_functional_tests.sh",
-    "test:funcsmoke": "./tests/run_functional_tests.sh smokeTest"
+    "test:unit": "karma start tests/karma.conf.js"
   },
   "dependencies": {
     "@angular/animations": "4.4.4",
