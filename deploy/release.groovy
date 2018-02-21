@@ -17,13 +17,16 @@ def ci (){
     }
 
     stage('Functional Tests'){
-        container('ui'){
-            sh '''
-            npm cache clean --force
-            npm cache verify
-            npm install
-            DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
-        '''
+        dir('runtime'){
+            container('ui'){
+                sh '''
+        # npm cache clean --force
+        # npm install
+        export TOKEN=${TOKEN}
+        cd src/tests/functionalTests
+        DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest
+'''
+            }
         }
     }
 }
