@@ -76,8 +76,8 @@ docker exec fabric8-planner bash -c '''
     cd fabric8-ui && npm run build:prod
 '''
 # Copy dist and Dockerfile.deploy to host (via mounted dir)
-docker exec fabric8-planner bash -c 'cd fabric8-ui; cp -r dist/ /fabric8-ui-dist'
-docker exec fabric8-planner bash -c 'cd fabric8-ui; cp Dockerfile.deploy /fabric8-ui-dist'
+docker exec fabric8-planner bash -c 'cd fabric8-ui; cp -r dist/ /home/fabric8/fabric8-ui-dist'
+docker exec fabric8-planner bash -c 'cd fabric8-ui; cp Dockerfile.deploy /home/fabric8/fabric8-ui-dist'
 
 # login first
 if [ -n "${DEVSHIFT_USERNAME}" -a -n "${DEVSHIFT_PASSWORD}" ]; then
