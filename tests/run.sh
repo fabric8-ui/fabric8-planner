@@ -91,7 +91,7 @@ main() {
   local access_token=${ACCESS_TOKEN:-"{\"access_token\":\"somerandomtoken\",\"expires_in\":1800,\"refresh_expires_in\":1800,\"refresh_token\":\"somerandomtoken\",\"token_type\":\"bearer\"}"}
   local protractor="$(npm bin)/protractor"
   local typescript="$(npm bin)/tsc"
-  local suite=${1:-fullTest}
+  local suite=${1:-smokeTest}
 
   echo "Getting local dependencies.."
   npm install
@@ -131,8 +131,7 @@ main() {
     echo
   fi
 
-  #$protractor --baseUrl "${base_url}" "tmp/protractor.conf.js" --suite "${suite}"
-  $protractor --baseUrl "${base_url}" --specs "${specs_pattern}" --exclude "node_modules/**/*.spec.js" --params.accessToken "${access_token}" "${temp_dir}/protractor.conf.js"
+  $protractor --baseUrl "${base_url}" --specs "${specs_pattern}" --exclude "node_modules/**/*.spec.js" --params.accessToken "${access_token}" --suite "${suite}" "${temp_dir}/protractor.conf.js"
 
   TEST_RESULT=$?
 
