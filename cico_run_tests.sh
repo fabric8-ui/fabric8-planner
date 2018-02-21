@@ -79,9 +79,11 @@ docker exec fabric8-planner bash -c '''
 docker exec fabric8-planner bash -c 'cd fabric8-ui; cp -r dist/ /home/fabric8/fabric8-planner/fabric8-ui-dist/'
 docker exec fabric8-planner bash -c 'cd fabric8-ui; cp Dockerfile.deploy /home/fabric8/fabric8-planner/fabric8-ui-dist'
 
+REGISTRY="push.registry.devshift.net"
+
 # login first
 if [ -n "${DEVSHIFT_USERNAME}" -a -n "${DEVSHIFT_PASSWORD}" ]; then
-    docker login -u ${DEVSHIFT_USERNAME} -p ${DEVSHIFT_PASSWORD} ${push_registry}
+    docker login -u ${DEVSHIFT_USERNAME} -p ${DEVSHIFT_PASSWORD} ${REGISTRY}
 else
     echo "Could not login, missing credentials for the registry"
     exit 1
@@ -89,11 +91,9 @@ fi
 
 # Build and push image
 # Following code is not tested on local(remove this comment when tested with cico)
-pr_id="SNAPSHOT-PR-${ghprbPullId}"
-push_registry=registry.devshift.net
-image_repository=planner
-image_name="${push_registry}/${push_registry}:${pr_id}"
+TAG="SNAPSHOT-PR-${ghprbPullId}"
+IMAGE_REPO="planner"
 
 cd fabric8-ui-dist
-docker build -t ${image_name} -f Dockerfile.deploy .
-docker push ${push_registry}/${image_repository}:${pr_id} ${image_name}
+docker build -t ${IMAGE_REPO}:${TAG} -f Dockerfile.deploy .
+docker push ${IMAGE_REPO}:${TAG}
