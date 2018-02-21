@@ -19,10 +19,12 @@ def ci (){
     stage('Functional Tests'){
         dir('runtime'){
             container('ui'){
+                token = ${env.TOKEN}
+                echo "$token"
                 sh '''
         # npm cache clean --force
         # npm install
-        export TOKEN=${TOKEN}
+        export TOKEN="${token}"
         cd src/tests/functionalTests
         DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest
 '''
