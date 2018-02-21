@@ -19,7 +19,7 @@ def ci (){
     stage('Functional Tests'){
         dir('runtime'){
             container('ui'){
-                token = ${env.TOKEN}
+                token = "${env.TOKEN}"
                 echo "$token"
                 sh '''
         # npm cache clean --force
