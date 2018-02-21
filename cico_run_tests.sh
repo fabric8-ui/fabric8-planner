@@ -30,11 +30,11 @@ service docker start
 # Build builder image
 cp /tmp/jenkins-env .
 
+mkdir -p fabric8-ui-dist
 # Build fabric8-planner image
 docker build -t fabric8-planner-builder -f Dockerfile .
 # User root is required to run webdriver-manager update.
 # This shouldn't be a problem for CI containers
-mkdir -p fabric8-ui-dist
 docker run --detach=true --name=fabric8-planner -v $(pwd)/fabric8-ui-dist:fabric8-ui-dist:Z --cap-add=SYS_ADMIN -t fabric8-planner-builder
 
 
