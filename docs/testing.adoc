@@ -17,7 +17,9 @@ $ gulp test:unit
 ----
 
 == Functional Tests
+The planner functional tests can be executed against 2 backends
 
+=== 1. Mock Backend - Running Tests against `inmemory` (mock) data
 * To run all the functional tests, in the *_runtime_* directory, run:
 +
 ----
@@ -28,6 +30,48 @@ $ npm run test:func
 ----
 npm run test:funcsmoke
 ----
+
+Functional Tests support the following (optional) variables:
+
+- `DIRECT_CONNECT` (default=false) - When `DIRECT_CONNECT` is set, Protractor will not use selenuim and directly connect to Chrome. Use this flag to run the tests faster. For example, `DIRECT_CONNECT=true npm run test:funcsmoke`
+
+- `HEADLESS_MODE` (default=false) - When `HEADLESS_MODE` is set, Protractor will run tests in headless chrome, similar to CI/CD environment.
+
+- `BASE_URL` - If you already have a standalone planner running, you can set `BASE_URL` for it. All tests will run against the provided `BASE_URL`.
+For example, `BASE_URL=http://localhost:8080 npm run test:funcsmoke`
+
+NOTE: Running tests with `DIRECT_CONNECT` and `BASE_URL` will significantly improve the speed of test execution.
+
+For example, `DIRECT_CONNECT=true BASE_URL=http://localhost:8080 npm run test:funcsmoke`
+
+=== 2. Live Backend - Running Tests against local instances of fabric8-ui, fabric8-wit and fabric8-auth
+The following section describes how to
+
+- Start fabric8-ui in minishift.
+- Populate fabric8-planner backend (fabric8-wit) with data.
+- Run functional tests against it.
+
+
+==== 1. Starting fabric8-serivces (fabric8-ui/fabric8-wit/fabric8-auth) in minishift
+This https://github.com/fabric8-services/fabric8-wit/tree/master/minishift[guide]
+describes how to start and run fabric8 services on minishift. Make sure you have a working minishift setup before proceeding to step 2.
+
+==== 2. Populating fabric8-planner backend (fabric8-wit) with data
+
+You'll need an offline token to make API calls. Instructions on how to generate offline token can be found https://github.com/fabric8-services/fabric8-wit/pull/1591#issuecomment-349232658[here]. Once the token is generated, follow this https://github.com/fabric8io/fabric8-test/tree/master/EE_API_automation/pytest[guide] to populate the database. (You'll have to clone fabric8-test repository)
+
+NOTE: Make sure all the API URLs are correct. In the minishift setup, fabric8-wit runs on `minishift.local:30000`, fabric8-auth runs on `minishift.local:31000`, fabric8-ui runs on `minishift.local:31200` and keycloak realm is `fabric8-test`
+
+==== 3. Running functional tests against the local instances
+1. Go to `fabric8-test/EE_API_automation/pytest`
+2. Run `cat launch_info_dump.json | ./json2env`. It will set all the required environment variables for running tests.
+3. Go to `fabric8-planner/runtime` directory and run
+
+----
+$(npm bin)/protractor tests/protractor.config.js --directConnect --baseUrl="http://minishift.local:31200" --suite smokeTest
+----
+
+This should start tests against the local minishift backend.
 
 === Building for Functional Tests or Standalone Production
 
