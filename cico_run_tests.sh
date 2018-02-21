@@ -92,8 +92,8 @@ fi
 # Build and push image
 # Following code is not tested on local(remove this comment when tested with cico)
 TAG="SNAPSHOT-PR-${ghprbPullId}"
-IMAGE_REPO="planner"
+IMAGE_REPO="fabric8-ui/fabric8-planner"
 
 cd fabric8-ui-dist
 docker build -t ${IMAGE_REPO}:${TAG} -f Dockerfile.deploy .
-docker push ${IMAGE_REPO}:${TAG}
+docker push ${REGISTRY}/${IMAGE_REPO}:${TAG}
