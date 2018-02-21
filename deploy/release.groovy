@@ -1,7 +1,5 @@
 #!/usr/bin/groovy
-def ci (project){
-    def tempVersion
-
+def ci (){
     stage('Setup & Build'){
         container('ui'){
             sh 'npm cache clean --force'
@@ -9,14 +7,6 @@ def ci (project){
             sh 'npm install'
             sh 'npm run build'
             sh 'npm pack dist/'
-        }
-    }
-
-    stage('Build fabric8-ui'){
-        container('ui'){
-            tempVersion = buildSnapshotFabric8UI{
-                pullRequestProject = project
-            }
         }
     }
 
@@ -36,7 +26,17 @@ def ci (project){
         '''
         }
     }
+}
 
+def buildF8UI(project){
+    def tempVersion
+    stage('Build fabric8-ui'){
+        container('ui'){
+            tempVersion = buildSnapshotFabric8UI{
+                pullRequestProject = project
+            }
+        }
+    }
     return tempVersion
 }
 

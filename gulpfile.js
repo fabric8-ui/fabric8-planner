@@ -102,18 +102,12 @@ mach.transpileLESS = function (src, debug) {
 gulp.task('build', function (done) {
 
   // app (default)
-
   mach.transpileTS(); // Transpile *.ts to *.js; _then_ post-process require statements to load templates
   mach.transpileLESS(appSrc + '/**/*.less'); // Transpile and minify less, storing results in distPath.
   mach.copyToDist(['src/**/*.html']); // Copy template html files to distPath
   gulp.src(['LICENSE', 'README.adoc', 'package.json']).pipe(gulp.dest(distPath)); // Copy static assets to distPath
 
   // image
-
-  // release
-  if (argv.release) {
-    proc.exec('$(npm bin)/semantic-release');
-  }
 
   // tarball
 
@@ -208,6 +202,17 @@ gulp.task('clean', function (done) {
 
   done();
 });
+
+// // Release
+// gulp.task('release', function (done) {
+//   gulp.src(['.git/**/*']).pipe(gulp.dest('dist/.git'));
+//   proc.exec('$(npm bin)/semantic-release', function(error, stdout) {
+//     console.log("error: ", error);
+//     console.log(stdout);
+//   });
+
+//   done();
+// });
 
 // Test
 gulp.task('tests', function (done) {
