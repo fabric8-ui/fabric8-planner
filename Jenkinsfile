@@ -19,7 +19,9 @@ fabric8UITemplate{
                 readTrusted 'deploy/release.groovy'
                 def pipeline = load 'deploy/release.groovy'
                 if (utils.isCI()){
-
+                    token = "${env.TOKEN}"
+                    echo "-------------"
+                    echo "$token"
                     pipeline.ci()
                     tempVersion = pipeline.buildF8UI(project)
 
