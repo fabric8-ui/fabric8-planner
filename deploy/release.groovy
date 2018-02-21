@@ -62,12 +62,22 @@ def cd (b){
     }
 
     stage('Functional Tests'){
+<<<<<<< HEAD
         container('ui'){
             sh '''
             npm cache clean --force
             npm cache verify
             npm install
             DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh smokeTest
+=======
+        dir('runtime'){
+            container('ui'){
+                sh '''
+        npm cache clean --force
+        npm install
+        cd src/tests/functionalTests
+        DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh
+>>>>>>> fix(tests) : modified release.groovy to run all the tests
         '''
         }
     }
