@@ -6,6 +6,7 @@ import * as ui from '../../ui';
 
 export class WorkItemList extends BaseElement {
   overlay = new BaseElement(this.$('div.lock-overlay-list'));
+  datatableHeaderdiv = new ui.BaseElement(this.$('.datatable-header'),'datatable header div');
   datatableHeaderCell = new ui.BaseElementArray(this.$$('datatable-header-cell'),'datatable header cell');
   datatableHeaderCellLabel = new ui.BaseElementArray(this.$$('datatable-header-cell-label'));
 
@@ -39,6 +40,7 @@ export class WorkItemList extends BaseElement {
   }
 
   async getDataTableHeaderCellCount() {
+    await this.datatableHeaderdiv.untilDisplayed();
     return await this.datatableHeaderCell.count();
   }
 };

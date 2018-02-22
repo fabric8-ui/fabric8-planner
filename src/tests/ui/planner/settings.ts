@@ -25,10 +25,6 @@ export class Settings extends ui.BaseElement {
     await this.settingsDropDown.clickWhenReady();
   }
 
-  async closeSettingsButton() {
-    await this.close.clickWhenReady();
-  }
-  
   async selectAttribute(AttributeValue: string) {
     await this.settingsDropDown.select(AttributeValue);
   }
@@ -39,5 +35,6 @@ export class Settings extends ui.BaseElement {
 
   async moveToAvailableAttribute() {
     await this.moveToAvailableAttributeButton.clickWhenReady();
+    await this.close.clickWhenReady();
   }
 }

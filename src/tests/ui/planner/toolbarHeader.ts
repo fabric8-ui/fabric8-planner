@@ -17,7 +17,7 @@ export class ToolbarHeader extends BaseElement {
 
   async clickShowTree() {
     await this.ready();
-    await this.showTree.untilPresent();
+    await this.showTree.untilDisplayed();
     await this.showTree.clickWhenReady();
   }
 }

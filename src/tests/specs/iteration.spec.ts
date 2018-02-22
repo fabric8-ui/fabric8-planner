@@ -22,7 +22,7 @@ describe('Iteration test', () => {
 
   it('should create a new iteration', async () => {
     await planner.sidePanel.createNewIteration();
-    await planner.iteration.addNewIteration(c.newIteration,c.iteration3);
+    await planner.iteration.addNewIteration(c.newIteration,c.iteration1);
     expect(await planner.sidePanel.hasIteration(c.newIteration)).toBeTruthy();
   });
 });

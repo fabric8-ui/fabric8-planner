@@ -7,7 +7,6 @@ export class Constants {
   attribute4 = "Assignees";
   iteration1 = '/Root Iteration/Iteration 0';
   iteration2 = '/Root Iteration/Iteration 1';
-  iteration3 = '/Root Iteration';
   label = 'Example Label 0';
   label1 = 'Example Label 1';
   linkType = 'tests';

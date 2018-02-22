@@ -161,7 +161,6 @@ export class WorkItemQuickPreview extends ui.BaseElement {
 
   async close() {
     await this.closeButton.clickWhenReady();
-    await this.closeButton.untilAbsent();
   }
 
   async createNewLabel(label: string) {

@@ -19,6 +19,5 @@ export class Iteration extends ui.BaseElement {
     await this.parentIteration.enterText(parentIteration);
     await this.parentDropdown.select(parentIteration);
     await this.createIterationButton.clickWhenReady();
-    await this.iterationDialog.untilAbsent();
   }
 }
