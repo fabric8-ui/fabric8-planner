@@ -38,6 +38,8 @@ $(PLANNER_ROOT)/scripts/run-functests.sh
 ```
 to run the tests. This script will build and start the Planner debug server and then runs the tests.
 
+It is also possible to run the tests as a black box runner using the script `tests/run.sh`.
+
 == Additional Configuration
 
 The test runner supports the following env variables to configure behaviour:
