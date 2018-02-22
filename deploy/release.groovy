@@ -23,6 +23,7 @@ def ci (){
         # npm cache clean --force
         # npm install
         //export TOKEN="${token}"
+        env | while IFS="=" read key val; do echo $key; done;
         cd src/tests/functionalTests
         DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest
 '''
