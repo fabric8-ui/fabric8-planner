@@ -1,4 +1,4 @@
-@Library('github.com/fabric8io/fabric8-pipeline-library@master')
+@Library('github.com/rupalibehera/fabric8-pipeline-library@token-env-planner-team')
 def utils = new io.fabric8.Utils()
 def flow = new io.fabric8.Fabric8Commands()
 def project = 'fabric8-ui/fabric8-planner'
@@ -19,7 +19,6 @@ fabric8UITemplate{
                 readTrusted 'deploy/release.groovy'
                 def pipeline = load 'deploy/release.groovy'
                 if (utils.isCI()){
-
                     pipeline.ci()
                     tempVersion = pipeline.buildF8UI(project)
 
