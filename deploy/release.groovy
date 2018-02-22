@@ -23,7 +23,7 @@ def ci (){
         # npm install
         # export TOKEN="${token}"
         env | grep TOKEN | cut -d 'G' -f 2
-        DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
+        #DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
 '''
             }
         }
