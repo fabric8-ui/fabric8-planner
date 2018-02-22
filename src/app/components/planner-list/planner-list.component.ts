@@ -173,7 +173,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     // on update the value on URL
 
     const queryParams = this.route.snapshot.queryParams;
-    if(Object.keys(queryParams).length === 0 && process.env.ENV != 'inmemory') {
+    if(Object.keys(queryParams).length === 0 || process.env.ENV == 'inmemory') {
       this.setDefaultUrl();
     } else {
       if (Object.keys(queryParams).indexOf('iteration') > -1) {
