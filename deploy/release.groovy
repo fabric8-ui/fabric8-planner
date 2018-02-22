@@ -20,7 +20,7 @@ def ci (){
         container('ui'){
             sh '''
         # npm cache clean --force
-        # npm install
+        npm install
         # export TOKEN="${token}"
         # env | grep TOKEN | cut -d 'G' -f 2
         DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
