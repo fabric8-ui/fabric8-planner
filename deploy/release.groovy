@@ -17,15 +17,13 @@ def ci (){
     }
 
     stage('Functional Tests'){
-        dir('runtime'){
-            container('ui'){
-                sh '''
+        container('ui'){
+            sh '''
         # npm cache clean --force
         # npm install
         # export TOKEN="${token}"
         env | grep TOKEN | cut -d 'G' -f 2
-        cd src/tests/functionalTests
-        #DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest
+        DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
 '''
             }
         }
