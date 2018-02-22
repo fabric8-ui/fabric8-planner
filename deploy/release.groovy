@@ -28,7 +28,6 @@ def ci (){
             }
         }
     }
-}
 
 def buildF8UI(project){
     def tempVersion
