@@ -1,20 +1,12 @@
 #!/usr/bin/groovy
-def ci (project){
-    def tempVersion
-
+def ci (){
     stage('Setup & Build'){
         container('ui'){
+            sh 'npm cache clean --force'
+            sh 'npm cache verify'
             sh 'npm install'
             sh 'npm run build'
             sh 'npm pack dist/'
-        }
-    }
-
-    stage('Build fabric8-ui'){
-        container('ui'){
-            tempVersion = buildSnapshotFabric8UI{
-                pullRequestProject = project
-            }
         }
     }
 
@@ -25,18 +17,26 @@ def ci (project){
     }
 
     stage('Functional Tests'){
-        dir('runtime'){
-            container('ui'){
-                sh '''
-        npm cache clean --force
-        npm install
-        cd src/tests/functionalTests
-        DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest
-'''
+        container('ui'){
+            sh '''
+            npm cache clean --force
+            npm cache verify
+            npm install
+            DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
+        '''
+        }
+    }
+}
+
+def buildF8UI(project){
+    def tempVersion
+    stage('Build fabric8-ui'){
+        container('ui'){
+            tempVersion = buildSnapshotFabric8UI{
+                pullRequestProject = project
             }
         }
     }
-
     return tempVersion
 }
 
@@ -62,15 +62,13 @@ def cd (b){
     }
 
     stage('Functional Tests'){
-        dir('runtime'){
-            container('ui'){
-                sh '''
-        npm cache clean --force
-        npm install
-        cd src/tests/functionalTests
-        DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest
+        container('ui'){
+            sh '''
+            npm cache clean --force
+            npm cache verify
+            npm install
+            DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh smokeTest
         '''
-            }
         }
     }
 
