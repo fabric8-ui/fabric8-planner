@@ -95,6 +95,5 @@ TAG="SNAPSHOT-PR-${ghprbPullId}"
 IMAGE_REPO="fabric8-ui/fabric8-planner"
 
 cd fabric8-ui-dist
-docker build -t ${TAG} -f Dockerfile.deploy .
-docker tag ${TAG} ${REGISTRY}/${IMAGE_REPO}:${TAG}
+docker build -t ${IMAGE_REPO}/${TAG} -f Dockerfile.deploy .
 docker push ${REGISTRY}/${IMAGE_REPO}:${TAG}
