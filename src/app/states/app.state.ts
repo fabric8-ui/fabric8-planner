@@ -19,7 +19,8 @@ export interface AppState {
 
   detailPage: {
     comments: states.CommentState,
-    workItem: states.DetailWorkItemState
+    workItem: states.DetailWorkItemState,
+    linkType: states.LinkTypeState
   };
 
   toolbar: {

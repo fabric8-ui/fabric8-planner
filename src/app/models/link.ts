@@ -1,4 +1,5 @@
-import { LinkType } from './link-type';
+import { LinkType, LinkTypeUI } from './link-type';
+import { WorkItemUI } from './work-item';
 
 export class Link {
   id: string;
@@ -45,4 +46,15 @@ export class RelationalData {
     state: string;
   };
   linkType?: string;
+}
+
+export interface WorkItemLinkService extends Link {}
+
+export interface WorkItemLinkUI {
+  id: string;
+  type: string;
+  version: number;
+  linkType: LinkTypeUI;
+  source: WorkItemUI;
+  target: WorkItemUI;
 }

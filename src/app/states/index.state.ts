@@ -49,3 +49,7 @@ export {
   DetailWorkItemState,
   initialState as initialDetailWIState
 } from './detail-work-item.state';
+export {
+  LinkTypeState,
+  initialState as initialLinkTypeState
+} from './link-type.state';
