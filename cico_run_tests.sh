@@ -47,7 +47,7 @@ docker exec fabric8-planner npm run tests -- --unit
 
 ## Exec functional tests
 docker exec fabric8-planner bash -c 'cd runtime; npm install'
-docker exec fabric8-planner bash -c 'cd runtime/src/tests/functionalTests; DEBUG=true HEADLESS_MODE=true ./run_ts_functional_tests.sh smokeTest'
+docker exec fabric8-planner bash -c 'DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh'
 
 # Following steps will create a snapshot for testing
 
