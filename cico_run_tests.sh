@@ -35,28 +35,28 @@ mkdir -p fabric8-ui-dist
 docker build -t fabric8-planner-builder -f Dockerfile .
 # User root is required to run webdriver-manager update.
 # This shouldn't be a problem for CI containers
-docker run --detach=true --name=fabric8-planner -v $(pwd)/fabric8-ui-dist:/home/fabric8/fabric8-planner/fabric8-ui-dist:Z --cap-add=SYS_ADMIN -t fabric8-planner-builder
+CID=$(docker run --detach=true -v $(pwd)/fabric8-ui-dist:/home/fabric8/fabric8-planner/fabric8-ui-dist:Z --cap-add=SYS_ADMIN -t fabric8-planner-builder)
 
 
 # Build fabric8-planner
-docker exec fabric8-planner npm install
-docker exec fabric8-planner npm run build
+docker exec $CID npm install
+docker exec $CID npm run build
 
 # Run unit tests
-docker exec fabric8-planner npm run tests -- --unit
+docker exec $CID npm run tests -- --unit
 
 ## Exec functional tests
-docker exec fabric8-planner bash -c 'cd runtime; npm install'
-docker exec fabric8-planner bash -c 'DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh'
+docker exec $CID bash -c 'cd runtime; npm install'
+docker exec $CID bash -c 'DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh'
 
 # Following steps will create a snapshot for testing
 
 # Build and integrate planner with fabric8-ui
-docker exec fabric8-planner npm pack dist/
-docker exec fabric8-planner git clone https://github.com/fabric8-ui/fabric8-ui.git
-docker exec fabric8-planner bash -c 'cd fabric8-ui; npm install'
-docker exec fabric8-planner bash -c 'cd fabric8-ui && npm install ../*0.0.0-development.tgz'
-docker exec fabric8-planner bash -c '''
+docker exec $CID npm pack dist/
+docker exec $CID git clone https://github.com/fabric8-ui/fabric8-ui.git
+docker exec $CID bash -c 'cd fabric8-ui; npm install'
+docker exec $CID bash -c 'cd fabric8-ui && npm install ../*0.0.0-development.tgz'
+docker exec $CID bash -c '''
     export FABRIC8_WIT_API_URL="https://api.prod-preview.openshift.io/api/"
     export FABRIC8_RECOMMENDER_API_URL="https://recommender.prod-preview.api.openshift.io"
     export FABRIC8_FORGE_API_URL="https://forge.api.prod-preview.openshift.io"
@@ -76,8 +76,8 @@ docker exec fabric8-planner bash -c '''
     cd fabric8-ui && npm run build:prod
 '''
 # Copy dist and Dockerfile.deploy to host (via mounted dir)
-docker exec fabric8-planner bash -c 'cd fabric8-ui; cp -r dist/ /home/fabric8/fabric8-planner/fabric8-ui-dist/'
-docker exec fabric8-planner bash -c 'cd fabric8-ui; cp Dockerfile.deploy /home/fabric8/fabric8-planner/fabric8-ui-dist'
+docker exec $CID bash -c 'cd fabric8-ui; cp -r dist/ /home/fabric8/fabric8-planner/fabric8-ui-dist/'
+docker exec $CID bash -c 'cd fabric8-ui; cp Dockerfile.deploy /home/fabric8/fabric8-planner/fabric8-ui-dist'
 
 REGISTRY="push.registry.devshift.net"
 
