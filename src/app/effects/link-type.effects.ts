@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { WorkItemService } from './../services/work-item.service';
 import {
   LinkTypeService,
-  LinkTypeMapper
+  LinkTypeUI
 } from './../models/link-type';
 
 export type Action = LinkTypeActions.All;
@@ -22,11 +22,26 @@ export class LinkTypeEffects {
     .ofType(LinkTypeActions.GET)
     .switchMap(action => {
       return this.workItemService.getAllLinkTypes()
-        .map((linkTypes) => {
-          const ltm = new LinkTypeMapper();
-          return new LinkTypeActions.GetSuccess(
-            linkTypes.json().data.map(l => ltm.toUIModel(l))
-          )
+        .map((data) => {
+          let lts: any = {};
+          let linkTypes: LinkTypeUI[] = [];
+          lts['forwardLinks'] = data.json().data;
+          lts['backwardLinks'] = data.json().data;
+          lts.forwardLinks.forEach((linkType) => {
+            linkTypes.push({
+              name: linkType.attributes['forward_name'],
+              id: linkType.id,
+              linkType: 'forward'
+            });
+          });
+          lts.backwardLinks.forEach((linkType) => {
+            linkTypes.push({
+              name: linkType.attributes['reverse_name'],
+              id: linkType.id,
+              linkType: 'reverse'
+            });
+          });
+          return new LinkTypeActions.GetSuccess(linkTypes);
         })
     })
 }
