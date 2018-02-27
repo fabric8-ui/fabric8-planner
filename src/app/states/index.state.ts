@@ -53,3 +53,7 @@ export {
   LinkTypeState,
   initialState as initialLinkTypeState
 } from './link-type.state';
+export {
+  WorkItemLinkState,
+  initialState as initialWorkItemLinkState
+} from './work-item-link.state';
