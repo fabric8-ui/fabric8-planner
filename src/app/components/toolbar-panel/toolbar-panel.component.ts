@@ -440,7 +440,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       assignee: {
         datasource: Observable.combineLatest(this.collaboratorService.getCollaborators(), this.userService.getUser()),
         datamap: ([users, authUser]) => {
-          if (Object.keys(authUser).length > 0) {
+          if (users.length > 1 && Object.keys(authUser).length > 0) {
             users = users.filter(u => u.id !== authUser.id);
           }
           return {
@@ -456,7 +456,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       creator: {
         datasource: Observable.combineLatest(this.collaboratorService.getCollaborators(), this.userService.getUser()),
         datamap: ([users, authUser]) => {
-          if (Object.keys(authUser).length > 0) {
+          if (users.length > 1 && Object.keys(authUser).length > 0) {
             users = users.filter(u => u.id !== authUser.id);
           }
           return {
