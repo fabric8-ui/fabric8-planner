@@ -283,6 +283,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         //get groupsgroups
         this.groupTypesService.getGroupTypes().subscribe(groupTypes => {
           const defaultGroupName = groupTypes[0].attributes.name;
+          this.groupTypesService.setCurrentGroupType(groupTypes[0].relationships.typeList, groupTypes[0].attributes.bucket);
           //Query for work item type group
           const type_query = this.filterService.queryBuilder('$WITGROUP', this.filterService.equal_notation, defaultGroupName);
           //Query for space
