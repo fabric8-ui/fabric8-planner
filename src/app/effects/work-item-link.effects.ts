@@ -11,6 +11,8 @@ export type Action = WorkItemLinkActions.All;
 
 @Injectable()
 export class WorkItemLinkEffects {
+  private wilMapper = new WorkItemLinkMapper();
+
   constructor(
     private actions$: Actions,
     private workItemService: WorkItemService,
@@ -30,10 +32,26 @@ export class WorkItemLinkEffects {
             return link;
           });
         }).map(links => {
-          const wilMapper = new WorkItemLinkMapper();
           return new WorkItemLinkActions.GetSuccess(
-            links.map(l => wilMapper.toUIModel(l))
+            links.map(l => this.wilMapper.toUIModel(l))
           );
         });
     });
+
+  @Effect() createLink$: Observable<Action> = this.actions$
+    .ofType<WorkItemLinkActions.Add>(WorkItemLinkActions.ADD)
+    .map(action => action.payload)
+    .switchMap(payload => {
+      let createLinkPayload = {'data': payload};
+      return this.workItemService
+        .createLink(createLinkPayload)
+        .map(([link, includes]) => {
+          link.relationships.link_type.data = includes.find(i => i.id === link.relationships.link_type.data.id);
+          link.relationships.source.data = includes.find(i => i.id === link.relationships.source.data.id);
+          link.relationships.target.data = includes.find(i => i.id === link.relationships.target.data.id);
+          return new WorkItemLinkActions.AddSuccess(
+            this.wilMapper.toUIModel(link)
+          )
+        })
+    })
 }

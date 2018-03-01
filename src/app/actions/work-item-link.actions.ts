@@ -13,8 +13,8 @@ export const GET_ERROR = '[workItemLink] GetError';
 export const DELETE_ERROR = '[workItemLink] DeleteError';
 
 export class Add implements Action {
-  payload: WorkItemLinkUI;
-  constructor(payload: WorkItemLinkUI) {
+  payload: WorkItemLinkService;
+  constructor(payload: WorkItemLinkService) {
     this.payload = payload;
   }
   readonly type = ADD;

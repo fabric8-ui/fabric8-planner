@@ -7,7 +7,7 @@ import {
 } from './common.model';
 
 export class Link {
-  id: string;
+  id?: string;
   type: string;
   attributes: {
     'version': Number

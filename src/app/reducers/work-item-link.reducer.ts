@@ -10,6 +10,20 @@ export const WorkItemLinkReducer: ActionReducer<WorkItemLinkState> =
       case WorkItemLinkActions.GET_SUCCESS: {
         return action.payload;
       }
+
+      case WorkItemLinkActions.GET_ERROR: {
+        return [...state];
+      }
+
+      case WorkItemLinkActions.ADD_SUCCESS: {
+        console.log(action.payload, '####-2');
+        return [action.payload, ...state];
+      }
+
+      case WorkItemLinkActions.ADD_ERROR: {
+        return [...state];
+      }
+
       default: {
         return state;
       }
