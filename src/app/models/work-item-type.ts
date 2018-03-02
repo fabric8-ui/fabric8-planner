@@ -39,12 +39,12 @@ export class WorkItemTypeField {
 export interface WorkItemTypeService extends WorkItemType {}
 
 export interface WorkItemTypeUI extends modelUI {
-  icon?: string;
-  version?: number;
+  icon: string;
+  version: number;
   type: string;
-  description?: string;
-  childTypes?: WorkItemTypeUI[];
-  fields?: Map<string, WorkItemTypeField>;
+  description: string;
+  childTypes: any;
+  fields: Map<string, WorkItemTypeField>;
 }
 
 export class WorkItemTypeMapper implements Mapper<WorkItemTypeService, WorkItemTypeUI> {
