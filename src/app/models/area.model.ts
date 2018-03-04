@@ -1,9 +1,14 @@
-export class AreaModel {
+import {
+  modelUI,
+  modelService,
+  Mapper,
+  MapTree,
+  switchModel,
+} from './common.model';
+export class AreaModel extends modelService {
   attributes?: AreaAttributes;
-  id: string;
   links?: AreaLinks;
   relationships?: AreaRelations;
-  type: string;
 }
 
 export class AreaAttributes {
@@ -14,6 +19,7 @@ export class AreaAttributes {
 }
 
 export class AreaLinks {
+  related: string;
   self: string;
 }
 
@@ -32,4 +38,57 @@ export class AreaRelations {
       related: string;
     };
   };
+}
+
+export interface AreaUI extends modelUI {
+  parentPath: string;
+  parentPathResolved: string;
+}
+
+export interface AreaService extends AreaModel {}
+
+export class AreaMapper implements Mapper<AreaService, AreaUI> {
+
+  serviceToUiMapTree: MapTree = [{
+    fromPath: ['id'],
+    toPath: ['id']
+  }, {
+    fromPath: ['attributes', 'name'],
+    toPath: ['name']
+  }, {
+    fromPath: ['attributes', 'parent_path'],
+    toPath: ['parentPath']
+  }, {
+    fromPath: ['attributes', 'parent_path_resolved'],
+    toPath: ['parentPathResolved']
+  }];
+
+  uiToServiceMapTree: MapTree = [{
+    toPath: ['id'],
+    fromPath: ['id']
+  }, {
+    toPath: ['attributes', 'name'],
+    fromPath: ['name']
+  }, {
+    toPath: ['attributes', 'parent_path'],
+    fromPath: ['parentPath']
+  }, {
+    toPath: ['attributes', 'parent_path_resolved'],
+    fromPath: ['parentPathResolved']
+  }, {
+    toPath: ['type'],
+    toValue: 'areas'
+  }];
+
+  toUIModel(arg: AreaService): AreaUI {
+    return switchModel<AreaService, AreaUI> (
+      arg, this.serviceToUiMapTree
+    )
+  }
+
+  toServiceModel(arg: AreaUI): AreaService {
+    return switchModel<AreaUI, AreaService> (
+      arg, this.uiToServiceMapTree
+    )
+  }
 }
