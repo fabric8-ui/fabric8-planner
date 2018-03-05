@@ -121,7 +121,7 @@ main() {
   log.info "Entering $SCRIPT_DIR/../tests"
   cd $SCRIPT_DIR/../tests
   log.info "Running Functional Tests..."
-  ./run.sh $1
+  ./run.sh
 
   clean_up
 }
