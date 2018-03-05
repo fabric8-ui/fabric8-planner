@@ -9,7 +9,7 @@
     "build": "gulp build",
     "clean": "gulp clean",
     "tests": "gulp tests",
-    "semantic-release": "gulp release"
+    "semantic-release": "semantic-release pre && gulp build && cp -r .git dist && npm publish dist/ && semantic-release post"
   },
   "license": "Apache-2.0",
   "contributors": [
@@ -83,6 +83,9 @@
     "@angular/platform-browser-dynamic": "^4.4.0",
     "@angular/platform-server": "^4.4.0",
     "@angular/router": "^4.4.0",
+    "@ngrx/effects": "^4.1.1",
+    "@ngrx/store": "^4.1.1",
+    "@ngrx/store-devtools": "^4.1.1",
     "core-js": "^2.5.1",
     "less-plugin-autoprefix": "^1.5.1",
     "lodash": "^4.17.4",
@@ -99,7 +102,7 @@
     "ngx-widgets": "^2.3.2",
     "patternfly-ng": "^0.13.5",
     "reflect-metadata": "^0.1.10",
-    "rh-ngx-datatable": "^11.2.3",
+    "rh-ngx-datatable": "12.0.9",
     "rxjs": "^5.0.1",
     "zone.js": "^0.8.18"
   },
@@ -181,7 +184,7 @@
     "rimraf": "2.6.2",
     "run-sequence": "2.2.0",
     "script-ext-html-webpack-plugin": "1.8.7",
-    "semantic-release": "12.2.2",
+    "semantic-release": "8.2.0",
     "style-loader": "0.19.0",
     "systemjs": "0.20.19",
     "to-string-loader": "1.1.5",

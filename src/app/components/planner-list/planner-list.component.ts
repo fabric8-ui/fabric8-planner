@@ -1,3 +1,4 @@
+
 import { EventService } from './../../services/event.service';
 import { AreaModel } from '../../models/area.model';
 import { AreaService } from '../../services/area.service';
@@ -63,6 +64,9 @@ import { UrlService } from './../../services/url.service';
 import { CookieService } from './../../services/cookie.service';
 import { WorkItemDetailAddTypeSelectorComponent } from './../work-item-create/work-item-create.component';
 
+// ngrx stuff
+import { Store } from '@ngrx/store';
+import { AppState } from './../../states/app.state';
 @Component({
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -164,16 +168,22 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     private spaces: Spaces,
     private userService: UserService,
     private urlService: UrlService,
-    private renderer: Renderer2) { }
+    private renderer: Renderer2,
+    private store: Store<AppState>) {}
 
   ngOnInit(): void {
+
+    this.store.subscribe((val) => {
+      console.log('####-1', val);
+    })
+
     // If there is an iteration on the URL
     // Setting the value to currentIteration
     // BehaviorSubject so that we can compare
     // on update the value on URL
 
     const queryParams = this.route.snapshot.queryParams;
-    if(Object.keys(queryParams).length === 0 && process.env.ENV != 'inmemory') {
+    if(Object.keys(queryParams).length === 0 || process.env.ENV == 'inmemory') {
       this.setDefaultUrl();
     } else {
       if (Object.keys(queryParams).indexOf('iteration') > -1) {
@@ -283,6 +293,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
         //get groupsgroups
         this.groupTypesService.getGroupTypes().subscribe(groupTypes => {
           const defaultGroupName = groupTypes[0].attributes.name;
+          this.groupTypesService.setCurrentGroupType(groupTypes[0].relationships.typeList, groupTypes[0].attributes.bucket);
           //Query for work item type group
           const type_query = this.filterService.queryBuilder('$WITGROUP', this.filterService.equal_notation, defaultGroupName);
           //Query for space
@@ -390,7 +401,7 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   loadWorkItems(): void {
     const queryParams = this.route.snapshot.queryParams;
-    if(Object.keys(queryParams).length === 0 && process.env.ENV != 'inmemory')
+    if(Object.keys(queryParams).length === 0)
       this.setDefaultUrl();
     this.uiLockedList = true;
     if (this.wiSubscriber) {

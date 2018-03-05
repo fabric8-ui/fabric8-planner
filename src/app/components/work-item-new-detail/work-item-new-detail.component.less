@@ -46,9 +46,7 @@
       margin-top: 5px;
     }
   }
-  .close {
-    cursor: pointer;
-  }
+
   &__assignee {
     [noValueLabel='none'] {
       color: @color-pf-blue-400;
@@ -57,7 +55,6 @@
       &:extend(.not-assigned-user-icon);
       margin-right: 10px;
       color: @color-pf-black-500;
-      cursor: pointer;
     }
     .active {
       padding: 5px;
@@ -74,6 +71,9 @@
   &__content {
     padding-right: 15px;
     padding-left: 140px;
+  }
+  .close {
+    cursor: pointer;
   }
 }
 
