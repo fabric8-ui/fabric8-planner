@@ -47,7 +47,7 @@ docker exec $CID npm run tests -- --unit
 
 ## Exec functional tests
 docker exec $CID bash -c 'cd runtime; npm install'
-docker exec $CID bash -c 'DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh'
+docker exec $CID bash -c 'DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh smokeTest'
 
 # Following steps will create a snapshot for testing
 
