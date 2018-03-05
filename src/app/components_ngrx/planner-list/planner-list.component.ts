@@ -59,30 +59,37 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private groupTypeSource = this.store
     .select('listPage')
     .select('groupTypes')
+    .do(g => {if (!g.length) this.store.dispatch(new GroupTypeActions.Get())})
     .filter(g => !!g.length);
   private workItemTypeSource = this.store
     .select('listPage')
     .select('workItemTypes')
+    .do(i => {if (!i.length) this.store.dispatch(new WorkItemTypeActions.Get())})
     .filter(w => !!w.length);
   private spaceSource = this.store
     .select('listPage')
     .select('space')
+    .do(s => {if (!s) this.store.dispatch(new SpaceActions.Get())})
     .filter(s => !!s);
   private areaSource = this.store
     .select('listPage')
     .select('areas')
-    .filter(a => !!a);
+    .do(a => {if (!a.length) this.store.dispatch(new AreaActions.Get())})
+    .filter(a => !!a.length);
   private iterationSource = this.store
     .select('listPage')
     .select('iterations')
+    .do(i => {if (!i.length) this.store.dispatch(new IterationActions.Get())})
     .filter(i => !!i.length);
   private labelSource = this.store
     .select('listPage')
     .select('labels')
-    .filter(l => l !== null);
+    .do(i => {if (i === null) this.store.dispatch(new LabelActions.Get())})
+    .filter(i => i !== null);
   private collaboratorSource = this.store
     .select('listPage')
     .select('collaborators')
+    .do(i => {if (!i.length) this.store.dispatch(new CollaboratorActions.Get())})
     .filter(c => !!c.length);
   private selectedIterationSource = this.store
     .select('listPage')
@@ -140,33 +147,20 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
       title: 'No Work Items Available'
     } as EmptyStateConfig;
 
-    this.store.dispatch(new SpaceActions.Get());
-
     this.eventListeners.push(
       this.spaceSource
-        .take(1)
-        .subscribe((space: Space) => {
-          this.store.dispatch(new IterationActions.Get());
-          this.store.dispatch(new GroupTypeActions.Get());
-          this.store.dispatch(new CollaboratorActions.Get());
-          this.store.dispatch(new AreaActions.Get());
-          this.store.dispatch(new WorkItemTypeActions.Get());
-          this.store.dispatch(new LabelActions.Get());
-        })
-    );
-
-    this.eventListeners.push(
-      Observable.combineLatest(
-        this.workItemTypeSource.take(1),
-        this.spaceSource.take(1),
-        this.areaSource.take(1),
-        this.iterationSource.take(1),
-        this.labelSource.take(1),
-        this.collaboratorSource.take(1),
-        this.routeSource
-      ).subscribe(([
+      .switchMap(s => {
+        return Observable.combineLatest(
+          this.workItemTypeSource,
+          this.areaSource,
+          this.iterationSource,
+          this.labelSource,
+          this.collaboratorSource,
+          this.routeSource
+        );
+      })
+      .subscribe(([
         workItemTypeSource,
-        spaceSource,
         areaSource,
         iterationSource,
         labelSource,
