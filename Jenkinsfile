@@ -79,6 +79,11 @@ if (ciDeploy){
                     githubProject = project
                 }
             }
+            stage("e2e Tests"){
+                container('ui'){
+                    sh 'DEBUG=true BASE_URL=https://${route} REFRESH_TOKEN=$PLANNER_TOKEN ./run_e2e_tests.sh'
+                }
+            }
             stage('notify'){
                 def changeAuthor = env.CHANGE_AUTHOR
                 if (!changeAuthor){
