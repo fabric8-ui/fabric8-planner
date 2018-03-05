@@ -5,9 +5,7 @@ module.exports = function(config) {
 
         files: [
             { pattern: "src/base.spec.ts" },
-            { pattern: "src/app/mock/**/*.+(ts|html)" },
-            { pattern: "src/app/pipes/**/*.+(ts|html)" },
-            { pattern: "src/app/services/**/*.+(ts|html)" }
+            { pattern: "src/app/**/*.+(ts|html)" },
         ],
 
         plugins: [
@@ -52,8 +50,10 @@ module.exports = function(config) {
             ]
         },
 
-        reporters: ['progress', 'karma-typescript', 'mocha'],
-
+        reporters: ['progress', 'karma-typescript', 'coverage'],
+        coverageReporter: {
+            reporters: [{type: 'lcov'}]
+          },
         browsers: ['PhantomJS'],
 
         singleRun: true
