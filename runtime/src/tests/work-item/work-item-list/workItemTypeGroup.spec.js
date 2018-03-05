@@ -115,12 +115,12 @@ describe('Type group tests', function () {
   });
   */
 
-  it("Url should contain query typegroup.name:Scenario on clicking Scenario", function() {
+  it("Url should contain query typegroup.name:Scenarios on clicking Scenarios", function() {
     page.clickScenario();    
     expect(browser.getCurrentUrl()).toContain('typegroup.name:Scenarios');  
   });
 
-  it("Url should contain query typegroup.name:Experiences on clicking Experience", function() {
+  it("Url should contain query typegroup.name:Experiences on clicking Experiences", function() {
     page.clickExperience();    
     expect(browser.getCurrentUrl()).toContain('typegroup.name:Experiences');  
   });
