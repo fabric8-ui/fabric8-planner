@@ -98,3 +98,7 @@ cd fabric8-ui-dist
 docker build -t fabric8-planner-snapshot -f Dockerfile.deploy .
 docker tag fabric8-planner-snapshot ${REGISTRY}/${IMAGE_REPO}:$TAG
 docker push ${REGISTRY}/${IMAGE_REPO}:${TAG}
+
+echo "======= Snapshot can be created by running following command"
+echo "docker run -e PROXY_PASS_URL=\"https://api.free-stg.openshift.com\" -p 8080:8080 ${REGISTRY}/${IMAGE_REPO}:${TAG}"
+echo "======="
