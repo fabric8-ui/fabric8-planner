@@ -116,6 +116,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private showTreeUI: boolean = false;
   private emptyStateConfig: any = {};
   private uiLockedList: boolean = false;
+  private uiLockedSidebar: boolean = false;
 
   @ViewChild('plannerLayout') plannerLayout: PlannerLayoutComponent;
   @ViewChild('containerHeight') containerHeight: ElementRef;
@@ -149,6 +150,10 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
 
     this.eventListeners.push(
       this.spaceSource
+      .do(() => {
+        this.uiLockedSidebar = true;
+        this.uiLockedList = true;
+      })
       .switchMap(s => {
         return Observable.combineLatest(
           this.workItemTypeSource,
@@ -167,6 +172,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         collaboratorSource,
         queryParams
       ]) => {
+        this.uiLockedSidebar = false;
         this.uiLockedList = true;
         let exp = this.filterService.queryToJson(queryParams.q);
         // Check for tree view
