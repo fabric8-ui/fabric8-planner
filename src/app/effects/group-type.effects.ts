@@ -1,3 +1,5 @@
+import { AppState } from './../states/app.state';
+import { Store } from '@ngrx/store';
 import { Actions, Effect } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
 import * as GroupTypeActions from './../actions/group-type.actions';
@@ -14,13 +16,17 @@ export type Action = GroupTypeActions.All;
 export class GroupTypeEffects {
   constructor(
     private actions$: Actions,
-    private groupTypeService: GTService
+    private groupTypeService: GTService,
+    private store: Store<AppState>
   ){}
 
   @Effect() getGroupTypes$: Observable<Action> = this.actions$
     .ofType(GroupTypeActions.GET)
-    .switchMap(action => {
-      return this.groupTypeService.getGroupTypes()
+    .withLatestFrom(this.store.select('listPage').select('space'))
+    .switchMap(([action, space]) => {
+      return this.groupTypeService.getGroupTypes2(
+          space.relationships.workitemtypegroups.links.related
+        )
         .map((types: GroupTypeService[]) => {
           const gtm = new GroupTypeMapper();
           return new GroupTypeActions.GetSuccess(

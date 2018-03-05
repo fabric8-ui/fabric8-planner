@@ -59,12 +59,10 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private groupTypeSource = this.store
     .select('listPage')
     .select('groupTypes')
-    .do(g => {if (!g.length) this.store.dispatch(new GroupTypeActions.Get())})
     .filter(g => !!g.length);
   private workItemTypeSource = this.store
     .select('listPage')
     .select('workItemTypes')
-    .do(i => {if (!i.length) this.store.dispatch(new WorkItemTypeActions.Get())})
     .filter(w => !!w.length);
   private spaceSource = this.store
     .select('listPage')
@@ -74,22 +72,18 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private areaSource = this.store
     .select('listPage')
     .select('areas')
-    .do(a => {if (!a.length) this.store.dispatch(new AreaActions.Get())})
     .filter(a => !!a.length);
   private iterationSource = this.store
     .select('listPage')
     .select('iterations')
-    .do(i => {if (!i.length) this.store.dispatch(new IterationActions.Get())})
     .filter(i => !!i.length);
   private labelSource = this.store
     .select('listPage')
     .select('labels')
-    .do(i => {if (i === null) this.store.dispatch(new LabelActions.Get())})
     .filter(i => i !== null);
   private collaboratorSource = this.store
     .select('listPage')
     .select('collaborators')
-    .do(i => {if (!i.length) this.store.dispatch(new CollaboratorActions.Get())})
     .filter(c => !!c.length);
   private selectedIterationSource = this.store
     .select('listPage')

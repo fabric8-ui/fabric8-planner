@@ -24,17 +24,20 @@ export class WorkItemTypeEffects {
 
   @Effect() getWorkItemTypes$: Observable<Action> = this.actions$
     .ofType(WorkItemTypeActions.GET)
-    .switchMap(action => {
-      return this.workItemService.getWorkItemTypes()
-        .map((types: WorkItemTypeService[]) => {
-          const witm = new WorkItemTypeMapper();
-          const wiTypes = types.map(t => witm.toUIModel(t));
-          const witResolver = new WorkItemTypeResolver(wiTypes);
-          witResolver.resolveChildren();
-          this.store.dispatch(new WIStateActoins.GetSuccess(types));
-          return new WorkItemTypeActions.GetSuccess(
-            witResolver.getResolvedWorkItemTypes()
-          );
-        })
+    .withLatestFrom(this.store.select('listPage').select('space'))
+    .switchMap(([action, space]) => {
+      return this.workItemService.getWorkItemTypes2(
+        space.links.self + '/workitemtypes'
+      )
+      .map((types: WorkItemTypeService[]) => {
+        const witm = new WorkItemTypeMapper();
+        const wiTypes = types.map(t => witm.toUIModel(t));
+        const witResolver = new WorkItemTypeResolver(wiTypes);
+        witResolver.resolveChildren();
+        this.store.dispatch(new WIStateActoins.GetSuccess(types));
+        return new WorkItemTypeActions.GetSuccess(
+          witResolver.getResolvedWorkItemTypes()
+        );
+      })
     })
 }
