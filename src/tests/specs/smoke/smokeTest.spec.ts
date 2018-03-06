@@ -4,7 +4,7 @@ import * as support from '../../support';
 
 /* Smoke Tests */
 
-describe('Planner Smoke Tests:', () => {
+fdescribe('Planner Smoke Tests:', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
 
