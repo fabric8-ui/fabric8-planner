@@ -35,8 +35,8 @@ describe('planner quick preview tests', () => {
   // TODO: Work item link will be added shortly
   // This test has to be activated
   xit('should link a workitem',async () => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle3);
-    await planner.quickPreview.addLink(c.linkType, c.workItemTitle4);
-    expect(await planner.quickPreview.hasLinkedItem(c.workItemTitle4)).toBeTruthy();
+    await planner.workItemList.clickWorkItem(c.workItemTitle2);
+    await planner.quickPreview.addLink(c.linkType, c.workItemTitle1);
+    expect(await planner.quickPreview.hasLinkedItem(c.workItemTitle1)).toBeTruthy();
   });
 });

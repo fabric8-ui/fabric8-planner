@@ -114,10 +114,6 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.assigneeDropdown.clickWhenReady();
     await this.assigneeDropdown.select(assignee);
     await this.assigneeDropdownCloseButton.clickWhenReady();
-
-    // Wait for notification to appear and disappear
-    await this.notificationToast.ready();
-    await this.notificationToast.untilHidden();
     await this.loadingAnimation.untilCount(0);
   }
 
@@ -127,9 +123,6 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.areaDropdown.clickWhenReady();
     await this.areaDropdown.select(areaTitle);
     await this.areaSaveButton.clickWhenReady();
-    // Wait for notification to appear and disappear
-    await this.notificationToast.ready();
-    await this.notificationToast.untilHidden();
     await this.loadingAnimation.untilCount(0);
   }
 
@@ -139,10 +132,6 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.iterationDropdown.clickWhenReady();
     await this.iterationDropdown.select(iterationTitle);
     await this.iterationSaveButton.clickWhenReady();
-    // Wait for notification to appear and disappear
-    await this.notificationToast.ready();
-    await this.notificationToast.untilHidden();
-    await this.loadingAnimation.untilCount(0);
   }
 
   async typeaHeadSearch(iterationTitle: string) {
@@ -273,8 +262,6 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     }
     await this.titleInput.enterText(title);
     await this.titleSaveButton.clickWhenReady();
-    await this.notificationToast.ready();
-    await this.notificationToast.untilHidden();
     await this.titleSaveButton.untilHidden();
   }
 
@@ -284,10 +271,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
       await this.descriptionTextarea.clear();
     }
     await this.descriptionTextarea.enterText(description);
+    await this.descriptionSaveButton.scrollIntoView();
     await this.descriptionSaveButton.clickWhenReady();
     await this.descriptionSaveButton.untilHidden();
-    await this.notificationToast.ready();
-    await this.notificationToast.untilCount(0);
   }
 
   async removeAssignee(assignee: string) {

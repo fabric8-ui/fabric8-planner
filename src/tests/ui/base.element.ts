@@ -117,6 +117,9 @@ export class BaseElement extends ElementFinder implements BaseElementInterface {
     await this.untilDisplayed(timeout);
     return await this.getText();
   }
+
+  async scrollIntoView() {
+    await browser.executeScript('arguments[0].scrollIntoView(true)', this.getWebElement());
 }
 
 export class BaseElementArray extends ElementArrayFinder {
