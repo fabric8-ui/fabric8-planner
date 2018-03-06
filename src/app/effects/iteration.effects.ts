@@ -67,7 +67,7 @@ export class IterationEffects {
               type: NotificationType.SUCCESS
             } as Notification);
           } catch (e) {
-            console.log('Error displaying notification.')
+            console.log('Iteration is added.')
           }
           return new IterationActions.AddSuccess({
             iteration, parent: parent ? itMapper.toUIModel(parent) : null
@@ -80,7 +80,7 @@ export class IterationEffects {
               type: NotificationType.DANGER
             } as Notification);
           } catch (e) {
-            console.log('Error displaying notification.')
+            console.log('There was some problem adding the iteration..')
           }
           return Observable.of(new IterationActions.AddError());
         })

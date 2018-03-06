@@ -11,6 +11,11 @@ import * as GroupTypeActions from './../actions/group-type.actions';
 import * as IterationActions from './../actions/iteration.actions';
 import * as LabelActions from './../actions/label.actions';
 import * as WorkItemTypeActions from './../actions/work-item-type.actions';
+import {
+  Notification,
+  Notifications,
+  NotificationType
+} from "ngx-base";
 
 export type Action = SpaceActions.All;
 
@@ -20,7 +25,8 @@ export class SpaceEffects {
 
   constructor(
     private actions$: Actions,
-    private spaces: Spaces
+    private spaces: Spaces,
+    private notifications: Notifications
   ){}
 
   @Effect() getSpace$: Observable<Action> = this.actions$
@@ -42,5 +48,16 @@ export class SpaceEffects {
       new IterationActions.Get(),
       new LabelActions.Get(),
       new WorkItemTypeActions.Get()
-    ]);
+    ])
+    .catch(e => {
+      try {
+        this.notifications.message({
+          message: `Problem in getting space`,
+          type: NotificationType.DANGER
+        } as Notification);
+      } catch (e) {
+        console.log('Problem in getting space');
+      }
+      return Observable.of(new SpaceActions.GetError());
+    });
 }

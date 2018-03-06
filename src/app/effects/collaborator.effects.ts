@@ -6,6 +6,12 @@ import * as CollaboratorActions from './../actions/collaborator.actions';
 import { Observable } from 'rxjs';
 import { AppState } from './../states/app.state';
 import {
+  Notification,
+  Notifications,
+  NotificationType
+} from "ngx-base";
+
+import {
   CollaboratorService as CollabService
 } from './../services/collaborator.service';
 import {
@@ -21,7 +27,8 @@ export class CollaboratorEffects {
     private actions$: Actions,
     private collaboratorService: CollabService,
     private userService: UserService,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private notifications: Notifications
   ) {}
 
   @Effect() getCollaborators$: Observable<Action> = this.actions$
@@ -47,6 +54,17 @@ export class CollaboratorEffects {
               }
               return new CollaboratorActions.GetSuccess(collaborators);
             })
+        })
+        .catch(e => {
+          try {
+            this.notifications.message({
+              message: `Problem in fetching collaborators`,
+              type: NotificationType.DANGER
+            } as Notification);
+          } catch (e) {
+            console.log('Problem in fetching collaborators');
+          }
+          return Observable.of(new CollaboratorActions.GetError());
         })
     })
 }

@@ -8,6 +8,11 @@ import {
   FilterService
 } from './../services/filter.service';
 import { FilterModel } from './../models/filter.model';
+import {
+  Notification,
+  Notifications,
+  NotificationType
+} from "ngx-base";
 
 export type Action = FilterActions.All;
 
@@ -16,7 +21,8 @@ export class FilterEffects {
   constructor(
     private actions$: Actions,
     private filterService: FilterService,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private notifications: Notifications
   ) {}
 
   @Effect() GetFilters$: Observable<Action> = this.actions$
@@ -26,6 +32,17 @@ export class FilterEffects {
       return this.filterService.getFilters2(space.links.filters)
         .map((types: FilterModel[]) => {
           return new FilterActions.GetSuccess(types);
+        })
+        .catch(e => {
+          try {
+            this.notifications.message({
+              message: 'Problem in fetching filters.',
+              type: NotificationType.DANGER
+            } as Notification);
+          } catch (e) {
+            console.log('Problem in fetching filters');
+          }
+          return Observable.of(new FilterActions.GetError());
         })
     })
 }
