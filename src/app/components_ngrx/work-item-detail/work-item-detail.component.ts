@@ -234,12 +234,15 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   saveTitle(event) {
     const value = event.value.trim();
     this.titleCallback = event.callBack;
-    if (value !== '' && this.workItem.title !== value) {
+    if (value === '') {
+      this.titleCallback(value, 'Empty title not allowed');
+    } else if (this.workItem.title === value) {
+      this.titleCallback(value);
+    } else {
       let workItem = {} as WorkItemUI;
       workItem['version'] = this.workItem.version;
       workItem['link'] = this.workItem.link;
       workItem['id'] = this.workItem.id;
-
       workItem['title'] = value;
       this.store.dispatch(new WorkItemActions.Update(workItem));
     }
