@@ -56,4 +56,5 @@ export class WorkItemTypeEffects {
         }
         return Observable.of(new WorkItemTypeActions.GetError());
       })
+    });
 }
