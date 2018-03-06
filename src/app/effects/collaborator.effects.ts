@@ -6,6 +6,12 @@ import * as CollaboratorActions from './../actions/collaborator.actions';
 import { Observable } from 'rxjs';
 import { AppState } from './../states/app.state';
 import {
+  Notification,
+  Notifications,
+  NotificationType
+} from "ngx-base";
+
+import {
   CollaboratorService as CollabService
 } from './../services/collaborator.service';
 import {
@@ -20,13 +26,18 @@ export class CollaboratorEffects {
   constructor(
     private actions$: Actions,
     private collaboratorService: CollabService,
-    private userService: UserService
+    private userService: UserService,
+    private store: Store<AppState>,
+    private notifications: Notifications
   ) {}
 
   @Effect() getCollaborators$: Observable<Action> = this.actions$
     .ofType(CollaboratorActions.GET)
-    .switchMap(action => {
-      return this.collaboratorService.getCollaborators()
+    .withLatestFrom(this.store.select('listPage').select('space'))
+    .switchMap(([action, space]) => {
+      return this.collaboratorService.getCollaborators2(
+          space.links.self + '/collaborators?page[offset]=0&page[limit]=1000'
+        )
         .map((collaborators: UserServiceModel[]) => {
           const collabM = new UserMapper();
           return collaborators.map(c => collabM.toUIModel(c))
@@ -43,6 +54,17 @@ export class CollaboratorEffects {
               }
               return new CollaboratorActions.GetSuccess(collaborators);
             })
+        })
+        .catch(e => {
+          try {
+            this.notifications.message({
+              message: `Problem in fetching collaborators`,
+              type: NotificationType.DANGER
+            } as Notification);
+          } catch (e) {
+            console.log('Problem in fetching collaborators');
+          }
+          return Observable.of(new CollaboratorActions.GetError());
         })
     })
 }
