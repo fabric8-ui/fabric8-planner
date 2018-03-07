@@ -16,7 +16,8 @@ export class Constants {
   areaTitle2 = '/' + process.env.SPACE_NAME + '/Area_2';
   iteration1 = '/' + process.env.SPACE_NAME + '/Iteration_1/Iteration1_5';
   iteration2 = '/' + process.env.SPACE_NAME + '/Iteration_2';
-  iteration3 = '123';
+  parentIteration = 'Iteration_2';
+  iteration3 = '/' + process.env.SPACE_NAME;
   newWorkItem1 = {
     title: "Workitem Title",
     description: "Describes the work item"

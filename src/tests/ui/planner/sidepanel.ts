@@ -1,4 +1,4 @@
-import { $, ElementFinder, by, By, element} from 'protractor';
+import { $, ElementFinder, by, element} from 'protractor';
 import  *  as ui from './../../ui';
 import * as support from '../../support';
 
@@ -47,11 +47,12 @@ export class SidePanel extends ui.BaseElement {
   async hasIteration(iteration: string): Promise<Boolean> {
     await this.ready();
     let iterationList = await this.iterationList.getTextWhenReady();
+    this.debug('iterationList : ' + iterationList );
     return iterationList.indexOf(iteration) > -1;
   }
 
   async selectIterationKebab(iterationName: string) {
-    return this.element(By.xpath("//iteration-list-entry[.//span[text()='"+ iterationName +"']]")).$('.dropdown-toggle').click();
+    return this.element(by.xpath("//iteration-list-entry[.//span[text()='"+ iterationName +"']]")).$('.dropdown-toggle').click();
   }
 
   async openIterationDialogue() {

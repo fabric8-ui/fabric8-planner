@@ -9,15 +9,11 @@ describe('Work Item datatable list', () => {
 
   beforeEach( async () => {
     await support.desktopTestSetup();
-    let token = encodeURIComponent(JSON.stringify({
-      access_token: "somerandomtoken",
-      expires_in: 1800,
-      refresh_token: "somerandomtoken",
-      token_type: "bearer"
-    }));
-    let planner_url = browser.baseUrl + "/?token_json=" + token;
-    planner = new PlannerPage(planner_url);
+    planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
+    // This is necessary since the planner takes time to load on prod/prod-preview
+    await browser.sleep(12000);
+    await planner.ready();
   });
 
   it('should open settings button and hide columns', async () => {
@@ -47,19 +43,18 @@ describe('Work Item datatable list', () => {
     await planner.header.clickShowTree();
     await planner.createWorkItem(c.newWorkItem1);
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem1.title)).toBeTruthy();
+    await planner.quickPreview.notificationToast.untilHidden();
     await planner.header.clickShowTree();
-    await browser.sleep(2000);
-    await planner.workItemList.overlay.untilHidden();
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem1.title)).toBeTruthy();
   });
 
   it('work item should show updated title when switching from flat to tree view', async() => {
     await planner.header.clickShowTree();
     await planner.workItemList.ready();
-    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+    await planner.workItemList.clickWorkItem(c.workItemTitle2);
     await planner.quickPreview.updateTitle(c.updatedWorkItem.title);
+    await planner.quickPreview.close();    
     expect(await planner.workItemList.hasWorkItem(c.updatedWorkItem.title)).toBeTruthy();
-    await planner.quickPreview.close();
     await planner.header.clickShowTree();
     expect(await planner.workItemList.hasWorkItem(c.updatedWorkItem.title)).toBeTruthy();
   });
