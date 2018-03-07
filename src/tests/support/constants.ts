@@ -5,7 +5,7 @@ export class Constants {
   attribute4 = "Assignees";
   dropdownIteration1 = 'Iteration 0';
   dropdownIteration2 = 'Iteration 1';
-  label = 'Example Label 0';
+  label = 'sample_label_1';
   label1 = 'Example Label 1';
   label2 = 'sample_label_2';
   linkType = 'tests';
@@ -15,6 +15,8 @@ export class Constants {
   areaTitle2 = '/' + process.env.SPACE_NAME + '/Area_2';
   iteration1 = '/' + process.env.SPACE_NAME + '/Iteration_1/Iteration1_5';
   iteration2 = '/' + process.env.SPACE_NAME + '/Iteration_2';
+  parentIteration = 'Iteration_2';
+  iteration3 = '/' + process.env.SPACE_NAME;
   newWorkItem1 = {
     title: "Workitem Title",
     description: "Describes the work item"

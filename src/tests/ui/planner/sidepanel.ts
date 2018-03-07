@@ -1,4 +1,4 @@
-import { $, ElementFinder, by} from 'protractor';
+import { $, ElementFinder, by, element} from 'protractor';
 import  *  as ui from './../../ui';
 import * as support from '../../support';
 
@@ -9,8 +9,7 @@ export class SidePanel extends ui.BaseElement {
   requirementsButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Requirements')),'Side panel Requirements button');
   iterationDiv = new ui.BaseElement(this.$('.f8-itr'),'Iteration div');
   createIterationButton = new ui.Button(this.iterationDiv.$('#add-iteration-icon'), 'Side panel Add Iteration Button');
-  iterationList = new ui.BaseElementArray(this.$$('.f8-itr__tree .f8-itr-name'),'Iteration list');
-  
+  iterationList = new ui.BaseElementArray(this.$$('.f8-itr__tree .f8-itr-name'),'Iteration list');  
 
   constructor(ele: ElementFinder, name: string = 'WorkItem List page Side Panel') {
     super(ele, name);
@@ -46,6 +45,7 @@ export class SidePanel extends ui.BaseElement {
   async hasIteration(iteration: string): Promise<Boolean> {
     await this.ready();
     let iterationList = await this.iterationList.getTextWhenReady();
+    this.debug('iterationList : ' + iterationList );
     return iterationList.indexOf(iteration) > -1;
   }
 }

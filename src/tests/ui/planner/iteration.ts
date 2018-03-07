@@ -17,7 +17,8 @@ export class Iteration extends ui.BaseElement {
   async addNewIteration(iterationName: string, parentIteration: string ) {
     await this.iterationName.enterText(iterationName);
     await this.parentIteration.enterText(parentIteration);
-    await this.parentDropdown.select(parentIteration);
+    await this.parentIteration.clickWhenReady();
     await this.createIterationButton.clickWhenReady();
+    await this.createIterationButton.untilHidden();    
   }
 }
