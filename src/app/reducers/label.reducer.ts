@@ -2,7 +2,6 @@ import { State } from '@ngrx/store';
 import { ActionReducer } from '@ngrx/store';
 import * as LabelActions  from './../actions/label.actions';
 import { LabelState, initialState } from './../states/label.state';
-import { cloneDeep } from 'lodash';
 
 import { LabelModel } from './../models/label.model';
 
@@ -14,13 +13,13 @@ export const LabelReducer: ActionReducer<LabelState> = (state = initialState, ac
       return [...action.payload];
     }
     case LabelActions.GET_ERROR: {
-      return [...state];
+      return state;
     }
     case LabelActions.ADD_SUCCESS: {
       return [action.payload, ...state];
     }
     case LabelActions.ADD_ERROR: {
-      return [...state];
+      return state;
     }
     default: {
       return state;
