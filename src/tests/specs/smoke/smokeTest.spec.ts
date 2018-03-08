@@ -50,7 +50,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.workItemList.hasWorkItem(c.updatedWorkItem.title)).toBeTruthy();
   });
 
-  it('Check WorkItem title is not empty', async () => {
+  it('update of empty workitem title is not allowed', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.updateTitle('');
     expect(await planner.quickPreview.hasTitleError('Empty title not allowed')).toBeTruthy();
