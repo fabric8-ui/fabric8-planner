@@ -19,6 +19,7 @@
               placeholder="Iteration Name"
               [(ngModel)]="iteration.attributes.name"
               (keyup)="removeError()"
+              (keyup.enter)="actionOnSubmit()"
               #itrname autofocus>
             <span class="error-block">
               <span class="help-block"
