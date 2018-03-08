@@ -27,4 +27,8 @@ export interface AppState {
   toolbar: {
     filters: states.FilterState
   };
+
+  workItemLink: {
+    workItems: states.WorkItemState
+  }
 };
