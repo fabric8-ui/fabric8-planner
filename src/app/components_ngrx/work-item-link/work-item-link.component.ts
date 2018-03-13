@@ -4,6 +4,7 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Space } from 'ngx-fabric8-wit';
 import { WorkItemUI, WorkItem } from './../../models/work-item';
 import { WorkItemLinkUI } from './../../models/link';

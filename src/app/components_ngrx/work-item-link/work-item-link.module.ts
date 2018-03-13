@@ -4,6 +4,7 @@ import {
   BsDropdownConfig,
   BsDropdownModule
 } from 'ngx-bootstrap/dropdown';
+import { RouterModule } from '@angular/router';
 import { WorkItemLinkComponent } from './work-item-link.component';
 import {
   WorkItemLinkFilterByTypeName,
@@ -13,7 +14,8 @@ import {
 @NgModule({
   imports: [
     CommonModule,
-    BsDropdownModule
+    BsDropdownModule,
+    RouterModule
   ],
   declarations: [
     WorkItemLinkComponent,
