@@ -1,6 +1,6 @@
 import { browser } from 'protractor';
-import { PlannerPage } from '../page_objects/planner';
-import * as support from '../support';
+import { PlannerPage } from '../../page_objects/planner';
+import * as support from '../../support';
 
 /* Smoke Tests */
 
@@ -19,6 +19,7 @@ describe('Planner Smoke Tests:', () => {
     let planner_url = browser.baseUrl + "/?token_json=" + token;
     planner = new PlannerPage(planner_url);
     await planner.openInBrowser();
+    await planner.ready();
   });
 
   it('create a work item and add/remove assignee', async () => {
@@ -28,7 +29,6 @@ describe('Planner Smoke Tests:', () => {
 
     await planner.quickPreview.addAssignee(c.user2);
     expect(await planner.quickPreview.hasAssignee(c.user2)).toBeTruthy();
-    expect(await planner.quickPreview.hasCreationTime('Creating now!')).toBeTruthy();
     await planner.quickPreview.close();
 
     await planner.workItemList.clickWorkItem(c.newWorkItem1.title);

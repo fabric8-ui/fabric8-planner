@@ -1,3 +1,4 @@
+import { EffectsModule } from '@ngrx/effects';
 import './rxjs-extensions';
 
 import { ModuleWithProviders, NgModule } from '@angular/core';
@@ -41,6 +42,11 @@ import { LoginService } from './services/login.service';
 // App components
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+
+import {
+  StoreModule
+} from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 // conditionally import the inmemory resource module
 let serviceImports: Array<any[] | any | ModuleWithProviders>;
@@ -132,6 +138,20 @@ if (process.env.ENV == 'inmemory') {
     TruncateModule,
     HeaderModule,
     FooterModule,
+    StoreModule.forRoot({}),
+    EffectsModule.forRoot([]),
+    StoreModule.forRoot({}),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25 //  Retains last 25 states
+    }),
+    HeaderModule,
+    FooterModule,
+    StoreModule.forRoot({}),
+    EffectsModule.forRoot([]),
+    StoreModule.forRoot({}),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25 //  Retains last 25 states
+    })
   ],
   declarations: [
     AppComponent,

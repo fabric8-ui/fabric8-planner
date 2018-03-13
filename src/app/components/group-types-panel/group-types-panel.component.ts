@@ -27,6 +27,7 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
   @Input('groupTypes') set groupTypesSetup(types: GroupTypesModel[]) {
     if(JSON.stringify(this.groupTypes) != JSON.stringify(types)) {
       this.groupTypes = types;
+      this.selectedgroupType = types[0];
     }
   }
 
@@ -67,28 +68,26 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
 
   fnBuildQueryParam(witGroup) {
     //Query for work item type group
-    const type_query = this.filterService.queryBuilder('$WITGROUP', this.filterService.equal_notation, witGroup.attributes.name);
+    const type_query = this.filterService.queryBuilder('typegroup.name', this.filterService.equal_notation, witGroup.attributes.name);
     //Query for space
     const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, this.spaceId);
     //Join type and space query
     const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query );
     const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
-    this.setGroupType(witGroup);
     //second_join gives json object
     return this.filterService.jsonToQuery(second_join);
     //reverse function jsonToQuery(second_join);
   }
 
-  setGroupType(groupType: GroupTypesModel) {
-    this.selectedgroupType = groupType;
-  }
-
   setGuidedTypeWI(witGroup: GroupTypesModel) {
-    let matchingWITGroup = this.groupTypes.find(gt => {
-      return gt.id === witGroup.id;
-    });
-    let witIdArray = matchingWITGroup.relationships.typeList.data
-    .map(wit => wit.id);
-    this.groupTypesService.setCurrentGroupType(witIdArray, matchingWITGroup.attributes.bucket);
+    if(witGroup !== this.selectedgroupType) {
+      this.selectedgroupType = witGroup;
+      let matchingWITGroup = this.groupTypes.find(gt => {
+        return gt.id === witGroup.id;
+      });
+      let witIdArray = matchingWITGroup.relationships.typeList.data
+        .map(wit => wit.id);
+      this.groupTypesService.setCurrentGroupType(witIdArray, matchingWITGroup.attributes.bucket);
+    }
   }
 }

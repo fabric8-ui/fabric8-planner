@@ -43,7 +43,6 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   selectedIteration: IterationModel;
   allIterations: IterationModel[] = [];
   eventListeners: any[] = [];
-  masterIterations;
   treeIterations;
   activeIterations:IterationModel[] = [];
   menuList: any[] = [];
@@ -96,7 +95,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
       // do not display the root iteration on the iteration panel.
       this.allIterations = [];
       for (let i=0; i<this.iterations.length; i++) {
-        if (!this.iterationService.isRootIteration(this.iterations[i])) {
+        if (!this.iterationService.isRootIteration(this.iterations[i].attributes.parent_path)) {
           this.allIterations.push(this.iterations[i]);
         }
       }
@@ -113,7 +112,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
 
   constructURL(iterationId: string) {
     //Query for work item type group
-    const type_query = this.filterService.queryBuilder('$WITGROUP', this.filterService.equal_notation, this.witGroup);
+    const type_query = this.filterService.queryBuilder('typegroup.name', this.filterService.equal_notation, this.witGroup);
     //Query for space
     const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, this.spaceId);
     //Query for iteration
@@ -132,7 +131,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
       // do not display the root iteration on the iteration panel.
       this.allIterations = [];
       for (let i=0; i<this.iterations.length; i++) {
-        if (!this.iterationService.isRootIteration(this.iterations[i])) {
+        if (!this.iterationService.isRootIteration(this.iterations[i].attributes.parent_path)) {
           this.allIterations.push(this.iterations[i]);
         }
       }
@@ -143,7 +142,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
           // do not display the root iteration on the iteration panel.
           this.allIterations = [];
           for (let i=0; i<iterations.length; i++) {
-            if (!this.iterationService.isRootIteration(iterations[i])) {
+            if (!this.iterationService.isRootIteration(iterations[i].attributes.parent_path)) {
               this.allIterations.push(iterations[i]);
             }
           }
