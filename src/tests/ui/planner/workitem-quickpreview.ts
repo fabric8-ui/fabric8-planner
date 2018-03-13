@@ -150,6 +150,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async addCommentAndSave(comment: string) {
+    await this.ready()
     await this.addComment(comment);
     await this.commentSaveButton.clickWhenReady();
   }
@@ -229,7 +230,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async hasComment(comment: string): Promise<Boolean> {
+    await this.ready();
     let commentList = await this.commentsText.getTextWhenReady();
+    this.debug("Comment list: " + commentList);
     return commentList.indexOf(comment) > -1;
   }
 
