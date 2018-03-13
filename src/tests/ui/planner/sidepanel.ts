@@ -1,4 +1,4 @@
-import { $, ElementFinder, by, element} from 'protractor';
+import { $, ElementFinder, by } from 'protractor';
 import  *  as ui from './../../ui';
 import * as support from '../../support';
 

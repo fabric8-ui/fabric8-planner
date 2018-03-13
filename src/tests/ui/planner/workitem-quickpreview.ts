@@ -104,7 +104,8 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.closeButton.ready();
     await this.titleDiv.ready();
     await this.descriptionDiv.ready();
-    await this.linksToggleButton.ready();
+    // uncomment this once we have links in place
+    // await this.linksToggleButton.ready();
     await this.commentsToggleButton.ready();
     support.debug('... check if WorkItem preview is Ready - OK');
   }
@@ -147,6 +148,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async addCommentAndSave(comment: string) {
+    await this.ready()
     await this.addComment(comment);
     await this.commentSaveButton.clickWhenReady();
   }
@@ -226,7 +228,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async hasComment(comment: string): Promise<Boolean> {
+    await this.ready();
     let commentList = await this.commentsText.getTextWhenReady();
+    this.debug("Comment list: " + commentList);
     return commentList.indexOf(comment) > -1;
   }
 

@@ -117,9 +117,11 @@ describe('Planner Smoke Tests:', () => {
   });
 
   it('Edit Comment and Save', async() => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+    await planner.createWorkItem(c.newWorkItem3);
+    expect(await planner.workItemList.hasWorkItem(c.newWorkItem3.title)).toBeTruthy();    
+    await planner.workItemList.clickWorkItem(c.newWorkItem3.title);
     await planner.quickPreview.addCommentAndSave(c.comment);
-    expect(await planner.quickPreview.hasComment('new comment')).toBeTruthy();
+    expect(await planner.quickPreview.hasComment(c.comment)).toBeTruthy();
   });
 
   it('Edit Comment and Cancel', async() => {

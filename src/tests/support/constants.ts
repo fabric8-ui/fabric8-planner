@@ -24,6 +24,9 @@ export class Constants {
   newWorkItem2 = {
     title: "Workitem Title 1"
   };
+  newWorkItem3 = {
+    title:  "New Workitem"
+  };
   updatedWorkItem = {
     title: 'New Workitem Title',
     description: 'New WorkItem Description'
