@@ -76,11 +76,11 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private iterationSource = this.store
     .select('listPage')
     .select('iterations')
-    .filter(i => !!i.length);
+    .filter(i => !!i.length)
   private labelSource = this.store
     .select('listPage')
     .select('labels')
-    .filter(i => i !== null);
+    .filter(i => i !== null)
   private collaboratorSource = this.store
     .select('listPage')
     .select('collaborators')
@@ -152,8 +152,8 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         return Observable.combineLatest(
           this.workItemTypeSource,
           this.areaSource,
-          this.iterationSource,
-          this.labelSource,
+          this.iterationSource.take(1),
+          this.labelSource.take(1),
           this.collaboratorSource,
           this.routeSource
         );
