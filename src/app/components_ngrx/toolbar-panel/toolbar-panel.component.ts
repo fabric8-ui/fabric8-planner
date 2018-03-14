@@ -123,6 +123,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private currentQuery: string = '';
 
   private isShowTreeOn: boolean = false;
+  private isShowCloseOn: boolean = false;
 
   constructor(
     private router: Router,
@@ -569,6 +570,21 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  showCloseToggle(e) {
+    let queryParams = cloneDeep(this.route.snapshot.queryParams);
+    if (e.target.checked) {
+      queryParams['showClose'] = true;
+    } else {
+      if (queryParams.hasOwnProperty('showClose')) {
+        delete queryParams['showClose'];
+      }
+    }
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams
+    });
+  }
+
   handleShowTreeCheckBox() {
     let currentParams = cloneDeep(this.route.snapshot.queryParams);
     if (currentParams.hasOwnProperty('showTree')) {
@@ -579,6 +595,15 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     } else {
       this.isShowTreeOn = false;
+    }
+    if (currentParams.hasOwnProperty('showClose')) {
+      if (currentParams['showClose'] === 'true') {
+        this.isShowCloseOn = true;
+      } else if (currentParams['showClose'] === 'false') {
+        this.isShowCloseOn = false;
+      }
+    } else {
+      this.isShowCloseOn = false;
     }
   }
 }
