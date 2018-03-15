@@ -14,6 +14,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   titleInput = new ui.TextInput(this.titleDiv.$('textarea'), 'WorkItem Title Input');
   titleSaveButton = new ui.Button(this.titleDiv.$('.inlineinput-btn-save'), 'WorkItem Title Save button');
   titleCancelButton = new ui.Button(this.titleDiv.$('.inlineinput-btn-cancel'), 'Workitem Title cancel button');
+  titleErrorMessage = new ui.BaseElement(this.$('.error-message small'), 'WorkItem Title error message');
 
   /* UI elements for the middle section of the workitem preview */
   assigneeDropdown = new ui.Dropdown(
@@ -101,7 +102,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.closeButton.ready();
     await this.titleDiv.ready();
     await this.descriptionDiv.ready();
-    await this.linksToggleButton.ready();
+    // We do not have the link button in current planner
+    // Uncomment when workitem linking is implemented
+    // await this.linksToggleButton.ready();
     await this.commentsToggleButton.ready();
     support.debug('... check if WorkItem preview is Ready - OK');
   }
@@ -251,4 +254,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.addAssignee(assignee);
   }
 
+  async hasTitleError(error: string) {
+    return await this.titleErrorMessage.getTextWhenReady() === error;
+  }
 }
