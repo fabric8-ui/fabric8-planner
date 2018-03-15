@@ -65,7 +65,7 @@ import * as LinkTypeActions from './../../actions/link-type.actions';
   animations: [
     trigger('slideInOut', [
       state('in', style({
-        transform: 'translateX(5px)',
+        transform: 'translateX(0)',
         left: 'auto'
       })),
       state('out', style({
