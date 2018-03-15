@@ -50,7 +50,7 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
 COPY runtime/tests/google-chrome.repo /etc/yum.repos.d/google-chrome.repo
 # RUN yum install -y google-chrome-stable
 RUN wget http://orion.lcg.ufrj.br/RPMS/myrpms/google/google-chrome-stable-62.0.3202.94-1.x86_64.rpm
-RUN rpm -i google-chrome-stable-62.0.3202.94-1.x86_64.rpm
+RUN yum install -y google-chrome-stable-62.0.3202.94-1.x86_64.rpm
 
 ENV FABRIC8_USER_NAME=fabric8
 
