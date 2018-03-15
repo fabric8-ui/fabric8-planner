@@ -138,5 +138,11 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.addCommentAndCancel(c.comment);
     expect(await planner.quickPreview.hasComment('new comment')).toBeFalsy();
   });
+
+  it('update of empty workitem title is not allowed', async () => {
+    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+    await planner.quickPreview.updateTitle('');
+    expect(await planner.quickPreview.hasTitleError('Empty title not allowed')).toBeTruthy();
+  })
 });
 
