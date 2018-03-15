@@ -43,4 +43,13 @@ export class WorkItemQuickAdd extends ui.BaseElement {
       return filtered;
     }, []);
   }
+  
+  async addAndOpenWorkItem({ title, description = '', type }: WorkItem) {
+    await this.clickWhenReady();
+    await this.titleTextInput.enterText(title);
+    await this.workItemTypeDropdown.clickWhenReady();
+    await this.workItemTypeDropdown.select(type);
+    await this.addAndOpenButton.clickWhenReady();
+    this.log('New WorkItem created', `${title} added`);
+  }
 }
