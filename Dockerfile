@@ -48,6 +48,10 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
 #  && npm install -g karma-firefox-launcher
 
 COPY runtime/tests/google-chrome.repo /etc/yum.repos.d/google-chrome.repo
+
+# following downgrade is needed as GKE build does not install latest chrome.
+# Functional tests do pass on latest chrome version-65 (as of this writing)
+# Replace following 2 lines by following whenever you want to upgrade to latest
 # RUN yum install -y google-chrome-stable
 RUN wget http://orion.lcg.ufrj.br/RPMS/myrpms/google/google-chrome-stable-62.0.3202.94-1.x86_64.rpm
 RUN yum install -y google-chrome-stable-62.0.3202.94-1.x86_64.rpm
