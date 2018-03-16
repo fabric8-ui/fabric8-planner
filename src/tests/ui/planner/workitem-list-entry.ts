@@ -10,6 +10,8 @@ export class WorkItemListEntry extends ui.BaseElement {
   title = new ui.Clickable(this.$('.wi-detail-title p'), 'WorkItem Title');
   labels = new ui.BaseElement(this.$('f8-label'), 'WorkItem Labels');
   inlineCloseButton = new ui.Clickable(this.$('.pficon-close'),'inline close');
+  treeExpander = new ui.Clickable(this.$('.tree-icon'), 'WorkItem Expander');
+
   // TODO
   status: ui.BaseElement;
   iteration: ui.BaseElement;
@@ -34,5 +36,9 @@ export class WorkItemListEntry extends ui.BaseElement {
 
   async getInlineQuickAddClass() {
     return await this.inlineQuickAdd.getAttribute('className');
+  }
+
+  async clickExpandWorkItem() {
+    return await this.treeExpander.clickWhenReady();
   }
 }
