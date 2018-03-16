@@ -53,9 +53,29 @@ describe('Work Item datatable list', () => {
     await planner.workItemList.ready();
     await planner.workItemList.clickWorkItem(c.workItemTitle2);
     await planner.quickPreview.updateTitle(c.updatedWorkItem.title);
-    await planner.quickPreview.close();    
+    await planner.quickPreview.close();
     expect(await planner.workItemList.hasWorkItem(c.updatedWorkItem.title)).toBeTruthy();
     await planner.header.clickShowTree();
     expect(await planner.workItemList.hasWorkItem(c.updatedWorkItem.title)).toBeTruthy();
+  });
+
+  it('list should not update when new label is added', async() => {
+    await planner.workItemList.workItem(c.workItemTitle7).clickExpandWorkItem();
+    await browser.sleep(3000);
+    expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
+    await planner.workItemList.clickWorkItem(c.workItemTitle7);
+    await planner.quickPreview.createNewLabel(c.newLabel1);
+    await browser.sleep(3000);
+    expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
+  });
+
+  it('list should not update when new iteration is added', async() => {
+    await planner.workItemList.workItem(c.workItemTitle7).clickExpandWorkItem();
+    await browser.sleep(3000);
+    expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
+    await planner.sidePanel.createNewIteration();
+    await planner.iteration.addNewIteration(c.newIteration1, c.iteration3);
+    await browser.sleep(3000);
+    expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
   });
 });

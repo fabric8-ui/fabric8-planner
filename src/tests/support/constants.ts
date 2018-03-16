@@ -11,7 +11,9 @@ export class Constants {
   label2 = 'sample_label_2';
   linkType = 'tests';
   newLabel = "new label";
+  newLabel1 = "new label 1";
   newIteration ='new Iteration';
+  newIteration1 ='new Iteration 1';
   areaTitle1 = '/' + process.env.SPACE_NAME + '/Area_1';
   areaTitle2 = '/' + process.env.SPACE_NAME + '/Area_2';
   iteration1 = '/' + process.env.SPACE_NAME + '/Iteration_1/Iteration1_5';
@@ -34,6 +36,8 @@ export class Constants {
   };
   workItemTitle1 = 'Workitem_Title_10';
   workItemTitle2 = 'Workitem_Title_5';
+  workItemTitle7 = 'Workitem_Title_7';
+  workItemTitle13 = 'Workitem_Title_13';
   user1 = process.env.USER_FULLNAME;
   // Required since we need 2 users. Do not remove
   user2 = this.user1;
