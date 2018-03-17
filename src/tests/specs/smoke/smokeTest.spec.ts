@@ -79,13 +79,13 @@ describe('Planner Smoke Tests:', () => {
 
   it('Associate/Re-associate workitem with an Iteration', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle3);
-    await planner.quickPreview.addIteration(c.iteration1);
+    await planner.quickPreview.addIteration(c.dropdownIteration1);
     expect(await planner.quickPreview.hasIteration(c.iteration1)).toBeTruthy();
     await planner.quickPreview.close();
 
     await planner.workItemList.clickWorkItem(c.workItemTitle3);
     expect(await planner.quickPreview.hasIteration(c.iteration1)).toBeTruthy();
-    await planner.quickPreview.addIteration(c.iteration2);
+    await planner.quickPreview.addIteration(c.dropdownIteration2);
     expect(await planner.quickPreview.hasIteration(c.iteration2)).toBeTruthy();
     await planner.quickPreview.close();
 
