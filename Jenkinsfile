@@ -80,10 +80,12 @@ if (ciDeploy){
                 }
             }
         }
-        stage("e2e Tests"){
-            container('ui'){
-                sh 'cd tests/'
-                sh 'DEBUG=true BASE_URL=https://${route} REFRESH_TOKEN=$PLANNER_TOKEN ./run_e2e_tests.sh'
+        fabric8UINode {
+            stage("e2e Tests") {
+                container('ui') {
+                    sh 'cd tests/'
+                    sh 'DEBUG=true BASE_URL=https://${route} REFRESH_TOKEN=$PLANNER_TOKEN ./run_e2e_tests.sh'
+                }
             }
         }
         stage('notify'){
