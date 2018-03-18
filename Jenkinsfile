@@ -79,26 +79,27 @@ if (ciDeploy){
                     githubProject = project
                 }
             }
-            stage("e2e Tests"){
-                container('ui'){
-                    sh 'cd tests/'
-                    sh 'DEBUG=true BASE_URL=https://${route} REFRESH_TOKEN=$PLANNER_TOKEN ./run_e2e_tests.sh'
-                }
-            }
-            stage('notify'){
-                def changeAuthor = env.CHANGE_AUTHOR
-                if (!changeAuthor){
-                    error "no commit author found so cannot comment on PR"
-                }
-                def pr = env.CHANGE_ID
-                if (!pr){
-                    error "no pull request number found so cannot comment on PR"
-                }
-                def message = "@${changeAuthor} ${imageName} is deployed and available for testing at https://${route}"
-                container('clients'){
-                    flow.addCommentToPullRequest(message, pr, project)
-                }
+        }
+        stage("e2e Tests"){
+            container('ui'){
+                sh 'cd tests/'
+                sh 'DEBUG=true BASE_URL=https://${route} REFRESH_TOKEN=$PLANNER_TOKEN ./run_e2e_tests.sh'
             }
         }
+        stage('notify'){
+            def changeAuthor = env.CHANGE_AUTHOR
+            if (!changeAuthor){
+                error "no commit author found so cannot comment on PR"
+            }
+            def pr = env.CHANGE_ID
+            if (!pr){
+                error "no pull request number found so cannot comment on PR"
+            }
+            def message = "@${changeAuthor} ${imageName} is deployed and available for testing at https://${route}"
+            container('clients'){
+                flow.addCommentToPullRequest(message, pr, project)
+            }
+        }
+
     }
 }
