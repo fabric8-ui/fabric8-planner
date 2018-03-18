@@ -81,6 +81,7 @@ if (ciDeploy){
             }
         }
         fabric8UINode {
+            checkout scm
             stage("e2e Tests") {
                 container('ui') {
                     sh 'cd tests/'
