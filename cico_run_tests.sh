@@ -38,7 +38,7 @@ mkdir -p fabric8-ui-dist
 docker build -t fabric8-planner-builder -f Dockerfile .
 # User root is required to run webdriver-manager update.
 # This shouldn't be a problem for CI containers
-# Chrome crashed on low size of /dev/shm. We need the --shm-size=256m flag.
+# Chrome crashes on low size of /dev/shm. We need the --shm-size=256m flag.
 CID=$(docker run --detach=true \
     --shm-size=256m \
     -v $(pwd)/fabric8-ui-dist:/home/fabric8/fabric8-planner/fabric8-ui-dist:Z \
