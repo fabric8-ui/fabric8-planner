@@ -24,6 +24,9 @@ clone_fabric8_test() {
 
 generate_db() {
   cd $temp_dir/fabric8-test/EE_API_automation/pytest
+  log "Installing python pip"
+  rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+  yum install python-pip
   log "Installing all the required packages..."
   pip install pytest requests jmespath
   log "Running the EE_API_Automation Tests (DB Generation)"
