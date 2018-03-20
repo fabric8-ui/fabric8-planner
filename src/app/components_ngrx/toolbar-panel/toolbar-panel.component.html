@@ -34,10 +34,10 @@
 </ng-template>
 <ng-template #addTemplate>
   <input type="checkbox"
-    name="show close" id="showClose"
-    [checked]="isShowCloseOn"
-    (change)="showCloseToggle($event)">
-  <label class="show-close__label checkbox-label" for="showClose">&nbsp;Show closed item</label>
+    name="show completed" id="showCompleted"
+    [checked]="isShowCompletedOn"
+    (change)="showCompletedToggle($event)">
+  <label class="show-close__label checkbox-label" for="showCompleted">&nbsp;Show Completed</label>
 
   <input type="checkbox"
     [checked]="isShowTreeOn"
