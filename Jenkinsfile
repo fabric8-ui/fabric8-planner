@@ -78,6 +78,7 @@ if (ciDeploy){
                     openShiftProject = prj
                     githubProject = project
                 }
+                echo route
             }
         }
         fabric8UINode {
