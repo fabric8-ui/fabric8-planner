@@ -15,7 +15,7 @@ export class ToolbarHeader extends BaseElement {
     this.$('.filter-select .dropdown-menu'),
     'Select Filter Condition'
   );
-  clearAllFilter = new ui.Clickable(this.$('.clear-filters'), 'Clear All filters');
+  private clearAllFilter = new ui.Clickable(this.$('.clear-filters'), 'Clear All filters');
 
   constructor(el: ElementFinder, name = 'ToolBar Header') {
     super(el, name);
@@ -37,5 +37,9 @@ export class ToolbarHeader extends BaseElement {
     await this.filterDropdown.select(Label);
     await this.selectFilterCondition.clickWhenReady();
     await this.selectFilterCondition.select(LabelTest);
+  }
+
+  async clickClearAllFilters() {
+    await this.clearAllFilter.clickWhenReady();
   }
 }
