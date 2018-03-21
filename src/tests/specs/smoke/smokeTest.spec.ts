@@ -92,6 +92,14 @@ describe('Planner Smoke Tests:', () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle3);
     expect(await planner.quickPreview.hasIteration(c.iteration2)).toBeTruthy();
     await planner.quickPreview.close();
+
+    await planner.workItemList.clickWorkItem(c.workItemTitle3);
+    await planner.quickPreview.typeaHeadSearch('z');
+    expect(await planner.quickPreview.iterationDropdown.menu.getTextWhenReady()).toBe('No matches found.');
+    await planner.quickPreview.iterationCancelButton.click();
+    await planner.quickPreview.iterationDropdown.click();
+    expect(await planner.quickPreview.iterationDropdown.menu.getTextWhenReady()).not.toBe('No matches found.');
+    await planner.quickPreview.close();
   });
 
   it('Scenario-Quick Add should support Scenario, papercuts and fundamentals' ,async () => {
