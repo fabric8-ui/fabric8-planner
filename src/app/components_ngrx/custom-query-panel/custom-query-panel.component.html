@@ -1,0 +1,22 @@
+<div *ngIf='customQueries.length == 0'>
+  No custom queries
+</div>
+<div class="f8-group-filter" *ngFor="let item of customQueries">
+  <a
+    class="f8-group-filter__type"
+    id="{{item.group}}"
+    [routerLink]="[]"
+    [queryParams]="showTree ?
+      {q: fnBuildQueryParam(item), showTree: showTree} :
+      {q: fnBuildQueryParam(item)}"
+    [class.selected]="item.selected"
+  >
+      <span class="dib margin-right-10 {{ item.icon }}"
+        tooltip="{{sidePanelOpen ? '' : item.attributes.title }}"
+        placement="right"></span>
+      <span
+        [class.dib]="sidePanelOpen"
+        [class.hide]="!sidePanelOpen">
+      {{ item.attributes.title }}</span>
+  </a>
+</div>

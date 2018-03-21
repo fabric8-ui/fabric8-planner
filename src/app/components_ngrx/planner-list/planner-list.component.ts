@@ -56,6 +56,10 @@ import { WorkItemPreviewPanelComponent } from '../work-item-preview-panel/work-i
 export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked {
   private uiLockedAll: boolean = false;
   private sidePanelOpen: boolean = true;
+  private customQueriesSource = this.store
+    .select('listPage')
+    .select('customQueries')
+    .filter(cq => !!cq.length);
   private groupTypeSource = this.store
     .select('listPage')
     .select('groupTypes')

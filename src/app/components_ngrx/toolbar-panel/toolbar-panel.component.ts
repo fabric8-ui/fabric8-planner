@@ -554,6 +554,10 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  saveFilters() {
+
+  }
+
   showTreeToggle(e) {
     let queryParams = cloneDeep(this.route.snapshot.queryParams);
     if (e.target.checked) {
