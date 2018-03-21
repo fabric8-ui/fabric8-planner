@@ -32,7 +32,7 @@ cp /tmp/jenkins-env .
 
 mkdir -p fabric8-ui-dist
 # Build fabric8-planner image
-docker build -t fabric8-planner-builder -f Dockerfile .
+docker build -t fabric8-planner-builder .
 # User root is required to run webdriver-manager update.
 # This shouldn't be a problem for CI containers
 # Chrome crashes on low size of /dev/shm. We need the --shm-size=256m flag.
