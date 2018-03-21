@@ -38,6 +38,7 @@ export class Constants {
   workItemTitle2 = 'Workitem_Title_5';
   workItemTitle7 = 'Workitem_Title_7';
   workItemTitle13 = 'Workitem_Title_13';
+  workItemTitle17 = 'Workitem_Title_17';
   user1 = process.env.USER_FULLNAME;
   // Required since we need 2 users. Do not remove
   user2 = this.user1;

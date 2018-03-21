@@ -1,5 +1,6 @@
 import { browser } from 'protractor';
 import { PlannerPage } from '../page_objects/planner';
+import { SidePanel } from './../ui/planner/sidepanel';
 import * as support from '../support';
 
 
@@ -78,4 +79,16 @@ describe('Work Item datatable list', () => {
     await browser.sleep(3000);
     expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
   });
+
+  it ('matching child should be expanded initially', async() => {
+    await planner.sidePanel.clickRequirement();
+    await planner.workItemList.workItem(c.workItemTitle17).clickInlineQuickAdd();
+    await planner.createInlineWorkItem(c.newWorkItem1);
+    await browser.sleep(3000);
+    await planner.sidePanel.clickScenarios();
+    await browser.sleep(3000);
+    await planner.sidePanel.clickRequirement();
+    await browser.sleep(3000);
+    expect(await planner.workItemList.hasWorkItem(c.newWorkItem1.title)).toBeTruthy();
+  })
 });

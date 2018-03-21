@@ -7,6 +7,7 @@ import * as support from './../../support';
 export class PlannerPage extends AppPage {
   workItemList = new planner.WorkItemList($('alm-work-item-list'));
   quickAdd =  new planner.WorkItemQuickAdd($('alm-work-item-quick-add'));
+  inlineQuickAdd =  new planner.WorkItemInlineQuickAdd($('#workItemList_quickAdd_inline'));
   sidePanel = new planner.SidePanel($('aside.f8-sidepanel'));
   quickPreview = new planner.WorkItemQuickPreview($('work-item-detail'));
   header = new planner.ToolbarHeader($('pfng-toolbar'));
@@ -30,6 +31,11 @@ export class PlannerPage extends AppPage {
   async createWorkItem(item: planner.WorkItem) {
     this.debug('create item', JSON.stringify(item));
     await this.quickAdd.addWorkItem(item);
+  }
+
+  async createInlineWorkItem(item: planner.WorkItem) {
+    this.debug('create inline item', JSON.stringify(item));
+    await this.inlineQuickAdd.addInlineWorkItem(item);
   }
 
 }
