@@ -35,6 +35,7 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
   private eventListeners: any[] = [];
   private startedCheckingURL: boolean = false;
   private showTree: string = '';
+  private showCompleted: string = '';
 
   constructor(
     private auth: AuthenticationService,
@@ -111,6 +112,11 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
           this.showTree = val.showTree;
         } else {
           this.showTree = '';
+        }
+        if (val.hasOwnProperty('showCompleted')) {
+          this.showCompleted = val.showCompleted;
+        } else {
+          this.showCompleted = '';
         }
       })
     );

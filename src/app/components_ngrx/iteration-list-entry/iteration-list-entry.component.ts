@@ -42,6 +42,7 @@ export class IterationListEntryComponent implements OnInit, OnDestroy {
   @Input() collection = [];
   @Input() witGroup: string = '';
   @Input() showTree: string = '';
+  @Input() showCompleted: string = '';
 
   @Output() onEditIteration = new EventEmitter<IterationUI>();
   @Output() onCloseIteration = new EventEmitter<IterationUI>();
