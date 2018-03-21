@@ -23,11 +23,8 @@ fi
 # We need to disable selinux for now, XXX
 /usr/sbin/setenforce 0
 
-# Get gcc-c++ to avoid npm errors
-yum -y install gcc-c++
-
 # Get all the deps in
-yum -y install docker make git
+yum -y install docker
 service docker start
 
 # Build builder image

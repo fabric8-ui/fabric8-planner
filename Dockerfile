@@ -24,7 +24,7 @@ ENV NODE_VERSION 8.3.0
 
 RUN yum -y update && \
     yum install -y bzip2 fontconfig tar java-1.8.0-openjdk nmap-ncat psmisc gtk3 git \
-      python-setuptools xorg-x11-xauth wget unzip which \
+      python-setuptools xorg-x11-xauth wget unzip which gcc-c++ \
       xfonts-100dpi libXfont GConf2 \
       xorg-x11-fonts-75dpi xfonts-scalable xfonts-cyrillic \
       ipa-gothic-fonts xorg-x11-utils xorg-x11-fonts-Type1 xorg-x11-fonts-misc && \
