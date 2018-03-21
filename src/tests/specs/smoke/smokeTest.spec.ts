@@ -98,6 +98,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.sidePanel.clickScenarios();
     let wiTypes = await planner.quickAdd.workItemTypes();
     expect(wiTypes.length).toBe(3);
+    expect(wiTypes[0]).toBe('Scenario');
     expect(wiTypes).toContain('Scenario');
     expect(wiTypes).toContain('Papercuts');
     expect(wiTypes).toContain('Fundamental');
@@ -107,8 +108,18 @@ describe('Planner Smoke Tests:', () => {
     await planner.sidePanel.clickExperience();
     let wiTypes = await planner.quickAdd.workItemTypes();
     expect(wiTypes.length).toBe(2);
+    expect(wiTypes[0]).toBe('Experience');
     expect(wiTypes).toContain('Experience');
     expect(wiTypes).toContain('Value Proposition');
+  });
+
+  it('Requirement-Quick Add should support Feature and Bug', async () => {
+    await planner.sidePanel.clickRequirement();
+    let wiTypes = await planner.quickAdd.workItemTypes();
+    expect(wiTypes.length).toBe(2);
+    expect(wiTypes[0]).toBe('Feature');
+    expect(wiTypes).toContain('Feature');
+    expect(wiTypes).toContain('Bug');
   });
 
   it('Edit Comment and Save', async() => {
