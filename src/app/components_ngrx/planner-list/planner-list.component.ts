@@ -32,6 +32,7 @@ import { datatableColumn } from './../../components/planner-list/datatable-confi
 import { Store } from '@ngrx/store';
 import { AppState } from './../../states/app.state';
 // import * as actions from './../../actions/index.actions';
+import * as CustomQueryActions from './../../actions/custom.query.actions';
 import * as IterationActions from './../../actions/iteration.actions';
 import * as GroupTypeActions from './../../actions/group-type.actions';
 import * as SpaceActions from './../../actions/space.actions';
@@ -56,10 +57,6 @@ import { WorkItemPreviewPanelComponent } from '../work-item-preview-panel/work-i
 export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked {
   private uiLockedAll: boolean = false;
   private sidePanelOpen: boolean = true;
-  private customQueriesSource = this.store
-    .select('listPage')
-    .select('customQueries')
-    .filter(cq => !!cq.length);
   private groupTypeSource = this.store
     .select('listPage')
     .select('groupTypes')
@@ -97,6 +94,9 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private workItemSource = this.store
     .select('listPage')
     .select('workItems');
+  private customQuerySource = this.store
+    .select('listPage')
+    .select('customQueries');
   private routeSource = this.route.queryParams
     .filter(p => p.hasOwnProperty('q'));
   private quickAddWorkItemTypes: WorkItemTypeUI[] = [];
@@ -159,7 +159,8 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
           this.iterationSource.take(1),
           this.labelSource.take(1),
           this.collaboratorSource,
-          this.routeSource
+          this.routeSource,
+          this.customQuerySource
         );
       })
       .subscribe(([
@@ -168,9 +169,10 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         iterationSource,
         labelSource,
         collaboratorSource,
+        customQuerySource,
         queryParams
       ]) => {
-        this.uiLockedSidebar = false;
+        console.log('customQuerySource = ', customQuerySource);
         this.uiLockedList = true;
         let exp = this.filterService.queryToJson(queryParams.q);
         // Check for tree view
@@ -193,6 +195,8 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         }))
       })
     );
+
+
 
     const queryParams = this.route.snapshot.queryParams;
     if(Object.keys(queryParams).length === 0 ||
