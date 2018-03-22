@@ -4,6 +4,7 @@ import {
   AfterViewChecked,
   Component,
   ElementRef,
+  HostListener,
   OnInit,
   OnDestroy,
   Renderer2,
@@ -538,4 +539,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
       }
     }
   }
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {}
 }
