@@ -47,7 +47,7 @@ import * as effects from './../../effects/index.effects';
 import { WorkItemReducer } from './../../reducers/work-item.reducer';
 
 import { AlmIconModule } from 'ngx-widgets';
-import { EmptyStateModule } from 'patternfly-ng';
+import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { UrlService } from '../../services/url.service';
 
 let providers = [];
