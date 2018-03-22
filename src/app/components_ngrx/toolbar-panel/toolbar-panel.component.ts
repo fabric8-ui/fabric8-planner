@@ -42,8 +42,10 @@ import { GroupTypeUI } from './../../models/group-types.model';
 // ngrx stuff
 import { Store } from '@ngrx/store';
 import { AppState } from './../../states/app.state';
+import * as CustomQueryActions from './../../actions/custom.query.actions';
 import * as FilterActions from './../../actions/filter.actions';
 import * as SpaceActions from './../../actions/space.actions';
+import { CustomQueryModel } from 'src/app/models/custom.query.model';
 
 
 @Component({
@@ -206,7 +208,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     /*
      * The current version of the patternfly filter dropdown does not fully support the async
      * update of the filterConfig.fields fields set. It does not refresh the widget on field
-     * array change. The current workaround is to add a "dummy" entry "Select Filter.." as
+     * array change. The current workaround is to add a 'dummy' entry 'Select Filter..' as
      * the first entry in the fields array. When the user selects a new value from the
      * filter list, the implementation works subsequently.
      */
@@ -561,7 +563,19 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   saveFilters() {
-
+    //let exp = this.filterService.queryToJson(queryParams.q);
+    console.log('this.activeFilters = ', this.activeFilters);
+    let customQuery = {
+      'attributes':
+      {
+        'fields': '{\'$AND\': [{\'space\': \'00000000-0000-0000-0000-000000000001\'}]}',
+        'title': 'query 1'
+      },
+      'type': 'queries'
+    };
+    //this.store.dispatch(new CustomQueryActions.Add({
+      //customQuery: customQuery,
+    //}));
   }
 
   showTreeToggle(e) {

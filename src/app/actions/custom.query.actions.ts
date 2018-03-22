@@ -1,9 +1,38 @@
 import { Action } from '@ngrx/store';
+import { CustomQueryService} from './../services/custom-query.service';
 import { CustomQueryModel} from './../models/custom.query.model';
 
-export const GET = '[filter] Get';
-export const GET_SUCCESS = '[filter] GetSuccess';
-export const GET_ERROR = '[filter] GetError';
+export const ADD = '[customQuery] Add';
+export const ADD_SUCCESS = '[customQuery] AddSuccess';
+export const ADD_ERROR = '[customQuery] AddError';
+export const GET = '[customQuery] Get';
+export const GET_SUCCESS = '[customQuery] GetSuccess';
+export const GET_ERROR = '[customQuery] GetError';
+
+export class Add implements Action {
+  payload: {customQuery: CustomQueryService};
+  constructor(
+    payload: {
+      customQuery: CustomQueryService,
+    }
+  ) {
+    this.payload = payload;
+  }
+  readonly type = ADD;
+}
+
+export class AddSuccess implements Action {
+  payload: CustomQueryModel;
+  constructor(payload: CustomQueryModel) {
+    this.payload = payload;
+  }
+  readonly type = ADD_SUCCESS;
+}
+
+export class AddError implements Action {
+  readonly type = ADD_ERROR;
+}
+
 
 export class Get implements Action {
   readonly type = GET;

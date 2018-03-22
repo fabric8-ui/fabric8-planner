@@ -10,6 +10,7 @@ import { Space, Spaces } from 'ngx-fabric8-wit';
 
 import { CustomQueryService } from '../../services/custom-query.service';
 import { CustomQueryModel } from '../../models/custom.query.model';
+import { FilterService } from '../../services/filter.service';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
@@ -33,28 +34,29 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
   constructor(
     private auth: AuthenticationService,
     private customQueryService: CustomQueryService,
+    private filterService: FilterService,
     private route: ActivatedRoute,
     private spaces: Spaces,
     private store: Store<AppState>
   ) {}
 
   ngOnInit(): void {
-    const customQueriesData = this.store
-      .select('listPage')
-      .select('customQueries')
-      .filter(customQueries => !!customQueries.length);
     const spaceData = this.store
       .select('listPage')
       .select('space')
-      .filter(space => space !== null)
+      .filter(space => space !== null);
+
+    const customQueriesData = this.store
+      .select('listPage')
+      .select('customQueries')
+      //.filter(customQueries => !!customQueries.length);
 
     this.eventListeners.push(
       Observable.combineLatest(
         customQueriesData,
         spaceData
       ).subscribe(([customQueries, space]) => {
-        this.customQueries = customQueries.length > 0 ? customQueries : [];
-        console.log('abc = ', this.customQueries)
+        this.customQueries = customQueries;
         this.spaceId = space.id;
       })
     );
@@ -63,4 +65,11 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.eventListeners.forEach(e => e.unsubscribe());
   }
+
+  constructUrl(attributes) {
+    let jsonAttributes = JSON.parse(attributes);
+    let jsonQuery = this.filterService.jsonToQuery(jsonAttributes);
+    return jsonQuery;
+  }
+
 }

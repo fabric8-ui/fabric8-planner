@@ -25,18 +25,18 @@ export class CustomQueryEffects {
   @Effect() GetCustomQueries$: Observable<Action> = this.actions$
     .ofType(CustomQueryActions.GET)
     .switchMap(action => {
-      return this.filterService.getFilters()
+      return this.customQueryService.getCustomqueries()
         .map((types: CustomQueryModel[]) => {
           return new CustomQueryActions.GetSuccess(types);
         })
         .catch(e => {
           try {
             this.notifications.message({
-              message: 'Problem in fetching filters.',
+              message: 'Problem in fetching custom queries.',
               type: NotificationType.DANGER
             } as Notification);
           } catch (e) {
-            console.log('Problem in fetching filters');
+            console.log('Problem in fetching custom queries');
           }
           return Observable.of(new CustomQueryActions.GetError());
         })
