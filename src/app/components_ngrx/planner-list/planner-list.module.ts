@@ -32,7 +32,6 @@ import {
 import { WorkItemQuickAddModule } from './../work-item-quick-add/work-item-quick-add.module';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { FilterColumn } from '../../pipes/column-filter.pipe';
-import { WorkItemQuickPreviewModule } from '../work-item-quick-preview/work-item-quick-preview.module';
 import { WorkItemDataService } from './../../services/work-item-data.service';
 import { PlannerModalModule } from '../../components/modal/modal.module';
 
@@ -48,7 +47,7 @@ import * as effects from './../../effects/index.effects';
 import { WorkItemReducer } from './../../reducers/work-item.reducer';
 
 import { AlmIconModule } from 'ngx-widgets';
-import { EmptyStateModule } from 'patternfly-ng';
+import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { UrlService } from '../../services/url.service';
 
 let providers = [];
