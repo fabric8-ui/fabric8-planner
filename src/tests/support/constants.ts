@@ -33,4 +33,5 @@ export class Constants {
   user2 = "Example User 1";
   user_avatar = 'https://avatars.githubusercontent.com/u/2410471?v=3&s=20';
   comment = "new comment";
+  randomText = "zxz"
 }
