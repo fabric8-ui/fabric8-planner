@@ -288,8 +288,8 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     return await this.titleErrorMessage.getTextWhenReady() === error;
   }
 
-  async changeStateToClose() {
+  async changeStateTo(state: string) {
     await this.stateDropdown.clickWhenReady();
-    await this.stateDropdown.select('closed');
+    await this.stateDropdown.select(state);
   }
 }
