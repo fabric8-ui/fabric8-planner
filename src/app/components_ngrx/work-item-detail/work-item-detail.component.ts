@@ -14,6 +14,7 @@ import {
   ElementRef, ViewChild, Renderer2, HostListener
 } from '@angular/core';
 import { InlineInputComponent } from './../../widgets/inlineinput/inlineinput.component';
+import { MarkdownComponent } from 'ngx-widgets';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
@@ -39,6 +40,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   @ViewChild('detailHeader') detailHeader: ElementRef;
   @ViewChild('detailContent') detailContent: ElementRef;
   @ViewChild('inlineInput') inlineInput: InlineInputComponent;
+  @ViewChild('markdown') markdown: MarkdownComponent;
 
   private spaceSource = this.store
     .select('listPage')
@@ -188,7 +190,9 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
         this.loadingArea = false;
         this.loadingIteration = false;
         this.loadingLabels = false;
-
+        
+        if(this.markdown) this.markdown.closeClick();
+        
         // set title on update
         if (this.titleCallback !== null) {
           this.titleCallback(this.workItem.title);

@@ -271,7 +271,7 @@
                 [rawText]="workItem.description"
                 [renderedText]="workItem.descriptionRendered"
                 (onSaveClick)="descUpdate($event)"
-                (showPreview)="showPreview($event)">
+                (showPreview)="showPreview($event)" #markdown>
               </f8-markdown>
             </div>
           </section>
