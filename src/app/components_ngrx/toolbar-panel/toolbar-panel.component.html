@@ -36,8 +36,11 @@
   <input type="checkbox"
     name="show completed" id="showCompleted"
     [checked]="isShowCompletedOn"
-    (change)="showCompletedToggle($event)">
-  <label class="show-close__label checkbox-label" for="showCompleted">&nbsp;Show Completed</label>
+    (change)="showCompletedToggle($event)"
+    [disabled]="isStateFilterSelected">
+  <label class="show-close__label checkbox-label"
+    for="showCompleted"
+    [class.inactive]="isStateFilterSelected">&nbsp;Show Completed</label>
 
   <input type="checkbox"
     [checked]="isShowTreeOn"

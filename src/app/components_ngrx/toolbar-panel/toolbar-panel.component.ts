@@ -124,6 +124,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private isShowTreeOn: boolean = false;
   private isShowCompletedOn: boolean = false;
+  private isStateFilterSelected: boolean = false;
 
   constructor(
     private router: Router,
@@ -253,6 +254,10 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectFilterType(event: FilterEvent) {
+    this.isStateFilterSelected = false;
+    if (event.field.id === 'state') {
+      this.isStateFilterSelected = true;
+    }
     const filterMap = this.getFilterMap();
     if (Object.keys(filterMap).indexOf(event.field.id) > -1) {
       const index = this.filterConfig.fields.findIndex(i => i.id === event.field.id);
