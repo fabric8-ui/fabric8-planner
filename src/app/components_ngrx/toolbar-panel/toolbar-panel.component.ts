@@ -126,6 +126,10 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private isShowTreeOn: boolean = false;
 
+  private routeSource = this.route.queryParams
+    .filter(p => p.hasOwnProperty('q'));
+  private queryExp;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -155,6 +159,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.context !== 'boardview') {
       this.allowedFilterKeys.push('state');
     }
+    this.routeSource.subscribe(queryParam => this.queryExp = queryParam.q);
   }
 
   ngAfterViewInit(): void {
@@ -557,19 +562,21 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   saveFilters() {
-    //let exp = this.filterService.queryToJson(queryParams.q);
-    console.log('this.activeFilters = ', this.activeFilters);
+    let exp = this.filterService.queryToJson(this.queryExp);
+    console.log(JSON.stringify(exp));
+    //let exp = JSON.parse(this.queryExp);
+    console.log('******', exp);
     let customQuery = {
-      'attributes':
+        'attributes':
       {
-        'fields': '{\'$AND\': [{\'space\': \'00000000-0000-0000-0000-000000000001\'}]}',
-        'title': 'query 1'
+        'fields': exp,
+        'title': 'query 10'
       },
       'type': 'queries'
+
     };
-    //this.store.dispatch(new CustomQueryActions.Add({
-      //customQuery: customQuery,
-    //}));
+    console.log('customQuery', customQuery);
+    this.store.dispatch(new CustomQueryActions.Add(customQuery));
   }
 
   showTreeToggle(e) {

@@ -172,7 +172,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         customQuerySource,
         queryParams
       ]) => {
-        console.log('customQuerySource = ', customQuerySource);
         this.uiLockedList = true;
         let exp = this.filterService.queryToJson(queryParams.q);
         // Check for tree view

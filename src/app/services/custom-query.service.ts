@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { WIT_API_URL, Space, Spaces } from 'ngx-fabric8-wit';
 import { HttpService } from './http-service';
-import { CustomQueryModel } from '../models/custom.query.model';
+import { CustomQueryModel, CustomQueryService as CQService } from '../models/custom.query.model';
 
 @Injectable()
 export class CustomQueryService {
@@ -23,11 +23,11 @@ export class CustomQueryService {
   }
 
   /**
-   * getFilters - Fetches all the available filters
+   * getCustomQueries - Fetches all the available custom queries
    * @param apiUrl - The url to get list of all filters
    * @return Observable of FilterModel[] - Array of filters
    */
-  getCustomqueries(): Observable<CustomQueryModel[]> {
+  getCustomQueries(): Observable<CustomQueryModel[]> {
     if (this._currentSpace) {
       if (this.customQueries.length > 0 ) {
         return Observable.of(this.customQueries);
@@ -59,4 +59,29 @@ export class CustomQueryService {
       }
     }
   }
+
+  /**
+    * Usage: This method create a new item
+    * adds the new item to the big list
+    * resolve the users for the item
+    * re build the ID-Index map
+    *
+    * @param: WorkItem - workItem (Item to be created)
+    */
+    create(customQuery: CustomQueryModel): Observable<CustomQueryModel> {
+      let payload = JSON.stringify({data: customQuery});
+      if (this._currentSpace) {
+        let queryUrl = this._currentSpace.links.self + '/queries';
+        return this.http
+          .post(queryUrl, payload)
+          .map(response => {
+            return response.json().data as CustomQueryModel;
+          }).catch((error: Error | any) => {
+            console.log('Creating custom query failed.', error);
+            return Observable.throw(new Error(error.message));
+          });
+      } else {
+        return Observable.of<CustomQueryModel>( new CustomQueryModel() );
+      }
+    }
 }
