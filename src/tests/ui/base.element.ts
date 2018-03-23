@@ -91,7 +91,6 @@ export class BaseElement extends ElementFinder implements BaseElementInterface {
       await this.untilClickable(timeout);
       await this.click();
     })
-    this.log('Clicked');
   }
 
   async ready() {
@@ -108,7 +107,7 @@ export class BaseElement extends ElementFinder implements BaseElementInterface {
   }
 
   async run(msg: string, fn: () => Promise<any>) {
-    this.debug(msg);
+    this.debug(msg, '- ACTION STARTED');
     await fn();
     this.debug(msg, '- DONE');
   }
