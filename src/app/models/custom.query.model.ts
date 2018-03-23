@@ -6,3 +6,5 @@ export class CustomQueryAttributes {
   fields: string;
   title: string;
 }
+
+export interface CustomQueryService extends CustomQueryModel {}

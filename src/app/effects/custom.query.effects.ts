@@ -1,3 +1,5 @@
+import { Store } from '@ngrx/store';
+import { AppState } from './../states/app.state';
 import { Actions, Effect } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
 import * as CustomQueryActions from './../actions/custom.query.actions';
@@ -19,13 +21,14 @@ export class CustomQueryEffects {
   constructor(
     private actions$: Actions,
     private customQueryService: CustomQueryService,
+    private store: Store<AppState>,
     private notifications: Notifications
   ) {}
 
   @Effect() GetCustomQueries$: Observable<Action> = this.actions$
     .ofType(CustomQueryActions.GET)
     .switchMap(action => {
-      return this.customQueryService.getCustomqueries()
+      return this.customQueryService.getCustomQueries()
         .map((types: CustomQueryModel[]) => {
           return new CustomQueryActions.GetSuccess(types);
         })
@@ -39,6 +42,40 @@ export class CustomQueryEffects {
             console.log('Problem in fetching custom queries');
           }
           return Observable.of(new CustomQueryActions.GetError());
+        })
+    })
+
+    @Effect() addCustomQuery$ = this.actions$
+    .ofType<CustomQueryActions.Add>(CustomQueryActions.ADD)
+    .ofType(CustomQueryActions.ADD)
+    .switchMap((action: CustomQueryActions.Add) => {
+      let payload = action.payload;
+      return this.customQueryService.create(payload)
+        .map(customQuery => {
+          let customQueryName = customQuery.attributes.title;
+          if (customQueryName.length > 15) {
+            customQueryName = customQueryName.slice(0, 15) + '...';
+          }
+          try {
+            this.notifications.message({
+              message: `${customQueryName} added.`,
+              type: NotificationType.SUCCESS
+            } as Notification);
+          } catch (e) {
+            console.log('Custom query added.')
+          }
+          return new CustomQueryActions.AddSuccess(customQuery);
+        })
+        .catch(() => {
+          try {
+            this.notifications.message({
+              message: `There was some problem creating custom query.`,
+              type: NotificationType.DANGER
+            } as Notification);
+          } catch (e) {
+            console.log('There was some problem creating custom query.')
+          }
+          return Observable.of(new CustomQueryActions.AddError());
         })
     })
 }
