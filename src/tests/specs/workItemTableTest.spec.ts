@@ -59,7 +59,7 @@ describe('Work Item datatable list', () => {
     await planner.createWorkItem(newWorkItem);
     expect(await planner.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(newWorkItem.title);
-    await planner.quickPreview.changeStateToClose();
+    await planner.quickPreview.changeStateTo('closed');
     await planner.quickPreview.close();
     await planner.header.clickShowCompleted();
     await planner.workItemList.overlay.untilPresent();
