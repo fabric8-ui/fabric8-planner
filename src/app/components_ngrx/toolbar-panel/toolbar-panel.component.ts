@@ -9,7 +9,8 @@ import {
   ViewEncapsulation,
   Output,
   OnDestroy,
-  EventEmitter
+  EventEmitter,
+  ChangeDetectorRef
 } from '@angular/core';
 import {
   Router,
@@ -17,11 +18,8 @@ import {
   NavigationExtras
 } from '@angular/router';
 import { cloneDeep } from 'lodash';
-import {
-  FilterConfig,
-  FilterEvent,
-  ToolbarConfig
-} from 'patternfly-ng';
+import { FilterConfig, FilterEvent } from 'patternfly-ng/filter';
+import { ToolbarConfig } from 'patternfly-ng/toolbar';
 
 import { Spaces } from 'ngx-fabric8-wit';
 import {
@@ -133,7 +131,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     private filterService: FilterService,
     private auth: AuthenticationService,
     private userService: UserService,
-    private store: Store<AppState>) {
+    private store: Store<AppState>,
+    private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -468,6 +467,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .subscribe(selected => {
         this.activeFilterFromSidePanel = selected;
+        this.cdr.markForCheck();
       })
     );
   }
@@ -524,6 +524,25 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentQuery
     );
     fields.splice(field.index, 1);
+    const queryString = this.filterService.jsonToQuery(
+      this.filterService.flatToQuery(fields)
+    );
+    let queryParams = cloneDeep(this.route.snapshot.queryParams);
+    queryParams['q'] = queryString;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams
+    });
+  }
+
+  removeAllFilters() {
+    const fields = this.filterService.queryToFlat(
+      this.currentQuery
+    ).filter(f => {
+      return this.activeFilters.findIndex(
+        af => af.field === f.field && af.value === f.value
+      ) === -1;
+    });
     const queryString = this.filterService.jsonToQuery(
       this.filterService.flatToQuery(fields)
     );

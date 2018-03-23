@@ -183,7 +183,7 @@ export class WorkItemService {
     if (this._currentSpace) {
       let url = '';
       if (process.env.ENV === 'inmemory') {
-        url = 'http://mock.service/api/spaces/space-id0/workitems?page[limit]=42&filter[space]=space-id0&filter[$WITGROUP]=Scenarios';
+        url = 'http://mock.service/api/spaces/space-id0/workitems?page[limit]=42&filter[space]=space-id0&filter[typegroup.name]=Scenarios';
       } else {
         this.workItemUrl = this._currentSpace.links.self.split('spaces')[0] + 'search';
         url = this.workItemUrl + '?page[limit]=' + pageSize + '&' + Object.keys(filters).map(k => 'filter['+k+']='+JSON.stringify(filters[k])).join('&');
@@ -606,6 +606,25 @@ export class WorkItemService {
     } else {
       return Observable.of<WorkItemType[]>( [] as WorkItemType[] );
     }
+  }
+
+  getWorkItemTypes2(workItemTypeUrl): Observable<any[]> {
+    return this.http
+      .get(workItemTypeUrl)
+      .map((response) => {
+        let resultTypes = response.json().data as WorkItemType[];
+
+        // THIS IS A HACK!
+        for (let i=0; i<resultTypes.length; i++)
+          if (resultTypes[i].id==='86af5178-9b41-469b-9096-57e5155c3f31')
+            resultTypes.splice(i, 1);
+
+        this.workItemTypes = resultTypes;
+        return this.workItemTypes;
+      }).catch((error: Error | any) => {
+        this.notifyError('Getting work item type information failed.', error);
+        return Observable.throw(new Error(error.message));
+      });
   }
 
   /**

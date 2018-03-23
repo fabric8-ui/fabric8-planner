@@ -126,7 +126,7 @@ export class FilterService {
     }
     //active filter will have the transient filters
     //witgroup and space are permanent filters
-    return refCurrentFilter.filter(f => f.id === '$WITGROUP' || f.id === 'space' || f.id === 'iteration');
+    return refCurrentFilter.filter(f => f.id === 'typegroup.name' || f.id === 'space' || f.id === 'iteration');
   }
 
   clearFilters(keys: string[] = []): void {
@@ -159,6 +159,23 @@ export class FilterService {
         return Observable.of([] as FilterModel[]);
       }
     });
+  }
+
+  /**
+   * getFilters - Fetches all the available filters
+   * @param apiUrl - The url to get list of all filters
+   * @return Observable of FilterModel[] - Array of filters
+   */
+  getFilters2(apiUrl): Observable<FilterModel[]> {
+    return this.http
+      .get(apiUrl)
+      .map(response => {
+        return response.json().data as FilterModel[];
+      })
+      .catch ((error: Error | any) => {
+        console.log('API returned error: ', error.message);
+        return Observable.throw('Error  - [FilterService - getFilters]' + error.message);
+      });
   }
 
   returnFilters() {
