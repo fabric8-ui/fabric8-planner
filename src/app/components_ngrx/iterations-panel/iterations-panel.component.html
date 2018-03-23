@@ -32,11 +32,7 @@
           <a
           [routerLinkActive]="'f8-itr--selected'"
           [routerLink]="[]" [attr.data-id]="iteration.id"
-          [queryParams]="showTree && showCompleted ?
-              { q: constructURL(iteration.id), showTree: showTree, showCompleted: showCompleted } :
-              showTree ? { q: constructURL(iteration.id), showTree: showTree } :
-              showCompleted ? { q: constructURL(iteration.id), showCompleted: showCompleted } :
-              { q: constructURL(iteration.id) }">
+          [queryParams]="addRemoveQueryParams(iteration.id)">
               <span id="{{ iteration.resolvedParentPath +
                   '/' + iteration.name }}">
                 {{iteration.resolvedParentPath +

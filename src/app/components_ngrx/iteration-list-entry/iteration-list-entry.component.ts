@@ -99,6 +99,30 @@ export class IterationListEntryComponent implements OnInit, OnDestroy {
     return this.filterService.jsonToQuery(third_join);
   }
 
+  addRemoveQueryParams(iterationId: string) {
+    if (this.showCompleted && this.showTree) {
+      return {
+        q: this.constructURL(iterationId),
+        showTree: this.showTree,
+        showCompleted: this.showCompleted
+      }
+    } else if (this.showTree) {
+      return {
+        q: this.constructURL(iterationId),
+        showTree: this.showTree
+      }
+    } else if (this.showCompleted) {
+      return {
+        q: this.constructURL(iterationId),
+        showCompleted: this.showCompleted
+      }
+    } else {
+      return {
+        q: this.constructURL(iterationId)
+      }
+    }
+  }
+
   toggleChildrenDisplay(iteration) {
     // TODO: Dispatch an action to this
     iteration.showChildren = !iteration.showChildren;

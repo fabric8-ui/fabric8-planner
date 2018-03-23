@@ -95,6 +95,30 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
     //reverse function jsonToQuery(second_join);
   }
 
+  addRemoveQueryParams(witGroup) {
+    if (this.showCompleted && this.showTree) {
+      return {
+        q: this.fnBuildQueryParam(witGroup),
+        showTree: this.showTree,
+        showCompleted: this.showCompleted
+      }
+    } else if (this.showTree) {
+      return {
+        q: this.fnBuildQueryParam(witGroup),
+        showTree: this.showTree
+      }
+    } else if (this.showCompleted) {
+      return {
+        q: this.fnBuildQueryParam(witGroup),
+        showCompleted: this.showCompleted
+      }
+    } else {
+      return {
+        q: this.fnBuildQueryParam(witGroup)
+      }
+    }
+  }
+
   checkURL() {
     this.startedCheckingURL = true;
     this.eventListeners.push(

@@ -128,6 +128,30 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     return this.filterService.jsonToQuery(third_join);
   }
 
+  addRemoveQueryParams(iterationId: string) {
+    if (this.showCompleted && this.showTree) {
+      return {
+        q: this.constructURL(iterationId),
+        showTree: this.showTree,
+        showCompleted: this.showCompleted
+      }
+    } else if (this.showTree) {
+      return {
+        q: this.constructURL(iterationId),
+        showTree: this.showTree
+      }
+    } else if (this.showCompleted) {
+      return {
+        q: this.constructURL(iterationId),
+        showCompleted: this.showCompleted
+      }
+    } else {
+      return {
+        q: this.constructURL(iterationId)
+      }
+    }
+  }
+
   getAndfilterIterations() {
     if (this.takeFromInput) {
       // do not display the root iteration on the iteration panel.
