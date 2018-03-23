@@ -40,7 +40,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   @ViewChild('detailHeader') detailHeader: ElementRef;
   @ViewChild('detailContent') detailContent: ElementRef;
   @ViewChild('inlineInput') inlineInput: InlineInputComponent;
-  @ViewChild('markdown') markdown: MarkdownComponent;
+  @ViewChild('descMarkdown') descMarkdown: MarkdownComponent;
 
   private spaceSource = this.store
     .select('listPage')
@@ -191,7 +191,10 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
         this.loadingIteration = false;
         this.loadingLabels = false;
         
-        if(this.markdown) this.markdown.closeClick();
+        if((this.detailContext === 'preview') 
+        && (this.descMarkdown)) {
+          this.descMarkdown.closeClick();
+        }
         
         // set title on update
         if (this.titleCallback !== null) {

@@ -256,7 +256,17 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async openDescriptionBox(){
-    await this.descriptionEditIcon.clickWhenReady()
+    await this.descriptionDiv.clickWhenReady();
+    await this.descriptionEditIcon.clickWhenReady();
+  }
+
+  async isSaveButtonDisplayed() {
+    try {
+      return await this.descriptionSaveButton.isDisplayed();
+    } 
+    catch (exception) {
+      return false;
+    }
   }
 
   async removeAssignee(assignee: string) {

@@ -40,14 +40,14 @@ describe('planner quick preview tests', () => {
     expect(await planner.quickPreview.hasLinkedItem(c.workItemTitle4)).toBeTruthy();
   });
 
-  it('description box should not be open for wis',async () =>{
+  it('description box should not be open for wis',async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.openDescriptionBox();
-    expect(await planner.quickPreview.descriptionSaveButton.isDisplayed()).toBeTruthy();
+    expect(await planner.quickPreview.isSaveButtonDisplayed()).toBeTruthy();
   
     // Open another WI(Note: the description box is still in edit mode)
     await planner.workItemList.clickWorkItem(c.workItemTitle2);
     // The description box should not be in edit mode 
-    expect(await planner.quickPreview.descriptionSaveButton.isDisplayed()).toBeFalsy();
+    expect(await planner.quickPreview.isSaveButtonDisplayed()).toBeFalsy();
   })
 });
