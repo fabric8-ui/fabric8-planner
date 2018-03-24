@@ -28,6 +28,7 @@ export class CustomQueryService {
    * @return Observable of FilterModel[] - Array of filters
    */
   getCustomQueries(): Observable<CustomQueryModel[]> {
+    console.log('********* get custom queries');
     if (this._currentSpace) {
       if (this.customQueries.length > 0 ) {
         return Observable.of(this.customQueries);
