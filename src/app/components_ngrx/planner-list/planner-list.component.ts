@@ -160,8 +160,8 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
           this.iterationSource.take(1),
           this.labelSource.take(1),
           this.collaboratorSource,
-          this.routeSource,
-          this.customQuerySource
+          this.customQuerySource,
+          this.routeSource
         );
       })
       .subscribe(([
@@ -173,6 +173,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         customQuerySource,
         queryParams
       ]) => {
+        this.uiLockedSidebar = false;
         this.uiLockedList = true;
         let exp = this.filterService.queryToJson(queryParams.q);
         // Check for tree view
@@ -201,8 +202,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         }))
       })
     );
-
-
 
     const queryParams = this.route.snapshot.queryParams;
     if(Object.keys(queryParams).length === 0 ||

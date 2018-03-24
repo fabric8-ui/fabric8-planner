@@ -568,14 +568,14 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   saveFilters() {
-    let exp = this.filterService.queryToJson(this.queryExp);
-    console.log(JSON.stringify(exp));
-    //let exp = JSON.parse(this.queryExp);
-    console.log('******', exp);
+    //let exp = JSON.stringify(this.filterService.queryToJson(this.queryExp));
+    let exp = this.queryExp;
+    let e1 = this.filterService.queryToJson(exp);
+    let str = '' + JSON.stringify(e1);
     let customQuery = {
         'attributes':
       {
-        'fields': exp,
+        'fields': str,
         'title': 'query 10'
       },
       'type': 'queries'

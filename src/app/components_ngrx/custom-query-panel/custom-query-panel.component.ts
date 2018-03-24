@@ -41,6 +41,7 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    console.log('abc');
     const spaceData = this.store
       .select('listPage')
       .select('space')
