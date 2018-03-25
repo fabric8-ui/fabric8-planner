@@ -1,0 +1,16 @@
+<div class="f8-group-filter" *ngFor="let item of customQueries">
+  <a
+    class="f8-group-filter__type"
+    id="{{item.group}}"
+    [routerLink]="[]"
+    [queryParams]="showTree ?
+      { q: constructUrl(item.attributes.fields), showTree: showTree } :
+      { q: constructUrl(item.attributes.fields) }"
+    [class.selected]="item.selected"
+  >
+    <span
+      [class.dib]="sidePanelOpen"
+      [class.hide]="!sidePanelOpen">
+    {{ item.attributes.title }}</span>
+  </a>
+</div>

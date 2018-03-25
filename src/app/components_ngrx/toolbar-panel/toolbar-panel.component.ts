@@ -42,8 +42,10 @@ import { GroupTypeUI } from './../../models/group-types.model';
 // ngrx stuff
 import { Store } from '@ngrx/store';
 import { AppState } from './../../states/app.state';
+import * as CustomQueryActions from './../../actions/custom.query.actions';
 import * as FilterActions from './../../actions/filter.actions';
 import * as SpaceActions from './../../actions/space.actions';
+import { CustomQueryModel } from 'src/app/models/custom.query.model';
 
 
 @Component({
@@ -124,6 +126,10 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private isShowTreeOn: boolean = false;
 
+  private routeSource = this.route.queryParams
+    .filter(p => p.hasOwnProperty('q'));
+  private queryExp;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -153,6 +159,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.context !== 'boardview') {
       this.allowedFilterKeys.push('state');
     }
+    this.routeSource.subscribe(queryParam => this.queryExp = queryParam.q);
   }
 
   ngAfterViewInit(): void {
@@ -204,7 +211,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     /*
      * The current version of the patternfly filter dropdown does not fully support the async
      * update of the filterConfig.fields fields set. It does not refresh the widget on field
-     * array change. The current workaround is to add a "dummy" entry "Select Filter.." as
+     * array change. The current workaround is to add a 'dummy' entry 'Select Filter..' as
      * the first entry in the fields array. When the user selects a new value from the
      * filter list, the implementation works subsequently.
      */
@@ -552,6 +559,24 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       relativeTo: this.route,
       queryParams: queryParams
     });
+  }
+
+  saveFilters() {
+    //let exp = JSON.stringify(this.filterService.queryToJson(this.queryExp));
+    let exp = this.queryExp;
+    let e1 = this.filterService.queryToJson(exp);
+    let str = '' + JSON.stringify(e1);
+    let customQuery = {
+        'attributes':
+      {
+        'fields': str,
+        'title': 'query 10'
+      },
+      'type': 'queries'
+
+    };
+    console.log('customQuery', customQuery);
+    this.store.dispatch(new CustomQueryActions.Add(customQuery));
   }
 
   showTreeToggle(e) {
