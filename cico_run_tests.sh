@@ -38,6 +38,7 @@ docker build -t fabric8-planner-builder .
 # Chrome crashes on low size of /dev/shm. We need the --shm-size=256m flag.
 CID=$(docker run --detach=true \
     --shm-size=256m \
+    -u $(shell id -u $(USER)):$(shell id -g $(USER)) \
     -v $(pwd)/fabric8-ui-dist:/home/fabric8/fabric8-planner/fabric8-ui-dist:Z \
     --cap-add=SYS_ADMIN \
     -t fabric8-planner-builder)
