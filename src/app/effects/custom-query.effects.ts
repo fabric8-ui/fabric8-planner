@@ -45,7 +45,7 @@ export class CustomQueryEffects {
         })
     })
 
-    @Effect() addCustomQuery$ = this.actions$
+  @Effect() addCustomQuery$ = this.actions$
     .ofType<CustomQueryActions.Add>(CustomQueryActions.ADD)
     .ofType(CustomQueryActions.ADD)
     .switchMap((action: CustomQueryActions.Add) => {

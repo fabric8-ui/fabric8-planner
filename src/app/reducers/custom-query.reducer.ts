@@ -21,6 +21,10 @@ export const CustomQueryReducer: ActionReducer<CustomQueryState> =
         return state;
       }
 
+      case CustomQueryActions.ADD_SUCCESS: {
+        return [...state, action.payload];
+      }
+
       default: {
         return state;
       }

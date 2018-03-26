@@ -50,3 +50,5 @@ export type All
   = Get
   | GetSuccess
   | GetError
+  | AddSuccess
+  | AddError
