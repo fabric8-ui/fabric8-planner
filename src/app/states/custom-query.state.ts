@@ -1,4 +1,4 @@
-import { CustomQueryModel } from './../models/custom.query.model';
+import { CustomQueryModel } from './../models/custom-query.model';
 
 export type CustomQueryState = CustomQueryModel[];
 

@@ -8,14 +8,13 @@ import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core';
 import { AuthenticationService } from 'ngx-login-client';
 import { Space, Spaces } from 'ngx-fabric8-wit';
 
-import { CustomQueryService } from '../../services/custom-query.service';
-import { CustomQueryModel } from '../../models/custom.query.model';
+import { CustomQueryModel } from '../../models/custom-query.model';
 import { FilterService } from '../../services/filter.service';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
 import { AppState } from './../../states/app.state';
-import * as CustomQueryActions from './../../actions/custom.query.actions';
+import * as CustomQueryActions from './../../actions/custom-query.actions';
 
 @Component({
   selector: 'custom-query',
@@ -33,7 +32,6 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthenticationService,
-    private customQueryService: CustomQueryService,
     private filterService: FilterService,
     private route: ActivatedRoute,
     private spaces: Spaces,

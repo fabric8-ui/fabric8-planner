@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { WIT_API_URL, Space, Spaces } from 'ngx-fabric8-wit';
 import { HttpService } from './http-service';
-import { CustomQueryModel, CustomQueryService as CQService } from '../models/custom.query.model';
+import { CustomQueryModel, CustomQueryService as CQService } from '../models/custom-query.model';
 
 @Injectable()
 export class CustomQueryService {

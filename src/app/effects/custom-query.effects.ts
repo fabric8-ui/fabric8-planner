@@ -2,12 +2,12 @@ import { Store } from '@ngrx/store';
 import { AppState } from './../states/app.state';
 import { Actions, Effect } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
-import * as CustomQueryActions from './../actions/custom.query.actions';
+import * as CustomQueryActions from './../actions/custom-query.actions';
 import { Observable } from 'rxjs';
 import {
   CustomQueryService
 } from './../services/custom-query.service';
-import { CustomQueryModel } from './../models/custom.query.model';
+import { CustomQueryModel } from './../models/custom-query.model';
 import {
   Notification,
   Notifications,
