@@ -42,10 +42,10 @@ import { GroupTypeUI } from './../../models/group-types.model';
 // ngrx stuff
 import { Store } from '@ngrx/store';
 import { AppState } from './../../states/app.state';
-import * as CustomQueryActions from './../../actions/custom.query.actions';
+import * as CustomQueryActions from './../../actions/custom-query.actions';
 import * as FilterActions from './../../actions/filter.actions';
 import * as SpaceActions from './../../actions/space.actions';
-import { CustomQueryModel } from 'src/app/models/custom.query.model';
+import { CustomQueryModel } from 'src/app/models/custom-query.model';
 
 
 @Component({
@@ -567,13 +567,11 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     let e1 = this.filterService.queryToJson(exp);
     let str = '' + JSON.stringify(e1);
     let customQuery = {
-        'attributes':
-      {
+      'attributes': {
         'fields': str,
         'title': 'query 10'
       },
       'type': 'queries'
-
     };
     console.log('customQuery', customQuery);
     this.store.dispatch(new CustomQueryActions.Add(customQuery));

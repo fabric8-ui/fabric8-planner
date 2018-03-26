@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { CustomQueryModel, CustomQueryService as CQService} from './../models/custom.query.model';
+import { CustomQueryModel, CustomQueryService as CQService} from './../models/custom-query.model';
 
 export const ADD = '[customQuery] Add';
 export const ADD_SUCCESS = '[customQuery] AddSuccess';

@@ -2,7 +2,7 @@ import {
   State,
   ActionReducer
 } from '@ngrx/store';
-import * as CustomQueryActions from './../actions/custom.query.actions';
+import * as CustomQueryActions from './../actions/custom-query.actions';
 import {
   CustomQueryState,
   initialState

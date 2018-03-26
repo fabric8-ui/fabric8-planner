@@ -32,7 +32,6 @@ import { datatableColumn } from './../../components/planner-list/datatable-confi
 import { Store } from '@ngrx/store';
 import { AppState } from './../../states/app.state';
 // import * as actions from './../../actions/index.actions';
-import * as CustomQueryActions from './../../actions/custom.query.actions';
 import * as IterationActions from './../../actions/iteration.actions';
 import * as GroupTypeActions from './../../actions/group-type.actions';
 import * as SpaceActions from './../../actions/space.actions';
@@ -94,9 +93,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private workItemSource = this.store
     .select('listPage')
     .select('workItems');
-  private customQuerySource = this.store
-    .select('listPage')
-    .select('customQueries');
   private routeSource = this.route.queryParams
     .filter(p => p.hasOwnProperty('q'));
   private quickAddWorkItemTypes: WorkItemTypeUI[] = [];
@@ -159,7 +155,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
           this.iterationSource.take(1),
           this.labelSource.take(1),
           this.collaboratorSource,
-          this.customQuerySource,
           this.routeSource
         );
       })
@@ -169,7 +164,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         iterationSource,
         labelSource,
         collaboratorSource,
-        customQuerySource,
         queryParams
       ]) => {
         this.uiLockedSidebar = false;
