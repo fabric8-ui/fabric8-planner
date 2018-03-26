@@ -78,17 +78,14 @@ if (ciDeploy){
                     openShiftProject = prj
                     githubProject = project
                 }
-                echo route
             }
-        }
-        fabric8UINode {
-            checkout scm
             stage("e2e Tests") {
                 container('ui') {
                     sh 'set +x && cd tests/ && DEBUG=true BASE_URL=https://${route} REFRESH_TOKEN=$PLANNER_TOKEN ./run_e2e_tests.sh'
                 }
             }
         }
+
         stage('notify'){
             def changeAuthor = env.CHANGE_AUTHOR
             if (!changeAuthor){
