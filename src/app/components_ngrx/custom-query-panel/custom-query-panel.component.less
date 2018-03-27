@@ -1,39 +1,57 @@
-@import (reference) '../../../assets/stylesheets/shared/_variables';
+@import (reference) '../../../assets/stylesheets/_base';
+@import (reference) '../../../assets/stylesheets/shared/_utilities';
 
-.f8-group-filter {
-  // float: left;
-  // width: 100%;
-  display: block;
-  border-bottom: 1px solid;
-  border-bottom-color: @color-pf-black;
-  &__type {
-    // float: left;
-    // width: 100%;
+.f8-cf {
+  color: @color-pf-white;
+  background-color: @color-pf-black-900;
+  &__panel {
     display: block;
-    padding: 20px 15px;
-    font-size: 15px;
-    line-height: 15px;
-    color: @color-pf-white;
-    text-decoration: none;
-    border-left: 4px solid;
-    border-left-color: transparent;
-    &:hover {
-      color: @color-pf-white;
-      text-decoration: none;
-      background: @color-pf-black-700;
+    &-hdr {
+      display: block;
+      padding: 20px 15px;
+      border-left: 4px solid;
+      border-left-color: transparent;
+      cursor: default; // as item is not clickable
+      &.nohover {
+        h3 {
+          color: @color-pf-white;
+        }
+      }
+      &:not(.nohover):hover {
+        background: @color-pf-black-700;
+      }
     }
-    &:visited, &:focus {
-      color: @color-pf-white;
-      text-decoration: none;
+    ul {
+      list-style: none;
+      padding-left: 0px;
+      li {
+        display: block;
+        border-left: 4px solid transparent;
+        &:hover {
+          border-left-color: @color-pf-blue;
+          background-color: @color-pf-black-800;
+        }
+      }
     }
   }
-  h3 {
-    padding: 20px;
+  &__container {
+    cursor: pointer;
+    a {
+      color: @color-pf-white;
+      margin-left: 40px;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+    .fa {
+      width: 15px;
+    }
+    &:focus {
+      outline: none;
+    }
   }
-}
-
-.selected {
-  background-color: @color-pf-black-700;
-  border-left: 4px solid;
-  border-left-color: @color-pf-blue;
+  &--selected {
+    border-left-color: @color-pf-blue !important;
+    background-color: @color-pf-black-800;
+  }
 }

@@ -29,6 +29,7 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
   private spaceId;
   private eventListeners: any[] = [];
   private customQueries: CustomQueryModel[] = [];
+  private startedCheckingURL: boolean = false;
 
   constructor(
     private auth: AuthenticationService,
@@ -39,24 +40,18 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('abc');
-    const spaceData = this.store
-      .select('listPage')
-      .select('space')
-      .filter(space => space !== null);
-
     const customQueriesData = this.store
       .select('listPage')
       .select('customQueries')
-      //.filter(customQueries => !!customQueries.length);
 
     this.eventListeners.push(
-      Observable.combineLatest(
-        customQueriesData,
-        spaceData
-      ).subscribe(([customQueries, space]) => {
+      customQueriesData
+      .subscribe((customQueries) => {
+        console.log('####-1', customQueries);
         this.customQueries = customQueries;
-        this.spaceId = space.id;
+        if (!this.startedCheckingURL && !!this.customQueries.length) {
+          this.checkURL();
+        }
       })
     );
   }
@@ -69,6 +64,27 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
     let jsonAttributes = JSON.parse(attributes);
     let jsonQuery = this.filterService.jsonToQuery(jsonAttributes);
     return jsonQuery;
+  }
+
+  checkURL() {
+    this.startedCheckingURL = true;
+    this.eventListeners.push(
+      this.route.queryParams.subscribe(val => {
+        if (val.hasOwnProperty('q')) {
+          const urlQuery = val['q'];
+          let foundMatch = false;
+          this.customQueries.forEach(q => {
+            if (this.constructUrl(q.attributes.fields) === urlQuery) {
+              foundMatch = true;
+              this.store.dispatch(new CustomQueryActions.Select(q));
+            }
+          });
+          if (!foundMatch) {
+            this.store.dispatch(new CustomQueryActions.SelectNone());
+          }
+        }
+      })
+    );
   }
 
 }
