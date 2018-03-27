@@ -114,6 +114,7 @@
       <div class="col-xs-12 col-sm-12 col-md-12 margin-top-15 padding-0">
         <div class="form-horizontal">
           <f8-inlineinput
+            #inlineInput
             id="wi-title-div"
             [disabled]="false"
             [value]="workItem.title"
@@ -270,7 +271,7 @@
                 [rawText]="workItem.description"
                 [renderedText]="workItem.descriptionRendered"
                 (onSaveClick)="descUpdate($event)"
-                (showPreview)="showPreview($event)">
+                (showPreview)="showPreview($event)" #descMarkdown>
               </f8-markdown>
             </div>
           </section>
