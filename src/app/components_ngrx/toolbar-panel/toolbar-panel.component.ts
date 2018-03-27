@@ -45,7 +45,6 @@ import { AppState } from './../../states/app.state';
 import * as CustomQueryActions from './../../actions/custom-query.actions';
 import * as FilterActions from './../../actions/filter.actions';
 import * as SpaceActions from './../../actions/space.actions';
-import { CustomQueryModel } from 'src/app/models/custom-query.model';
 
 
 @Component({
