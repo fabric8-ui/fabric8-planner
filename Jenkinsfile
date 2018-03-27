@@ -68,7 +68,7 @@ if (ciDeploy){
     prj = prj.toLowerCase()
     def route
     timeout(time: 1, unit: 'HOURS') {
-        deployOpenShiftNode(openshiftConfigSecretName: 'fabric8-intcluster-config'){
+        deployOpenShiftNode(openshiftConfigSecretName: 'fabric8-intcluster-config', inheritFrom: 'fabric8UITemplate'){
             stage("deploy ${prj}"){
                 route = deployOpenShiftSnapshot{
                     mavenRepo = 'http://central.maven.org/maven2/io/fabric8/online/apps/fabric8-ui'
@@ -80,7 +80,7 @@ if (ciDeploy){
                 }
             }
             stage("e2e Tests") {
-                container('clients') {
+                container('ui') {
                     checkout scm
                     sh 'set +x && cd tests/ && DEBUG=true BASE_URL=https://${route} REFRESH_TOKEN=$PLANNER_TOKEN ./run_e2e_tests.sh'
                 }
