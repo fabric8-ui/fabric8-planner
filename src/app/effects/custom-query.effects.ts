@@ -27,55 +27,67 @@ export class CustomQueryEffects {
 
   @Effect() GetCustomQueries$: Observable<Action> = this.actions$
     .ofType(CustomQueryActions.GET)
-    .switchMap(action => {
-      return this.customQueryService.getCustomQueries()
-        .map((types: CustomQueryModel[]) => {
-          return new CustomQueryActions.GetSuccess(types);
+    .withLatestFrom(this.store.select('listPage').select('space'))
+    .switchMap(([action, space]) => {
+      return this.customQueryService.getCustomQueries(
+        space.links.self + '/queries'
+      )
+      .map((types: CustomQueryModel[]) => {
+        types = types.map((t) => {
+          t['selected'] = false;
+          return t;
         })
-        .catch(e => {
-          try {
-            this.notifications.message({
-              message: 'Problem in fetching custom queries.',
-              type: NotificationType.DANGER
-            } as Notification);
-          } catch (e) {
-            console.log('Problem in fetching custom queries');
-          }
-          return Observable.of(new CustomQueryActions.GetError());
-        })
+        return new CustomQueryActions.GetSuccess(types);
+      })
+      .catch(e => {
+        try {
+          this.notifications.message({
+            message: 'Problem in fetching custom queries.',
+            type: NotificationType.DANGER
+          } as Notification);
+        } catch (e) {
+          console.log('Problem in fetching custom queries');
+        }
+        return Observable.of(new CustomQueryActions.GetError());
+      })
     })
 
   @Effect() addCustomQuery$ = this.actions$
     .ofType<CustomQueryActions.Add>(CustomQueryActions.ADD)
     .ofType(CustomQueryActions.ADD)
-    .switchMap((action: CustomQueryActions.Add) => {
+    .withLatestFrom(this.store.select('listPage').select('space'))
+    .switchMap(([action, space]) => {
       let payload = action.payload;
-      return this.customQueryService.create(payload)
-        .map(customQuery => {
-          let customQueryName = customQuery.attributes.title;
-          if (customQueryName.length > 15) {
-            customQueryName = customQueryName.slice(0, 15) + '...';
-          }
-          try {
-            this.notifications.message({
-              message: `${customQueryName} added.`,
-              type: NotificationType.SUCCESS
-            } as Notification);
-          } catch (e) {
-            console.log('Custom query added.')
-          }
-          return new CustomQueryActions.AddSuccess(customQuery);
-        })
-        .catch(() => {
-          try {
-            this.notifications.message({
-              message: `There was some problem creating custom query.`,
-              type: NotificationType.DANGER
-            } as Notification);
-          } catch (e) {
-            console.log('There was some problem creating custom query.')
-          }
-          return Observable.of(new CustomQueryActions.AddError());
-        })
+      return this.customQueryService.create(
+        payload,
+        space.links.self + '/queries'
+      )
+      .map(customQuery => {
+        customQuery['selected'] = true;
+        let customQueryName = customQuery.attributes.title;
+        if (customQueryName.length > 15) {
+          customQueryName = customQueryName.slice(0, 15) + '...';
+        }
+        try {
+          this.notifications.message({
+            message: `${customQueryName} added.`,
+            type: NotificationType.SUCCESS
+          } as Notification);
+        } catch (e) {
+          console.log('Custom query added.')
+        }
+        return new CustomQueryActions.AddSuccess(customQuery);
+      })
+      .catch(() => {
+        try {
+          this.notifications.message({
+            message: `There was some problem creating custom query.`,
+            type: NotificationType.DANGER
+          } as Notification);
+        } catch (e) {
+          console.log('There was some problem creating custom query.')
+        }
+        return Observable.of(new CustomQueryActions.AddError());
+      })
     })
 }
