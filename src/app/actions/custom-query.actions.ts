@@ -7,6 +7,8 @@ export const ADD_ERROR = '[customQuery] AddError';
 export const GET = '[customQuery] Get';
 export const GET_SUCCESS = '[customQuery] GetSuccess';
 export const GET_ERROR = '[customQuery] GetError';
+export const SELECT = '[customQuery] Select';
+export const SELECT_NONE = '[customQuery] Select None';
 
 export class Add implements Action {
   payload: CustomQueryModel;
@@ -46,9 +48,24 @@ export class GetError implements Action {
   readonly type = GET_ERROR;
 }
 
+export class Select implements Action {
+  payload: CustomQueryModel;
+  constructor(payload: CustomQueryModel) {
+    this.payload = payload;
+  };
+  readonly type = SELECT;
+}
+
+export class SelectNone implements Action {
+  readonly type = SELECT_NONE;
+}
+
+
 export type All
   = Get
   | GetSuccess
   | GetError
   | AddSuccess
   | AddError
+  | Select
+  | SelectNone
