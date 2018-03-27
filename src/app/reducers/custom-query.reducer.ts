@@ -25,6 +25,22 @@ export const CustomQueryReducer: ActionReducer<CustomQueryState> =
         return [...state, action.payload];
       }
 
+      case CustomQueryActions.SELECT: {
+        const newState = state.map(q => {
+          q.selected = q.id === action.payload.id;
+          return q;
+        });
+        return [...newState];
+      }
+
+      case CustomQueryActions.SELECT_NONE: {
+        const newState = state.map(q => {
+          q.selected = false;
+          return q;
+        });
+        return [...newState];
+      }
+
       default: {
         return state;
       }
