@@ -5,6 +5,10 @@ def project = 'fabric8-ui/fabric8-planner'
 def ciDeploy = false
 def tempVersion
 def imageName
+def userSecret = 'planner-team-test-osio-token'
+def testEnvVars = [
+    secretEnvVar(secretName: userSecret, key: 'PLANNER_TOKEN', secretKey: 'planner-test-osio-token')
+]
 node{
     properties([
         disableConcurrentBuilds()
