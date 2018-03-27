@@ -84,7 +84,7 @@ if (ciDeploy){
                 }
             }
             stage("e2e Tests") {
-                container('ui') {
+                container('clients') {
                     checkout scm
                     sh 'set +x && cd tests/ && DEBUG=true BASE_URL=https://${route} REFRESH_TOKEN=$PLANNER_TOKEN ./run_e2e_tests.sh'
                 }
