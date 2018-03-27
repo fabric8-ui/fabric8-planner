@@ -94,6 +94,9 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     'title'
   ];
 
+  showSaveFilterButton: boolean = true;
+  isFilterSaveOpen: boolean = false;
+
   // the type of the list is changed (Hierarchy/Flat).
   currentListType: string = 'Hierarchy';
 
@@ -162,6 +165,25 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       this.allowedFilterKeys.push('state');
     }
     this.routeSource.subscribe(queryParam => this.queryExp = queryParam.q);
+
+    const customQueriesData = this.store
+      .select('listPage')
+      .select('customQueries')
+      .filter(customQueries => !!customQueries.length);
+
+    this.eventListeners.push(
+      customQueriesData.subscribe(queries => {
+        const selected = queries.find(q => q.selected);
+        if (selected) {
+          // if any selected saved filter found
+          // then save filter button will not be shown
+          // to avoid duplication
+          this.showSaveFilterButton = false;
+        } else {
+          this.showSaveFilterButton = true;
+        }
+      })
+    );
   }
 
   ngAfterViewInit(): void {
@@ -567,20 +589,22 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  saveFilters() {
-    //let exp = JSON.stringify(this.filterService.queryToJson(this.queryExp));
-    let exp = this.queryExp;
-    let e1 = this.filterService.queryToJson(exp);
-    let str = '' + JSON.stringify(e1);
-    let customQuery = {
-      'attributes': {
-        'fields': str,
-        'title': 'query 10'
-      },
-      'type': 'queries'
-    };
-    console.log('customQuery', customQuery);
-    this.store.dispatch(new CustomQueryActions.Add(customQuery));
+  saveFilters(filterName: string) {
+    if (filterName !== '') {
+      //let exp = JSON.stringify(this.filterService.queryToJson(this.queryExp));
+      let exp = this.queryExp;
+      let e1 = this.filterService.queryToJson(exp);
+      let str = '' + JSON.stringify(e1);
+      let customQuery = {
+        'attributes': {
+          'fields': str,
+          'title': filterName
+        },
+        'type': 'queries'
+      };
+      this.store.dispatch(new CustomQueryActions.Add(customQuery));
+      this.closeFilterSave();
+    }
   }
 
   showTreeToggle(e) {
@@ -633,5 +657,13 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.isShowCompletedOn = false;
     }
+  }
+
+  saveFilterDropdownChange(value: boolean) {
+    this.isFilterSaveOpen = value;
+  }
+
+  closeFilterSave() {
+    this.isFilterSaveOpen = false;
   }
 }
