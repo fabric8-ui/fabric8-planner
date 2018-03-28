@@ -70,15 +70,6 @@ fabric8UITemplate{
                             sh './scripts/fix-git-repo.sh'
                         }
 
-                        stage('Setup & Build'){
-                            sh 'npm install'
-                            sh 'npm run build'
-                        }
-
-                        stage('Unit Tests'){
-                            sh 'npm run tests -- --unit'
-                        }
-
                         stage('Functional Tests'){
                             container('ui'){
                                 sh '''
