@@ -28,7 +28,7 @@ describe('Iteration test', () => {
 
   fit('updating iteration should update workitem associated to iteration', async() => {
     expect(await planner.workItemList.iterationText(c.workItemTitle1)).toBe('Iteration 0');
-    await planner.sidePanel.selectIterationKebab('Iteration 0');
+    await planner.sidePanel.selectIterationKebab();
     await planner.sidePanel.openIterationDialogue();
     await planner.iteration.editIteration(c.iteration3);
     expect(await planner.workItemList.iterationText(c.workItemTitle1)).toBe('Iteration 0123');

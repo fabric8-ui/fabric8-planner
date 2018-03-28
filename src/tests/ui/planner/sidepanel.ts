@@ -12,6 +12,7 @@ export class SidePanel extends ui.BaseElement {
   iterationList = new ui.BaseElementArray(this.$$('.f8-itr__tree .f8-itr-name'),'Iteration list');
   iterationKebab = new ui.Button(this.$('.dropdown-toggle'), 'Side panel Iteration Kebab Dropdown');
   editIteration = new ui.Clickable(this.element(by.cssContainingText('.f8-itr .dropdown.open ul>li','Edit')), 'Iteration Dropdown Edit Option');
+  iterationToggle = new ui.Clickable(this.$$('.f8-itr .dropdown-toggle').first(),'iterationToggle');
   
 
   constructor(ele: ElementFinder, name: string = 'WorkItem List page Side Panel') {
@@ -51,10 +52,9 @@ export class SidePanel extends ui.BaseElement {
     return iterationList.indexOf(iteration) > -1;
   }
 
-  // async selectIterationKebab(iterationName: string) {
-  //   let iteration = new ui.BaseElement(element(By.xpath("//iteration-list-entry[.//span[text()=' "+ iterationName +" ']]")), "Iteration: " + iterationName)
-  //   await iteration.ready()//.iterationKebab.clickWhenReady();
-  // }
+  async selectIterationKebab() {
+    this.iterationToggle.clickWhenReady();
+  }
 
   async openIterationDialogue() {
     await this.editIteration.clickWhenReady();
