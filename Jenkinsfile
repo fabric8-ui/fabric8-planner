@@ -15,9 +15,11 @@ fabric8UITemplate{
         ws {
             timeout(time: 1, unit: 'HOURS') {
                 checkout scm
+
+                ci()
+
                 if (utils.isCI()){
 
-                    ci()
                     tempVersion = buildF8UI(project)
 
                     imageName = "fabric8/fabric8-ui:${tempVersion}"
@@ -63,7 +65,6 @@ fabric8UITemplate{
                     sh "git pull"
                     sh "git remote set-url origin git@github.com:${project}.git"
 
-                    ci()
 
                     def branch
                     container('ui'){
