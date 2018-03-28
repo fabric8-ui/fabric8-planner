@@ -71,13 +71,12 @@ fabric8UITemplate{
                         }
 
                         stage('Functional Tests'){
-                            container('ui'){
-                                sh '''
-                                npm cache clean --force
-                                npm cache verify
-                                npm install
-                                DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh smokeTest
-                            '''
+                            sh '''
+                               npm cache clean --force
+                               npm cache verify
+                               npm install
+                               DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh smokeTest
+                               '''
                             }
                         }
 
