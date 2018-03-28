@@ -16,8 +16,9 @@ fabric8UITemplate{
             timeout(time: 1, unit: 'HOURS') {
                 checkout scm
 
-                ci()
-
+                container('ui') {
+                    ci()
+                }
                 if (utils.isCI()){
 
                     tempVersion = buildF8UI(project)
@@ -105,32 +106,26 @@ fabric8UITemplate{
 }
 
 def ci (){
-    stage('Setup & Build'){
-        container('ui'){
-            sh 'npm cache clean --force'
-            sh 'npm cache verify'
-            sh 'npm install'
-            sh 'npm run build'
-            sh 'npm pack dist/'
-        }
+    stage('Setup & Build') {
+        sh 'npm cache clean --force'
+        sh 'npm cache verify'
+        sh 'npm install'
+        sh 'npm run build'
+        sh 'npm pack dist/'
     }
 
     stage('Unit Tests'){
-        container('ui'){
-            sh 'npm run tests -- --unit'
-            sh 'scripts/upload_to_codecov.sh'
-        }
+        sh 'npm run tests -- --unit'
+        sh 'scripts/upload_to_codecov.sh'
     }
 
     stage('Functional Tests'){
-        container('ui'){
-            sh '''
-            npm cache clean --force
-            npm cache verify
-            npm install
-            DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
-        '''
-        }
+        sh '''
+           npm cache clean --force
+           npm cache verify
+           npm install
+           DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
+           '''
     }
 }
 
