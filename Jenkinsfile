@@ -61,10 +61,6 @@ fabric8UITemplate{
                     }
 
                 } else if (utils.isCD()){
-                    sh "git checkout master"
-                    sh "git pull"
-                    sh "git remote set-url origin git@github.com:${project}.git"
-
 
                     def branch
                     container('ui'){
