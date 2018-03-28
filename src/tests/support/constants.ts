@@ -7,6 +7,7 @@ export class Constants {
   attribute4 = "Assignees";
   dropdownIteration1 = 'Iteration 0';
   dropdownIteration2 = 'Iteration 1';
+  updateIteration = 'Iteration 0123'
   iteration1 = '/Root Iteration/Iteration 0';
   iteration2 = '/Root Iteration/Iteration 1';
   iteration3 = '123';

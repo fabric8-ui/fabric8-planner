@@ -26,13 +26,13 @@ describe('Iteration test', () => {
     expect(await planner.sidePanel.hasIteration(c.newIteration)).toBeTruthy();
   });
 
-  fit('updating iteration should update workitem associated to iteration', async() => {
+  it('updating iteration should update workitem associated to iteration', async() => {
     await planner.sidePanel.ready();
-    expect(await planner.workItemList.iterationText(c.workItemTitle1)).toBe('Iteration 0');
-    await planner.sidePanel.selectIterationKebab('Iteration 0');
+    expect(await planner.workItemList.iterationText(c.workItemTitle1)).toBe(c.dropdownIteration1);
+    await planner.sidePanel.selectIterationKebab(c.dropdownIteration1);
     await planner.sidePanel.openIterationDialogue();
     await planner.iteration.editIteration(c.iteration3);
-    expect(await planner.workItemList.iterationText(c.workItemTitle1)).toBe('Iteration 0123');
+    expect(await planner.workItemList.iterationText(c.workItemTitle1)).toBe(c.updateIteration);
   });
 
 });
