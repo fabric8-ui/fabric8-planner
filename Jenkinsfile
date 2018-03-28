@@ -8,7 +8,7 @@ def imageName
 node{
     properties([
         disableConcurrentBuilds()
-        ])
+    ])
 }
 
 fabric8UITemplate{
@@ -104,16 +104,15 @@ fabric8UITemplate{
                                npm install
                                DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh smokeTest
                                '''
-                            }
                         }
+                    }
 
-                        stage('Release'){
-                            def published = npmRelease {branch = branch}
-                            def releaseVersion = utils.getLatestVersionFromTag()
+                    stage('Release'){
+                        def published = npmRelease {branch = branch}
+                        def releaseVersion = utils.getLatestVersionFromTag()
 
-                            if (published){
-                                updateDownstreamProjects(releaseVersion)
-                            }
+                        if (published){
+                            updateDownstreamProjects(releaseVersion)
                         }
                     }
                 }
@@ -134,7 +133,7 @@ def updateDownstreamProjects(v){
     pushPackageJSONChangePR{
         propertyName = 'fabric8-planner'
         projects = [
-                'fabric8-ui/fabric8-npm-dependencies'
+            'fabric8-ui/fabric8-npm-dependencies'
         ]
         version = v
         containerName = 'ui'
