@@ -15,7 +15,6 @@ fabric8UITemplate{
         ws {
             timeout(time: 1, unit: 'HOURS') {
                 checkout scm
-                readTrusted 'deploy/release.groovy'
                 if (utils.isCI()){
 
                     ci()
