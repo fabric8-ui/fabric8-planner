@@ -52,8 +52,8 @@ export class SidePanel extends ui.BaseElement {
     return iterationList.indexOf(iteration) > -1;
   }
 
-  async selectIterationKebab() {
-    this.iterationToggle.clickWhenReady();
+  async selectIterationKebab(iterationName: string) {
+    return this.element(By.xpath("//iteration-list-entry[.//span[text()='"+ iterationName +"']]")).$('.dropdown-toggle').click();
   }
 
   async openIterationDialogue() {
