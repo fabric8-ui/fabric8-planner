@@ -2,8 +2,6 @@
 def utils = new io.fabric8.Utils()
 def flow = new io.fabric8.Fabric8Commands()
 def project = 'fabric8-ui/fabric8-planner'
-def tempVersion
-def imageName
 
 node{
     properties([
@@ -56,7 +54,7 @@ fabric8UITemplate{
                     }
 
                     // deploy a snapshot fabric8-ui pod and notify pull request of details
-                    def prj = ('fabric8-ui-'+ env.BRANCH_NAME).toLowerCase()
+                    def prj = ('fabric8-ui-' + env.BRANCH_NAME).toLowerCase()
 
                     def route
                     timeout(time: 10, unit: 'MINUTES') {
@@ -90,9 +88,6 @@ fabric8UITemplate{
 
                 } else if (utils.isCD()){
                     container('ui'){
-
-                        def branch = utils.getBranch()
-
                         stage('Repo Fix'){
                             sh './scripts/fix-git-repo.sh'
                         }
