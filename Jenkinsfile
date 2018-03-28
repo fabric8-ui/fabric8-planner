@@ -17,7 +17,27 @@ fabric8UITemplate{
                 checkout scm
 
                 container('ui') {
-                    ci()
+                    stage('Setup & Build') {
+                        sh 'npm cache clean --force'
+                        sh 'npm cache verify'
+                        sh 'npm install'
+                        sh 'npm run build'
+                        sh 'npm pack dist/'
+                    }
+
+                    stage('Unit Tests'){
+                        sh 'npm run tests -- --unit'
+                        sh 'scripts/upload_to_codecov.sh'
+                    }
+
+                    stage('Functional Tests'){
+                        sh '''
+                           npm cache clean --force
+                           npm cache verify
+                           npm install
+                           DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
+                           '''
+                    }
                 }
                 if (utils.isCI()){
 
@@ -92,30 +112,6 @@ fabric8UITemplate{
                 }
             }
         }
-    }
-}
-
-def ci (){
-    stage('Setup & Build') {
-        sh 'npm cache clean --force'
-        sh 'npm cache verify'
-        sh 'npm install'
-        sh 'npm run build'
-        sh 'npm pack dist/'
-    }
-
-    stage('Unit Tests'){
-        sh 'npm run tests -- --unit'
-        sh 'scripts/upload_to_codecov.sh'
-    }
-
-    stage('Functional Tests'){
-        sh '''
-           npm cache clean --force
-           npm cache verify
-           npm install
-           DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
-           '''
     }
 }
 
