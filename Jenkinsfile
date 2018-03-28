@@ -4,6 +4,7 @@ def flow = new io.fabric8.Fabric8Commands()
 def project = 'fabric8-ui/fabric8-planner'
 def tempVersion
 def imageName
+
 node{
     properties([
         disableConcurrentBuilds()
@@ -40,10 +41,16 @@ fabric8UITemplate{
                     }
                 }
                 if (utils.isCI()){
+                    def imageName = stage('Build fabric8-ui'){
+                        container('ui'){
+                            def tempVersion = buildSnapshotFabric8UI{
+                                pullRequestProject = project
+                            }
 
-                    tempVersion = buildF8UI(project)
+                            return "fabric8/fabric8-ui:${tempVersion}"
+                        }
+                    }
 
-                    imageName = "fabric8/fabric8-ui:${tempVersion}"
                     container('docker'){
                         buildImage(imageName)
                     }
@@ -113,18 +120,6 @@ fabric8UITemplate{
             }
         }
     }
-}
-
-def buildF8UI(project){
-    def tempVersion
-    stage('Build fabric8-ui'){
-        container('ui'){
-            tempVersion = buildSnapshotFabric8UI{
-                pullRequestProject = project
-            }
-        }
-    }
-    return tempVersion
 }
 
 def buildImage(imageName){
