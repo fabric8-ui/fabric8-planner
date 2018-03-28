@@ -28,8 +28,8 @@ fabric8UITemplate{
                     }
 
                     // deploy a snapshot fabric8-ui pod and notify pull request of details
-                    def prj = 'fabric8-ui-'+ env.BRANCH_NAME
-                    prj = prj.toLowerCase()
+                    def prj = ('fabric8-ui-'+ env.BRANCH_NAME).toLowerCase()
+
                     def route
                     timeout(time: 10, unit: 'MINUTES') {
                         deployOpenShiftNode(openshiftConfigSecretName: 'fabric8-intcluster-config'){
