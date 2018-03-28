@@ -61,8 +61,6 @@ fabric8UITemplate{
                     }
 
                 } else if (utils.isCD()){
-
-                    def published
                     container('ui'){
 
                         def branch = utils.getBranch()
@@ -92,19 +90,13 @@ fabric8UITemplate{
                         }
 
                         stage('Release'){
-                            published = npmRelease{
-                                branch = branch
+                            def published = npmRelease {branch = branch}
+                            def releaseVersion = utils.getLatestVersionFromTag()
+
+                            if (published){
+                                updateDownstreamProjects(releaseVersion)
                             }
                         }
-                    }
-
-                    def releaseVersion
-                    container('ui'){
-                        releaseVersion = utils.getLatestVersionFromTag()
-                    }
-
-                    if (published){
-                        updateDownstreamProjects(releaseVersion)
                     }
                 }
             }
