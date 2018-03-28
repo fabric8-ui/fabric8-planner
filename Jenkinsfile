@@ -73,7 +73,36 @@ fabric8UITemplate{
 
                     def published
                     container('ui'){
-                        published = cd(branch)
+
+                        stage('Repo Fix'){
+                            sh './scripts/fix-git-repo.sh'
+                        }
+
+                        stage('Setup & Build'){
+                            sh 'npm install'
+                            sh 'npm run build'
+                        }
+
+                        stage('Unit Tests'){
+                            sh 'npm run tests -- --unit'
+                        }
+
+                        stage('Functional Tests'){
+                            container('ui'){
+                                sh '''
+                                npm cache clean --force
+                                npm cache verify
+                                npm install
+                                DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh smokeTest
+                            '''
+                            }
+                        }
+
+                        stage('Release'){
+                            published = npmRelease{
+                                branch = branch
+                            }
+                        }
                     }
 
                     def releaseVersion
@@ -136,39 +165,6 @@ def buildImage(imageName){
     stage('Snapshot Image'){
         sh "cd fabric8-ui && docker build -t ${imageName} -f Dockerfile.deploy ."
         sh "cd fabric8-ui && docker push ${imageName}"
-    }
-}
-
-def cd (b){
-    stage('Repo Fix'){
-        sh './scripts/fix-git-repo.sh'
-    }
-
-    stage('Setup & Build'){
-        sh 'npm install'
-        sh 'npm run build'
-    }
-
-    stage('Unit Tests'){
-        sh 'npm run tests -- --unit'
-    }
-
-    stage('Functional Tests'){
-        container('ui'){
-            sh '''
-            npm cache clean --force
-            npm cache verify
-            npm install
-            DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh smokeTest
-        '''
-        }
-    }
-
-    stage('Release'){
-        def published = npmRelease{
-            branch = b
-        }
-        return published
     }
 }
 
