@@ -17,15 +17,14 @@ fabric8UITemplate{
             timeout(time: 1, unit: 'HOURS') {
                 checkout scm
                 readTrusted 'deploy/release.groovy'
-                def pipeline = load 'deploy/release.groovy'
                 if (utils.isCI()){
 
-                    pipeline.ci()
-                    tempVersion = pipeline.buildF8UI(project)
+                    ci()
+                    tempVersion = buildF8UI(project)
 
                     imageName = "fabric8/fabric8-ui:${tempVersion}"
                     container('docker'){
-                        pipeline.buildImage(imageName)
+                        buildImage(imageName)
                     }
 
                     ciDeploy = true
@@ -36,7 +35,7 @@ fabric8UITemplate{
                     sh "git pull"
                     sh "git remote set-url origin git@github.com:${project}.git"
 
-                    pipeline.ci()
+                    ci()
 
                     def branch
                     container('ui'){
@@ -45,7 +44,7 @@ fabric8UITemplate{
 
                     def published
                     container('ui'){
-                        published = pipeline.cd(branch)
+                        published = cd(branch)
                     }
 
                     def releaseVersion
@@ -54,7 +53,7 @@ fabric8UITemplate{
                     }
 
                     if (published){
-                        pipeline.updateDownstreamProjects(releaseVersion)
+                        updateDownstreamProjects(releaseVersion)
                     }
                 }
             }
@@ -94,5 +93,101 @@ if (ciDeploy){
                 }
             }
         }
+    }
+}
+
+
+def ci (){
+    stage('Setup & Build'){
+        container('ui'){
+            sh 'npm cache clean --force'
+            sh 'npm cache verify'
+            sh 'npm install'
+            sh 'npm run build'
+            sh 'npm pack dist/'
+        }
+    }
+
+    stage('Unit Tests'){
+        container('ui'){
+            sh 'npm run tests -- --unit'
+            sh 'scripts/upload_to_codecov.sh'
+        }
+    }
+
+    stage('Functional Tests'){
+        container('ui'){
+            sh '''
+            npm cache clean --force
+            npm cache verify
+            npm install
+            DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh
+        '''
+        }
+    }
+}
+
+def buildF8UI(project){
+    def tempVersion
+    stage('Build fabric8-ui'){
+        container('ui'){
+            tempVersion = buildSnapshotFabric8UI{
+                pullRequestProject = project
+            }
+        }
+    }
+    return tempVersion
+}
+
+def buildImage(imageName){
+    stage('Snapshot Image'){
+        sh "cd fabric8-ui && docker build -t ${imageName} -f Dockerfile.deploy ."
+        sh "cd fabric8-ui && docker push ${imageName}"
+    }
+}
+
+def cd (b){
+    stage('Repo Fix'){
+        sh './scripts/fix-git-repo.sh'
+    }
+
+    stage('Setup & Build'){
+        sh 'npm install'
+        sh 'npm run build'
+    }
+
+    stage('Unit Tests'){
+        sh 'npm run tests -- --unit'
+    }
+
+    stage('Functional Tests'){
+        container('ui'){
+            sh '''
+            npm cache clean --force
+            npm cache verify
+            npm install
+            DEBUG=true HEADLESS_MODE=true ./scripts/run-functests.sh smokeTest
+        '''
+        }
+    }
+
+    stage('Release'){
+        def published = npmRelease{
+            branch = b
+        }
+        return published
+    }
+}
+
+def updateDownstreamProjects(v){
+    echo 'we would Update Downstream Projects'
+    pushPackageJSONChangePR{
+        propertyName = 'fabric8-planner'
+        projects = [
+                'fabric8-ui/fabric8-npm-dependencies'
+        ]
+        version = v
+        containerName = 'ui'
+        autoMerge = true
     }
 }
