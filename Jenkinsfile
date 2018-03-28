@@ -62,13 +62,10 @@ fabric8UITemplate{
 
                 } else if (utils.isCD()){
 
-                    def branch
-                    container('ui'){
-                        branch = utils.getBranch()
-                    }
-
                     def published
                     container('ui'){
+
+                        def branch = utils.getBranch()
 
                         stage('Repo Fix'){
                             sh './scripts/fix-git-repo.sh'
