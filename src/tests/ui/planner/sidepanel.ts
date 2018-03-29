@@ -10,7 +10,9 @@ export class SidePanel extends ui.BaseElement {
   iterationDiv = new ui.BaseElement(this.$('.f8-itr'),'Iteration div');
   createIterationButton = new ui.Button(this.iterationDiv.$('#add-iteration-icon'), 'Side panel Add Iteration Button');
   iterationList = new ui.BaseElementArray(this.$$('.f8-itr__tree .f8-itr-name'),'Iteration list');
-  
+  customQueryDiv = new ui.BaseElement(this.$('.f8-cf'),'Custom Query div');
+  customQueryList = new ui.BaseElementArray(this.$$('.f8-cf__tree .f8-cf-name'),'Custom Query list');
+
 
   constructor(ele: ElementFinder, name: string = 'WorkItem List page Side Panel') {
     super(ele, name);
@@ -47,5 +49,11 @@ export class SidePanel extends ui.BaseElement {
     await this.ready();
     let iterationList = await this.iterationList.getTextWhenReady();
     return iterationList.indexOf(iteration) > -1;
+  }
+
+  async hasCustomQuery(query: string): Promise<Boolean> {
+    await this.ready();
+    let customQueryList = await this.customQueryList.getTextWhenReady();
+    return customQueryList.indexOf(query) > -1;
   }
 }

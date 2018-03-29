@@ -16,6 +16,11 @@ export class ToolbarHeader extends BaseElement {
     'Select Filter Condition'
   );
   private clearAllFilter = new ui.Clickable(this.$('.clear-filters'), 'Clear All filters');
+  private saveFilter = new ui.Clickable(this.$('.save-filters'), 'Save');
+  private saveFilterDialog = new BaseElement(this.$('.save-filter-dropdown'));
+  saveFilterBtn = new ui.Button(this.saveFilterDialog.$('.save-btn'),'Save');
+  closeBtn = new ui.Button(this.saveFilterDialog.$('.cancel-btn'),'Cancel');
+  titleTextInput = new ui.TextInput(this.saveFilterDialog.$('input.query-title'), 'Query Title');
 
   constructor(el: ElementFinder, name = 'ToolBar Header') {
     super(el, name);
@@ -41,5 +46,11 @@ export class ToolbarHeader extends BaseElement {
 
   async clickClearAllFilters() {
     await this.clearAllFilter.clickWhenReady();
+  }
+
+  async saveFilters(title) {
+    await this.saveFilter.clickWhenReady();
+    await this.titleTextInput.enterText(title);
+    await this.saveFilterBtn.clickWhenReady();
   }
 }
