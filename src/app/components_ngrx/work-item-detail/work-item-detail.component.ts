@@ -14,6 +14,7 @@ import {
   ElementRef, ViewChild, Renderer2, HostListener
 } from '@angular/core';
 import { InlineInputComponent } from './../../widgets/inlineinput/inlineinput.component';
+import { MarkdownComponent } from 'ngx-widgets';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
@@ -39,6 +40,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   @ViewChild('detailHeader') detailHeader: ElementRef;
   @ViewChild('detailContent') detailContent: ElementRef;
   @ViewChild('inlineInput') inlineInput: InlineInputComponent;
+  @ViewChild('descMarkdown') descMarkdown: MarkdownComponent;
 
   private spaceSource = this.store
     .select('listPage')
@@ -48,21 +50,17 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   private areaSource = this.store
     .select('listPage')
     .select('areas')
-    .do(a => {if (!a.length) this.store.dispatch(new AreaActions.Get())})
     .filter(a => !!a.length);
   private iterationSource = this.store
     .select('listPage')
     .select('iterations')
-    .do(i => {if (!i.length) this.store.dispatch(new IterationActions.Get())})
     .filter(i => !!i.length);
   private labelSource = this.store
     .select('listPage')
     .select('labels')
-    .do(i => {if (i === null) this.store.dispatch(new LabelActions.Get())});
   private collaboratorSource = this.store
     .select('listPage')
     .select('collaborators')
-    .do(i => {if (!i.length) this.store.dispatch(new CollaboratorActions.Get())})
     .filter(c => !!c.length);
   private workItemStateSource = this.store
     .select('listPage')
@@ -71,7 +69,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   private workItemTypeSource = this.store
     .select('listPage')
     .select('workItemTypes')
-    .do(i => {if (!i.length) this.store.dispatch(new WorkItemTypeActions.Get())})
     .filter(w => !!w.length);
   private workItemSource: Observable<WorkItemUI> =
     this.store
@@ -193,7 +190,12 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
         this.loadingArea = false;
         this.loadingIteration = false;
         this.loadingLabels = false;
-
+        
+        if((this.detailContext === 'preview') 
+        && (this.descMarkdown)) {
+          this.descMarkdown.closeClick();
+        }
+        
         // set title on update
         if (this.titleCallback !== null) {
           this.titleCallback(this.workItem.title);
