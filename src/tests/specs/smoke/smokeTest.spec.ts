@@ -130,5 +130,13 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.addCommentAndCancel(c.comment);
     expect(await planner.quickPreview.hasComment('new comment')).toBeFalsy();
   });
+
+  it('Create custom query', async() => {
+    await planner.sidePanel.clickRequirement();
+    await planner.header.selectFilter('State','in progress');
+    await planner.header.saveFilters('Query 1');
+    expect(await planner.sidePanel.hasCustomQuery('Query 1')).toBeTruthy();
+  });
+
 });
 

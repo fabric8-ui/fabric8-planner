@@ -12,7 +12,7 @@
             My Filters ({{ customQueries.length }})
           </h3>
         </div>
-        <ul
+        <ul class="f8-cf__tree"
           [class.show]="sidePanelOpen"
           [class.hide]="!sidePanelOpen">
           <li class="active f8-cf__container padding-v-2 padding-right-15 padding-left-5"
@@ -26,7 +26,7 @@
               [queryParams]="showTree ?
               { q: constructUrl(query.attributes.fields), showTree: showTree } :
               { q: constructUrl(query.attributes.fields) }">
-                <span id="query.attributes.title">
+                <span id="query.attributes.title" class="f8-cf-name">
                     {{ query.attributes.title }}
                 </span>
             </a>
