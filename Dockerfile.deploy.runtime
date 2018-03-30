@@ -1,0 +1,11 @@
+FROM fabric8/fabric8-openshift-nginx:vd83b3a1
+
+USER root
+
+RUN rm -rf /usr/share/nginx/html/
+COPY ./runtime/dist /usr/share/nginx/html
+RUN chmod -R 777 /var/lib/nginx/
+RUN chmod -R 777 /usr/share/nginx/html/
+
+
+USER ${FABRIC8_USER_NAME}
