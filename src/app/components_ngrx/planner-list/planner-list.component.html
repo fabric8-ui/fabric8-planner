@@ -71,8 +71,11 @@
         [autoClose]="false"
         [isOpen]="isTableConfigOpen"
         (isOpenChange)="tableConfigChange($event)">
-        <button class="btn btn-link dropdown-toggle" type="button" dropdownToggle>
-          <span class="fa fa-cog"></span>
+        <button class="btn btn-link dropdown-toggle" 
+          type="button" dropdownToggle>
+          <span class="fa fa-cog"
+            placement="bottom"
+            tooltip="Open Config"></span>
         </button>
         <div class="dropdown-menu-right dropdown-menu f8-wi-list__settings-dropdown" *dropdownMenu>
           <aside>
