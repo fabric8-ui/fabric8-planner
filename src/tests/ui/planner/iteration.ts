@@ -21,4 +21,9 @@ export class Iteration extends ui.BaseElement {
     await this.createIterationButton.clickWhenReady();
     await this.createIterationButton.untilHidden();    
   }
+
+  async editIteration(iterationName: string) {
+    await this.iterationName.enterText(iterationName);
+    await this.createIterationButton.clickWhenReady();
+  }
 }

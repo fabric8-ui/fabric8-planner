@@ -14,7 +14,7 @@ export class WorkItemListEntry extends ui.BaseElement {
 
   // TODO
   status: ui.BaseElement;
-  iteration: ui.BaseElement;
+  iteration= new ui.BaseElement(this.$('#table-iteration'), 'Table Workitem Iteration Name');
   creator: ui.BaseElement;
   assignees: ui.BaseElement;
 
@@ -40,5 +40,8 @@ export class WorkItemListEntry extends ui.BaseElement {
 
   async clickExpandWorkItem() {
     return await this.treeExpander.clickWhenReady();
+  }
+  async getIterationText() {
+    return await this.iteration.getTextWhenReady();
   }
 }
