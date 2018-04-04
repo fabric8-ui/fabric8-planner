@@ -32,7 +32,7 @@
         dropdown>
       <span *ngIf="activeFilters.length > 0 && showSaveFilterButton"
           class="clickable margin-left-10">
-        <a dropdownToggle>Save</a>
+        <a dropdownToggle class="save-filters">Save</a>
       </span>
       <div *dropdownMenu class="dropdown-menu-right dropdown-menu">
         <aside>
@@ -43,8 +43,8 @@
           <input class="form-control ng-pristine ng-valid ng-touched" #filterSaveInp />
         </div>
         <div class="save-filter-action">
-          <button class="btn btn-primary pull-right margin-left-5" (click)="saveFilters(filterSaveInp.value)">Save</button>
-          <button class="btn pull-right margin-right-5" (click)="closeFilterSave()">Cancel</button>
+          <button class="btn btn-primary pull-right margin-left-5 save-cq-btn" (click)="saveFilters(filterSaveInp.value)">Save</button>
+          <button class="btn pull-right margin-right-5 cancel-cq-btn" (click)="closeFilterSave()">Cancel</button>
         </div>
       </div>
     </div>
