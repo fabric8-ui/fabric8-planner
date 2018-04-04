@@ -108,5 +108,5 @@ docker push ${REGISTRY}/${IMAGE_REPO}:${TAG}
 PULL_REGISTRY="registry.devshift.net"
 image_name="${PULL_REGISTRY}/${IMAGE_REPO}:${TAG}"
 echo "======= Snapshot can be created by running following command"
-echo "docker run -e PROXY_PASS_URL=\"https://api.free-stg.openshift.com\" -p 8080:8080 ${image_name}"
+echo "docker run -it -p 8080:8080 ${image_name}"
 echo "======="
