@@ -14,7 +14,7 @@ toc::[]
 
 == Overview
 Fabric8 Planner is a task planner and the issue tracker front-end for link:https://openshift.io/[openshift.io].
-It uses the link:https://github.com/fabric8-services/fabric8-wit[Fabric8 Work Item Tracker] as the back-end.
+It uses the link:https://github.com/fabric8-services/fabric8-wit[Fabric8 Work Item Tracker] as the back-end. 
 
 The Planner project provides a component library which is used by other applications to provide a task planning front-end.
 
@@ -22,7 +22,7 @@ The Planner project provides a component library which is used by other applicat
 
 The Planner is available as an npm package. It can not be run by itself as it is an Angular component library.
 
-However, for development and testing purpose, a minimal runtime environment is available in the link:runtime[*_runtime_*] directory. So you can run Planner either as a minimal Standalone component or as an Integrated component using an external webapp like the *_fabric8-ui_*. Typically, you would want to develop in the Standalone mode and test your changes in the Integrated mode.
+However, for development and testing purpose, a minimal runtime environment is available in the link:runtime[*_runtime_*] directory. So you can run Planner either as a minimal Standalone component or as an Integrated component using an external webapp like the *_fabric8-ui_*. Typically, you would want to develop in the Standalone mode and test your changes in the Integrated mode. 
 
 === Quickstart
 

@@ -9,7 +9,8 @@ import {
   ViewEncapsulation,
   Output,
   OnDestroy,
-  EventEmitter
+  EventEmitter,
+  ChangeDetectorRef
 } from '@angular/core';
 import {
   Router,
@@ -17,11 +18,8 @@ import {
   NavigationExtras
 } from '@angular/router';
 import { cloneDeep } from 'lodash';
-import {
-  FilterConfig,
-  FilterEvent,
-  ToolbarConfig
-} from 'patternfly-ng';
+import { FilterConfig, FilterEvent } from 'patternfly-ng/filter';
+import { ToolbarConfig } from 'patternfly-ng/toolbar';
 
 import { Spaces } from 'ngx-fabric8-wit';
 import {
@@ -70,22 +68,22 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   eventListeners: any[] = [];
   existingAllowedQueryParams: Object = {};
   filterConfig: FilterConfig = {
-      fields: [{
-        id: 'type',
-        title:  'Select',
-        placeholder: 'Select a filter type',
-        type: 'select'
-      }],
-      appliedFilters: [],
-      resultsCount: -1, // Hide
-      selectedCount: 0,
-      totalCount: 0,
-      tooltipPlacement: 'right'
-    } as FilterConfig;
+    fields: [{
+      id: 'type',
+      title:  'Select',
+      placeholder: 'Select a filter type',
+      type: 'select'
+    }],
+    appliedFilters: [],
+    resultsCount: -1, // Hide
+    selectedCount: 0,
+    totalCount: 0,
+    tooltipPlacement: 'right'
+  } as FilterConfig;
   toolbarConfig: ToolbarConfig = {
-      actionConfig: {},
-      filterConfig: this.filterConfig
-    } as ToolbarConfig;
+    actionConfig: {},
+    filterConfig: this.filterConfig
+  } as ToolbarConfig;
   allowedFilterKeys: string[] = [];
   allowedMultipleFilterKeys: string[] = [
     'label'
@@ -101,15 +99,15 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private savedFIlterFieldQueries = {};
 
   private separator = {
-          id: 'separator',
-          value: null,
-          separator: true
-      };
+    id: 'separator',
+    value: null,
+    separator: true
+  };
   private loader = {
-          id: 'loader',
-          value: 'Loading...',
-          iconStyleClass: 'fa fa-spinner'
-      };
+    id: 'loader',
+    value: 'Loading...',
+    iconStyleClass: 'fa fa-spinner'
+  };
   private areaData: Observable<AreaUI[]>;
   private allUsersData: Observable<UserUI[]>;
   private workItemTypeData: Observable<WorkItemTypeUI[]>;
@@ -125,6 +123,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private currentQuery: string = '';
 
   private isShowTreeOn: boolean = false;
+  private isShowCompletedOn: boolean = false;
+  private isStateFilterSelected: boolean = false;
 
   constructor(
     private router: Router,
@@ -133,7 +133,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     private filterService: FilterService,
     private auth: AuthenticationService,
     private userService: UserService,
-    private store: Store<AppState>) {
+    private store: Store<AppState>,
+    private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -253,6 +254,10 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectFilterType(event: FilterEvent) {
+    this.isStateFilterSelected = false;
+    if (event.field.id === 'state') {
+      this.isStateFilterSelected = true;
+    }
     const filterMap = this.getFilterMap();
     if (Object.keys(filterMap).indexOf(event.field.id) > -1) {
       const index = this.filterConfig.fields.findIndex(i => i.id === event.field.id);
@@ -468,6 +473,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .subscribe(selected => {
         this.activeFilterFromSidePanel = selected;
+        this.cdr.markForCheck();
       })
     );
   }
@@ -569,6 +575,21 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  showCompletedToggle(e) {
+    let queryParams = cloneDeep(this.route.snapshot.queryParams);
+    if (e.target.checked) {
+      queryParams['showCompleted'] = true;
+    } else {
+      if (queryParams.hasOwnProperty('showCompleted')) {
+        delete queryParams['showCompleted'];
+      }
+    }
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams
+    });
+  }
+
   handleShowTreeCheckBox() {
     let currentParams = cloneDeep(this.route.snapshot.queryParams);
     if (currentParams.hasOwnProperty('showTree')) {
@@ -579,6 +600,15 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     } else {
       this.isShowTreeOn = false;
+    }
+    if (currentParams.hasOwnProperty('showCompleted')) {
+      if (currentParams['showCompleted'] === 'true') {
+        this.isShowCompletedOn = true;
+      } else if (currentParams['showCompleted'] === 'false') {
+        this.isShowCompletedOn = false;
+      }
+    } else {
+      this.isShowCompletedOn = false;
     }
   }
 }

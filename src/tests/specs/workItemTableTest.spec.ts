@@ -35,6 +35,12 @@ describe('Work Item datatable list', () => {
     expect(await planner.workItemList.getInlineQuickAddClass(c.workItemTitle1)).toContain('disable');
   });
 
+  // This test doesn't work on mock data. Hence, skip it.
+  // It should work against real database. 
+  xit('should filter work item by type', async() => {
+    await planner.header.selectFilter(c.attribute2, c.label2);
+  });
+
   // The test doesn't work on mock data. Hence, ignore it.
   // The should work against real database.
   xit('hideTree and create a work item then work item should be displayed when show tree is selected', async () => {
@@ -49,6 +55,7 @@ describe('Work Item datatable list', () => {
 
   it('work item should show updated title when switching from flat to tree view', async() => {
     await planner.header.clickShowTree();
+    await planner.workItemList.ready();
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.updateTitle(c.updatedWorkItem.title);
     expect(await planner.workItemList.hasWorkItem(c.updatedWorkItem.title)).toBeTruthy();
