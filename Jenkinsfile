@@ -5,10 +5,6 @@ def project = 'fabric8-ui/fabric8-planner'
 def ciDeploy = false
 def tempVersion
 def imageName
-def userSecret = 'planner-team-test-osio-token'
-def testEnvVars = [
-    secretEnvVar(secretName: userSecret, key: 'PLANNER_TOKEN', secretKey: 'planner-test-osio-token')
-]
 node{
     properties([
         disableConcurrentBuilds()
@@ -71,8 +67,8 @@ if (ciDeploy){
     def prj = 'fabric8-ui-'+ env.BRANCH_NAME
     prj = prj.toLowerCase()
     def route
-    timeout(time: 1, unit: 'HOURS') {
-        deployOpenShiftNode(openshiftConfigSecretName: 'fabric8-intcluster-config', inheritFrom: 'fabric8UITemplate'){
+    timeout(time: 10, unit: 'MINUTES') {
+        deployOpenShiftNode(openshiftConfigSecretName: 'fabric8-intcluster-config'){
             stage("deploy ${prj}"){
                 route = deployOpenShiftSnapshot{
                     mavenRepo = 'http://central.maven.org/maven2/io/fabric8/online/apps/fabric8-ui'
@@ -83,28 +79,20 @@ if (ciDeploy){
                     githubProject = project
                 }
             }
-            stage("e2e Tests") {
-                container('clients') {
-                    checkout scm
-                    sh 'set +x && cd tests/ && DEBUG=true BASE_URL=https://${route} REFRESH_TOKEN=$PLANNER_TOKEN ./run_e2e_tests.sh'
+            stage('notify'){
+                def changeAuthor = env.CHANGE_AUTHOR
+                if (!changeAuthor){
+                    error "no commit author found so cannot comment on PR"
+                }
+                def pr = env.CHANGE_ID
+                if (!pr){
+                    error "no pull request number found so cannot comment on PR"
+                }
+                def message = "@${changeAuthor} ${imageName} is deployed and available for testing at https://${route}"
+                container('clients'){
+                    flow.addCommentToPullRequest(message, pr, project)
                 }
             }
         }
-
-        stage('notify'){
-            def changeAuthor = env.CHANGE_AUTHOR
-            if (!changeAuthor){
-                error "no commit author found so cannot comment on PR"
-            }
-            def pr = env.CHANGE_ID
-            if (!pr){
-                error "no pull request number found so cannot comment on PR"
-            }
-            def message = "@${changeAuthor} ${imageName} is deployed and available for testing at https://${route}"
-            container('clients'){
-                flow.addCommentToPullRequest(message, pr, project)
-            }
-        }
-
     }
 }
