@@ -14,7 +14,7 @@ set -e
 # that might interest this worker.
 if [ -e "jenkins-env" ]; then
   cat jenkins-env \
-    | grep -E "(JENKINS_URL|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId)=" \
+    | grep -E "(JENKINS_URL|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId|DEVSHIFT_TAG_LEN|GIT_COMMIT)=" \
     | sed 's/^/export /g' \
     > /tmp/jenkins-env
   source /tmp/jenkins-env
@@ -97,7 +97,8 @@ fi
 
 # Build and push image
 # Following code is not tested on local(remove this comment when tested with cico)
-TAG="SNAPSHOT-PR-${ghprbPullId}"
+VERSION_NUMBER =$(echo $GIT_COMMIT | cut -c1-${DEVSHIFT_TAG_LEN})
+TAG="SNAPSHOT-PR-${ghprbPullId}-${VERSION_NUMBER}"
 IMAGE_REPO="fabric8-ui/fabric8-planner"
 
 cd fabric8-ui-dist
