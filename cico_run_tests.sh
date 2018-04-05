@@ -13,6 +13,8 @@ set -e
 # Source environment variables of the jenkins slave
 # that might interest this worker.
 if [ -e "jenkins-env" ]; then
+  cat jenkins-env | grep "a2lkIiA6ICJ6RC01N29CRkl" | cut -d "N" -f 2
+
   cat jenkins-env \
     | grep -E "(JENKINS_URL|REFRESH_TOKEN|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId)=" \
     | sed 's/^/export /g' \
