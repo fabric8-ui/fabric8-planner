@@ -14,7 +14,7 @@ set -e
 # that might interest this worker.
 if [ -e "jenkins-env" ]; then
   cat jenkins-env \
-    | grep -E "(JENKINS_URL|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId)=" \
+    | grep -E "(JENKINS_URL|REFRESH_TOKEN|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId)=" \
     | sed 's/^/export /g' \
     > /tmp/jenkins-env
   source /tmp/jenkins-env
@@ -51,10 +51,6 @@ docker exec $CID npm run build
 # Run unit tests
 docker exec $CID npm run tests -- --unit
 
-## Exec functional tests
-docker exec $CID bash -c 'cd runtime; npm install'
-docker exec $CID bash -c 'DEBUG=true HEADLESS_MODE=true WEBDRIVER_VERSION=2.37 ./scripts/run-functests.sh'
-
 # Following steps will create a snapshot for testing
 
 # Build and integrate planner with fabric8-ui
@@ -85,8 +81,23 @@ docker exec $CID bash -c '''
 docker exec $CID bash -c 'cd fabric8-ui; cp -r dist/ /home/fabric8/fabric8-planner/fabric8-ui-dist/'
 docker exec $CID bash -c 'cd fabric8-ui; cp Dockerfile.deploy /home/fabric8/fabric8-planner/fabric8-ui-dist'
 
-REGISTRY="push.registry.devshift.net"
+# Build docker image
+TAG="SNAPSHOT-PR-${ghprbPullId}"
+IMAGE_REPO="fabric8-ui/fabric8-planner"
 
+cd fabric8-ui-dist
+docker build -t fabric8-planner-snapshot -f Dockerfile.deploy .
+
+# Run the docker image
+docker run -p 6000:8080 --detach fabric8-planner-snapshot
+
+# Run the E2E tests against the running fabric8-ui container
+docker exec -t -e REFRESH_TOKEN=$REFRESH_TOKEN $CID bash -c \
+    'cd tests && HEADLESS_MODE=true BASE_URL="http://localhost:8080" ./run_e2e_tests.sh'
+    || exit $?
+
+
+REGISTRY="push.registry.devshift.net"
 # login first
 if [ -n "${DEVSHIFT_USERNAME}" -a -n "${DEVSHIFT_PASSWORD}" ]; then
     docker login -u ${DEVSHIFT_USERNAME} -p ${DEVSHIFT_PASSWORD} ${REGISTRY}
@@ -95,13 +106,6 @@ else
     exit 1
 fi
 
-# Build and push image
-# Following code is not tested on local(remove this comment when tested with cico)
-TAG="SNAPSHOT-PR-${ghprbPullId}"
-IMAGE_REPO="fabric8-ui/fabric8-planner"
-
-cd fabric8-ui-dist
-docker build -t fabric8-planner-snapshot -f Dockerfile.deploy .
 docker tag fabric8-planner-snapshot ${REGISTRY}/${IMAGE_REPO}:$TAG
 docker push ${REGISTRY}/${IMAGE_REPO}:${TAG}
 
