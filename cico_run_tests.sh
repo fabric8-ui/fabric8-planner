@@ -114,6 +114,6 @@ image_name="${PULL_REGISTRY}/${IMAGE_REPO}:${TAG}"
 set +x
 # Pretty print the command for snapshot
 echo
-echo "\e[92m========= Run snapshot by running following command ========="
-echo "\e[1mdocker run -it -p 5000:8080 ${image_name}\e[21m"
-echo "=============================================================\e[0m"
+echo -e "\e[92m========= Run snapshot by running following command ========="
+echo -e "\e[1mdocker run -it -p 5000:8080 ${image_name}\e[21m"
+echo -e "=============================================================\e[0m"
