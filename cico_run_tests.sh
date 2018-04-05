@@ -97,7 +97,7 @@ fi
 
 # Build and push image
 # Following code is not tested on local(remove this comment when tested with cico)
-VERSION_NUMBER =$(echo $GIT_COMMIT | cut -c1-${DEVSHIFT_TAG_LEN})
+VERSION_NUMBER=$(echo $GIT_COMMIT | cut -c1-${DEVSHIFT_TAG_LEN})
 TAG="SNAPSHOT-PR-${ghprbPullId}-${VERSION_NUMBER}"
 IMAGE_REPO="fabric8-ui/fabric8-planner"
 
