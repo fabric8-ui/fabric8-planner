@@ -17,6 +17,7 @@ if [ -e "jenkins-env" ]; then
     | grep -E "(JENKINS_URL|REFRESH_TOKEN|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId)=" \
     | sed 's/^/export /g' \
     > /tmp/jenkins-env
+    head -11 /tmp/jenkins-env | cut -b -5
   source /tmp/jenkins-env
 fi
 
