@@ -93,7 +93,7 @@ docker run -p 6000:8080 --detach fabric8-planner-snapshot
 
 # Run the E2E tests against the running fabric8-ui container
 docker exec -t -e REFRESH_TOKEN=$REFRESH_TOKEN $CID bash -c \
-    'cd tests && HEADLESS_MODE=true BASE_URL="http://localhost:8080" ./run_e2e_tests.sh'
+    'cd tests && HEADLESS_MODE=true BASE_URL="http://localhost:8080" USER_NAME="ijarif-test-preview" ./run_e2e_tests.sh'
     || exit $?
 
 

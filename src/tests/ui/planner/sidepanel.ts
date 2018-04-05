@@ -9,7 +9,7 @@ export class SidePanel extends ui.BaseElement {
   requirementsButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Requirements')),'Side panel Requirements button');
   iterationDiv = new ui.BaseElement(this.$('.f8-itr'),'Iteration div');
   createIterationButton = new ui.Button(this.iterationDiv.$('#add-iteration-icon'), 'Side panel Add Iteration Button');
-  iterationList = new ui.BaseElementArray(this.$$('.f8-itr__tree .f8-itr-name'),'Iteration list');
+  iterationList = new ui.BaseElementArray(this.$$('.f8-itr__tree .f8-itr-name'),'Iteration list');  
   iterationKebab = new ui.Button(this.$('.dropdown-toggle'), 'Side panel Iteration Kebab Dropdown');
   editIteration = new ui.Clickable(this.element(by.cssContainingText('.f8-itr .dropdown.open ul>li','Edit')), 'Iteration Dropdown Edit Option');
 

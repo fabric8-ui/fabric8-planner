@@ -5,8 +5,8 @@ export class Constants {
   attribute4 = "Assignees";
   dropdownIteration1 = 'Iteration 0';
   dropdownIteration2 = 'Iteration 1';
+  label = 'sample_label_1';
   updateIteration = 'Iteration 0123'
-  label = 'Example Label 0';
   label1 = 'Example Label 1';
   label2 = 'sample_label_2';
   linkType = 'tests';
