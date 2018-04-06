@@ -44,6 +44,7 @@ export interface WorkItemTypeUI extends modelUI {
   type: string;
   description: string;
   childTypes: any;
+  infotipTextMap: object;
   fields: Map<string, WorkItemTypeField>;
 }
 
@@ -76,8 +77,19 @@ export class WorkItemTypeMapper implements Mapper<WorkItemTypeService, WorkItemT
       }, {
         toPath: ['type'],
         toValue: 'workitemtypes'
-      }
-    ];
+      }, {
+        toPath: ['infotipTextMap'],
+        toValue: { 
+            'Scenario': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'Fundamental': 'Work item type that focuses on getting the basic foundations of a product right to make it more efficient.',
+            'Papercuts': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'Experience': 'Experience describes the envisioned user experience in the product to actualize a parent work item. Each parent work item can have multiple experiences.',
+            'Value Proposition': 'Work item type that states the value provided to the user by addressing a parent work item. Each parent work item can have multiple value propositions.',
+            'Feature': 'A feature is a detailed user-story that helps actualize parent experiences. It can support multiple experiences and is generally achievable within a sprint.',
+            'Bug': 'Defect that causes unexpected behavior in the software.',
+            'Task': 'Work assigned to various team members to implement a feature. They are generally measured in units of 0.5 days, for example, four hours, eight hours, sixteen hours.'
+     }
+    }];
 
     uiToServiceMapTree: MapTree = [{
         toPath: ['id'],

@@ -24,7 +24,7 @@ import * as GroupTypeActions from './../../actions/group-type.actions';
   styleUrls: ['./group-types-panel.component.less']
 })
 export class GroupTypesComponent implements OnInit, OnDestroy {
-
+   
   @Input() sidePanelOpen: boolean = true;
 
   authUser: any = null;

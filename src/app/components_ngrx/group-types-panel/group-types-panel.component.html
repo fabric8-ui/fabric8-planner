@@ -1,5 +1,5 @@
 <div class="f8-group-filter" *ngFor="let item of groupTypes">
-  <a
+  <a 
     class="f8-group-filter__type"
     id="{{item.group}}"
     [routerLink]="[]"
@@ -13,6 +13,7 @@
         [class.dib]="sidePanelOpen"
         [class.hide]="!sidePanelOpen">
       {{ item.name }}</span>
+      <infotip [infotipText]="item.infotipTextMap[item.name]"></infotip>
   </a>
   <!--If group is execution show a header and then embed the iteration component -->
   <div *ngIf="item.bucket === 'iteration'">
