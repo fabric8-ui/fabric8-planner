@@ -34,7 +34,6 @@ export async function setBrowserMode(mode: BrowserMode) {
 }
 
 export async function desktopTestSetup() {
-  browser.ignoreSynchronization = true;
   await setBrowserMode(BrowserMode.Desktop);
 }
 
