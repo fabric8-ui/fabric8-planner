@@ -61,25 +61,27 @@ describe('Planner Smoke Tests:', () => {
 
   it('Associate workitem with an Area', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
-    await planner.quickPreview.addArea(c.areaTitle1);
+    await planner.quickPreview.addArea(c.dropdownareaTitle1);
     expect(await planner.quickPreview.hasArea(c.areaTitle1)).toBeTruthy();
     await planner.quickPreview.close();
 
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     expect(await planner.quickPreview.hasArea(c.areaTitle1)).toBeTruthy();
-    await planner.quickPreview.addArea(c.areaTitle2);
+    await planner.quickPreview.addArea(c.dropdownareaTitle2);
     expect(await planner.quickPreview.hasArea(c.areaTitle1)).toBeFalsy();
     expect(await planner.quickPreview.hasArea(c.areaTitle2)).toBeTruthy();
     await planner.quickPreview.close();
   });
 
   it('Associate/Re-associate workitem with an Iteration', async () => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle3);
+    //add new iteration
+    await planner.workItemList.clickWorkItem(c.workItemTitle7);
     await planner.quickPreview.addIteration(c.dropdownIteration1);
     expect(await planner.quickPreview.hasIteration(c.iteration1)).toBeTruthy();
     await planner.quickPreview.close();
 
-    await planner.workItemList.clickWorkItem(c.workItemTitle2);
+    //update iteration
+    await planner.workItemList.clickWorkItem(c.workItemTitle7);
     expect(await planner.quickPreview.hasIteration(c.iteration1)).toBeTruthy();
     await planner.quickPreview.addIteration(c.dropdownIteration2);
     expect(await planner.quickPreview.hasIteration(c.iteration2)).toBeTruthy();
@@ -89,7 +91,8 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.quickPreview.hasIteration(c.iteration2)).toBeTruthy();
     await planner.quickPreview.close();
 
-    await planner.workItemList.clickWorkItem(c.workItemTitle3);
+    //search iteration
+    await planner.workItemList.clickWorkItem(c.workItemTitle7);
     await planner.quickPreview.typeaHeadSearch(c.randomText);
     expect(await planner.quickPreview.iterationDropdown.menu.getTextWhenReady()).toBe('No matches found.');
     await planner.quickPreview.iterationCancelButton.clickWhenReady();

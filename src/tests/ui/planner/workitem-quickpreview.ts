@@ -246,7 +246,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
 
   async hasIteration(iterationTitle: string): Promise<Boolean> {
     await this.loadingAnimation.untilCount(0);
+    await browser.sleep(1000);    
     let iteration = await this.iterationDropdown.getTextWhenReady();
+    this.debug(" iteration : " + iteration);
     return iteration === iterationTitle;
   }
 

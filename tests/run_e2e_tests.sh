@@ -2,7 +2,7 @@
 set -euo pipefail
 
 declare -r temp_dir=${TEMP_DIR:-$(mktemp -d)}
-declare USER_NAME=${USER_NAME:-"rgarg-osiotest1"}
+declare USER_NAME=${USER_NAME:-"ijarif-test-preview"}
 declare FABRIC8_WIT_API_URL=${FABRIC8_WIT_API_URL:-"https://api.prod-preview.openshift.io"}
 
 cleanup() {

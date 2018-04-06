@@ -22,10 +22,20 @@ describe('Iteration test', () => {
     expect(await planner.sidePanel.hasIteration(c.newIteration)).toBeTruthy();
   });
 
-  it('updating iteration should update workitem associated to iteration', async() => {
+  //changes are not in prod-preview. Hence, skipping the test
+  // Add it back when changes are in prod-preview
+
+  xit('updating iteration should update workitem associated to iteration', async() => {
     await planner.sidePanel.ready();
-    expect(await planner.workItemList.iterationText(c.workItemTitle1)).toBe(c.dropdownIteration1);
-    await planner.sidePanel.selectIterationKebab(c.dropdownIteration1);
+    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+    await planner.quickPreview.typeaHeadSearch(c.dropdownIteration_2);    
+    await planner.quickPreview.iterationDropdown.select(c.dropdownIteration_2);
+    await planner.quickPreview.iterationSaveButton.clickWhenReady();
+    expect(await planner.quickPreview.hasIteration(c.dropdownIteration_2)).toBeTruthy();
+    await planner.quickPreview.close();
+
+    expect(await planner.workItemList.iterationText(c.workItemTitle1)).toBe(c.dropdownIteration_2);
+    await planner.sidePanel.selectIterationKebab(c.dropdownIteration_2);
     await planner.sidePanel.openIterationDialogue();
     await planner.iteration.editIteration(c.iteration3);
     expect(await planner.workItemList.iterationText(c.workItemTitle1)).toBe(c.updateIteration);
