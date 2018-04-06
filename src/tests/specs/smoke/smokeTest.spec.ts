@@ -127,7 +127,7 @@ describe('Planner Smoke Tests:', () => {
 
   it('Edit Comment and Save', async() => {
     await planner.createWorkItem(c.newWorkItem3);
-    expect(await planner.workItemList.hasWorkItem(c.newWorkItem3.title)).toBeTruthy();    
+    expect(await planner.workItemList.hasWorkItem(c.newWorkItem3.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(c.newWorkItem3.title);
     await planner.quickPreview.addCommentAndSave(c.comment);
     expect(await planner.quickPreview.hasComment(c.comment)).toBeTruthy();
@@ -143,6 +143,14 @@ describe('Planner Smoke Tests:', () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.updateTitle('');
     expect(await planner.quickPreview.hasTitleError('Empty title not allowed')).toBeTruthy();
-  })
+  });
+
+  it('Create custom query', async() => {
+    await planner.sidePanel.clickRequirement();
+    await planner.header.selectFilter('State','in progress');
+    await planner.header.saveFilters('Query 1');
+    expect(await planner.sidePanel.hasCustomQuery('Query 1')).toBeTruthy();
+  });
+
 });
 

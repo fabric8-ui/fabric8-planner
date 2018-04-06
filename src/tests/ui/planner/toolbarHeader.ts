@@ -18,6 +18,11 @@ export class ToolbarHeader extends BaseElement {
   );
   private clearAllFilter = new ui.Clickable(this.$('.clear-filters'), 'Clear All filters');
   showCompleted = new BaseElement(this.$('.toolbar-pf-view-selector #showCompleted'), 'Show Completed');
+  saveFilter = new ui.Clickable(this.$('.save-filters'), 'Save');
+  saveFilterDialog = new BaseElement(this.$('.save-filter-dropdown'));
+  saveFilterBtn = new ui.Button(this.$('.save-cq-btn'),'Save');
+  closeBtn = new ui.Button(this.$('.cancel-cq-btn'),'Cancel');
+  titleTextInput = new ui.TextInput(this.saveFilterDialog.$('input.query-title'), 'Query Title');
 
   constructor(el: ElementFinder, name = 'ToolBar Header') {
     super(el, name);
@@ -58,5 +63,11 @@ export class ToolbarHeader extends BaseElement {
         await this.notificationToast.untilCount(0);
       }
     }
+  }
+
+  async saveFilters(title) {
+    await this.saveFilter.clickWhenReady();
+    await this.titleTextInput.enterText(title);
+    await this.saveFilterBtn.clickWhenReady();
   }
 }
