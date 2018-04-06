@@ -72,6 +72,8 @@ let conf: Config = {
         }
       })
     );
+    // Disable control flow
+    browser.ignoreSynchronization = true;
     if(process.env.NODE_ENV == "inmemory") {
       browser.baseUrl = browser.baseUrl + '/plan/list'
     } else {

@@ -40,7 +40,7 @@ log() {
 }
 
 run_tests() {
-  log "Running Planner smokeTests"
+  log "Running Planner Functional Tests"
   BASE_URL=$BASE_URL AUTH_TOKEN=$TOKEN REFRESH_TOKEN=$OFFLINE_TOKEN ./run.sh 
 }
 
