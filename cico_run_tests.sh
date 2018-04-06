@@ -93,7 +93,7 @@ docker run -p 6000:8080 --detach fabric8-planner-snapshot
 
 # Run the E2E tests against the running fabric8-ui container
 docker exec -t -e REFRESH_TOKEN=$REFRESH_TOKEN $CID bash -c \
-    'cd tests && HEADLESS_MODE=true BASE_URL="http://localhost:8080" USER_NAME="ijarif-test-preview" ./run_e2e_tests.sh'
+    'cd tests && WEBDRIVER_VERSION=2.37 HEADLESS_MODE=true BASE_URL="http://localhost:8080" USER_NAME="ijarif-test-preview" ./run_e2e_tests.sh'
     || exit $?
 
 
@@ -106,8 +106,6 @@ else
     exit 1
 fi
 
-<<<<<<< HEAD
-=======
 # Build and push image
 # Use default length when not provided
 echo "${DEVSHIFT_TAG_LEN:=6}"
@@ -117,7 +115,6 @@ IMAGE_REPO="fabric8-ui/fabric8-planner"
 
 cd fabric8-ui-dist
 docker build -t fabric8-planner-snapshot -f Dockerfile.deploy .
->>>>>>> master
 docker tag fabric8-planner-snapshot ${REGISTRY}/${IMAGE_REPO}:$TAG
 docker push ${REGISTRY}/${IMAGE_REPO}:${TAG}
 
