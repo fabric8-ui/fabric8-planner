@@ -14,12 +14,16 @@ set -x
 # Exit on error
 set -e
 
+# This option sets the exit code of a pipeline to that of the rightmost command to exit with a
+# non-zero status, or to zero if all commands of the pipeline exit successfully.
+set -o pipefail
+
 function main {
     # Source environment variables of the jenkins slave
     # that might interest this worker.
     if [ -e "jenkins-env" ]; then
     cat jenkins-env \
-        | grep -E "(JENKINS_URL|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId)=" \
+        | grep -E "^(GIT_BRANCH|GIT_COMMIT|NPM_TOKEN|GH_TOKEN)=" \
         | sed 's/^/export /g' \
         > /tmp/jenkins-env
     source /tmp/jenkins-env
@@ -28,18 +32,20 @@ function main {
     # # We need to disable selinux for now, XXX
     /usr/sbin/setenforce 0
 
-    export GH_TOKEN=""
-    export NPM_TOKEN=""
-
     # Build and Release Planner (It will update the tag on github and push fabric8-planner to npmjs.org)
     npm run semantic-release
 
+    create_merge_PR
+}
+
+# This function raises a PR against fabric8-npm-dependencies
+function create_merge_PR {
     # extract version number from latest git tag
     new_planner_version=$(git tag --sort=-v:refname | head -1 | cut -d'v' -f 2)
 
     # Create PR on fabric8-npm-dependencies and merge it
     repo="fabric8-npm-dependencies"
-    org="jarifibrahim" #"fabric8-ui"
+    org="fabric8-ui"
     project="${org}/${repo}"
     baseUrl="https://api.github.com/repos"
     id=$(uuidgen)
@@ -47,14 +53,14 @@ function main {
     cd ${repo} && git checkout -b versionUpdate"${id}"
 
     # find fabric8-planner > extract version number > remove ", char > trim whitespacs
-    current_planner_version=$( grep my-test123 package.json \
+    current_planner_version=$( grep fabric8-planner package.json \
         | awk -F: '{ print $2 }' \
         | sed 's/[",]//g' \
         | tr -d '[:space:]' )
-    echo $new_planner_version
-    echo $current_planner_version
+    echo "New Planner version:" $new_planner_version
+    echo "Current Planner version:" $current_planner_version
     if [ "$new_planner_version" == "$current_planner_version" ]; then
-        echo "Skippping as my-test123 is already on version $new_planner_version"
+        echo "Skippping as fabric8-planner is already on version $new_planner_version"
         exit 0
     fi
 
@@ -90,7 +96,7 @@ function main {
 # Updates fabric8-planner's version in package.json file
 function updatePackageJSONVersion {
     local f="package.json"
-    local p="my-test123"
+    local p="fabric8-planner"
     local v=$1
     sed -i -r "s/\"${p}\": \"[0-9][0-9]{0,2}.[0-9][0-9]{0,2}(.[0-9][0-9]{0,2})?(.[0-9][0-9]{0,2})?(-development)?\"/\"${p}\": \"${v}\"/g" ${f}
 }
@@ -103,7 +109,8 @@ function waitUntilSuccess {
            | sed -n 's/.*"ref": "\(.*\)",/\1/p' | head -1) # Extract "ref" value from the response
     status="NA"
     NEXT_WAIT_TIME=0
-    until [ "$status" == "success" ] || [ $NEXT_WAIT_TIME -eq 25 ]; do
+    # Max wait 720 seconds
+    until [ "$status" == "success" ] || [ $NEXT_WAIT_TIME -eq 7 ]; do
         status=$( curl --silent -X GET https://api.github.com/repos/"${project}"/commits/"${ref}"/status \
                   | sed -n 's/.*"state": "\(.*\)",/\1/p')  # Extract "state" value from the response
         echo "Pull Request status: ${status}.  Waiting to merge..."
