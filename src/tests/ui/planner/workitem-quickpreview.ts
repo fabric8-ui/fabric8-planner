@@ -56,6 +56,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   createLabelSaveButton = new ui.Button(this.createLabelDiv.$('.fa-check'),'create label save button');
 
   descriptionDiv = new ui.BaseElement(this.$('#wi-desc-div'), 'WorkItem Description Div');
+  descriptionEditIcon = new ui.Clickable(this.descriptionDiv.$('i'), 'WorkItem Description Edit icon');
   descriptionTextarea = new ui.TextInput(this.descriptionDiv.$('.editor-box'), 'WorkItem Description Input');
   descriptionSaveButton =  new ui.Button(
     this.descriptionDiv.$('.action-btn.btn-save'),
@@ -103,7 +104,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.closeButton.ready();
     await this.titleDiv.ready();
     await this.descriptionDiv.ready();
-    await this.linksToggleButton.ready();
+    // We do not have the link button in current planner
+    // Uncomment when workitem linking is implemented
+    // await this.linksToggleButton.ready();
     await this.commentsToggleButton.ready();
     support.debug('... check if WorkItem preview is Ready - OK');
   }
@@ -246,12 +249,26 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async updateDescription(description: string, append: boolean = false) {
-    await this.descriptionDiv.clickWhenReady();
+    await this.openDescriptionBox();
     if(!append) {
       await this.descriptionTextarea.clear();
     }
     await this.descriptionTextarea.enterText(description);
     await this.descriptionSaveButton.clickWhenReady();
+  }
+
+  async openDescriptionBox(){
+    await browser.actions().mouseMove(this.descriptionDiv).perform();
+    await this.descriptionEditIcon.clickWhenReady();
+  }
+
+  async isSaveButtonDisplayed() {
+    try {
+      return await this.descriptionSaveButton.isDisplayed();
+    }
+    catch (exception) {
+      return false;
+    }
   }
 
   async removeAssignee(assignee: string) {
