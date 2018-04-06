@@ -115,7 +115,7 @@ set +x
 # Pretty print the command for snapshot
 echo
 echo -e "\e[92m========= Run snapshot by running following command =========\e[0m"
-echo -e "\e[1mdocker run -it -p 5000:8080 ${image_name}\e[21m\e[0m"
+echo -e "\e[92m\e[1mdocker run -it -p 5000:8080 ${image_name}\e[0m"
 echo -e "\e[92m=============================================================\e[0m"
 
 # Show command before executing
