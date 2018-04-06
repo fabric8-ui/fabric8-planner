@@ -106,11 +106,31 @@ else
     exit 1
 fi
 
+<<<<<<< HEAD
+=======
+# Build and push image
+# Use default length when not provided
+echo "${DEVSHIFT_TAG_LEN:=6}"
+VERSION_NUMBER=$(echo $GIT_COMMIT | cut -c1-${DEVSHIFT_TAG_LEN})
+TAG="SNAPSHOT-PR-${ghprbPullId}-${VERSION_NUMBER}"
+IMAGE_REPO="fabric8-ui/fabric8-planner"
+
+cd fabric8-ui-dist
+docker build -t fabric8-planner-snapshot -f Dockerfile.deploy .
+>>>>>>> master
 docker tag fabric8-planner-snapshot ${REGISTRY}/${IMAGE_REPO}:$TAG
 docker push ${REGISTRY}/${IMAGE_REPO}:${TAG}
 
 PULL_REGISTRY="registry.devshift.net"
 image_name="${PULL_REGISTRY}/${IMAGE_REPO}:${TAG}"
-echo "======= Snapshot can be created by running following command"
-echo "docker run -e PROXY_PASS_URL=\"https://api.free-stg.openshift.com\" -p 8080:8080 ${image_name}"
-echo "======="
+
+# turn off showing command before executing
+set +x
+# Pretty print the command for snapshot
+echo
+echo -e "\e[92m========= Run snapshot by running following command =========\e[0m"
+echo -e "\e[92m\e[1mdocker run -it -p 5000:8080 ${image_name}\e[0m"
+echo -e "\e[92m=============================================================\e[0m"
+
+# Show command before executing
+set -x
