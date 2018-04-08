@@ -38,7 +38,6 @@ docker build -t fabric8-planner-builder .
 # Chrome crashes on low size of /dev/shm. We need the --shm-size=256m flag.
 CID=$(docker run --detach=true \
     --shm-size=256m \
-    -u $(shell id -u $(USER)):$(shell id -g $(USER)) \
     -v $(pwd)/fabric8-ui-dist:/home/fabric8/fabric8-planner/fabric8-ui-dist:Z \
     --cap-add=SYS_ADMIN \
     -t fabric8-planner-builder)
@@ -89,12 +88,12 @@ cd fabric8-ui-dist
 docker build -t fabric8-planner-snapshot -f Dockerfile.deploy .
 
 # Run the docker image
-docker run -p 6000:8080 --detach fabric8-planner-snapshot
+SERVER_CID=$(docker run --detach fabric8-planner-snapshot)
+SERVER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${SERVER_CID})
 
-docker ps -a
 # Run the E2E tests against the running fabric8-ui container
 docker exec -t -e REFRESH_TOKEN=$REFRESH_TOKEN $CID bash -c \
-    'cd tests && WEBDRIVER_VERSION=2.37 HEADLESS_MODE=true BASE_URL="http://localhost:6000" USER_NAME="ijarif-test-preview" ./run_e2e_tests.sh'
+    "cd tests && WEBDRIVER_VERSION=2.37 HEADLESS_MODE=true BASE_URL='http://${SERVER_IP}:8080' USER_NAME='ijarif-test-preview' ./run_e2e_tests.sh"
     || exit $?
 
 
