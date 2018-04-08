@@ -74,19 +74,13 @@ let conf: Config = {
     );
     // Disable control flow
     browser.ignoreSynchronization = true;
-    if(process.env.NODE_ENV == "inmemory") {
-      browser.baseUrl = browser.baseUrl + '/plan/list'
-    } else {
-      browser.baseUrl = browser.baseUrl + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME + '/plan';
-    }
+    browser.baseUrl = browser.baseUrl + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME + '/plan';
     browser.token = encodeURIComponent(JSON.stringify({
-      access_token: process.env.AUTH_TOKEN  || "somerandomtoken",
+      access_token: process.env.AUTH_TOKEN,
       expires_in: 1800,
-      refresh_token: process.env.REFRESH_TOKEN || "somerandomtoken",
+      refresh_token: process.env.REFRESH_TOKEN,
       token_type: "bearer"
     }));
-    // Bypass login by supplying auth and refresh token
-    browser.get(browser.baseUrl + "/?token_json=" + browser.token);
   }
 };
 
