@@ -44,11 +44,12 @@ export class SidePanel extends ui.BaseElement {
     await this.createIterationButton.clickWhenReady();
   }
 
-  async hasIteration(iteration: string): Promise<Boolean> {
+  async getIterationList(): Promise<String[]> {
     await this.ready();
-    let iterationList = await this.iterationList.getTextWhenReady();
-    this.debug('iterationList : ' + iterationList );
-    return iterationList.indexOf(iteration) > -1;
+    let iterationString = await this.iterationList.getTextWhenReady();
+    let iterationList = iterationString.toString().split(",");
+    this.debug('iterationList : ' + iterationList);
+    return iterationList;
   }
 
   async selectIterationKebab(iterationName: string) {

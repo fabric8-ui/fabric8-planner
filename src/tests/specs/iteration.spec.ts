@@ -5,7 +5,6 @@ import * as support from '../support';
 
 describe('Iteration test', () => {
   let planner: PlannerPage;
-  let c = new support.Constants();
 
   beforeEach( async () => {
     await support.desktopTestSetup();
@@ -17,18 +16,27 @@ describe('Iteration test', () => {
   });
 
   it('should create a new iteration', async () => {
+    let newIteration = 'new Iteration';
+    let iteration3 = '/' + process.env.SPACE_NAME
     await planner.sidePanel.createNewIteration();
-    await planner.iteration.addNewIteration(c.newIteration,c.iteration3);
-    expect(await planner.sidePanel.hasIteration(c.newIteration)).toBeTruthy();
+    await planner.iteration.addNewIteration(newIteration, iteration3);
+    expect(await planner.sidePanel.getIterationList()).toContain(newIteration);
   });
 
   it('updating iteration should update workitem associated to iteration', async() => {
+    let dropdownIteration1 = 'Iteration_5',
+      updateIteration = 'Iteration 0123',
+      workItemTitle1 = 'Workitem_Title_10';
     await planner.sidePanel.ready();
-    expect(await planner.workItemList.iterationText(c.workItemTitle1)).toBe(c.dropdownIteration1);
-    await planner.sidePanel.selectIterationKebab(c.dropdownIteration1);
+    await planner.workItemList.workItem(workItemTitle1).openQuickPreview();
+    await planner.quickPreview.addIteration(dropdownIteration1);
+    expect(await planner.workItemList.iterationText(workItemTitle1)).toBe(dropdownIteration1);
+    await planner.sidePanel.selectIterationKebab(dropdownIteration1);
     await planner.sidePanel.openIterationDialogue();
-    await planner.iteration.editIteration(c.iteration3);
-    expect(await planner.workItemList.iterationText(c.workItemTitle1)).toBe(c.updateIteration);
+    await planner.iteration.editIteration(updateIteration);
+    await planner.quickPreview.notificationToast.untilCount(1);
+    await planner.quickPreview.close();
+    expect(await planner.workItemList.iterationText(workItemTitle1)).toBe(updateIteration);
   });
 
 });

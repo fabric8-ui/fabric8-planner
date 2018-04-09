@@ -120,6 +120,7 @@ export class BaseElement extends ElementFinder implements BaseElementInterface {
 
   async scrollIntoView() {
     await browser.executeScript('arguments[0].scrollIntoView(true)', this.getWebElement());
+  }
 }
 
 export class BaseElementArray extends ElementArrayFinder {
@@ -148,7 +149,7 @@ export class BaseElementArray extends ElementArrayFinder {
     });
   }
 
-  async getTextWhenReady() {
+  async getTextWhenReady(): Promise<String> {
     await this.ready();
     return await this.getText();
   }

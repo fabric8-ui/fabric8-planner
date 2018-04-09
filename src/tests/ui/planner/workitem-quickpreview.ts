@@ -135,6 +135,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.iterationDropdown.clickWhenReady();
     await this.iterationDropdown.select(iterationTitle);
     await this.iterationSaveButton.clickWhenReady();
+    await this.notificationToast.untilCount(1);
   }
 
   async typeaHeadSearch(iterationTitle: string) {

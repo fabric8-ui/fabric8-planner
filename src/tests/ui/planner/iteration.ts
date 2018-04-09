@@ -23,6 +23,7 @@ export class Iteration extends ui.BaseElement {
   }
 
   async editIteration(iterationName: string) {
+    await this.iterationName.clear();
     await this.iterationName.enterText(iterationName);
     await this.createIterationButton.clickWhenReady();
   }
