@@ -27,7 +27,7 @@
     <span [innerHTML]="name | almSearchHighlight: searchValue"></span>
   </ng-template>
   <ng-template #dropdownFooter>
-    <div *ngIf="!activeAddLabel"
+    <div [class.hide]="activeAddLabel"
       (click)="clickOnAddLabel()"
       class="create-label-button">
       <span class="pficon pficon-add-circle-o"></span>
