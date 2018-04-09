@@ -18,25 +18,35 @@ set -e
 # non-zero status, or to zero if all commands of the pipeline exit successfully.
 set -o pipefail
 
-function main {
-    # Source environment variables of the jenkins slave
-    # that might interest this worker.
-    if [ -e "jenkins-env" ]; then
-    cat jenkins-env \
-        | grep -E "^(GIT_BRANCH|GIT_COMMIT|NPM_TOKEN|GH_TOKEN)=" \
-        | sed 's/^/export /g' \
-        > /tmp/jenkins-env
-    source /tmp/jenkins-env
-    fi
+. cico_setup.sh
 
-    # # We need to disable selinux for now, XXX
-    /usr/sbin/setenforce 0
+setup;
 
-    # Build and Release Planner (It will update the tag on github and push fabric8-planner to npmjs.org)
-    npm run semantic-release
+# Build fabric8-planner image
+docker build -t fabric8-planner-builder .
 
-    create_merge_PR
-}
+# User root is required to run webdriver-manager update.
+# This shouldn't be a problem for CI containers
+# Chrome crashes on low size of /dev/shm. We need the --shm-size=256m flag.
+CID=$(docker run --detach=true \
+    --shm-size=256m \
+    -u $(shell id -u $(USER)):$(shell id -g $(USER)) \
+    -v $(pwd)/fabric8-ui-dist:/home/fabric8/fabric8-planner/fabric8-ui-dist:Z \
+    --cap-add=SYS_ADMIN \
+    -t fabric8-planner-builder)
+
+build_planner;
+
+run_unit_tests;
+
+run_functional_tests;
+
+build_fabric8_ui;
+
+# Build and Release Planner (It will update the tag on github and push fabric8-planner to npmjs.org)
+npm run semantic-release
+
+create_merge_PR
 
 # This function raises a PR against fabric8-npm-dependencies
 function create_merge_PR {
@@ -117,5 +127,3 @@ function waitUntilSuccess {
         sleep $(( NEXT_WAIT_TIME++ ))
     done
 }
-
-main
