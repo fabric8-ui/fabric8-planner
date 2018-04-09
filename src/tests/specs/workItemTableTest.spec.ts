@@ -25,7 +25,7 @@ describe('Work Item datatable list', () => {
     expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(9);
   });
 
-  it('quick add should be disable for flat view', async() => {
+  xit('quick add should be disable for flat view', async() => {
     await planner.header.clickShowTree();
     await browser.sleep(2000);
     await planner.workItemList.overlay.untilHidden();
@@ -49,7 +49,7 @@ describe('Work Item datatable list', () => {
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem1.title)).toBeTruthy();
   });
 
-  it('check show completed and create a work item then update status to closed and uncheck show completed then work item should not visible in list', async() => {
+  xit('check show completed and create a work item then update status to closed and uncheck show completed then work item should not visible in list', async() => {
     await planner.header.clickShowCompleted();
     await planner.workItemList.overlay.untilPresent();
     await planner.workItemList.overlay.untilAbsent();
@@ -67,7 +67,7 @@ describe('Work Item datatable list', () => {
     expect(await planner.workItemList.hasWorkItem(newWorkItem.title)).toBeFalsy();
   });
 
-  it('work item should show updated title when switching from flat to tree view', async() => {
+  xit('work item should show updated title when switching from flat to tree view', async() => {
     await planner.header.clickShowTree();
     await planner.workItemList.ready();
     await planner.workItemList.clickWorkItem(c.workItemTitle2);
