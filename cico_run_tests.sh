@@ -94,7 +94,6 @@ SERVER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}
 # Run the E2E tests against the running fabric8-ui container
 docker exec -t -e REFRESH_TOKEN=$REFRESH_TOKEN $CID bash -c \
     "cd tests && WEBDRIVER_VERSION=2.37 DEBUG=true HEADLESS_MODE=true BASE_URL='http://${SERVER_IP}:8080' USER_NAME='ijarif-test-preview' ./run_e2e_tests.sh"
-    || exit $?
 
 
 REGISTRY="push.registry.devshift.net"
