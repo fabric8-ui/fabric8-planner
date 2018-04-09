@@ -104,7 +104,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.closeButton.ready();
     await this.titleDiv.ready();
     await this.descriptionDiv.ready();
-    await this.linksToggleButton.ready();
+    // We do not have the link button in current planner
+    // Uncomment when workitem linking is implemented
+    // await this.linksToggleButton.ready();
     await this.commentsToggleButton.ready();
     support.debug('... check if WorkItem preview is Ready - OK');
   }
@@ -256,14 +258,14 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async openDescriptionBox(){
-    await this.descriptionDiv.clickWhenReady();
+    await browser.actions().mouseMove(this.descriptionDiv).perform();
     await this.descriptionEditIcon.clickWhenReady();
   }
 
   async isSaveButtonDisplayed() {
     try {
       return await this.descriptionSaveButton.isDisplayed();
-    } 
+    }
     catch (exception) {
       return false;
     }
