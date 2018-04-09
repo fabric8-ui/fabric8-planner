@@ -2,7 +2,8 @@ import {
   Component,
   Input,
   OnInit,
-  ViewChild
+  ViewChild,
+  ElementRef
 } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Space } from 'ngx-fabric8-wit';
@@ -28,6 +29,9 @@ import * as WorkItemLinkActions from './../../actions/work-item-link.actions';
 export class WorkItemLinkComponent implements OnInit {
   @Input() loggedIn: Boolean;
   @ViewChild('searchResultList') searchResultList: any;
+  @ViewChild('linkTypeSelector') linkTypeSelector: ElementRef;
+  @ViewChild('wiSearchBox') wiSearchBox: ElementRef;
+
   @Input('workItem') set workItemSetter(workItem: WorkItemUI) {
     this.workItem = workItem;
     this.store.dispatch(
@@ -84,6 +88,9 @@ export class WorkItemLinkComponent implements OnInit {
       this.linkTypes = [...linkTypeSource];
       this.workItemLinkSource.subscribe(workItemLinks => {
         this.workItemLinks = [...workItemLinks];
+        if (this.linkTypeSelector && this.wiSearchBox) {
+          this.wiSearchBox.nativeElement.value = '';
+        }
       });
     })
   }
@@ -120,11 +127,10 @@ export class WorkItemLinkComponent implements OnInit {
 
   onSelectRelation(relation: any): void{
     //clear the search box and reset values related to search
-    // this.searchBox.nativeElement.value = '';
-    // this.searchWorkItems = [];
-    // this.selectedWorkItemId = null;
+    this.wiSearchBox.nativeElement.value = '';
+    this.searchWorkItems = [];
+    this.selectedWorkItemId = null;
     this.selectedLinkType = relation;
-    // this.setSearchNotAllowedIds();
   }
 
   selectSearchResult(id: string, number: number, title: string){
