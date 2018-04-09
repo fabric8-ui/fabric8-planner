@@ -86,11 +86,6 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.quickPreview.hasIteration(c.iteration1)).toBeTruthy();
     await planner.quickPreview.addIteration(c.dropdownIteration2);
     expect(await planner.quickPreview.hasIteration(c.iteration2)).toBeTruthy();
-    await planner.quickPreview.close();
-
-    await planner.workItemList.clickWorkItem(c.workItemTitle2);
-    expect(await planner.quickPreview.hasIteration(c.iteration2)).toBeTruthy();
-    await planner.quickPreview.close();
 
     //search iteration
     await planner.workItemList.clickWorkItem(c.workItemTitle7);
@@ -148,7 +143,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.quickPreview.hasTitleError('Empty title not allowed')).toBeTruthy();
   });
 
-  it('Create custom query', async() => {
+  xit('Create custom query', async() => {
     await planner.sidePanel.clickRequirement();
     await planner.header.selectFilter('State','in progress');
     await planner.header.saveFilters('Query 1');
