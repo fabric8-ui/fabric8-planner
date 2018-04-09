@@ -9,7 +9,12 @@
   </pfng-toolbar>
 </div>
 <div class="active-filters-section">
-  <div *ngIf="activeFilters.length" class="active-filters-div">
+  <span class="pull-left padding-right-15" 
+    *ngIf="activeFilterFromSidePane !== ''">
+      <strong>14</strong> in {{activeFilterFromSidePanel}}
+  </span>
+  <div class="active-filters-div"
+    *ngIf="activeFilters.length">
     <ul class="list-inline">
       <li *ngFor="let filter of activeFilters">
         <span class="active-filter label label-info">
@@ -21,8 +26,8 @@
         </span>
       </li>
     </ul>
-    <span *ngIf="activeFilters.length > 1"
-      class="clickable margin-left-5 margin-right-10">
+    <span  class="clickable padding-h-10"
+      *ngIf="activeFilters.length > 1">
       <a (click)="removeAllFilters()">Clear all filters</a>
     </span>
     <div class="dropdown-kebab-pf dropdown save-filter-dropdown"
