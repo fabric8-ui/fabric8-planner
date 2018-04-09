@@ -112,8 +112,6 @@ VERSION_NUMBER=$(echo $GIT_COMMIT | cut -c1-${DEVSHIFT_TAG_LEN})
 TAG="SNAPSHOT-PR-${ghprbPullId}-${VERSION_NUMBER}"
 IMAGE_REPO="fabric8-ui/fabric8-planner"
 
-cd fabric8-ui-dist
-docker build -t fabric8-planner-snapshot -f Dockerfile.deploy .
 docker tag fabric8-planner-snapshot ${REGISTRY}/${IMAGE_REPO}:$TAG
 docker push ${REGISTRY}/${IMAGE_REPO}:${TAG}
 
