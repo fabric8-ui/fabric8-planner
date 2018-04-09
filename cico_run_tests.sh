@@ -96,10 +96,7 @@ else
 fi
 
 # Build and push image
-# Use default length when not provided
-echo "${DEVSHIFT_TAG_LEN:=6}"
-VERSION_NUMBER=$(echo $GIT_COMMIT | cut -c1-${DEVSHIFT_TAG_LEN})
-TAG="SNAPSHOT-PR-${ghprbPullId}-${VERSION_NUMBER}"
+TAG="SNAPSHOT-PR-${ghprbPullId}"
 IMAGE_REPO="fabric8-ui/fabric8-planner"
 
 cd fabric8-ui-dist
