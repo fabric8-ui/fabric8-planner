@@ -8,7 +8,8 @@ import { RouterModule } from '@angular/router';
 import { WorkItemLinkComponent } from './work-item-link.component';
 import {
   WorkItemLinkFilterByTypeName,
-  WorkItemLinkTypeFilterByTypeName
+  WorkItemLinkTypeFilterByTypeName,
+  GroupWorkItemLinks
 } from '../../pipes/work-item-link-filters.pipe';
 
 @NgModule({
@@ -20,7 +21,8 @@ import {
   declarations: [
     WorkItemLinkComponent,
     WorkItemLinkFilterByTypeName,
-    WorkItemLinkTypeFilterByTypeName
+    WorkItemLinkTypeFilterByTypeName,
+    GroupWorkItemLinks
    ],
   exports: [ WorkItemLinkComponent ],
   providers: [BsDropdownConfig]

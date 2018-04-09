@@ -60,26 +60,31 @@ export class WorkItemLinkEffects {
           let targetWIIndex = p.workItems.findIndex(w => w.id === p.payload.relationships.target.data.id);
           let sourceWorkItem;
           let targetWorkItem;
-          if (sourceWIIndex > -1) {
-            sourceWorkItem = p.workItems[sourceWIIndex];
-          }
-          if (targetWIIndex > -1) {
-            targetWorkItem = p.workItems[targetWIIndex];
-          }
-          if (sourceWIIndex > -1 && targetWIIndex > -1) {
-            if (sourceWorkItem.treeStatus === 'expanded' ||
-            sourceWorkItem.childrenLoaded) {
-              this.store.dispatch(new WorkItemActions.CreateLink({
-                source: sourceWorkItem,
-                target: targetWorkItem,
-                sourceTreeStatus: sourceWorkItem.treeStatus
-              }));
-            } else {
-              this.store.dispatch(new WorkItemActions.CreateLink({
-                source: sourceWorkItem,
-                target: targetWorkItem,
-                sourceTreeStatus: sourceWorkItem.treeStatus
-              }));
+
+          // the tree will updated
+          // only if it is parent-child relationship
+          if (link.relationships['link_type'].data.id === '25c326a7-6d03-4f5a-b23b-86a9ee4171e9') {
+            if (sourceWIIndex > -1) {
+              sourceWorkItem = p.workItems[sourceWIIndex];
+            }
+            if (targetWIIndex > -1) {
+              targetWorkItem = p.workItems[targetWIIndex];
+            }
+            if (sourceWIIndex > -1 && targetWIIndex > -1) {
+              if (sourceWorkItem.treeStatus === 'expanded' ||
+              sourceWorkItem.childrenLoaded) {
+                this.store.dispatch(new WorkItemActions.CreateLink({
+                  source: sourceWorkItem,
+                  target: targetWorkItem,
+                  sourceTreeStatus: sourceWorkItem.treeStatus
+                }));
+              } else {
+                this.store.dispatch(new WorkItemActions.CreateLink({
+                  source: sourceWorkItem,
+                  target: targetWorkItem,
+                  sourceTreeStatus: sourceWorkItem.treeStatus
+                }));
+              }
             }
           }
           return new WorkItemLinkActions.AddSuccess(

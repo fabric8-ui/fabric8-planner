@@ -219,6 +219,7 @@ export class WorkItemLinkComponent implements OnInit {
   }
 
   deleteLink(event, wiLink, workItem) {
+    console.log(wiLink, '####-89');
     this.store.dispatch(new WorkItemLinkActions.Delete({
       wiLink: wiLink,
       workItemId: workItem.id
