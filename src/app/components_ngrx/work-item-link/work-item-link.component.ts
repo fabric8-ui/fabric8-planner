@@ -82,11 +82,9 @@ export class WorkItemLinkComponent implements OnInit {
       linkTypeSource
     ]) => {
       this.linkTypes = [...linkTypeSource];
-      console.log('####-2', this.linkTypes);
       this.workItemLinkSource.subscribe(workItemLinks => {
         this.workItemLinks = [...workItemLinks];
       });
-      console.log(this.linkTypes, this.workItemLinks, '####-3');
     })
   }
 
@@ -212,6 +210,13 @@ export class WorkItemLinkComponent implements OnInit {
       this.selectedLinkType.linkType
     );
     this.store.dispatch(new WorkItemLinkActions.Add(linkPayload));
+  }
+
+  deleteLink(event, wiLink, workItem) {
+    this.store.dispatch(new WorkItemLinkActions.Delete({
+      wiLink: wiLink,
+      workItemId: workItem.id
+    }));
   }
 
   createLinkObject(sourceId: string, targetId: string, linkId: string, linkType: string) {

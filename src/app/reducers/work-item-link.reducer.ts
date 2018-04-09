@@ -12,16 +12,27 @@ export const WorkItemLinkReducer: ActionReducer<WorkItemLinkState> =
       }
 
       case WorkItemLinkActions.GET_ERROR: {
-        return [...state];
+        return state;
       }
 
       case WorkItemLinkActions.ADD_SUCCESS: {
-        console.log(action.payload, '####-2');
         return [action.payload, ...state];
       }
 
       case WorkItemLinkActions.ADD_ERROR: {
+        return state;
+      }
+
+      case WorkItemLinkActions.DELETE_SUCCESS: {
+        let linkIndex = state.findIndex(l => l.id === action.payload.id)
+        if (linkIndex > -1) {
+          state.splice(linkIndex, 1);
+        }
         return [...state];
+      }
+
+      case WorkItemLinkActions.DELETE_ERROR: {
+        return state;
       }
 
       default: {

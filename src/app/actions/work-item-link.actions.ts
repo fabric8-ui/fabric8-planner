@@ -31,17 +31,17 @@ export class Get implements Action {
 export class Delete implements Action {
   payload: {
     wiLink: WorkItemLinkUI,
-    workItem: WorkItemUI
+    workItemId: string
   }
   constructor(
     payload: {
       wiLink: WorkItemLinkUI,
-      workItem: WorkItemUI
+      workItemId: string
     }
   ){
     this.payload = payload;
   }
-  readonly type = DELETE_SUCCESS;
+  readonly type = DELETE;
 }
 
 export class AddSuccess implements Action {
