@@ -30,8 +30,6 @@ build_planner;
 
 run_unit_tests;
 
-run_functional_tests;
-
 build_fabric8_ui;
 
-build_push_image;
+build_test_and_push_image;
