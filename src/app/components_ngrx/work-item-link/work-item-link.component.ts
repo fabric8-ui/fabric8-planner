@@ -28,6 +28,7 @@ import * as WorkItemLinkActions from './../../actions/work-item-link.actions';
 
 export class WorkItemLinkComponent implements OnInit {
   @Input() loggedIn: Boolean;
+  @Input() detailContext: string; // It should be detail or preview
   @ViewChild('searchResultList') searchResultList: any;
   @ViewChild('linkTypeSelector') linkTypeSelector: ElementRef;
   @ViewChild('wiSearchBox') wiSearchBox: ElementRef;

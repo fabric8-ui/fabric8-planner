@@ -36,7 +36,7 @@ export class WorkItemLinkEffects {
           return new WorkItemLinkActions.GetSuccess(
             links.map(l => this.wilMapper.toUIModel(l))
           );
-        });
+        })
     });
 
   @Effect() createLink$: Observable<Action> = this.actions$
