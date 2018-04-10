@@ -41,4 +41,4 @@ run_unit_tests;
 
 run_functional_tests;
 
-docker exec $CID bash -c 'sh cico_release.sh'
+docker exec -e GH_TOKEN=$GH_TOKEN -e NPM_TOKEN=$NPM_TOKEN $CID bash -c 'sh cico_release.sh'
