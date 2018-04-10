@@ -7,6 +7,11 @@ import { AppState } from './../states/app.state';
 import { WorkItemLinkMapper } from './../models/link';
 import { WorkItemService } from './../services/work-item.service';
 import * as WorkItemActions from './../actions/work-item.actions';
+import {
+  Notification,
+  Notifications,
+  NotificationType
+} from "ngx-base";
 
 export type Action = WorkItemLinkActions.All;
 
@@ -17,6 +22,7 @@ export class WorkItemLinkEffects {
   constructor(
     private actions$: Actions,
     private workItemService: WorkItemService,
+    private notifications: Notifications,
     private store: Store<AppState>
   ) {}
 
@@ -36,6 +42,17 @@ export class WorkItemLinkEffects {
           return new WorkItemLinkActions.GetSuccess(
             links.map(l => this.wilMapper.toUIModel(l))
           );
+        })
+        .catch((e) => {
+          try {
+            this.notifications.message({
+              message: `Problem in fetching links.`,
+              type: NotificationType.DANGER
+            } as Notification);
+          } catch(e) {
+            console.log('Problem in fetching links');
+          }
+          return Observable.of(new WorkItemLinkActions.GetError());
         })
     });
 
@@ -91,6 +108,17 @@ export class WorkItemLinkEffects {
             this.wilMapper.toUIModel(link)
           )
         })
+        .catch((e) => {
+          try {
+            this.notifications.message({
+              message: `Problem in creating link`,
+              type: NotificationType.DANGER
+            } as Notification);
+          } catch (e) {
+            console.log('Problem in creating link');
+          }
+          return Observable.of(new WorkItemLinkActions.AddError());
+        })
     })
 
   @Effect() deleteLink$: Observable<Action> = this.actions$
@@ -123,6 +151,17 @@ export class WorkItemLinkEffects {
             sourceTreeStatus: ''
           }))
           return new WorkItemLinkActions.DeleteSuccess(p.payload.wiLink);
+        })
+        .catch((e) => {
+          try {
+            this.notifications.message({
+              message: `Problem in deleting work item.`,
+              type: NotificationType.DANGER
+            } as Notification);
+          } catch(e) {
+            console.log('Problem in deleting work item');
+          }
+          return Observable.of(new WorkItemLinkActions.DeleteError());
         })
     })
 }
