@@ -12,7 +12,7 @@ export class Constants {
   updateIteration = 'Iteration_2123'
   label1 = 'Example Label 1';
   label2 = 'sample_label_2';
-  linkType = 'tests';
+  linkType = 'blocks';
   newLabel = "new label";
   newLabel1 = "new label 1";
   newIteration ='new Iteration';

@@ -17,10 +17,13 @@ describe('Iteration test', () => {
 
   it('should create a new iteration', async () => {
     let newIteration = 'new Iteration';
-    let iteration3 = '/' + process.env.SPACE_NAME
+    let iteration3 = '/' + process.env.SPACE_NAME;
     await planner.sidePanel.createNewIteration();
     await planner.iteration.addNewIteration(newIteration, iteration3);
-    expect(await planner.sidePanel.getIterationList()).toContain(newIteration);
+    let month = await planner.iteration.getMonth();
+    let year = await planner.iteration.getYear();
+    await planner.iteration.clickCreateIteration();
+    expect(await planner.sidePanel.getIterationDate()).toContain('new Iteration [Active]'+month+' 1, '+year+' - '+month+' 30, '+year+'\n');
   });
 
   it('updating iteration should update workitem associated to iteration', async() => {
