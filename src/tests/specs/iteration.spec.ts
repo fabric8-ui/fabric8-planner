@@ -23,7 +23,7 @@ describe('Iteration test', () => {
     let month = await planner.iteration.getMonth();
     let year = await planner.iteration.getYear();
     await planner.iteration.clickCreateIteration();
-    expect(await planner.sidePanel.getIterationDate()).toContain('new Iteration [Active]'+month+' 1, '+year+' - '+month+' 30, '+year+'\n');
+    expect(await planner.sidePanel.getIterationDate()).toContain('new Iteration [Active]'+month+' 1, '+year+' - '+month+' 28, '+year+'\n');
   });
 
   it('updating iteration should update workitem associated to iteration', async() => {

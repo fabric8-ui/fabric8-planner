@@ -17,8 +17,8 @@ export class Iteration extends ui.BaseElement {
   private showStartDateCalendar = new ui.Clickable(this.datePickerDiv.$$('.selection.inputnoteditable').first(),'start date calendar');
   private showEndDateCalendar = new ui.Clickable(this.datePickerDiv.$$('.selection.inputnoteditable').last(),'End date calendar');
   calendarDiv = new ui.BaseElement(this.$('.selector.selectorarrow.selectorarrowleft'),'');
-  selectStartdate = new ui.Clickable(this.$$('.datevalue.currmonth').first(),' select date');
-  selectEndDate = new ui.Clickable(this.$$('.datevalue.currmonth').last(),' select date');
+  selectStartdate = new ui.Clickable(this.$$('.datevalue.currmonth').first(),' select start date');
+  selectEndDate = new ui.Clickable(this.$$('.datevalue.currmonth').get(27),' select end date');
   month = new ui.Clickable(this.$('.headermonthtxt'), 'month');
   year = new ui.Clickable(this.$('.yearlabel'), 'year');  
 
