@@ -637,7 +637,8 @@ export class WorkItemService {
       if (workItemType) {
         return Observable.of(workItemType);
       } else {
-        let workItemTypeUrl = this._currentSpace.links.self + '/workitemtypes/' + id;
+        let workItemTypeUrl = this._currentSpace.links.self.split('/spaces/')[0] +
+          '/workitemtypes/' + id;
         return this.http.get(workItemTypeUrl)
           .map((response) => {
             workItemType = response.json().data as WorkItemType;
@@ -835,7 +836,7 @@ export class WorkItemService {
    *
    * @return Promise of LinkType[]
    */
-  getAllLinkTypes(workItem: WorkItem): Observable<any> {
+  getAllLinkTypes(): Observable<any> {
     let workItemLinkTypesUrl = this._currentSpace.links.self + '/workitemlinktypes';
     return this.http.get(workItemLinkTypesUrl)
       .catch((error: Error | any) => {
@@ -850,8 +851,8 @@ export class WorkItemService {
    *
    * @return Promise of LinkType[]
    */
-  getLinkTypes(workItem: WorkItem): Observable<Object> {
-    return this.getAllLinkTypes(workItem)
+  getLinkTypes(): Observable<Object> {
+    return this.getAllLinkTypes()
         .map(item => {
           let linkTypes: Object = {};
           linkTypes['forwardLinks'] = item.json().data;
