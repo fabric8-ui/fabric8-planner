@@ -46,6 +46,11 @@ describe('Unit Test :: Group type model', () => {
       group: "portfolio",
       selected: false,
       showInSideBar: true,
+      infotipTextMap: { 
+        'Scenarios': 'A software development methodology focused on real-world problems, or scenarios, described in the language and from the viewpoint of the user. Scenarios deliver particular value propositions and are realized through experiences.',
+        'Experiences': 'Experience describes the envisioned user experience in the product to actualize a parent work item. Each parent work item can have multiple experiences.',
+        'Requirements': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+      },
       typeList: [{
         id: "b9a71831-c803-4f66-8774-4193fffd1311",
         workitemtype: "type-1"
