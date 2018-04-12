@@ -5,7 +5,7 @@
 function load_jenkins_vars() {
     if [ -e "jenkins-env" ]; then
         cat jenkins-env \
-        | grep -E "(JENKINS_URL|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId|DEVSHIFT_TAG_LEN|GIT_COMMIT|NPM_TOKEN|GH_TOKEN|REFRESH_TOKEN)=" \
+        | grep -E "^(JENKINS_URL|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId|DEVSHIFT_TAG_LEN|GIT_COMMIT|NPM_TOKEN|GH_TOKEN|REFRESH_TOKEN)=" \
         | sed 's/^/export /g' \
         > /tmp/jenkins-env
         source /tmp/jenkins-env
