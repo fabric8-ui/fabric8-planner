@@ -4,7 +4,7 @@ import { InfotipComponent } from './infotip.component';
 import { PopoverModule } from 'ngx-bootstrap';
 
 @NgModule({
-  imports: [CommonModule, PopoverModule],
+  imports: [CommonModule, PopoverModule.forRoot()],
   declarations: [InfotipComponent],
   exports: [InfotipComponent]
 })

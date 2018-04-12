@@ -1,8 +1,7 @@
 import {
   WorkItemTypeMapper,
   WorkItemTypeUI,
-  WorkItemTypeService,
-  WorkItemTypeField
+  WorkItemTypeService
 } from './work-item-type';
 
 describe('WorkItemTypeMapper', () => {
