@@ -58,8 +58,10 @@ export class LabelSelectorComponent implements OnInit {
   }
 
   @Input('selectedLabels') set selectedLabelsSetter(labels: LabelUI[]) {
-    this.selectedLabels = labels;
-    this.updateSelection();
+    if (this.selectedLabels !== labels) {
+      this.selectedLabels = labels;
+      this.updateSelection();
+    }
   }
 
   @Output() onSelectLabel: EventEmitter<LabelUI[]> = new EventEmitter();
