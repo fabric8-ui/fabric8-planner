@@ -1,8 +1,12 @@
 #!/bin/bash
 
 # This file is supposed to be executed by CICO build (ci.centos.org/view/Devtools/)
-#   1. Run tests for fabric8-planner
-#   2. Create snapshot with fabric8-ui's master and fabric8-planner's current changes
+# It will:
+#   1. Build fabric8-planner 
+#   2. Update Tag on github
+#   3. Push fabric8-planner to npmjs.org
+#   4. Create PR with new planner version on fabric8-npm-dependencies repo
+#   5. Merge the PR on fabric8-npm-dependencies repo
 
 # Show command before executing
 set -x
@@ -10,7 +14,11 @@ set -x
 # Exit on error
 set -e
 
-. cico_setup.sh
+# This option sets the exit code of a pipeline to that of the rightmost command to exit with a
+# non-zero status, or to zero if all commands of the pipeline exit successfully.
+set -o pipefail
+
+source cico_setup.sh
 
 setup;
 
@@ -33,6 +41,4 @@ run_unit_tests;
 
 run_functional_tests;
 
-build_fabric8_ui;
-
-build_push_image;
+docker exec -e GH_TOKEN=$GH_TOKEN -e NPM_TOKEN=$NPM_TOKEN -e JENKINS_URL=$JENKINS_URL -e GIT_BRANCH=$GIT_BRANCH $CID bash -c 'sh cico_release.sh'
