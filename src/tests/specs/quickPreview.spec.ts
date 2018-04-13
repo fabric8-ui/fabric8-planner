@@ -43,7 +43,9 @@ describe('Quick preview tests: ', () => {
   });
 
   it('description box should not be open for wis',async () => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+    let workitemname = {"title": "quickpreview test"};
+    await planner.createWorkItem(workitemname);
+    await planner.workItemList.clickWorkItem(workitemname.title);
     await planner.quickPreview.openDescriptionBox();
     expect(await planner.quickPreview.isSaveButtonDisplayed()).toBeTruthy();
 

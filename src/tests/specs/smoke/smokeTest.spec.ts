@@ -137,12 +137,6 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.quickPreview.hasComment('new comment')).toBeFalsy();
   });
 
-  it('update of empty workitem title is not allowed', async () => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle1);
-    await planner.quickPreview.updateTitle('');
-    expect(await planner.quickPreview.hasTitleError('Empty title not allowed')).toBeTruthy();
-  });
-
   xit('Create custom query', async() => {
     await planner.sidePanel.clickRequirement();
     await planner.header.selectFilter('State','in progress');
