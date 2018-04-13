@@ -85,7 +85,8 @@
                   placeholder="Search for work items"
                   (keyup)="searchWorkItem(wiSearchBox.value, $event)"
                   [value]="selectedValue"
-                  [disabled]="!selectedLinkType"/>
+                  [disabled]="!selectedLinkType"
+                  autocomplete="off" />
                   <ul class="dropdown-menu dropdown-ul"
                     *ngIf="searchWorkItems.length"
                     #searchResultList>

@@ -83,19 +83,30 @@ export const WorkItemReducer: ActionReducer<WorkItemState> = (state = initialSta
     }
 
     case WorkItemActions.CREATE_LINK: {
-      if (action.payload.sourceTreeStatus === 'expanded') {
-        let index = state.findIndex(w => w.id === action.payload.target.id);
-        if (index > -1) {
-          state[index].parentID = action.payload.source.id;
+      let sourceIndex = state.findIndex(w => w.id === action.payload.source.id);
+      let targetIndex = state.findIndex(w => w.id === action.payload.target.id);
+      if (action.payload.sourceTreeStatus === 'expanded' && sourceIndex > -1) {
+        if (sourceIndex > -1 && targetIndex > -1) {
+          state[targetIndex].parentID = action.payload.source.id;
+        } else if (sourceIndex > -1 && targetIndex === -1) {
+          action.payload.target.parentID = action.payload.source.id;
+          state = [...state, action.payload.target];
         }
-      } else if (action.payload.sourceTreeStatus === 'disabled') {
-        let sourceIndex = state.findIndex(w => w.id === action.payload.source.id);
-        let targetIndex = state.findIndex(w => w.id === action.payload.target.id);
+      } else if (action.payload.sourceTreeStatus === 'disabled' && sourceIndex > -1) {
         if (sourceIndex > -1 && targetIndex > -1) {
           state[sourceIndex].hasChildren = true;
           state[sourceIndex].treeStatus = 'collapsed';
           state.splice(targetIndex, 1);
+        } else if (sourceIndex > -1 && targetIndex == -1) {
+          state[sourceIndex].hasChildren = true;
+          state[sourceIndex].treeStatus = 'collapsed';
         }
+      }
+      if (sourceIndex === -1 && targetIndex > -1) {
+        action.payload.target.parentID = action.payload.source.id;
+        action.payload.source.hasChildren = true;
+        action.payload.source.treeStatus = "expanded";
+        state = [...state, action.payload.source];
       }
       return [...state];
     }

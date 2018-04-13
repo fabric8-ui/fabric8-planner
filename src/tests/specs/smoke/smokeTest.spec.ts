@@ -166,5 +166,6 @@ describe('Planner Smoke Tests:', () => {
     await planner.detailPage.closeButton.ready();
     expect(await browser.getCurrentUrl()).toContain('detail');
   });
+
 });
 
