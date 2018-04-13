@@ -54,6 +54,8 @@ export class LabelsComponent {
   
   constructQueryExpression(labelId) { 
    this.queryParams = cloneDeep(this.route.snapshot.queryParams);
+   let showTree: boolean = this.queryParams.hasOwnProperty('showTree');
+   let showCompleted: boolean = this.queryParams.hasOwnProperty('showCompleted');
    const newQuery = this.filterService.queryBuilder(
       'label',
       this.filterService.equal_notation,
@@ -62,9 +64,6 @@ export class LabelsComponent {
     let existingQuery = {};
     if (this.queryParams.hasOwnProperty('q')) {
       existingQuery = this.filterService.queryToJson(this.queryParams['q']);
-      if(existingQuery['$AND'][existingQuery['$AND'].length-1].hasOwnProperty('label')) {
-        existingQuery['$AND'].splice(existingQuery['$AND'].length-1,1);
-      }
     }
     const finalQuery = this.filterService.jsonToQuery(
       this.filterService.queryJoiner(
@@ -73,17 +72,7 @@ export class LabelsComponent {
         newQuery
       )
     );
-    let queryParamObj = {};
-    if(this.queryParams.hasOwnProperty('showTree')) {
-      queryParamObj = {
-        q : finalQuery,
-        showTree : this.queryParams.showTree
-      }
-      return queryParamObj;
-    }
-    queryParamObj = {
-      q : finalQuery
-    }
-    return queryParamObj;
+    this.queryParams['q'] = finalQuery;
+    return this.queryParams;
   }
 }
