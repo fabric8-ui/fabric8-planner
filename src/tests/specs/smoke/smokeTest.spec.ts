@@ -146,5 +146,16 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.sidePanel.hasCustomQuery('Query 1')).toBeTruthy();
   });
 
+  it('Update work item with a label and validate description', async() => {
+    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+    await planner.quickPreview.updateDescription(c.updatedWorkItem.description);
+    await planner.quickPreview.createNewLabel(c.newLabel);
+    expect(await planner.quickPreview.hasLabel(c.newLabel)).toBeTruthy();
+    await planner.quickPreview.close();
+    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+    await planner.quickPreview.addLabel(c.newLabel);
+    expect(await planner.quickPreview.hasDescription(c.updatedWorkItem.description)).toBeTruthy();
+    await planner.quickPreview.close();
+  })
 });
 
