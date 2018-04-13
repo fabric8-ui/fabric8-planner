@@ -10,7 +10,8 @@ export interface AppState {
     groupTypes: states.GroupTypeState,
     space: states.SpaceState,
     workItemStates: states.WIState,
-    workItemTypes: states.WorkItemTypeState
+    workItemTypes: states.WorkItemTypeState,
+    customQueries: states.CustomQueryState
   };
 
   iterationPanel: {
@@ -19,10 +20,16 @@ export interface AppState {
 
   detailPage: {
     comments: states.CommentState,
-    workItem: states.DetailWorkItemState
+    workItem: states.DetailWorkItemState,
+    linkType: states.LinkTypeState,
+    workItemLink: states.WorkItemLinkState
   };
 
   toolbar: {
     filters: states.FilterState
   };
+
+  workItemLink: {
+    workItems: states.WorkItemState
+  }
 };
