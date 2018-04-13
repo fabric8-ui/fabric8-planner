@@ -43,6 +43,7 @@ export class Constants {
   workItemTitle13 = 'Workitem_Title_13';
   workItemTitle17 = 'Workitem_Title_17';
   user1 = process.env.USER_FULLNAME;
+  editWorkItemTitle1 = 'Title Text "<0>"';
   // Required since we need 2 users. Do not remove
   user2 = this.user1;
   user_avatar = 'https://www.gravatar.com/avatar/f56b4884b4041f14b13d919008fd7d44.jpg&s=20';

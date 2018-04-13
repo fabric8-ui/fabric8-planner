@@ -36,6 +36,12 @@ describe('Quick preview tests: ', () => {
     expect(await planner.quickPreview.hasLinkedItem(c.workItemTitle1)).toBeTruthy();
   });
 
+  it('should open quick preview and edit the title',async () => {
+    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+    await planner.quickPreview.updateTitle(c.editWorkItemTitle1);
+    expect(await planner.quickPreview.titleDiv.getTextWhenReady()).toBe('Title Text "<0>"');
+  });
+
   it('description box should not be open for wis',async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.openDescriptionBox();
