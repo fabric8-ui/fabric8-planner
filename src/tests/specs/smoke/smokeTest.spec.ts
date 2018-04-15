@@ -13,7 +13,7 @@ describe('Planner Smoke Tests:', () => {
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     // This is necessary since the planner takes time to load on prod/prod-preview
-    await browser.sleep(12000);
+    await browser.sleep(5000);
     await planner.ready();
   });
 
@@ -47,6 +47,7 @@ describe('Planner Smoke Tests:', () => {
   });
 
   it('update of empty workitem title is not allowed', async () => {
+    let title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.updateTitle('');
     expect(await planner.quickPreview.hasTitleError('Empty title not allowed')).toBeTruthy();

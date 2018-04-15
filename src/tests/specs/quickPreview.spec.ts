@@ -12,7 +12,7 @@ describe('Quick preview tests: ', () => {
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     // This is necessary since the planner takes time to load on prod/prod-preview
-    await browser.sleep(12000);
+    await browser.sleep(5000);
     await planner.ready();
   });
 
@@ -37,8 +37,10 @@ describe('Quick preview tests: ', () => {
   });
 
   it('should open quick preview and edit the title',async () => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+    let title = await planner.createUniqueWorkItem();
+    await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.updateTitle(c.editWorkItemTitle1);
+    await planner.quickPreview.close();
     expect(await planner.quickPreview.titleDiv.getTextWhenReady()).toBe('Title Text "<0>"');
   });
 

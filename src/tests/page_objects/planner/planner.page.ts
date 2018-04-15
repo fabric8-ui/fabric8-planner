@@ -1,4 +1,5 @@
 import { $, browser } from 'protractor';
+import { v4 as uuid } from 'uuid';
 import { AppPage } from '../app.page';
 import * as planner from './../../ui/planner';
 import * as support from './../../support';
@@ -33,6 +34,11 @@ export class PlannerPage extends AppPage {
     await this.quickAdd.addWorkItem(item);
   }
 
+  async createUniqueWorkItem(): Promise<string> {
+    let workItemTitle = uuid();
+    await this.createWorkItem({"title" : workItemTitle});
+    return workItemTitle;
+  }
   async createInlineWorkItem(item: planner.WorkItem) {
     this.debug('create inline item', JSON.stringify(item));
     await this.inlineQuickAdd.addInlineWorkItem(item);
