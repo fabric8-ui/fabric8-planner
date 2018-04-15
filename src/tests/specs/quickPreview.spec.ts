@@ -40,7 +40,7 @@ describe('Quick preview tests: ', () => {
     let title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.updateTitle(c.editWorkItemTitle1);
-    await planner.quickPreview.close();
+    await planner.quickPreview.notificationToast.untilHidden();
     expect(await planner.quickPreview.titleDiv.getTextWhenReady()).toBe('Title Text "<0>"');
   });
 

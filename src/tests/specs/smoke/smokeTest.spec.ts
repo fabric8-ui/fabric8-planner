@@ -133,7 +133,8 @@ describe('Planner Smoke Tests:', () => {
   });
 
   it('Edit Comment and Cancel', async() => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle2);
+    let title = await planner.createUniqueWorkItem()
+    await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.addCommentAndCancel(c.comment);
     expect(await planner.quickPreview.hasComment('new comment')).toBeFalsy();
   });

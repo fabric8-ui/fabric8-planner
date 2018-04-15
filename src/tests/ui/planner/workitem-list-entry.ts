@@ -45,7 +45,4 @@ export class WorkItemListEntry extends ui.BaseElement {
     return await this.iteration.getTextWhenReady();
   }
 
-  async clickExpandWorkItem() {
-    return await this.treeExpander.clickWhenReady();
-  }
 }

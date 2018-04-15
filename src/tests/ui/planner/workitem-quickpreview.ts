@@ -232,7 +232,11 @@ export class WorkItemQuickPreview extends ui.BaseElement {
 
   async hasComment(comment: string): Promise<Boolean> {
     await this.ready();
-    let commentList = await this.commentsText.getTextWhenReady();
+    await this.commentDiv.scrollIntoView();
+    let commentList:String = "" ;
+    if (await this.commentsText.isPresent()) {
+      commentList = await this.commentsText.getTextWhenReady();
+    }
     this.debug("Comment list: " + commentList);
     return commentList.indexOf(comment) > -1;
   }

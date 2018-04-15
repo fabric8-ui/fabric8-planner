@@ -1,5 +1,5 @@
 import { BaseElement } from './../base.element';
-import { ElementFinder, browser } from 'protractor';
+import { ElementFinder, browser, $$ } from 'protractor';
 import * as ui from '../../ui';
 
 export class ToolbarHeader extends BaseElement {
