@@ -10,9 +10,9 @@ set -x
 # Exit on error
 set -e
 
-. cico_setup.sh
+source cico_setup.sh
 
-setup;
+setup
 
 # Build fabric8-planner image
 docker build -t fabric8-planner-builder .
@@ -26,10 +26,10 @@ CID=$(docker run --detach=true \
     --cap-add=SYS_ADMIN \
     -t fabric8-planner-builder)
 
-build_planner;
+build_planner
 
-run_unit_tests;
+run_unit_tests
 
-build_fabric8_ui;
+build_fabric8_ui
 
-build_test_and_push_image;
+build_test_and_push_image
