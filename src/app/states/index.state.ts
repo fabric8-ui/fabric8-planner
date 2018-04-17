@@ -12,6 +12,10 @@ export {
   initialState as initialCommentState
 } from './comment.state';
 export {
+  CustomQueryState,
+  initialState as initialCustomQueryState
+} from './custom-query.state'
+export {
   FilterState,
   initialState as initialFilterState
 } from './filter.state'
@@ -49,3 +53,11 @@ export {
   DetailWorkItemState,
   initialState as initialDetailWIState
 } from './detail-work-item.state';
+export {
+  LinkTypeState,
+  initialState as initialLinkTypeState
+} from './link-type.state';
+export {
+  WorkItemLinkState,
+  initialState as initialWorkItemLinkState
+} from './work-item-link.state';
