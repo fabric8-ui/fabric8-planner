@@ -30,8 +30,8 @@ describe('Quick preview tests: ', () => {
 
   it('should link a workitem',async () => {
     let workitemname = {"title": "link test"},
-    linkType = 'blocks',
-    workItemTitle17 = 'Workitem_Title_17';
+      linkType = 'blocks',
+      workItemTitle17 = 'Workitem_Title_17';
     await planner.createWorkItem(workitemname);    
     await planner.workItemList.clickWorkItem(workitemname.title);
     await planner.quickPreview.addLink(linkType, workItemTitle17);

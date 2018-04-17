@@ -98,18 +98,17 @@ describe('Work Item datatable list: ', () => {
     await browser.sleep(3000);
     expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
   });
-
-  // Skip this tests since it is failing (and we need to merge the E2E PR)
-  // Todo(Raunak): Fix this test
-  xit ('matching child should be expanded initially', async() => {
+  
+  it('matching child should be expanded initially', async() => {
+    let workitemname = {"title": "child", "type": 'Bug'};
     await planner.sidePanel.clickRequirement();
     await planner.workItemList.workItem(c.workItemTitle17).clickInlineQuickAdd();
-    await planner.createInlineWorkItem(c.newWorkItem1);
+    await planner.createInlineWorkItem(workitemname);
     await browser.sleep(3000);
     await planner.sidePanel.clickScenarios();
     await browser.sleep(3000);
     await planner.sidePanel.clickRequirement();
     await browser.sleep(3000);
-    expect(await planner.workItemList.hasWorkItem(c.newWorkItem1.title)).toBeTruthy();
+    expect(await planner.workItemList.hasWorkItem(workitemname.title)).toBeTruthy();
   })
 });
