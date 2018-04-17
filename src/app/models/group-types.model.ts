@@ -40,6 +40,9 @@ export class WorkItemRelations {
   };
   typeList?: {
     data?: TypeListData[]
+  };
+  infoTip?: {
+    data?: string;
   }
 }
 
@@ -61,7 +64,7 @@ export interface GroupTypeUI extends modelUI {
   selected: boolean;
   showInSideBar: boolean; // attributes / show-in-sidebar
   typeList: TypeListData[]; // relationships / typeList / data
-  infotipTextMap: object;
+  infotip: string;
 }
 
 export class GroupTypeMapper implements Mapper<GroupTypeService, GroupTypeUI> {
@@ -97,11 +100,13 @@ export class GroupTypeMapper implements Mapper<GroupTypeService, GroupTypeUI> {
       fromPath: ['relationships', 'typeList', 'data'],
       toPath: ['typeList'],
     }, {
-      toPath: ['infotipTextMap'],
-      toValue: { 
-        'Scenarios': 'A software development methodology focused on real-world problems, or scenarios, described in the language and from the viewpoint of the user. Scenarios deliver particular value propositions and are realized through experiences.',
-        'Experiences': 'Experience describes the envisioned user experience in the product to actualize a parent work item. Each parent work item can have multiple experiences.',
-        'Requirements': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+      fromPath: ['relationships', 'infoTip', 'data'],
+      toPath: ['infotip'],
+      toFunction: function(value) {
+        if (value === null) {
+          return 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+        }
+        return value;
       }
     }];
 
