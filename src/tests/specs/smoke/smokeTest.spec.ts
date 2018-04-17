@@ -147,14 +147,15 @@ describe('Planner Smoke Tests:', () => {
   });
 
   it('Update work item with a label and validate description', async() => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle1);
-    await planner.quickPreview.updateDescription(c.updatedWorkItem.description);
-    await planner.quickPreview.createNewLabel(c.newLabel);
-    expect(await planner.quickPreview.hasLabel(c.newLabel)).toBeTruthy();
+    let title = await planner.createUniqueWorkItem();
+    await planner.workItemList.clickWorkItem(title);
+    await planner.quickPreview.updateDescription("My new description");
+    await planner.quickPreview.createNewLabel("Validate description label");
+    expect(await planner.quickPreview.hasLabel("Validate description label")).toBeTruthy();
     await planner.quickPreview.close();
-    await planner.workItemList.clickWorkItem(c.workItemTitle1);
-    await planner.quickPreview.addLabel(c.newLabel);
-    expect(await planner.quickPreview.hasDescription(c.updatedWorkItem.description)).toBeTruthy();
+    await planner.workItemList.clickWorkItem(title);
+    await planner.quickPreview.addLabel("Validate description label");
+    expect(await planner.quickPreview.hasDescription("My new description")).toBeTruthy();
     await planner.quickPreview.close();
   })
 });
