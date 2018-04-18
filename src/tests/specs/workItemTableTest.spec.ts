@@ -50,7 +50,7 @@ describe('Work Item datatable list: ', () => {
     expect(await planner.workItemList.hasWorkItem(newWorkItem1.title)).toBeTruthy();
   });
 
-  xit('check show completed and create a work item then update status to closed and uncheck show completed then work item should not visible in list', async() => {
+  it('check show completed and create a work item then update status to closed and uncheck show completed then work item should not visible in list', async() => {
     await planner.header.clickShowCompleted();
     await planner.workItemList.overlay.untilPresent();
     await planner.workItemList.overlay.untilAbsent();
@@ -61,10 +61,10 @@ describe('Work Item datatable list: ', () => {
     expect(await planner.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(newWorkItem.title);
     await planner.quickPreview.changeStateTo('closed');
+    await planner.quickPreview.notificationToast.untilHidden();    
     await planner.quickPreview.close();
     await planner.header.clickShowCompleted();
-    await planner.workItemList.overlay.untilPresent();
-    await planner.workItemList.overlay.untilAbsent();
+    await planner.workItemList.overlay.untilHidden();
     expect(await planner.workItemList.hasWorkItem(newWorkItem.title)).toBeFalsy();
   });
 
