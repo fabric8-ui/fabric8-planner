@@ -125,6 +125,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private activeFilters = [];
   private activeFilterFromSidePanel: string = '';
   private currentQuery: string = '';
+  private workitemCount: number;
 
   private isShowTreeOn: boolean = false;
   private isShowCompletedOn: boolean = false;
@@ -169,6 +170,10 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       .select('listPage')
       .select('customQueries')
       .filter(customQueries => !!customQueries.length);
+    
+      const totalcount = this.store
+      .select('listPage')
+      .select('workItems')
 
     this.eventListeners.push(
       customQueriesData.subscribe(queries => {
@@ -181,6 +186,9 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.showSaveFilterButton = true;
         }
+      }),
+      totalcount.subscribe(items => {
+        this.workitemCount = items.filter(item => item.bold === true).length;
       })
     );
   }
