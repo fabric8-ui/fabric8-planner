@@ -38,15 +38,16 @@ describe('Work Item datatable list: ', () => {
     await planner.header.selectFilter(c.attribute2, c.label2);
   });
 
-  // The test doesn't work on mock data. Hence, ignore it.
-  // The should work against real database.
-  xit('hideTree and create a work item then work item should be displayed when show tree is selected', async () => {
+  it('hideTree and create a work item then work item should be displayed when show tree is selected', async () => {
+    let newWorkItem1 = {"title" : 'New WorkItem'};
+
     await planner.header.clickShowTree();
-    await planner.createWorkItem(c.newWorkItem1);
-    expect(await planner.workItemList.hasWorkItem(c.newWorkItem1.title)).toBeTruthy();
+    await planner.workItemList.overlay.untilHidden();    
+    await planner.createWorkItem(newWorkItem1);
+    expect(await planner.workItemList.hasWorkItem(newWorkItem1.title)).toBeTruthy();
     await planner.quickPreview.notificationToast.untilHidden();
     await planner.header.clickShowTree();
-    expect(await planner.workItemList.hasWorkItem(c.newWorkItem1.title)).toBeTruthy();
+    expect(await planner.workItemList.hasWorkItem(newWorkItem1.title)).toBeTruthy();
   });
 
   xit('check show completed and create a work item then update status to closed and uncheck show completed then work item should not visible in list', async() => {
