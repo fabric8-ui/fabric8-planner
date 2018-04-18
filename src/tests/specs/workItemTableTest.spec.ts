@@ -25,7 +25,7 @@ describe('Work Item datatable list: ', () => {
     expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(8);
   });
 
-  xit('quick add should be disable for flat view', async() => {
+  it('quick add should be disable for flat view', async() => {
     await planner.header.clickShowTree();
     await browser.sleep(2000);
     await planner.workItemList.overlay.untilHidden();
