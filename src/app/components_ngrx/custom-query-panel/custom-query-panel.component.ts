@@ -3,7 +3,13 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
 import { Params, ActivatedRoute } from '@angular/router';
-import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  OnChanges,
+  OnDestroy
+} from '@angular/core';
 
 import { AuthenticationService } from 'ngx-login-client';
 import { Space, Spaces } from 'ngx-fabric8-wit';
@@ -30,6 +36,8 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
   private eventListeners: any[] = [];
   private customQueries: CustomQueryModel[] = [];
   private startedCheckingURL: boolean = false;
+  private showTree: string = '';
+  private showCompleted: string = '';
 
   constructor(
     private auth: AuthenticationService,
@@ -47,7 +55,6 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
     this.eventListeners.push(
       customQueriesData
       .subscribe((customQueries) => {
-        console.log('####-1', customQueries);
         this.customQueries = customQueries;
         if (!this.startedCheckingURL && !!this.customQueries.length) {
           this.checkURL();
@@ -83,8 +90,51 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
             this.store.dispatch(new CustomQueryActions.SelectNone());
           }
         }
+        if (val.hasOwnProperty('showTree')) {
+          this.showTree = val.showTree;
+        } else {
+          this.showTree = '';
+        }
+        if (val.hasOwnProperty('showCompleted')) {
+          this.showCompleted = val.showCompleted;
+        } else {
+          this.showCompleted = '';
+        }
       })
     );
+  }
+
+  addRemoveQueryParams(queryField) {
+    if (this.showCompleted && this.showTree) {
+      return {
+        q: this.constructUrl(queryField),
+        showTree: this.showTree,
+        showCompleted: this.showCompleted
+      }
+    } else if (this.showTree) {
+      return {
+        q: this.constructUrl(queryField),
+        showTree: this.showTree
+      }
+    } else if (this.showCompleted) {
+      return {
+        q: this.constructUrl(queryField),
+        showCompleted: this.showCompleted
+      }
+    } else {
+      return {
+        q: this.constructUrl(queryField)
+      }
+    }
+  }
+
+  stopPropagation(event) {
+    event.stopPropagation();
+  }
+
+  deleteCustomQuery(event, customQuery) {
+    this.stopPropagation(event);
+    this.store.dispatch(new CustomQueryActions.Delete(customQuery));
   }
 
 }
