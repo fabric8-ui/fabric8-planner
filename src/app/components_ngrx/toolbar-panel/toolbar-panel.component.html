@@ -11,7 +11,7 @@
 <div class="active-filters-section">
   <span class="pull-left padding-right-15" 
     *ngIf="activeFilterFromSidePane !== ''">
-      <strong>14</strong> in {{activeFilterFromSidePanel}}
+      <strong>14</strong> Matches
   </span>
   <div class="active-filters-div"
     *ngIf="activeFilters.length">
@@ -26,7 +26,7 @@
         </span>
       </li>
     </ul>
-    <span  class="clickable padding-h-10"
+    <span  class="clickable padding-h-10 dib"
       *ngIf="activeFilters.length > 1">
       <a (click)="removeAllFilters()">Clear all filters</a>
     </span>
