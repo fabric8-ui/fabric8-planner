@@ -176,7 +176,11 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       .select('listPage')
       .select('workItems')
       .map(items => {
-        return items.filter(item => item.bold === true).length;
+        if(this.isShowTreeOn) {
+          return items.filter(item => item.bold === true).length;
+        } else {
+          return items.length;
+        }
       })
 
     this.eventListeners.push(
