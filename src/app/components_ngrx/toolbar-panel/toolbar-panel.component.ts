@@ -12,6 +12,7 @@ import {
   EventEmitter,
   ChangeDetectorRef
 } from '@angular/core';
+import { AsyncPipe } from '@angular/common'
 import {
   Router,
   ActivatedRoute,
@@ -125,7 +126,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private activeFilters = [];
   private activeFilterFromSidePanel: string = '';
   private currentQuery: string = '';
-  private workitemCount: number;
+  private totalcount: Observable<number>;
 
   private isShowTreeOn: boolean = false;
   private isShowCompletedOn: boolean = false;
@@ -171,9 +172,12 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       .select('customQueries')
       .filter(customQueries => !!customQueries.length);
     
-      const totalcount = this.store
+      this.totalcount = this.store
       .select('listPage')
       .select('workItems')
+      .map(items => {
+        return items.filter(item => item.bold === true).length;
+      })
 
     this.eventListeners.push(
       customQueriesData.subscribe(queries => {
@@ -187,9 +191,6 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           this.showSaveFilterButton = true;
         }
       }),
-      totalcount.subscribe(items => {
-        this.workitemCount = items.filter(item => item.bold === true).length;
-      })
     );
   }
 
