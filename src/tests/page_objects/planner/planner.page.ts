@@ -11,7 +11,7 @@ export class PlannerPage extends AppPage {
   inlineQuickAdd =  new planner.WorkItemInlineQuickAdd($('#workItemList_quickAdd_inline'));
   sidePanel = new planner.SidePanel($('aside.f8-sidepanel'));
   quickPreview = new planner.WorkItemQuickPreview($('work-item-detail'));
-  header = new planner.ToolbarHeader($('toolbar-panel'));
+  header = new planner.ToolbarHeader($('#header-div'));
   settings = new planner.Settings($('div.f8-wi-list__settings'));
   iteration = new planner.Iteration($('fab-planner-iteration-modal'));
   detailPage = new planner.WorkItemDetailPage($('work-item-detail'));
