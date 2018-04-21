@@ -22,7 +22,8 @@ export class ToolbarHeader extends BaseElement {
   saveFilterDialog = new BaseElement(this.$('.save-filter-dropdown'));
   saveFilterBtn = new ui.Button(this.saveFilterDialog.$('.save-cq-btn'),'Save');
   closeBtn = new ui.Button(this.$('.cancel-cq-btn'),'Cancel');
-  titleTextInput = new ui.TextInput(this.saveFilterDialog.$('input.form-control'), 'Query Title');
+  titleTextInput = new ui.TextInput(this.saveFilterDialog.$('input.query-title'), 'Query Title');
+  activeFiltersList = new ui.BaseElementArray(this.$$('.active-filters-div li'), 'Active filters div');
 
   constructor(el: ElementFinder, name = 'ToolBar Header') {
     super(el, name);
@@ -69,5 +70,9 @@ export class ToolbarHeader extends BaseElement {
     await this.saveFilter.clickWhenReady();
     await this.titleTextInput.enterText(title);
     await this.saveFilterBtn.clickWhenReady();
+  }
+
+  async getFilterConditions() {
+    return this.activeFiltersList;
   }
 }

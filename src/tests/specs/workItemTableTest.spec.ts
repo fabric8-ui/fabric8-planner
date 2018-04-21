@@ -111,4 +111,11 @@ describe('Work Item datatable list: ', () => {
     await browser.sleep(3000);
     expect(await planner.workItemList.hasWorkItem(workitemname.title)).toBeTruthy();
   })
+
+  it('clicking on label should filter the workitem list by label', async() => {
+    await planner.workItemList.clickWorkItemLabel(c.workItemTitle7);
+    expect(await planner.header.getFilterConditions()).toContain('label: '+c.label2);
+    await planner.header.clickShowTree();
+    expect(await planner.header.getFilterConditions()).toContain('label: '+c.label2);
+  })
 });
