@@ -59,11 +59,11 @@ describe('Quick preview tests: ', () => {
     expect(await planner.quickPreview.isSaveButtonDisplayed()).toBeFalsy();
   })
 
-  it('should close assignee dropdown when clicked outside',async () => {
+  fit('should close assignee dropdown when clicked outside',async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.assigneeDropdown.clickWhenReady();
-    expect(await planner.quickPreview.assigneeDropdownMenu).toContain('show');
+    expect(await planner.quickPreview.assigneeDropdownMenu.getAttribute('className')).toContain('show');
     await planner.quickPreview.titleInput.clickWhenReady();
-    expect(await planner.quickPreview.assigneeDropdownMenu).not.toContain('show');
+    expect(await planner.quickPreview.assigneeDropdownMenu.getAttribute('className')).not.toContain('show');
   })
 });
