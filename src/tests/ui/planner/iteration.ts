@@ -20,8 +20,8 @@ export class Iteration extends ui.BaseElement {
   selectStartdate = new ui.Clickable(this.$$('.datevalue.currmonth').first(),' select start date');
   selectEndDate = new ui.Clickable(this.$$('.datevalue.currmonth').get(27),' select end date');
   month = new ui.Clickable(this.$('.headermonthtxt'), 'month');
-  year = new ui.Clickable(this.$('.yearlabel'), 'year');  
-
+  year = new ui.Clickable(this.$('.yearlabel'), 'year');
+    
   async addNewIteration(iterationName: string, parentIteration: string ) {
     await this.iterationName.enterText(iterationName);
     await this.parentIteration.enterText(parentIteration);
@@ -56,5 +56,9 @@ export class Iteration extends ui.BaseElement {
   async clickCreateIteration() {
     await this.createIterationButton.clickWhenReady();
     await this.createIterationButton.untilHidden();
+  }
+
+  async checkVisibility() {
+    return await this.iterationDialog.isDisplayed();
   }
 }

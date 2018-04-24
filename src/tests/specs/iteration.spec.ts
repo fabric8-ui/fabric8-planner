@@ -23,6 +23,7 @@ describe('Iteration test', () => {
     let month = await planner.iteration.getMonth();
     let year = await planner.iteration.getYear();
     await planner.iteration.clickCreateIteration();
+    expect(await planner.iteration.checkVisibility()).toBeFalsy();
     expect(await planner.sidePanel.getIterationDate()).toContain('new Iteration [Active]'+month+' 1, '+year+' - '+month+' 28, '+year+'\n');
   });
 
