@@ -22,7 +22,7 @@
             {{selectedType ? selectedType.name : ''}}
             <span class="fa fa-angle-down"></span>
           </button>
-          <infotip [infotipText]="selectedType.infotip"></infotip>
+          <infotip [infotipText]="getInfotipText(selectedType.id)"></infotip>
         </div>
         <ul class="dropdown-menu"
           role="menu"
