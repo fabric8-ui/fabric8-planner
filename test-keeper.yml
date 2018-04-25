@@ -1,0 +1,6 @@
+test_patterns:
+  - '**/test/'
+  - '**/tests/'
+  - '**/spec/'
+  - '**/specs/'
+combine_defaults: true
