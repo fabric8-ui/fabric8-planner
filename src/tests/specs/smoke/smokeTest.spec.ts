@@ -8,7 +8,7 @@ describe('Planner Smoke Tests:', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
@@ -114,6 +114,7 @@ describe('Planner Smoke Tests:', () => {
     expect(wiTypes.length).toBe(2);
     expect(wiTypes[0]).toBe('Experience');
     expect(wiTypes[1]).toBe('Value Proposition');
+    await planner.sidePanel.clickScenarios();
   });
 
   it('Requirement-Quick Add should support Feature and Bug', async () => {
@@ -122,9 +123,11 @@ describe('Planner Smoke Tests:', () => {
     expect(wiTypes.length).toBe(2);
     expect(wiTypes[0]).toBe('Feature');
     expect(wiTypes[1]).toBe('Bug');
+    await planner.sidePanel.clickScenarios();    
   });
 
   it('Edit Comment and Save', async() => {
+    await planner.sidePanel.clickScenarios();    
     await planner.createWorkItem(c.newWorkItem3);
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem3.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(c.newWorkItem3.title);
@@ -133,6 +136,7 @@ describe('Planner Smoke Tests:', () => {
   });
 
   it('Edit Comment and Cancel', async() => {
+    await planner.sidePanel.clickScenarios();        
     let title = await planner.createUniqueWorkItem()
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.addCommentAndCancel(c.comment);
@@ -143,6 +147,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.sidePanel.clickRequirement();
     await planner.header.selectFilter('State','in progress');
     await planner.header.saveFilters('Query 1');
+    await planner.workItemList.overlay.untilHidden();
     expect(await planner.sidePanel.getMyFiltersList()).toContain('Query 1');
   });
 
