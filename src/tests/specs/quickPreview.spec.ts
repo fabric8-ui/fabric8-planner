@@ -35,7 +35,7 @@ describe('Quick preview tests: ', () => {
     await planner.createWorkItem(workitemname);    
     await planner.workItemList.clickWorkItem(workitemname.title);
     await planner.quickPreview.addLink(linkType, workItemTitle17);
-    expect(await planner.quickPreview.hasLinkedItem(workItemTitle17)).toBeTruthy();
+    expect(await planner.quickPreview.getLinkedItems()).toContain(workItemTitle17);
   });
 
   it('should open quick preview and edit the title',async () => {

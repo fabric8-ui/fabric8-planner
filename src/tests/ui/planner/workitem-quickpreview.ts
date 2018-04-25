@@ -259,9 +259,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     return labelList;
   }
 
-  async hasLinkedItem(linkItem:string) : Promise<Boolean> {
+  async getLinkedItems() {
     let linkList = await this.linklistItem.getTextWhenReady();
-    return linkList.indexOf(linkItem) > -1;
+    return linkList;
   }
 
   async updateTitle(title: string, append: boolean = false) {
