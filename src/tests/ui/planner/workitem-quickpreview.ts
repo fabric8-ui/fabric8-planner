@@ -254,9 +254,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     return iteration;
   }
 
-  async hasLabel(label: string) : Promise<Boolean> {
+  async getLabels() {
     let labelList = await this.labelListDiv.getTextWhenReady();
-    return labelList.indexOf(label) > -1;
+    return labelList;
   }
 
   async hasLinkedItem(linkItem:string) : Promise<Boolean> {
