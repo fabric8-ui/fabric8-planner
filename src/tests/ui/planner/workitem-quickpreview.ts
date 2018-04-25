@@ -200,11 +200,10 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     }
   }
 
-  async hasArea(areaName: string) {
+  async getAreas() {
     await this.loadingAnimation.untilCount(0);
     let area = await this.areaDropdown.getTextWhenReady();
-    this.debug("Expect area: " + area + " to be " + areaName);
-    return area === areaName;
+    return area;
   }
 
   async hasCreator(name: string): Promise<Boolean> {

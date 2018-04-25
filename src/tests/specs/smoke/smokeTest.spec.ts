@@ -64,14 +64,14 @@ describe('Planner Smoke Tests:', () => {
   it('Associate workitem with an Area', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.addArea(c.dropdownareaTitle1);
-    expect(await planner.quickPreview.hasArea(c.areaTitle1)).toBeTruthy();
+    expect(await planner.quickPreview.getAreas()).toContain(c.areaTitle1);
     await planner.quickPreview.close();
 
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
-    expect(await planner.quickPreview.hasArea(c.areaTitle1)).toBeTruthy();
+    expect(await planner.quickPreview.getAreas()).toContain(c.areaTitle1);
     await planner.quickPreview.addArea(c.dropdownareaTitle2);
-    expect(await planner.quickPreview.hasArea(c.areaTitle1)).toBeFalsy();
-    expect(await planner.quickPreview.hasArea(c.areaTitle2)).toBeTruthy();
+    expect(await planner.quickPreview.getAreas()).not.toContain(c.areaTitle1);
+    expect(await planner.quickPreview.getAreas()).toContain(c.areaTitle2);
     await planner.quickPreview.close();
   });
 
