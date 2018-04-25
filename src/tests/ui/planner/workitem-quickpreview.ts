@@ -243,8 +243,8 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     return origTime;
   }
 
-  async hasDescription(description: string): Promise<Boolean> {
-    return await this.descriptionTextarea.getTextWhenReady() == description;
+  async getDescription() {
+    return await this.descriptionTextarea.getTextWhenReady();
   }
 
   async hasIteration(iterationTitle: string): Promise<Boolean> {

@@ -40,7 +40,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.close();
     await planner.workItemList.clickWorkItem(c.updatedWorkItem.title);
     await planner.quickPreview.updateDescription(c.updatedWorkItem.description);
-    expect(await planner.quickPreview.hasDescription(c.updatedWorkItem.description)).toBeTruthy();
+    expect(await planner.quickPreview.getDescription()).toBe(c.updatedWorkItem.description);
     await planner.quickPreview.close();
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem2.title)).toBeFalsy();
     expect(await planner.workItemList.hasWorkItem(c.updatedWorkItem.title)).toBeTruthy();
@@ -155,7 +155,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.close();
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.addLabel("Validate description label");
-    expect(await planner.quickPreview.hasDescription("My new description")).toBeTruthy();
+    expect(await planner.quickPreview.getDescription()).toBe("My new description");
     await planner.quickPreview.close();
   })
 });
