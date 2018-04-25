@@ -247,12 +247,11 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     return await this.descriptionTextarea.getTextWhenReady();
   }
 
-  async hasIteration(iterationTitle: string): Promise<Boolean> {
+  async getIteration() {
     await this.loadingAnimation.untilCount(0);
     await browser.sleep(1000);    
     let iteration = await this.iterationDropdown.getTextWhenReady();
-    this.debug(" iteration : " + iteration);
-    return iteration === iterationTitle;
+    return iteration;
   }
 
   async hasLabel(label: string) : Promise<Boolean> {

@@ -79,14 +79,14 @@ describe('Planner Smoke Tests:', () => {
     //add new iteration
     await planner.workItemList.clickWorkItem(c.workItemTitle7);
     await planner.quickPreview.addIteration(c.dropdownIteration1);
-    expect(await planner.quickPreview.hasIteration(c.iteration1)).toBeTruthy();
+    expect(await planner.quickPreview.getIteration()).toBe(c.iteration1);
     await planner.quickPreview.close();
 
     //update iteration
     await planner.workItemList.clickWorkItem(c.workItemTitle7);
-    expect(await planner.quickPreview.hasIteration(c.iteration1)).toBeTruthy();
+    expect(await planner.quickPreview.getIteration()).toBe(c.iteration1);
     await planner.quickPreview.addIteration(c.dropdownIteration2);
-    expect(await planner.quickPreview.hasIteration(c.iteration2)).toBeTruthy();
+    expect(await planner.quickPreview.getIteration()).toBe(c.iteration2);
 
     //search iteration
     await planner.workItemList.clickWorkItem(c.workItemTitle7);
