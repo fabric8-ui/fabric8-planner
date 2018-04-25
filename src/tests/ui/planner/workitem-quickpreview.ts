@@ -206,12 +206,12 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     return area;
   }
 
-  async hasCreator(name: string): Promise<Boolean> {
+  async getCreator() {
     await this.loadingAnimation.untilCount(0);
+    // We need the explicit sleep since the creator name doesn't load instantly
     await browser.sleep(3000);
     let creator = await this.creatorusername.getTextWhenReady();
-    this.debug("Expect Creator: " + creator + " to be " + name);
-    return creator === name;
+    return creator;
   }
 
   async hasCreatorAvatar(avatarUrl: string): Promise<Boolean> {
