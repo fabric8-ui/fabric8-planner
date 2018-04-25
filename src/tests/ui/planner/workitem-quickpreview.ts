@@ -214,11 +214,10 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     return creator;
   }
 
-  async hasCreatorAvatar(avatarUrl: string): Promise<Boolean> {
+  async getCreatorAvatar() {
     await this.loadingAnimation.untilCount(0);
     let creator = await this.creatorAvatar.getAttribute('src');
-    this.debug("Expect Creator Avatar: " + creator + " to be " + avatarUrl);
-    return creator === avatarUrl;
+    return creator;
   }
 
   async hasAssignee(name: string): Promise<Boolean> {

@@ -57,7 +57,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.ready();
     expect(await planner.quickPreview.getCreator()).toBe(c.user1);
-    expect(await planner.quickPreview.hasCreatorAvatar(c.user_avatar)).toBeTruthy()
+    expect(await planner.quickPreview.getCreatorAvatar()).toBe(c.user_avatar)
     await planner.quickPreview.close();
   });
 
