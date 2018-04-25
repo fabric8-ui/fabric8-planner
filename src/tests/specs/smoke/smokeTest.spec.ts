@@ -56,7 +56,7 @@ describe('Planner Smoke Tests:', () => {
   it('Check WorkItem creator name and image is reflected', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.ready();
-    expect(await planner.quickPreview.getCreator()).toContain(c.user1);
+    expect(await planner.quickPreview.getCreator()).toBe(c.user1);
     expect(await planner.quickPreview.hasCreatorAvatar(c.user_avatar)).toBeTruthy()
     await planner.quickPreview.close();
   });
@@ -64,14 +64,14 @@ describe('Planner Smoke Tests:', () => {
   it('Associate workitem with an Area', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.addArea(c.dropdownareaTitle1);
-    expect(await planner.quickPreview.getAreas()).toContain(c.areaTitle1);
+    expect(await planner.quickPreview.getArea()).toBe(c.areaTitle1);
     await planner.quickPreview.close();
 
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
-    expect(await planner.quickPreview.getAreas()).toContain(c.areaTitle1);
+    expect(await planner.quickPreview.getArea()).toBe(c.areaTitle1);
     await planner.quickPreview.addArea(c.dropdownareaTitle2);
-    expect(await planner.quickPreview.getAreas()).not.toContain(c.areaTitle1);
-    expect(await planner.quickPreview.getAreas()).toContain(c.areaTitle2);
+    expect(await planner.quickPreview.getArea()).not.toBe(c.areaTitle1);
+    expect(await planner.quickPreview.getArea()).toBe(c.areaTitle2);
     await planner.quickPreview.close();
   });
 

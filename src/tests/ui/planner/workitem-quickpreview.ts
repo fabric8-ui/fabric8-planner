@@ -200,7 +200,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     }
   }
 
-  async getAreas() {
+  async getArea() {
     await this.loadingAnimation.untilCount(0);
     let area = await this.areaDropdown.getTextWhenReady();
     return area;
