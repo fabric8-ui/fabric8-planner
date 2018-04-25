@@ -303,8 +303,8 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.addAssignee(assignee);
   }
 
-  async hasTitleError(error: string) {
-    return await this.titleErrorMessage.getTextWhenReady() === error;
+  async getTitleError() {
+    return await this.titleErrorMessage.getTextWhenReady();
   }
 
   async changeStateTo(state: string) {

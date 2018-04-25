@@ -50,7 +50,7 @@ describe('Planner Smoke Tests:', () => {
     let title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.updateTitle('');
-    expect(await planner.quickPreview.hasTitleError('Empty title not allowed')).toBeTruthy();
+    expect(await planner.quickPreview.getTitleError()).toBe('Empty title not allowed');
   })
 
   it('Check WorkItem creator name and image is reflected', async () => {
