@@ -22,12 +22,12 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem1.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(c.newWorkItem1.title);
     await planner.quickPreview.addAssignee(c.user1 + " (me)");
-    expect(await planner.quickPreview.hasAssignee(c.user1)).toBeTruthy();
+    expect(await planner.quickPreview.getAssignees()).toContain(c.user1);
     await planner.quickPreview.close();
     await planner.workItemList.clickWorkItem(c.newWorkItem1.title);
     await browser.sleep(2000);
     await planner.quickPreview.removeAssignee(c.user1 + " (me)");
-    expect(await planner.quickPreview.hasAssignee(c.user1)).toBeFalsy();
+    expect(await planner.quickPreview.getAssignees()).not.toContain(c.user1);
     await planner.quickPreview.close();
   });
 

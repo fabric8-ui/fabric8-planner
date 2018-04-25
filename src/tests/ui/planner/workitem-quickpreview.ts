@@ -220,12 +220,12 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     return creator;
   }
 
-  async hasAssignee(name: string): Promise<Boolean> {
+  async getAssignees() {
     await this.loadingAnimation.untilCount(0);
     await this.assigneeDiv.untilDisplayed();
     await browser.sleep(5000);
     let assigneeList = await this.assigneeDiv.getTextWhenReady();
-    return assigneeList.indexOf(name) > -1;
+    return assigneeList;
   }
 
   async hasComment(comment: string): Promise<Boolean> {
