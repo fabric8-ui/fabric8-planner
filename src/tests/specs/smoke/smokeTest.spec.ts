@@ -129,14 +129,14 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem3.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(c.newWorkItem3.title);
     await planner.quickPreview.addCommentAndSave(c.comment);
-    expect(await planner.quickPreview.hasComment(c.comment)).toBeTruthy();
+    expect(await planner.quickPreview.getComments()).toContain(c.comment);
   });
 
   it('Edit Comment and Cancel', async() => {
     let title = await planner.createUniqueWorkItem()
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.addCommentAndCancel(c.comment);
-    expect(await planner.quickPreview.hasComment('new comment')).toBeFalsy();
+    expect(await planner.quickPreview.getComments()).not.toContain('new comment');
   });
 
   it('Create custom query', async() => {

@@ -228,15 +228,14 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     return assigneeList;
   }
 
-  async hasComment(comment: string): Promise<Boolean> {
+  async getComments() {
     await this.ready();
     await this.commentDiv.scrollIntoView();
     let commentList:String = "" ;
     if (await this.commentsText.isPresent()) {
       commentList = await this.commentsText.getTextWhenReady();
     }
-    this.debug("Comment list: " + commentList);
-    return commentList.indexOf(comment) > -1;
+    return commentList;
   }
 
   async hasCreationTime(time: string): Promise<Boolean> {
