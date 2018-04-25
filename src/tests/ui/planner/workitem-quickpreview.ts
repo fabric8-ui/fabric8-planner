@@ -238,9 +238,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     return commentList;
   }
 
-  async hasCreationTime(time: string): Promise<Boolean> {
+  async getCreationTime() {
     let origTime = await this.creationTimeDiv.getTextWhenReady()
-    return time === origTime;
+    return origTime;
   }
 
   async hasDescription(description: string): Promise<Boolean> {
