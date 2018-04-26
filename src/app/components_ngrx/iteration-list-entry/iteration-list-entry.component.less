@@ -14,6 +14,13 @@
       width: 15px;
       padding: 5px;
       font-size: 16px;
+      &:hover {
+        color: @color-pf-blue;
+        cursor: pointer;
+      }
+    }
+    &:hover {
+      background-color: @color-pf-black-700;
     }
     &--selected {
       border-left-color: @color-pf-blue;
@@ -23,18 +30,31 @@
       .btn-link {
         color: @color-pf-white;
       }
+      &:hover {
+        .btn-link {
+          color: @color-pf-blue;
+        }
+      }
       .dropdown-menu-right {
         right: -10px;
       }
     }
   }
   &__header {
-    display: inline-block;
+    padding-right: 25px;
+    padding-left: 30px;
+    cursor: pointer;
     i { color: @color-pf-white; }
+    &:hover {
+      a {
+        color: @color-pf-blue;
+      }
+    }
     &:focus, >div:focus {
       outline: none;
     }
     a {
+      text-transform: capitalize;
       color: @color-pf-white;
       &:hover {
         text-decoration: none;
