@@ -1,6 +1,4 @@
 test_patterns:
-  - '**/test/'
-  - '**/tests/'
-  - '**/spec/'
-  - '**/specs/'
+  - 'test/**/*.ts'
+  - 'tests/**/*.ts'
 combine_defaults: true
