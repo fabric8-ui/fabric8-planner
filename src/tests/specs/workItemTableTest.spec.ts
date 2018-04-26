@@ -17,6 +17,10 @@ describe('Work Item datatable list: ', () => {
     await planner.ready();
   });
 
+  beforeEach( async () => {
+    await planner.resetState();
+  });
+
   it('should open settings button and hide columns', async () => {
     expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(9);
     await planner.settings.clickSettings();
@@ -123,5 +127,5 @@ describe('Work Item datatable list: ', () => {
     await planner.sidePanel.clickRequirement();
     await planner.workItemList.overlay.untilAbsent();
     expect(await planner.workItemList.hasWorkItem(workitemname.title)).toBeTruthy();
-  })
+  });
 });

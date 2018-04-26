@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { AppPage } from '../app.page';
 import * as planner from './../../ui/planner';
 import * as support from './../../support';
+import { Key } from 'selenium-webdriver';
 
 // this is what you see when you click on the Plan Tab button
 export class PlannerPage extends AppPage {
@@ -44,4 +45,8 @@ export class PlannerPage extends AppPage {
     await this.inlineQuickAdd.addInlineWorkItem(item);
   }
 
+  async resetState() {
+    await this.sidePanel.clickScenarios();
+    await browser.$('body').sendKeys(Key.ESCAPE);
+  }
 }

@@ -15,6 +15,10 @@ describe('Iteration test', () => {
     await planner.ready();
   });
 
+  beforeEach( async () => {
+    await planner.resetState();
+  });
+
   it('should create a new iteration', async () => {
     let newIteration = 'new Iteration';
     let iteration3 = '/' + process.env.SPACE_NAME;
@@ -42,11 +46,10 @@ describe('Iteration test', () => {
     let dropdownIteration1 = 'Iteration_5',
       updateIteration = 'Iteration 0123',
       workItemTitle1 = 'Workitem_Title_10';
-      
-    await planner.sidePanel.clickScenarios();
+    await planner.sidePanel.ready();
     await planner.workItemList.workItem(workItemTitle1).openQuickPreview();
     await planner.quickPreview.addIteration(dropdownIteration1);
-    await planner.quickPreview.close();    
+    await planner.quickPreview.close();
     expect(await planner.workItemList.iterationText(workItemTitle1)).toBe(dropdownIteration1);
     await planner.sidePanel.selectIterationKebab(dropdownIteration1);
     await planner.sidePanel.openIterationDialogue();
@@ -54,5 +57,4 @@ describe('Iteration test', () => {
     await planner.quickPreview.notificationToast.untilCount(1);
     expect(await planner.workItemList.iterationText(workItemTitle1)).toBe(updateIteration);
   });
-
 });

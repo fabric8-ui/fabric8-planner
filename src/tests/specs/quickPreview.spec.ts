@@ -16,6 +16,10 @@ describe('Quick preview tests: ', () => {
     await planner.ready();
   });
 
+  beforeEach( async () => {
+    await planner.resetState();
+  });
+
   it('should open quickpreview and apply label', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.addLabel(c.label);
@@ -32,7 +36,7 @@ describe('Quick preview tests: ', () => {
     let workitemname = {"title": "link test"},
       linkType = 'blocks',
       workItemTitle17 = 'Workitem_Title_17';
-    await planner.createWorkItem(workitemname);    
+    await planner.createWorkItem(workitemname);
     await planner.workItemList.clickWorkItem(workitemname.title);
     await planner.quickPreview.addLink(linkType, workItemTitle17);
     expect(await planner.quickPreview.getLinkedItems()).toContain(workItemTitle17);
