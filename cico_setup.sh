@@ -55,7 +55,7 @@ function run_functional_tests() {
 
     # Run the E2E tests against the running fabric8-ui container
     docker exec -t -e REFRESH_TOKEN=$REFRESH_TOKEN $CID bash -c \
-        "cd tests && WEBDRIVER_VERSION=2.37 DEBUG=true HEADLESS_MODE=true BASE_URL='http://${SERVER_IP}:8080' ./run_e2e_tests.sh"
+        "cd tests && DEBUG=true HEADLESS_MODE=true BASE_URL='http://${SERVER_IP}:8080' ./run_e2e_tests.sh"
 }
 
 function build_fabric8_ui() {

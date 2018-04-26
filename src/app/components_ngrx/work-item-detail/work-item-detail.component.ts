@@ -275,15 +275,17 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     }
   }
 
-  assignUser(users) {
-    this.loadingAssignees = true;
-    let workItem = {} as WorkItemUI;
-    workItem['version'] = this.workItem.version;
-    workItem['link'] = this.workItem.link;
-    workItem['id'] = this.workItem.id;
+  assignUser(event) {
+    if(event.update){
+      this.loadingAssignees = true;
+      let workItem = {} as WorkItemUI;
+      workItem['version'] = this.workItem.version;
+      workItem['link'] = this.workItem.link;
+      workItem['id'] = this.workItem.id;
 
-    workItem['assignees'] = users;
-    this.store.dispatch(new WorkItemActions.Update(workItem));
+      workItem['assignees'] = event.users;
+      this.store.dispatch(new WorkItemActions.Update(workItem));
+    }
   }
 
   setAreas() {
@@ -338,15 +340,17 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     this.store.dispatch(new WorkItemActions.Update(workItem));
   }
 
-  updateLabels(labels) {
-    this.loadingLabels = true;
-    let workItem = {} as WorkItemUI;
-    workItem['version'] = this.workItem.version;
-    workItem['link'] = this.workItem.link;
-    workItem['id'] = this.workItem.id;
+  updateLabels(event) {
+    if(event.update) {
+      this.loadingLabels = true;
+      let workItem = {} as WorkItemUI;
+      workItem['version'] = this.workItem.version;
+      workItem['link'] = this.workItem.link;
+      workItem['id'] = this.workItem.id;
 
-    workItem['labels'] = labels;
-    this.store.dispatch(new WorkItemActions.Update(workItem));
+      workItem['labels'] = event.labels;
+      this.store.dispatch(new WorkItemActions.Update(workItem));
+    }
   }
 
   removeLable(label) {

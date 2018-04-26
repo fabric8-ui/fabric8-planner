@@ -117,7 +117,6 @@ main() {
   fi
 
   export BASE_URL="${BASE_URL:-http://localhost:$PLANNER_PORT}"
-  export WEBDRIVER_VERSION="${WEBDRIVER_VERSION:-2.33}"
   log.info "Entering $SCRIPT_DIR/../tests"
   cd $SCRIPT_DIR/../tests
   log.info "Running Functional Tests..."

@@ -9,7 +9,7 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isEqual } from 'lodash';
 import {
   SelectDropdownComponent
 } from './../../widgets/select-dropdown/select-dropdown.component';
@@ -69,14 +69,16 @@ export class AssigneeSelectorComponent {
   }
 
   selectedAssignees: UserUI[] = [];
+  prevSelected: UserUI[] = [];
   @Input('selectedAssignees') set selectedAssigneesSetter(val) {
+    this.prevSelected = cloneDeep(val);
     this.selectedAssignees = cloneDeep(val);
     this.updateSelection();
   }
 
   @Output() onSelectAssignee: EventEmitter<UserUI[]> = new EventEmitter();
   @Output() onOpenAssignee: EventEmitter<any> = new EventEmitter();
-  @Output() onCloseAssignee: EventEmitter<UserUI[]> = new EventEmitter();
+  @Output() onCloseAssignee: EventEmitter<any> = new EventEmitter();
 
   workItem: WorkItem;
   workItemRef: WorkItem;
@@ -149,7 +151,11 @@ export class AssigneeSelectorComponent {
     this.onOpenAssignee.emit('open');
   }
   onClose(event) {
-    this.onCloseAssignee.emit(cloneDeep(this.selectedAssignees));
+    const update = !isEqual(this.prevSelected, this.selectedAssignees);
+      this.onCloseAssignee.emit({
+        users: cloneDeep(this.selectedAssignees),
+        update: update
+      });
   }
 
   openDropdown() {

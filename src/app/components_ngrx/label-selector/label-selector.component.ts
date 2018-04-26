@@ -9,7 +9,7 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isEqual } from 'lodash';
 import { LabelUI, LabelModel } from './../../models/label.model';
 import { LabelService } from './../../services/label.service';
 import {
@@ -58,13 +58,14 @@ export class LabelSelectorComponent implements OnInit {
   }
 
   @Input('selectedLabels') set selectedLabelsSetter(labels: LabelUI[]) {
-    this.selectedLabels = labels;
+    this.prevSelected = cloneDeep(labels);
+    this.selectedLabels = cloneDeep(labels);
     this.updateSelection();
   }
 
   @Output() onSelectLabel: EventEmitter<LabelUI[]> = new EventEmitter();
   @Output() onOpenSelector: EventEmitter<any> = new EventEmitter();
-  @Output() onCloseSelector: EventEmitter<LabelUI[]> = new EventEmitter();
+  @Output() onCloseSelector: EventEmitter<any> = new EventEmitter();
 
   private activeAddLabel: boolean = false;
   private backup: any[] = [];
@@ -76,6 +77,7 @@ export class LabelSelectorComponent implements OnInit {
   private searchValue: string = '';
   private allLabels: LabelUI[] = [];
   private selectedLabels: LabelUI[] = [];
+  private prevSelected: LabelUI[] = [];
 
   constructor(
     private labelService: LabelService,
@@ -182,7 +184,11 @@ export class LabelSelectorComponent implements OnInit {
   }
 
   onClose(event) {
-    this.onCloseSelector.emit(cloneDeep(this.selectedLabels));
+    const update = !isEqual(this.prevSelected, this.selectedLabels);
+    this.onCloseSelector.emit({
+      labels: cloneDeep(this.selectedLabels),
+      update: update
+    });
   }
 
   openDropdown() {
