@@ -59,7 +59,7 @@ describe('Quick preview tests: ', () => {
     expect(await planner.quickPreview.isSaveButtonDisplayed()).toBeFalsy();
   })
 
-  fit('should close assignee dropdown when clicked outside',async () => {
+  it('should close assignee dropdown when clicked outside',async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.assigneeDropdown.clickWhenReady();
     expect(await planner.quickPreview.assigneeDropdownMenu.getAttribute('className')).toContain('show');
