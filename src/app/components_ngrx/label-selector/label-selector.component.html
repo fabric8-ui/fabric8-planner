@@ -40,6 +40,7 @@
         (click)="toggleColorPicker()" class="palet">
       </div>
       <input (input)="onAddLabelInput($event.target.value)"
+        (keyup.enter)="createLabel(labelname.value)"
         class="create-label-input" #labelname />
       <button class="action-btn btn btn-primary fa fa-check"
         type="button"
