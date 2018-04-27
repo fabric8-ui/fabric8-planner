@@ -29,7 +29,9 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
   @Input() sidePanelOpen: boolean = true;
 
   authUser: any = null;
-  infotips: InfotipState;
+  infotipSource = this.store
+  .select('listPage')
+  .select('infotips');
   private groupTypes: GroupTypeUI[];
   private selectedgroupType: GroupTypeUI;
   private allowedChildWits: WorkItemType;
@@ -68,11 +70,7 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
         if (!this.startedCheckingURL) {
           this.checkURL();
         }
-      }),
-      this.store
-        .select('listPage')
-        .select('infotips')
-        .subscribe(i => this.infotips = i)
+      })
     );
   }
 
@@ -153,9 +151,8 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
   }
 
   getInfotipText(id: string) {
-    if(this.infotips.hasOwnProperty(id)) {
-      return this.infotips[id].en_EN;
-    }
-    return id;
-  }
+    return this.infotipSource
+      .select(s => s[id])
+      .select(i => i ? i['en_EN'] : id);
+  }    
 }

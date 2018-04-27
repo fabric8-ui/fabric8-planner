@@ -29,6 +29,8 @@ import { AppState } from './../../states/app.state';
 import * as WorkItemActions from './../../actions/work-item.actions';
 import { InfotipState } from '../../states/index.state';
 import { Observable } from 'rxjs';
+import { InfotipComponent } from '../infotip/infotip.component';
+import * as InfotipActions from './../../actions/infotip.actions';
 
 @Component({
   selector: 'alm-work-item-quick-add',
@@ -64,7 +66,9 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   createId: number= 0;
   eventListeners: any[] = [];
   blockAdd: boolean = false;
-  infotips: InfotipState;
+  infotipSource = this.store
+  .select('listPage')
+  .select('infotips');
 
   constructor(
     private logger: Logger,
@@ -88,11 +92,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
         .subscribe(items => {
           // const addedItem = items.find(item => item.createId === this.createId);
           this.resetQuickAdd();
-        }),
-      this.store
-        .select('listPage')
-        .select('infotips')
-        .subscribe(i => this.infotips = i)
+        })
     );
   }
 
@@ -221,11 +221,10 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   getInfotipText(id: string) {
-    if(this.infotips.hasOwnProperty(id)) {
-      return this.infotips[id].en_EN;
-    }
-    return id;
-  }
+    return this.infotipSource
+      .select(s => s[id])
+      .select(i => i ? i['en_EN'] : id);
+  }    
   
   preventDef(event: any) {
     event.preventDefault();
