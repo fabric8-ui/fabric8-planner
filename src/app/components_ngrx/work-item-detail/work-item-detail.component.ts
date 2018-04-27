@@ -150,6 +150,9 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
       this.workItemSubscriber.unsubscribe();
       this.workItemSubscriber = null;
     }
+    if(document.getElementsByTagName('body')[0].style.overflow === "hidden") {
+      document.getElementsByTagName('body')[0].removeAttribute('style');
+    }
   }
 
   ngAfterViewChecked() {
@@ -185,6 +188,11 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
       })
       .filter(w => w !== null)
       .subscribe(workItem => {
+        if((this.detailContext === 'preview')
+        && this.descMarkdown && this.workItem.id !== workItem.id) {
+          this.descMarkdown.closeClick();
+        }
+
         this.workItem = workItem;
         const wiType = this.wiTypes.find(t => t.id === this.workItem.type.id);
         this.workItemStates = wiType.fields['system.state'].type.values;
@@ -194,12 +202,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
         this.loadingArea = false;
         this.loadingIteration = false;
         this.loadingLabels = false;
-        
-        if((this.detailContext === 'preview') 
-        && (this.descMarkdown)) {
-          this.descMarkdown.closeClick();
-        }
-        
+
         // set title on update
         if (this.titleCallback !== null) {
           this.titleCallback(this.workItem.title);

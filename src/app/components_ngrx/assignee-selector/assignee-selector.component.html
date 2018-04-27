@@ -1,7 +1,6 @@
 <f8-select-dropdown
   id="f8-add-assignee-dropdown"
   #dropdown
-  *ngIf="assignees.length"
   [toggleButtonRef]="toggleButtonRef"
   [dropdownItem]="dropdownItem"
   [headerText]="'Add Assignee'"
@@ -24,7 +23,7 @@
     let-stickontop="stickontop">
     <div class="user-avatar margin-right-10 pull-left">
       <img
-        class="user-assign-avatar"
+        class="user-assign-avatar pull-left"
         [src]="src | almAvatarSize: 20"
         onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'"/>
     </div>
