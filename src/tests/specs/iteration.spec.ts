@@ -27,14 +27,16 @@ describe('Iteration test', () => {
   });
   
   it('should create a new child iteration', async () => {
-   let newIteration = 'new child iteration';
-   let iteration3 = '/' + process.env.SPACE_NAME + '/Iteration_2';
-   await planner.sidePanel.createNewIteration();
-   await planner.iteration.addNewIteration(newIteration, iteration3);
-   await planner.sidePanel.clickExpander(iteration3);
- }
+    let newIteration = 'new Iteration';
+    let parentIteration = '/' + process.env.SPACE_NAME + '/Iteration_2';
+    let iteration2 = 'Iteration_2';
+    await planner.sidePanel.createNewIteration();
+    await planner.iteration.addNewChildIteration(newIteration, parentIteration);
+    await planner.iteration.clickCreateIteration();
+    await planner.sidePanel.clickExpander(iteration2);
+    expect(await planner.sidePanel.getIterationList()).toContain(newIteration);
+  }
     
-
   it('updating iteration should update workitem associated to iteration', async() => {
     let dropdownIteration1 = 'Iteration_5',
       updateIteration = 'Iteration 0123',
