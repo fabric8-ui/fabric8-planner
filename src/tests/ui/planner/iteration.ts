@@ -18,7 +18,7 @@ export class Iteration extends ui.BaseElement {
   private showEndDateCalendar = new ui.Clickable(this.datePickerDiv.$$('.selection.inputnoteditable').last(),'End date calendar');
   calendarDiv = new ui.BaseElement(this.$('.selector.selectorarrow.selectorarrowleft'),'');
   selectStartdate = new ui.Clickable(this.$$('.datevalue.currmonth').first(),' select start date');
-  selectEndDate = new ui.Clickable(this.$$('.datevalue.currmonth').get(27),' select end date');
+  selectEndDate = new ui.Clickable(this.$$('.datevalue.currmonth').last(),' select end date');  
   month = new ui.Clickable(this.$('.headermonthtxt'), 'month');
   year = new ui.Clickable(this.$('.yearlabel'), 'year');
     
@@ -38,12 +38,12 @@ export class Iteration extends ui.BaseElement {
   async selectCalendarDate() {
     await this.showStartDateCalendar.clickWhenReady();
     await this.selectStartdate.clickWhenReady();
-    await this.showEndDateCalendar.clickWhenReady();  
+    await this.showEndDateCalendar.clickWhenReady();
     await this.selectEndDate.clickWhenReady();
   }
 
   async getMonth(): Promise<String> {
-    await this.showStartDateCalendar.clickWhenReady();    
+    await this.showStartDateCalendar.clickWhenReady();
     let month = await this.month.getTextWhenReady();
     return month;
   }
@@ -62,5 +62,10 @@ export class Iteration extends ui.BaseElement {
     await this.iterationName.enterText(iterationName);
     await this.parentIteration.enterText(parentIteration);
     await this.parentDropdown.select(parentIteration);
+  }
+  
+  async getLastDayOfMonth(): Promise<String> {
+    let day = await this.selectEndDate.getAttribute("innerText");
+    return day;
   }
 }
