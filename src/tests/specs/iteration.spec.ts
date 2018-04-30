@@ -23,9 +23,17 @@ describe('Iteration test', () => {
     let month = await planner.iteration.getMonth();
     let year = await planner.iteration.getYear();
     await planner.iteration.clickCreateIteration();
-    expect(await planner.iteration.checkVisibility()).toBeFalsy();
     expect(await planner.sidePanel.getIterationDate()).toContain('new Iteration [Active]'+month+' 1, '+year+' - '+month+' 28, '+year+'\n');
   });
+  
+  it('should create a new child iteration', async () => {
+   let newIteration = 'new child iteration';
+   let iteration3 = '/' + process.env.SPACE_NAME + '/Iteration_2';
+   await planner.sidePanel.createNewIteration();
+   await planner.iteration.addNewIteration(newIteration, iteration3);
+   await planner.sidePanel.clickExpander(iteration3);
+ }
+    
 
   it('updating iteration should update workitem associated to iteration', async() => {
     let dropdownIteration1 = 'Iteration_5',
