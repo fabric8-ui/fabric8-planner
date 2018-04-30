@@ -144,7 +144,6 @@ describe('Planner Smoke Tests:', () => {
   });
 
   it('Edit Comment and Save', async() => {
-    await planner.sidePanel.clickScenarios();
     await planner.createWorkItem(c.newWorkItem3);
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem3.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(c.newWorkItem3.title);
