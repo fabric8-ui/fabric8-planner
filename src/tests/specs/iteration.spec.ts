@@ -36,7 +36,7 @@ describe('Iteration test', () => {
     await planner.iteration.clickCreateIteration();
     await planner.sidePanel.clickExpander(iteration2);
     expect(await planner.sidePanel.getIterationList()).toContain(newIteration);
-  }
+  });
     
   it('updating iteration should update workitem associated to iteration', async() => {
     let dropdownIteration1 = 'Iteration_5',
