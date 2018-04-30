@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { AppPage } from '../app.page';
 import * as planner from './../../ui/planner';
 import * as support from './../../support';
-import { Key } from 'protractor/node_modules/@types/selenium-webdriver';
+import { Key } from 'selenium-webdriver';
 
 // this is what you see when you click on the Plan Tab button
 export class PlannerPage extends AppPage {
@@ -48,5 +48,6 @@ export class PlannerPage extends AppPage {
   async resetState() {
     await this.sidePanel.clickScenarios();
     await browser.$('body').sendKeys(Key.ESCAPE);
+    await this.quickPreview.notificationToast.untilHidden();
   }
 }

@@ -46,6 +46,7 @@ describe('Iteration test', () => {
     let dropdownIteration1 = 'Iteration_5',
       updateIteration = 'Iteration 0123',
       workItemTitle1 = 'Workitem_Title_10';
+    
     await planner.sidePanel.ready();
     await planner.workItemList.workItem(workItemTitle1).openQuickPreview();
     await planner.quickPreview.addIteration(dropdownIteration1);
