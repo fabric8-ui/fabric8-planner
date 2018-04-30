@@ -157,6 +157,14 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.addLabel("Validate description label");
     expect(await planner.quickPreview.getDescription()).toBe("My new description");
     await planner.quickPreview.close();
-  })
+  });
+
+  it('Create a work item and Open detail page', async() => {
+    await planner.quickAdd.addAndOpenWorkItem('new detail workItem','Scenario');
+    await planner.quickPreview.notificationToast.untilCount(1);
+    await planner.quickPreview.notificationToast.untilHidden();
+    await planner.detailPage.closeButton.ready();
+    expect(await browser.getCurrentUrl()).toContain('detail');
+  });
 });
 
