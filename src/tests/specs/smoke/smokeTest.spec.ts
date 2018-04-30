@@ -139,11 +139,11 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.quickPreview.hasComment('new comment')).toBeFalsy();
   });
 
-  xit('Create custom query', async() => {
+  it('Create custom query', async() => {
     await planner.sidePanel.clickRequirement();
     await planner.header.selectFilter('State','in progress');
     await planner.header.saveFilters('Query 1');
-    expect(await planner.sidePanel.hasCustomQuery('Query 1')).toBeTruthy();
+    expect(await planner.sidePanel.getMyFiltersList()).toContain('Query 1');
   });
 
   it('Update work item with a label and validate description', async() => {
@@ -157,6 +157,14 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.addLabel("Validate description label");
     expect(await planner.quickPreview.hasDescription("My new description")).toBeTruthy();
     await planner.quickPreview.close();
-  })
+  });
+
+  it('Create a work item and Open detail page', async() => {
+    await planner.quickAdd.addAndOpenWorkItem('new detail workItem','Scenario');
+    await planner.quickPreview.notificationToast.untilCount(1);
+    await planner.quickPreview.notificationToast.untilHidden();
+    await planner.detailPage.closeButton.ready();
+    expect(await browser.getCurrentUrl()).toContain('detail');
+  });
 });
 
