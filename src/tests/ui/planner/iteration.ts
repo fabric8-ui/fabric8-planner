@@ -57,8 +57,10 @@ export class Iteration extends ui.BaseElement {
     await this.createIterationButton.clickWhenReady();
     await this.createIterationButton.untilHidden();
   }
-
-  async checkVisibility() {
-    return await this.iterationDialog.isDisplayed();
+  
+  async addNewChildIteration(iterationName: string, parentIteration: string) {
+    await this.iterationName.enterText(iterationName);
+    await this.parentIteration.enterText(parentIteration);
+    await this.parentDropdown.select(parentIteration);
   }
 }
