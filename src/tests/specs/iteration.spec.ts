@@ -22,10 +22,22 @@ describe('Iteration test', () => {
     await planner.iteration.addNewIteration(newIteration, iteration3);
     let month = await planner.iteration.getMonth();
     let year = await planner.iteration.getYear();
+    let lastDayOfMonth = await planner.iteration.getLastDayOfMonth();
     await planner.iteration.clickCreateIteration();
-    expect(await planner.sidePanel.getIterationDate()).toContain('new Iteration [Active]'+month+' 1, '+year+' - '+month+' 28, '+year+'\n');
+    expect(await planner.sidePanel.getIterationDate()).toContain('new Iteration [Active]'+month+' 1, '+year+' - '+month+' '+ lastDayOfMonth, +year+'\n');
   });
-
+  
+  it('should create a new child iteration', async () => {
+    let newIteration = 'new Iteration';
+    let parentIteration = '/' + process.env.SPACE_NAME + '/Iteration_2';
+    let iteration2 = 'Iteration_2';
+    await planner.sidePanel.createNewIteration();
+    await planner.iteration.addNewChildIteration(newIteration, parentIteration);
+    await planner.iteration.clickCreateIteration();
+    await planner.sidePanel.clickExpander(iteration2);
+    expect(await planner.sidePanel.getIterationList()).toContain(newIteration);
+  });
+    
   it('updating iteration should update workitem associated to iteration', async() => {
     let dropdownIteration1 = 'Iteration_5',
       updateIteration = 'Iteration 0123',
