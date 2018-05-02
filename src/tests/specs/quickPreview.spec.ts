@@ -7,13 +7,17 @@ describe('Quick preview tests: ', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
 
-  beforeEach( async () => {
+  beforeAll( async () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     // This is necessary since the planner takes time to load on prod/prod-preview
     await browser.sleep(5000);
     await planner.ready();
+  });
+
+  beforeEach( async () => {
+    await planner.resetState();
   });
 
   it('should open quickpreview and apply label', async () => {
