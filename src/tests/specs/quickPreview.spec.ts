@@ -32,18 +32,18 @@ describe('Quick preview tests: ', () => {
     let workitemname = {"title": "link test"},
       linkType = 'blocks',
       workItemTitle17 = 'Workitem_Title_17';
-    await planner.createWorkItem(workitemname);    
+    await planner.createWorkItem(workitemname);
     await planner.workItemList.clickWorkItem(workitemname.title);
     await planner.quickPreview.addLink(linkType, workItemTitle17);
     expect(await planner.quickPreview.getLinkedItems()).toContain(workItemTitle17);
   });
 
-  it('should open quick preview and edit the title',async () => {
+  it('should open quick preview and edit the title', async () => {
     let title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.updateTitle(c.editWorkItemTitle1);
     await planner.quickPreview.notificationToast.untilHidden();
-    expect(await planner.quickPreview.titleDiv.getTextWhenReady()).toBe('Title Text "<0>"');
+    expect(await planner.quickPreview.titleInput.getAttribute('value')).toBe('Title Text "<0>"');
   });
 
   it('description box should not be open for wis',async () => {
