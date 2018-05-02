@@ -1,11 +1,11 @@
 import { Observable } from 'rxjs';
 import { WorkItemUI } from '../models/work-item';
 
-export function workitemMatchesFilter(route, filterService, workItemService, w): Observable<WorkItemUI> {
+export function workitemMatchesFilter(route, filterService, workItemService, workitem): Observable<WorkItemUI> {
     
     const currentRoute = route.queryParams;
     const wiQuery = filterService.queryBuilder(
-      'number', filterService.equal_notation, w.number.toString()
+      'number', filterService.equal_notation, workitem.number.toString()
     );
     const exp = filterService.queryJoiner(
       filterService.queryToJson(currentRoute['q']),
@@ -18,8 +18,8 @@ export function workitemMatchesFilter(route, filterService, workItemService, w):
     return workItemService.getWorkItems2(1, searchPayload)
       .map(data => data.totalCount)
       .map(count => {
-        w.bold = count > 0;
-        return w;
+        workitem.bold = count > 0;
+        return workitem;
       });
 }
 
