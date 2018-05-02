@@ -25,6 +25,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   assigneeDropdownCloseButton = new ui.Button(
     this.$('#f8-add-assignee-dropdown .close-pointer'),
     'Assignee dropdown close button');
+  assigneeDropdownMenu = new ui.BaseElement(
+    this.$('assignee-selector div.select-dropdown'),
+    'Assignee dropdown menu');
   assigneeDiv = new ui.BaseElement(this.$('f8-assignee'), 'Assignee List Div');
   areaDropdown = new ui.Dropdown(
     this.$('#area-dropdown > div > span'),
@@ -105,9 +108,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.closeButton.ready();
     await this.titleDiv.ready();
     await this.descriptionDiv.ready();
-    // We do not have the link button in current planner
-    // Uncomment when workitem linking is implemented
-    // await this.linksToggleButton.ready();
+    await this.linksToggleButton.ready();
     await this.commentsToggleButton.ready();
     support.debug('... check if WorkItem preview is Ready - OK');
   }
@@ -200,72 +201,68 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     }
   }
 
-  async hasArea(areaName: string) {
+  async getArea() {
     await this.loadingAnimation.untilCount(0);
     let area = await this.areaDropdown.getTextWhenReady();
-    this.debug("Expect area: " + area + " to be " + areaName);
-    return area === areaName;
+    return area;
   }
 
-  async hasCreator(name: string): Promise<Boolean> {
+  async getCreator() {
     await this.loadingAnimation.untilCount(0);
+    // We need the explicit sleep since the creator name doesn't load instantly
     await browser.sleep(3000);
     let creator = await this.creatorusername.getTextWhenReady();
-    this.debug("Expect Creator: " + creator + " to be " + name);
-    return creator === name;
+    return creator;
   }
 
-  async hasCreatorAvatar(avatarUrl: string): Promise<Boolean> {
+  async getCreatorAvatar() {
     await this.loadingAnimation.untilCount(0);
     let creator = await this.creatorAvatar.getAttribute('src');
-    this.debug("Expect Creator Avatar: " + creator + " to be " + avatarUrl);
-    return creator === avatarUrl;
+    return creator;
   }
 
-  async hasAssignee(name: string): Promise<Boolean> {
+  async getAssignees() {
     await this.loadingAnimation.untilCount(0);
     await this.assigneeDiv.untilDisplayed();
     await browser.sleep(5000);
     let assigneeList = await this.assigneeDiv.getTextWhenReady();
-    return assigneeList.indexOf(name) > -1;
+    return assigneeList;
   }
 
-  async hasComment(comment: string): Promise<Boolean> {
+  async getComments() {
     await this.ready();
     await this.commentDiv.scrollIntoView();
     let commentList:String = "" ;
     if (await this.commentsText.isPresent()) {
       commentList = await this.commentsText.getTextWhenReady();
     }
-    this.debug("Comment list: " + commentList);
-    return commentList.indexOf(comment) > -1;
+    return commentList;
   }
 
-  async hasCreationTime(time: string): Promise<Boolean> {
+  async getCreationTime() {
     let origTime = await this.creationTimeDiv.getTextWhenReady()
-    return time === origTime;
+    return origTime;
   }
 
-  async hasDescription(description: string): Promise<Boolean> {
-    return await this.descriptionTextarea.getTextWhenReady() == description;
+  async getDescription() {
+    return await this.descriptionTextarea.getTextWhenReady();
   }
 
-  async hasIteration(iterationTitle: string): Promise<Boolean> {
+  async getIteration() {
     await this.loadingAnimation.untilCount(0);
     await browser.sleep(1000);    
     let iteration = await this.iterationDropdown.getTextWhenReady();
-    this.debug(" iteration : " + iteration);
-    return iteration === iterationTitle;
+    return iteration;
   }
 
-  async hasLabel(label: string) : Promise<Boolean> {
+  async getLabels() {
     let labelList = await this.labelListDiv.getTextWhenReady();
-    return labelList.indexOf(label) > -1;
+    return labelList;
   }
 
-  async hasLinkedItem(linkItem:string) : Promise<Boolean> {
+  async getLinkedItems() {
     let linkList = await this.linklistItem.getTextWhenReady();
-    return linkList.indexOf(linkItem) > -1;
+    return linkList;
   }
 
   async updateTitle(title: string, append: boolean = false) {
@@ -307,8 +304,8 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.addAssignee(assignee);
   }
 
-  async hasTitleError(error: string) {
-    return await this.titleErrorMessage.getTextWhenReady() === error;
+  async getTitleError() {
+    return await this.titleErrorMessage.getTextWhenReady();
   }
 
   async changeStateTo(state: string) {

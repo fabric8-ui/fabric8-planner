@@ -5,13 +5,10 @@
 function load_jenkins_vars() {
     if [ -e "jenkins-env" ]; then
         cat jenkins-env \
-        | grep -E "^(JENKINS_URL|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId|DEVSHIFT_TAG_LEN|GIT_COMMIT|NPM_TOKEN|FABRIC8CD_GH_TOKEN|REFRESH_TOKEN)=" \
+        | grep -E "^(JENKINS_URL|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId|DEVSHIFT_TAG_LEN|GIT_COMMIT|NPM_TOKEN|GH_TOKEN|REFRESH_TOKEN)=" \
         | sed 's/^/export /g' \
         > /tmp/jenkins-env
         source /tmp/jenkins-env
-
-        # "semantic release" needs token value in GH_TOKEN variable, so create a new variable with the correct value.
-        export GH_TOKEN="$FABRIC8CD_GH_TOKEN"
     fi
     echo "CICO: Jenkins environment variables loaded"
 }
@@ -45,7 +42,8 @@ function build_planner() {
 
 function run_unit_tests() {
     # Run unit tests
-    docker exec $CID npm run tests -- --unit
+    docker exec $CID npm run tests -- --unit \
+        && bash <(curl -s https://codecov.io/bash) -f ./coverage/*/coverage-final.json -t 73933b5a-4aba-4b55-8612-a809ca4ada30
 }
 
 function run_functional_tests() {
