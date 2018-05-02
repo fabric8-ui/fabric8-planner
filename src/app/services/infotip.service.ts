@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { HttpService } from './http-service';
 import { InfotipState } from './../states/infotip.state';
 
-const infotipsUrl: string = 'http://fabric8-online-docs-app-pr-314-fabric8-online-docs.badger.fabric8.io/json/infotips.json';
+const infotipsUrl: string = 'http://docs.openshift.io/json/infotips.json';
 
 @Injectable()
 export class InfotipService {
@@ -18,7 +18,7 @@ export class InfotipService {
         if (/^[5, 4][0-9]/.test(response.status.toString())) {
           throw new Error('API error occured');
         }
-        return response.json().data as InfotipState;
+        return response.json() as InfotipState;
       })
   }
 }
