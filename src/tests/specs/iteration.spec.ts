@@ -33,12 +33,12 @@ describe('Iteration test', () => {
   
   it('should create a new child iteration', async () => {
     let newIteration = 'new Iteration';
-    let parentIteration = '/' + process.env.SPACE_NAME + '/Iteration_2';
-    let iteration2 = 'Iteration_2';
+    let parentIteration = '/' + process.env.SPACE_NAME + '/Iteration_3';
+    let iteration = 'Iteration_3';
     await planner.sidePanel.createNewIteration();
     await planner.iteration.addNewChildIteration(newIteration, parentIteration);
     await planner.iteration.clickCreateIteration();
-    await planner.sidePanel.clickExpander(iteration2);
+    await planner.sidePanel.clickExpander(iteration);
     expect(await planner.sidePanel.getIterationList()).toContain(newIteration);
   });
     
