@@ -138,13 +138,15 @@ describe('Work Item datatable list: ', () => {
   });
 
   it('should update the workitem List on workitem edit', async() => {
+    let workitem = {'title': 'TITLE_TEXT'};
     await planner.header.selectFilter('State', 'new');
-    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+    await planner.createWorkItem(workitem);
+    await planner.workItemList.clickWorkItem(workitem.title);
     await planner.quickPreview.changeStateTo('open');
     await planner.quickPreview.notificationToast.untilCount(1);
     await planner.quickPreview.notificationToast.untilHidden(); 
     await planner.quickPreview.close();
-    expect(await planner.workItemList.isTitleTextBold(c.workItemTitle1)).not.toContain('bold');
+    expect(await planner.workItemList.isTitleTextBold(workitem.title)).not.toContain('bold');
   });
 
   it('should make the title bold based on filter when adding a new workitem', async() => {
