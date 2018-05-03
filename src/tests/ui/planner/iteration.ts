@@ -63,13 +63,6 @@ export class Iteration extends ui.BaseElement {
     await this.createIterationButton.untilHidden();
   }
   
-  async addNewChildIteration(iterationName: string, parentIteration: string) {
-    await this.parentIteration.clear();
-    await this.iterationName.enterText(iterationName);
-    await this.parentIteration.enterText(parentIteration);
-    await this.parentDropdown.select(parentIteration);
-  }
-  
   async getLastDayOfMonth(): Promise<String> {
     let day = await this.selectEndDate.getAttribute("innerText");
     return day;

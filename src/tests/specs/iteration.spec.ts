@@ -23,7 +23,7 @@ describe('Iteration test', () => {
     let newIteration = 'new Iteration';
     let iteration3 = '/' + process.env.SPACE_NAME;
     await planner.sidePanel.createNewIteration();
-    await planner.iteration.addNewIteration(newIteration, iteration3);
+    await planner.iteration.addNewIteration(newIteration, iteration3, true);
     let month = await planner.iteration.getMonth();
     let year = await planner.iteration.getYear();
     let lastDayOfMonth = await planner.iteration.getLastDayOfMonth();
@@ -36,7 +36,7 @@ describe('Iteration test', () => {
     let parentIteration = '/' + process.env.SPACE_NAME + '/Iteration_3';
     let iteration = 'Iteration_3';
     await planner.sidePanel.createNewIteration();
-    await planner.iteration.addNewChildIteration(newIteration, parentIteration);
+    await planner.iteration.addNewIteration(newIteration, parentIteration);
     await planner.iteration.clickCreateIteration();
     await planner.sidePanel.clickExpander(iteration);
     expect(await planner.sidePanel.getIterationList()).toContain(newIteration);
