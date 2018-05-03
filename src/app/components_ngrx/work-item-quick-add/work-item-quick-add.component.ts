@@ -27,6 +27,10 @@ import { IterationUI } from './../../models/iteration.model';
 import { Store } from '@ngrx/store';
 import { AppState } from './../../states/app.state';
 import * as WorkItemActions from './../../actions/work-item.actions';
+import { InfotipState } from '../../states/index.state';
+import { Observable } from 'rxjs';
+import { InfotipComponent } from '../infotip/infotip.component';
+import * as InfotipActions from './../../actions/infotip.actions';
 
 @Component({
   selector: 'alm-work-item-quick-add',
@@ -62,6 +66,9 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   createId: number= 0;
   eventListeners: any[] = [];
   blockAdd: boolean = false;
+  infotipSource = this.store
+  .select('listPage')
+  .select('infotips');
 
   constructor(
     private logger: Logger,
@@ -214,7 +221,12 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     }
   }
 
-
+  getInfotipText(id: string) {
+    return this.infotipSource
+      .select(s => s[id])
+      .select(i => i ? i['en_EN'] : id);
+  }    
+  
   preventDef(event: any) {
     event.preventDefault();
   }

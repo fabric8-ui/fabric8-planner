@@ -1,12 +1,12 @@
-import { Component, Input, HostListener } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'infotip',
-  template: `<template #popoverTemplate>
+  template: `<ng-template #popoverTemplate>
              <span class="popover-text">{{infotipText}}</span>
              <span class="pficon-close close-popover" 
              (click)="handlePropagation($event); pop.hide();"></span>
-             </template>
+             </ng-template>
              <span class="pficon-info infotip-icon"
              (click)="handlePropagation($event)"
              [style.opacity]="pop.isOpen ? '1' : ''"   
@@ -17,7 +17,7 @@ import { Component, Input, HostListener } from '@angular/core';
 
 export class InfotipComponent {
   @Input() infotipText: string;
-
+  
   handlePropagation(e) {
     if(e) {
       e.stopPropagation(); 
