@@ -71,15 +71,18 @@
         [autoClose]="false"
         [isOpen]="isTableConfigOpen"
         (isOpenChange)="tableConfigChange($event)">
-        <button class="btn btn-link dropdown-toggle" type="button" dropdownToggle>
-          <span class="fa fa-cog"></span>
+        <button class="btn btn-link dropdown-toggle" 
+          type="button" dropdownToggle>
+          <span class="fa fa-cog"
+            placement="bottom"
+            tooltip="Open Config"></span>
         </button>
         <div class="dropdown-menu-right dropdown-menu f8-wi-list__settings-dropdown" *dropdownMenu>
           <aside>
             <i class="db text-right fa fa-close btn btn-link" (click)="tableConfigToggle($event)"></i>
           </aside>
           <aside>
-            <small>Displayed Atrributes</small>
+            <small>Displayed Attributes</small>
             <ul class="f8-wi-list__settings-column">
               <li *ngFor='let col of (columns | filterColumn: "showInDisplay")'>
                 <input
@@ -101,7 +104,7 @@
             </span>
           </aside>
           <aside>
-            <small>Available Atrributes</small>
+            <small>Available Attributes</small>
             <ul class="f8-wi-list__settings-column">
               <li *ngFor='let col of (columns | filterColumn: "available")'>
                 <input
@@ -177,6 +180,8 @@
                 <span class="table-dnd-header"></span>
               </span>
               <a class="quick-add-icon"
+                placement="right"
+                tooltip="Add Child Work Item"
                 href="javascript:void(0)"
                 [class.pficon-add-circle-o]="!expanded"
                 [class.pficon-close]="expanded"
@@ -241,6 +246,8 @@
                  <span class="table-dnd-header"></span>
               </span>
               <a class="quick-add-icon pficon-add-circle-o disabled"
+                placement="right"
+                tooltip="Add Child Work Item"
                 href="javascript:void(0)">
               </a>
             </ng-template>

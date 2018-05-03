@@ -193,7 +193,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
       this.store.dispatch(new WorkItemActions.Add({
         createId: this.createId,
         workItem: this.workItem,
-        parentId: this.parentWorkItemId
+        parentId: this.parentWorkItemId,
+        openDetailPage: openStatus
       }));
     } else {
       this.blockAdd = false;
