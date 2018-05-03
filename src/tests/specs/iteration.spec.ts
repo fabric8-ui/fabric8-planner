@@ -58,4 +58,19 @@ describe('Iteration test', () => {
     await planner.quickPreview.notificationToast.untilCount(1);
     expect(await planner.workItemList.iterationText(workItemTitle1)).toBe(updateIteration);
   });
-});
+
+  // Regression test for https://github.com/openshiftio/openshift.io/issues/3318
+  it('Iteration modal should have sane values', async() => {
+    // Create iteration "issue-3318"
+    await planner.sidePanel.createNewIteration();
+    await planner.iteration.addNewIteration("issue-3318");
+    await planner.iteration.clickCreateIteration();
+    await browser.sleep(1000);
+    // Ensure dropdown list has only 1 "issue-3318"
+    await planner.sidePanel.createNewIteration();
+    await planner.iteration.parentIteration.enterText("issue-3318");
+    let val = await planner.iteration.parentDropdownList.getTextWhenReady();
+    // Ensure val is exactly the value we expect it to be
+    expect(val).toBe('/' + process.env.SPACE_NAME + '/issue-3318')
+  });
+})
