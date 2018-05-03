@@ -8,7 +8,7 @@ describe('Planner Smoke Tests:', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
@@ -17,30 +17,33 @@ describe('Planner Smoke Tests:', () => {
     await planner.ready();
   });
 
+  beforeEach( async () => {
+    await planner.resetState();
+  });
+
   it('create a work item and add/remove assignee', async () => {
     await planner.createWorkItem(c.newWorkItem1);
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem1.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(c.newWorkItem1.title);
     await planner.quickPreview.addAssignee(c.user1 + " (me)");
-    expect(await planner.quickPreview.hasAssignee(c.user1)).toBeTruthy();
+    expect(await planner.quickPreview.getAssignees()).toContain(c.user1);
     await planner.quickPreview.close();
     await planner.workItemList.clickWorkItem(c.newWorkItem1.title);
     await browser.sleep(2000);
     await planner.quickPreview.removeAssignee(c.user1 + " (me)");
-    expect(await planner.quickPreview.hasAssignee(c.user1)).toBeFalsy();
+    expect(await planner.quickPreview.getAssignees()).not.toContain(c.user1);
     await planner.quickPreview.close();
   });
 
   it('update workitem title/description', async () => {
     await planner.createWorkItem(c.newWorkItem2);
-
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem2.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(c.newWorkItem2.title);
     await planner.quickPreview.updateTitle(c.updatedWorkItem.title);
     await planner.quickPreview.close();
     await planner.workItemList.clickWorkItem(c.updatedWorkItem.title);
     await planner.quickPreview.updateDescription(c.updatedWorkItem.description);
-    expect(await planner.quickPreview.hasDescription(c.updatedWorkItem.description)).toBeTruthy();
+    expect(await planner.quickPreview.getDescription()).toBe(c.updatedWorkItem.description);
     await planner.quickPreview.close();
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem2.title)).toBeFalsy();
     expect(await planner.workItemList.hasWorkItem(c.updatedWorkItem.title)).toBeTruthy();
@@ -50,28 +53,28 @@ describe('Planner Smoke Tests:', () => {
     let title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.updateTitle('');
-    expect(await planner.quickPreview.hasTitleError('Empty title not allowed')).toBeTruthy();
+    expect(await planner.quickPreview.getTitleError()).toBe('Empty title not allowed');
   })
 
   it('Check WorkItem creator name and image is reflected', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.ready();
-    expect(await planner.quickPreview.hasCreator(c.user1)).toBeTruthy();
-    expect(await planner.quickPreview.hasCreatorAvatar(c.user_avatar)).toBeTruthy()
+    expect(await planner.quickPreview.getCreator()).toBe(c.user1);
+    expect(await planner.quickPreview.getCreatorAvatar()).toBe(c.user_avatar)
     await planner.quickPreview.close();
   });
 
   it('Associate workitem with an Area', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
     await planner.quickPreview.addArea(c.dropdownareaTitle1);
-    expect(await planner.quickPreview.hasArea(c.areaTitle1)).toBeTruthy();
+    expect(await planner.quickPreview.getArea()).toBe(c.areaTitle1);
     await planner.quickPreview.close();
 
     await planner.workItemList.clickWorkItem(c.workItemTitle1);
-    expect(await planner.quickPreview.hasArea(c.areaTitle1)).toBeTruthy();
+    expect(await planner.quickPreview.getArea()).toBe(c.areaTitle1);
     await planner.quickPreview.addArea(c.dropdownareaTitle2);
-    expect(await planner.quickPreview.hasArea(c.areaTitle1)).toBeFalsy();
-    expect(await planner.quickPreview.hasArea(c.areaTitle2)).toBeTruthy();
+    expect(await planner.quickPreview.getArea()).not.toBe(c.areaTitle1);
+    expect(await planner.quickPreview.getArea()).toBe(c.areaTitle2);
     await planner.quickPreview.close();
   });
 
@@ -79,14 +82,14 @@ describe('Planner Smoke Tests:', () => {
     //add new iteration
     await planner.workItemList.clickWorkItem(c.workItemTitle7);
     await planner.quickPreview.addIteration(c.dropdownIteration1);
-    expect(await planner.quickPreview.hasIteration(c.iteration1)).toBeTruthy();
+    expect(await planner.quickPreview.getIteration()).toBe(c.iteration1);
     await planner.quickPreview.close();
 
     //update iteration
     await planner.workItemList.clickWorkItem(c.workItemTitle7);
-    expect(await planner.quickPreview.hasIteration(c.iteration1)).toBeTruthy();
+    expect(await planner.quickPreview.getIteration()).toBe(c.iteration1);
     await planner.quickPreview.addIteration(c.dropdownIteration2);
-    expect(await planner.quickPreview.hasIteration(c.iteration2)).toBeTruthy();
+    expect(await planner.quickPreview.getIteration()).toBe(c.iteration2);
 
     //search iteration
     await planner.workItemList.clickWorkItem(c.workItemTitle7);
@@ -95,11 +98,9 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.iterationCancelButton.clickWhenReady();
     await planner.quickPreview.iterationDropdown.clickWhenReady();
     expect(await planner.quickPreview.iterationDropdown.menu.getTextWhenReady()).not.toBe('No matches found.');
-    await planner.quickPreview.close();
   });
 
   it('Scenario-Quick Add should support Scenario, papercuts and fundamentals' ,async () => {
-    await planner.quickPreview.loadingAnimation.untilHidden();
     let wiTypes = await planner.quickAdd.workItemTypes();
     expect(wiTypes.length).toBe(3);
     expect(wiTypes[0]).toBe('Scenario');
@@ -109,7 +110,6 @@ describe('Planner Smoke Tests:', () => {
 
   it('Experiences-Quick Add should support Experience and Value proposition', async () => {
     await planner.sidePanel.clickExperience();
-    await planner.quickPreview.loadingAnimation.untilHidden();
     let wiTypes = await planner.quickAdd.workItemTypes();
     expect(wiTypes.length).toBe(2);
     expect(wiTypes[0]).toBe('Experience');
@@ -129,20 +129,21 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem3.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(c.newWorkItem3.title);
     await planner.quickPreview.addCommentAndSave(c.comment);
-    expect(await planner.quickPreview.hasComment(c.comment)).toBeTruthy();
+    expect(await planner.quickPreview.getComments()).toContain(c.comment);
   });
 
   it('Edit Comment and Cancel', async() => {
-    let title = await planner.createUniqueWorkItem()
+    let title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.addCommentAndCancel(c.comment);
-    expect(await planner.quickPreview.hasComment('new comment')).toBeFalsy();
+    expect(await planner.quickPreview.getComments()).not.toContain('new comment');
   });
 
   it('Create custom query', async() => {
     await planner.sidePanel.clickRequirement();
     await planner.header.selectFilter('State','in progress');
     await planner.header.saveFilters('Query 1');
+    await planner.workItemList.overlay.untilHidden();
     expect(await planner.sidePanel.getMyFiltersList()).toContain('Query 1');
   });
 
@@ -151,11 +152,11 @@ describe('Planner Smoke Tests:', () => {
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.updateDescription("My new description");
     await planner.quickPreview.createNewLabel("Validate description label");
-    expect(await planner.quickPreview.hasLabel("Validate description label")).toBeTruthy();
+    expect(await planner.quickPreview.getLabels()).toContain("Validate description label");
     await planner.quickPreview.close();
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.addLabel("Validate description label");
-    expect(await planner.quickPreview.hasDescription("My new description")).toBeTruthy();
+    expect(await planner.quickPreview.getDescription()).toBe("My new description");
     await planner.quickPreview.close();
   });
 
@@ -165,6 +166,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.notificationToast.untilHidden();
     await planner.detailPage.closeButton.ready();
     expect(await browser.getCurrentUrl()).toContain('detail');
+    await planner.detailPage.close();
   });
 
 });

@@ -64,13 +64,17 @@ export class SidePanel extends ui.BaseElement {
   }
 
   async getIterationDate(): Promise<String> {
-    await this.ready();    
+    await this.ready();
     let iterationList = await this.iterationHeader.getAttribute('innerText');
     let iterationList1 = iterationList.toString().replace("\n","");
     this.debug('iterationList1 : ' + iterationList1 );
     return iterationList1;
   }
-
+  
+  async clickExpander(iterationName: string) {
+    await this.element(by.xpath("//iteration-list-entry[.//span[text()='"+ iterationName +"']]")).$('.fa-angle-right').click();
+  }
+  
   async getMyFiltersList(): Promise<String[]> {
     await this.customQuery.ready();
     let myFilterString = await this.customQueryList.getTextWhenReady();
