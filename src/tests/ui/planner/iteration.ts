@@ -27,7 +27,7 @@ export class Iteration extends ui.BaseElement {
     await this.iterationName.enterText(iterationName);
     if(parentIteration) {
       await this.parentIteration.enterText(parentIteration);
-      await this.parentIteration.clickWhenReady();
+      await this.parentDropdown.select(parentIteration);
     }
     if(withDates) {
       await this.selectCalendarDate();

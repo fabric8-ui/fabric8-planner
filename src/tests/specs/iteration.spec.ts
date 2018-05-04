@@ -32,7 +32,7 @@ describe('Iteration test', () => {
   });
   
   it('should create a new child iteration', async () => {
-    let newIteration = 'new Iteration';
+    let newIteration = 'new Iteration1';
     let parentIteration = '/' + process.env.SPACE_NAME + '/Iteration_3';
     let iteration = 'Iteration_3';
     await planner.sidePanel.createNewIteration();
@@ -61,16 +61,17 @@ describe('Iteration test', () => {
 
   // Regression test for https://github.com/openshiftio/openshift.io/issues/3318
   it('Iteration modal should have sane values', async() => {
+    let iterationName = "issue-3318";
     // Create iteration "issue-3318"
     await planner.sidePanel.createNewIteration();
-    await planner.iteration.addNewIteration("issue-3318");
+    await planner.iteration.addNewIteration(iterationName);
     await planner.iteration.clickCreateIteration();
     await browser.sleep(1000);
     // Ensure dropdown list has only 1 "issue-3318"
     await planner.sidePanel.createNewIteration();
-    await planner.iteration.parentIteration.enterText("issue-3318");
+    await planner.iteration.parentIteration.enterText(iterationName);
     let val = await planner.iteration.parentDropdownList.getTextWhenReady();
     // Ensure val is exactly the value we expect it to be
-    expect(val).toBe('/' + process.env.SPACE_NAME + '/issue-3318')
+    expect(val).toBe('/' + process.env.SPACE_NAME + '/' + iterationName)
   });
 })
