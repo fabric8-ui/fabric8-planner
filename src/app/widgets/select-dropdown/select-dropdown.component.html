@@ -3,7 +3,7 @@
     <ng-container *ngTemplateOutlet="toggleButtonRef">
     </ng-container>
   </span>
-  <div class="select-dropdown dropdown-menu dropdown-menu-left"
+  <div (clickOut)="clickOut()" class="select-dropdown dropdown-menu dropdown-menu-left"
     [class.show]="displayDropdown">
     <div class="select-dropdown-header">
       <span> {{ headerText }} </span>
