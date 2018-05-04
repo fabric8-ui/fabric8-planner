@@ -48,7 +48,7 @@ import { Space, Spaces } from 'ngx-fabric8-wit';
 import { EmptyStateConfig } from 'patternfly-ng/empty-state';
 
 // import for column
-import { datatableColumn } from './datatable-config';
+// import { datatableColumn } from './datatable-config';
 
 import { WorkItemCellComponent } from '../work-item-cell/work-item-cell.component'
 import { WorkItem } from '../../models/work-item';
@@ -196,13 +196,13 @@ export class PlannerListComponent implements OnInit, AfterViewChecked, OnDestroy
     this.loggedIn = this.auth.isLoggedIn();
 
     // Cookie for datatableColumn config
-    if(!this.cookieService.getCookie(datatableColumn.length).status) {
-      this.cookieService.setCookie('datatableColumn', datatableColumn);
-      this.columns = datatableColumn;
-    } else {
-      let temp = this.cookieService.getCookie(datatableColumn.length)
-      this.columns = temp.array;
-    }
+    // if(!this.cookieService.getCookie(datatableColumn.length).status) {
+    //   this.cookieService.setCookie('datatableColumn', datatableColumn);
+    //   this.columns = datatableColumn;
+    // } else {
+    //   let temp = this.cookieService.getCookie(datatableColumn.length)
+    //   this.columns = temp.array;
+    // }
 
     this.emptyStateConfig = {
       info: 'There are no Work Items for your selected criteria',
