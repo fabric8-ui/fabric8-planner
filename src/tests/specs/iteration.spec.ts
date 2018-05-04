@@ -23,7 +23,7 @@ describe('Iteration test', () => {
     let newIteration = 'new Iteration';
     let iteration3 = '/' + process.env.SPACE_NAME;
     await planner.sidePanel.createNewIteration();
-    await planner.iteration.addNewIteration(newIteration, iteration3, true);
+    await planner.iteration.addNewIteration(newIteration, null, true);
     let month = await planner.iteration.getMonth();
     let year = await planner.iteration.getYear();
     let lastDayOfMonth = await planner.iteration.getLastDayOfMonth();
