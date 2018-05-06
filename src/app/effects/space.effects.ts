@@ -17,6 +17,7 @@ import * as GroupTypeActions from './../actions/group-type.actions';
 import * as IterationActions from './../actions/iteration.actions';
 import * as LabelActions from './../actions/label.actions';
 import * as WorkItemTypeActions from './../actions/work-item-type.actions';
+import * as InfotipActions from './../actions/infotip.actions';
 
 export type Action = SpaceActions.All;
 
@@ -53,13 +54,12 @@ export class SpaceEffects {
     .filter(action => action.payload.id !== this.oldSpaceId)
     .do(action => this.oldSpaceId = action.payload.id)
     .switchMap(() => [
-      new CollaboratorActions.Get(),
-      new AreaActions.Get(),
       new FilterActions.Get(),
       new GroupTypeActions.Get(),
       new IterationActions.Get(),
       new LabelActions.Get(),
       new WorkItemTypeActions.Get(),
-      new CustomQueryActions.Get()
+      new CustomQueryActions.Get(),
+      new InfotipActions.Get()
     ]);
 }
