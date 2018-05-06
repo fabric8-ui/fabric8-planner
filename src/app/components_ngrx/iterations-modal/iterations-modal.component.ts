@@ -6,7 +6,8 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnDestroy
+  OnDestroy,
+  ElementRef
 } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
@@ -39,6 +40,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   @ViewChild('iterationList') iterationList: any;
   @ViewChild('startmydp') startmydp: MyDatePicker;
   @ViewChild('endmydp') endmydp: MyDatePicker;
+  @ViewChild('itrname') itrname: ElementRef;
 
   public iteration: IterationUI;
   private validationError = false;
@@ -235,6 +237,9 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
 
   actionOnOpen() {
     // console.log('Open');
+    setTimeout(() => {
+      this.itrname.nativeElement.focus();
+    }, 200);
   }
 
   actionOnClose() {
