@@ -1,5 +1,5 @@
 import { BaseElement } from './../base.element';
-import { ElementFinder, by } from 'protractor';
+import { ElementFinder, by, browser } from 'protractor';
 import { WorkItemQuickAdd } from './workitem-quickadd';
 import { WorkItemListEntry } from './workitem-list-entry';
 import * as ui from '../../ui';
@@ -67,5 +67,10 @@ export class WorkItemList extends BaseElement {
 
   async isTitleTextBold(title: string) {
     return await this.workItem(title).title.getAttribute('className');
+  }
+
+  async openDetailPage(title: string) {
+    await browser.actions().mouseMove(this.workItem(title)).perform();
+    await this.workItem(title).clickDetailIcon();
   }
 };

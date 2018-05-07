@@ -82,6 +82,10 @@ export class BaseElement extends ElementFinder implements BaseElementInterface {
     }
   }
 
+  async untilUrlContains(text: string, timeout?: number) {
+    await browser.wait(EC.urlContains(text), timeout);
+  }
+
   async untilAbsent(timeout?: number) {
     await this.waitFor('absence', EC.stalenessOf(this), timeout);
   }
