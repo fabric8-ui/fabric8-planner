@@ -3,7 +3,7 @@ import { PlannerPage } from '../page_objects/planner';
 import * as support from '../support';
 
 
-describe('Planner Collaborator Tests:', () => {
+fdescribe('Planner Collaborator Tests:', () => {
   let planner: PlannerPage;
   let planner1: PlannerPage;
   let c = new support.Constants();

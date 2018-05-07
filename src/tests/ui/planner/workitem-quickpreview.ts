@@ -10,7 +10,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   /* UI elements of the Top section of the workitem preview */
   closeButton = new ui.Button(this.$('.f8-detail--close'), 'WorkItem Quick Preview close button');
   stateDiv = new ui.BaseElement(this.$('#wi-preview-state'),' State toggle');
-  stateDropdown = new ui.Dropdown(this.stateDiv, this.$('#wi-status-dropdown'), 'WorkItem State dropdown');
+  iterationDropdownCloseButton = new ui.Button(this.$('.iteration-dropdown .close-pointer'),'Iteration dropdown close button');
+  areaDropdownCloseButton = new ui.Button(this.$('.area-dropdown .close-pointer'),'Area dropdown close button');
+  stateDropdown = new ui.Dropdown(this.$('.dropdown-toggle'), this.$('#wi-status-dropdown'), 'WorkItem State dropdown');
   fullDetailButton = new ui.Clickable(this.$('span.dib'), 'View full details button');
   titleDiv = new ui.BaseElement(this.$('#wi-title-div'), 'Workitem title div');
   titleInput = new ui.TextInput(this.titleDiv.$('textarea'), 'WorkItem Title Input');
@@ -30,22 +32,20 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     this.$('assignee-selector div.select-dropdown'),
     'Assignee dropdown menu');
   assigneeDiv = new ui.BaseElement(this.$('f8-assignee'), 'Assignee List Div');
+  areaDiv = new ui.BaseElement(this.$('.area-dropdown'), 'Assignee List Div');
   areaDropdown = new ui.Dropdown(
-    this.$('#area-dropdown > div > span'),
-    this.$('ul.item-ul.dropdown-list'),
+    this.areaDiv.$('f8-select-dropdown>div>span'),
+    this.areaDiv.$('.select-dropdown-menu'),
     'Area select dropdown'
   );
-  areaSaveButton = new ui.Button(this.$('#area-dropdown .save-button'), 'Area save button');
-  areaCancelButton = new ui.Button(this.$('#area-dropdown .cancel-button'), 'Area cancel button');
-
+  iterationDiv = new ui.BaseElement(this.$('.iteration-dropdown'), 'Iteration List Div');
+  
   iterationDropdown = new ui.Dropdown(
-    this.$('#iteration-dropdown > div > span'),
-    this.$('ul.item-ul.dropdown-list'),
+    this.iterationDiv.$('f8-select-dropdown>div>span'),
+    this.iterationDiv.$('.select-dropdown-menu'),
     'Iteration select dropdown'
   );
-  iterationInput = new ui.TextInput(this.$('#valueSearchInput'), 'Iteration input');
-  iterationSaveButton = new ui.Button(this.$('#iteration-dropdown .save-button'), 'Iteration save button');
-  iterationCancelButton = new ui.Button(this.$('#iteration-dropdown .cancel-button'), 'Iteration cancel button');
+  iterationInput = new ui.TextInput(this.iterationDiv.$('.select-dropdown-search-input'), 'Iteration input');
 
   labelDropdown = new ui.Dropdown(
     this.$('#labelSelector .add-label'),
@@ -127,7 +127,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await browser.sleep(2000);
     await this.areaDropdown.clickWhenReady();
     await this.areaDropdown.select(areaTitle);
-    await this.areaSaveButton.clickWhenReady();
+    await this.areaDropdownCloseButton.clickWhenReady();
     await this.loadingAnimation.untilCount(0);
   }
 
@@ -136,7 +136,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await browser.sleep(2000);
     await this.iterationDropdown.clickWhenReady();
     await this.iterationDropdown.select(iterationTitle);
-    await this.iterationSaveButton.clickWhenReady();
+    await this.iterationDropdownCloseButton.clickWhenReady();
     await this.notificationToast.untilCount(1);
   }
 
@@ -252,7 +252,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
 
   async getIteration() {
     await this.loadingAnimation.untilCount(0);
-    await browser.sleep(1000);    
+    await browser.sleep(1000);
     let iteration = await this.iterationDropdown.getTextWhenReady();
     return iteration;
   }
