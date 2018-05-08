@@ -2,6 +2,7 @@ import { LabelUI } from './../../models/label.model';
 import { IterationUI } from './../../models/iteration.model';
 import { AreaUI } from './../../models/area.model';
 import { UserUI } from './../../models/user';
+import { WorkItemTypeUI } from './../../models/work-item-type';
 import { AuthenticationService } from 'ngx-login-client';
 import { UrlService } from './../../services/url.service';
 import { GetWorkItem } from './../../actions/detail-work-item.actions';
@@ -11,8 +12,10 @@ import {
   AfterViewChecked,
   Component, Input, OnInit,
   OnDestroy, Output, EventEmitter,
-  ElementRef, ViewChild, Renderer2
+  ElementRef, ViewChild, Renderer2, HostListener
 } from '@angular/core';
+import { InlineInputComponent } from './../../widgets/inlineinput/inlineinput.component';
+import { MarkdownComponent } from 'ngx-widgets';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
@@ -37,6 +40,8 @@ import { WorkItemService } from './../../services/work-item.service';
 export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('detailHeader') detailHeader: ElementRef;
   @ViewChild('detailContent') detailContent: ElementRef;
+  @ViewChild('inlineInput') inlineInput: InlineInputComponent;
+  @ViewChild('descMarkdown') descMarkdown: MarkdownComponent;
 
   private spaceSource = this.store
     .select('listPage')
@@ -46,21 +51,17 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   private areaSource = this.store
     .select('listPage')
     .select('areas')
-    .do(a => {if (!a.length) this.store.dispatch(new AreaActions.Get())})
     .filter(a => !!a.length);
   private iterationSource = this.store
     .select('listPage')
     .select('iterations')
-    .do(i => {if (!i.length) this.store.dispatch(new IterationActions.Get())})
     .filter(i => !!i.length);
   private labelSource = this.store
     .select('listPage')
     .select('labels')
-    .do(i => {if (i === null) this.store.dispatch(new LabelActions.Get())});
   private collaboratorSource = this.store
     .select('listPage')
     .select('collaborators')
-    .do(i => {if (!i.length) this.store.dispatch(new CollaboratorActions.Get())})
     .filter(c => !!c.length);
   private workItemStateSource = this.store
     .select('listPage')
@@ -69,7 +70,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   private workItemTypeSource = this.store
     .select('listPage')
     .select('workItemTypes')
-    .do(i => {if (!i.length) this.store.dispatch(new WorkItemTypeActions.Get())})
     .filter(w => !!w.length);
   private workItemSource: Observable<WorkItemUI> =
     this.store
@@ -91,6 +91,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
       this.detailContext = 'preview';
       const workItemNumber = val.number;
       this.setWorkItem(workItemNumber);
+      this.listenToEsc = true;
     }
   }
 
@@ -110,6 +111,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   private _iterations: IterationUI[] = [];
   private iterations: any[] = []; // this goes in dropdown component
   private labels: LabelUI[] = [];
+  private wiTypes: WorkItemTypeUI[] = [];
 
   private loadingComments: boolean = true;
   private loadingTypes: boolean = false;
@@ -118,6 +120,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   private loadingLabels: boolean = false;
   private loadingAssignees: boolean = false;
   private loggedInUser: UserUI = null;
+  private listenToEsc: boolean = false;
 
   constructor(
     private store: Store<AppState>,
@@ -147,6 +150,9 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
       this.workItemSubscriber.unsubscribe();
       this.workItemSubscriber = null;
     }
+    if(document.getElementsByTagName('body')[0].style.overflow === "hidden") {
+      document.getElementsByTagName('body')[0].removeAttribute('style');
+    }
   }
 
   ngAfterViewChecked() {
@@ -169,12 +175,12 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
         return this.combinedSources
       })
       .switchMap(([areas, iterations, labels, collabs, states, type]) => {
-        this.workItemStates = states;
         this.collaborators = collabs.filter(c => !c.currentUser);
         this.loggedInUser = collabs.find(c => c.currentUser);
         this._areas = areas;
         this._iterations = iterations;
         this.labels = labels;
+        this.wiTypes = type;
         this.store.dispatch(new DetailWorkItemActions.GetWorkItem({
           number: wiNumber
         }));
@@ -182,7 +188,14 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
       })
       .filter(w => w !== null)
       .subscribe(workItem => {
+        if((this.detailContext === 'preview')
+        && this.descMarkdown && this.workItem.id !== workItem.id) {
+          this.descMarkdown.closeClick();
+        }
+
         this.workItem = workItem;
+        const wiType = this.wiTypes.find(t => t.id === this.workItem.type.id);
+        this.workItemStates = wiType.fields['system.state'].type.values;
         this.setAreas();
         this.setIterations();
         this.loadingAssignees = false;
@@ -208,6 +221,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   }
 
   closeDetail() {
+    this.workItem = null;
     if (this.workItemSubscriber !== null) {
       this.workItemSubscriber.unsubscribe();
       this.workItemSubscriber = null;
@@ -215,6 +229,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     if (this.detailContext === 'detail') {
       this.navigateBack();
     } else {
+      this.inlineInput.closeClick();
       this.closePreview.emit();
     }
   }
@@ -234,12 +249,15 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   saveTitle(event) {
     const value = event.value.trim();
     this.titleCallback = event.callBack;
-    if (value !== '' && this.workItem.title !== value) {
+    if (value === '') {
+      this.titleCallback(value, 'Empty title not allowed');
+    } else if (this.workItem.title === value) {
+      this.titleCallback(value);
+    } else {
       let workItem = {} as WorkItemUI;
       workItem['version'] = this.workItem.version;
       workItem['link'] = this.workItem.link;
       workItem['id'] = this.workItem.id;
-
       workItem['title'] = value;
       this.store.dispatch(new WorkItemActions.Update(workItem));
     }
@@ -364,5 +382,14 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
 
     workItem['description'] = rawText;
     this.store.dispatch(new WorkItemActions.Update(workItem));
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeyEvent(event: any) {
+    // for ESC key handling
+    if (event.keyCode == 27 && this.listenToEsc) {
+     this.closeDetail();
+     this.listenToEsc = false;
+    }
   }
 }

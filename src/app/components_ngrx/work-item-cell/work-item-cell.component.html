@@ -21,11 +21,14 @@
   <div class="wi-detail-title">
     <p class="truncate pointer"
         [class.bold]="row.bold"
-        (click)="onPreview($event, row['id'])"> {{row.title}} </p>
+        [innerHTML]="row.title"
+        (click)="onPreview($event, row['id'])"></p>
   </div>
   <div class="dib text-right wi-detail-icon">
     <a class="fa fa-list-alt padding-v-5 pointer"
-    [routerLink]="['detail', row.number]"></a>
+      placement="right"
+      tooltip="Open Detail View"
+      [routerLink]="['detail', row.number]"></a>
   </div>
 </div>
 <!-- Status -->
@@ -49,7 +52,7 @@
 </div>
 
 <!-- Iteration -->
-  <span *ngIf="col === 'iteration'">
+  <span id="table-iteration" *ngIf="col === 'iteration'">
     {{row.iteration?.parentPath === '/' ? 'NA' : row.iteration?.name}}
   </span>
 

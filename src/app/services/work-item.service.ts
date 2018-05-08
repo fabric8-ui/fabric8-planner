@@ -183,7 +183,7 @@ export class WorkItemService {
     if (this._currentSpace) {
       let url = '';
       if (process.env.ENV === 'inmemory') {
-        url = 'http://mock.service/api/spaces/space-id0/workitems?page[limit]=42&filter[space]=space-id0&filter[$WITGROUP]=Scenarios';
+        url = 'http://mock.service/api/spaces/space-id0/workitems?page[limit]=42&filter[space]=space-id0&filter[typegroup.name]=Scenarios';
       } else {
         this.workItemUrl = this._currentSpace.links.self.split('spaces')[0] + 'search';
         url = this.workItemUrl + '?page[limit]=' + pageSize + '&' + Object.keys(filters).map(k => 'filter['+k+']='+JSON.stringify(filters[k])).join('&');
@@ -311,7 +311,8 @@ export class WorkItemService {
           '/namedspaces' +
           '/' + owner +
           '/' + space +
-          '/workitems/' + id
+          '/workitems/' + id,
+          {'no-header': null}
         )
         .map(item => item.json().data)
         .catch((error: Error | any) => {
@@ -608,6 +609,25 @@ export class WorkItemService {
     }
   }
 
+  getWorkItemTypes2(workItemTypeUrl): Observable<any[]> {
+    return this.http
+      .get(workItemTypeUrl)
+      .map((response) => {
+        let resultTypes = response.json().data as WorkItemType[];
+
+        // THIS IS A HACK!
+        for (let i=0; i<resultTypes.length; i++)
+          if (resultTypes[i].id==='86af5178-9b41-469b-9096-57e5155c3f31')
+            resultTypes.splice(i, 1);
+
+        this.workItemTypes = resultTypes;
+        return this.workItemTypes;
+      }).catch((error: Error | any) => {
+        this.notifyError('Getting work item type information failed.', error);
+        return Observable.throw(new Error(error.message));
+      });
+  }
+
   /**
    * Usage: This method is to fetch the work item types by ID
    */
@@ -618,7 +638,8 @@ export class WorkItemService {
       if (workItemType) {
         return Observable.of(workItemType);
       } else {
-        let workItemTypeUrl = this._currentSpace.links.self + '/workitemtypes/' + id;
+        let workItemTypeUrl = this._currentSpace.links.self.split('/spaces/')[0] +
+          '/workitemtypes/' + id;
         return this.http.get(workItemTypeUrl)
           .map((response) => {
             workItemType = response.json().data as WorkItemType;
@@ -816,34 +837,12 @@ export class WorkItemService {
    *
    * @return Promise of LinkType[]
    */
-  getAllLinkTypes(workItem: WorkItem): Observable<any> {
-    let workItemLinkTypesUrl = this._currentSpace.links.self + '/workitemlinktypes';
-    return this.http.get(workItemLinkTypesUrl)
+  getAllLinkTypes(url: string): Observable<any> {
+    return this.http.get(url)
       .catch((error: Error | any) => {
         this.notifyError('Getting link meta info failed (forward).', error);
         return Observable.throw(new Error(error.message));
       });
-  }
-
-  /**
-   * Usage: This function fetches all the work item link types
-   * Store it in an instance variable
-   *
-   * @return Promise of LinkType[]
-   */
-  getLinkTypes(workItem: WorkItem): Observable<Object> {
-    return this.getAllLinkTypes(workItem)
-        .map(item => {
-          let linkTypes: Object = {};
-          linkTypes['forwardLinks'] = item.json().data;
-          linkTypes['backwardLinks'] = item.json().data;
-          return linkTypes;
-        })
-        .map((linkTypes: any) => { return this.formatLinkTypes(linkTypes); })
-        .catch((err) => {
-          console.log(err);
-          return Observable.of({});
-        });
   }
 
   formatLinkTypes(linkTypes: any): any {

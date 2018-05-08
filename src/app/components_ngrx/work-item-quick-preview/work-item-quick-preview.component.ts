@@ -56,6 +56,7 @@ import {
 import { Store } from '@ngrx/store';
 import { AppState } from './../../states/app.state';
 import * as CommentActions from './../../actions/comment.actions';
+import * as LinkTypeActions from './../../actions/link-type.actions';
 
 @Component({
   selector: 'work-item-preview',
@@ -110,7 +111,7 @@ export class WorkItemQuickPreviewComponent implements OnInit, OnDestroy {
   private labelSource = this.store
     .select('listPage')
     .select('labels')
-    .filter(l => l !== null);
+    .filter(l => !!l.length);
   private collaboratorSource = this.store
     .select('listPage')
     .select('collaborators')
@@ -207,6 +208,7 @@ export class WorkItemQuickPreviewComponent implements OnInit, OnDestroy {
     this.areas = this.extractAreaKeyValue(this.areasUI);
     this.iterations = this.extractIterationKeyValue(this.iterationUI);
     this.store.dispatch(new CommentActions.Get(this.workItem.commentLink));
+    this.store.dispatch(new LinkTypeActions.Get());
     this.panelState = 'in';
   }
 
@@ -372,6 +374,22 @@ export class WorkItemQuickPreviewComponent implements OnInit, OnDestroy {
 
     // Navigated to filtered view
     this.router.navigate([], navigationExtras);
+  }
+
+  createComment(event: any) {
+    const payload = {
+      url: this.workItem.commentLink,
+      comment: event
+    };
+    this.store.dispatch(new CommentActions.Add(payload));
+  }
+
+  updateComment(comment) {
+    this.store.dispatch(new CommentActions.Update(comment));
+  }
+
+  deleteComment(event: any) {
+    this.store.dispatch(new CommentActions.Delete(event));
   }
 
   @HostListener('window:keydown', ['$event'])

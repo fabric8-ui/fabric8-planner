@@ -5,11 +5,11 @@ import { NgModule } from '@angular/core';
 
 import { CollapseModule } from 'ngx-bootstrap';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { InfotipModule } from '../infotip/infotip.module';
 
 import {
   WidgetsModule
 } from 'ngx-widgets';
-import { ActionModule, ListModule } from 'patternfly-ng';
 import { DragulaModule } from 'ng2-dragula';
 import { FabPlannerIterationModalComponent } from '../iterations-modal/iterations-modal.component';
 import { MyDatePickerModule } from 'mydatepicker';
@@ -29,7 +29,6 @@ import { initialUIState } from './../../states/iteration.state';
 
 @NgModule({
   imports: [
-    ActionModule,
     BsDropdownModule.forRoot(),
     CollapseModule,
     CommonModule,
@@ -37,12 +36,12 @@ import { initialUIState } from './../../states/iteration.state';
     FormsModule,
     MyDatePickerModule,
     ModalModule,
-    ListModule,
     TooltipModule.forRoot(),
     TruncateModule,
     SwitchModule,
     WidgetsModule,
     RouterModule,
+    InfotipModule,
     StoreModule.forFeature('iterationPanel', {
       iterationUI: iterationUiReducer
     }, {

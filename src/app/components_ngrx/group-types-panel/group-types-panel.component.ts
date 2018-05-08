@@ -17,6 +17,7 @@ import { WorkItemType } from '../../models/work-item-type';
 import { Store } from '@ngrx/store';
 import { AppState } from './../../states/app.state';
 import * as GroupTypeActions from './../../actions/group-type.actions';
+import { InfotipState } from '../../states/index.state';
 
 @Component({
   selector: 'group-types',
@@ -28,6 +29,9 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
   @Input() sidePanelOpen: boolean = true;
 
   authUser: any = null;
+  infotipSource = this.store
+  .select('listPage')
+  .select('infotips');
   private groupTypes: GroupTypeUI[];
   private selectedgroupType: GroupTypeUI;
   private allowedChildWits: WorkItemType;
@@ -35,6 +39,7 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
   private eventListeners: any[] = [];
   private startedCheckingURL: boolean = false;
   private showTree: string = '';
+  private showCompleted: string = '';
 
   constructor(
     private auth: AuthenticationService,
@@ -76,7 +81,7 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
   fnBuildQueryParam(witGroup) {
     //Query for work item type group
     const type_query = this.filterService.queryBuilder(
-      '$WITGROUP', this.filterService.equal_notation, witGroup.name
+      'typegroup.name', this.filterService.equal_notation, witGroup.name
     );
     //Query for space
     const space_query = this.filterService.queryBuilder(
@@ -94,13 +99,37 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
     //reverse function jsonToQuery(second_join);
   }
 
+  addRemoveQueryParams(witGroup) {
+    if (this.showCompleted && this.showTree) {
+      return {
+        q: this.fnBuildQueryParam(witGroup),
+        showTree: this.showTree,
+        showCompleted: this.showCompleted
+      }
+    } else if (this.showTree) {
+      return {
+        q: this.fnBuildQueryParam(witGroup),
+        showTree: this.showTree
+      }
+    } else if (this.showCompleted) {
+      return {
+        q: this.fnBuildQueryParam(witGroup),
+        showCompleted: this.showCompleted
+      }
+    } else {
+      return {
+        q: this.fnBuildQueryParam(witGroup)
+      }
+    }
+  }
+
   checkURL() {
     this.startedCheckingURL = true;
     this.eventListeners.push(
       this.route.queryParams.subscribe(val => {
         if (val.hasOwnProperty('q')) {
           const selectedTypeGroupName =
-            this.filterService.getConditionFromQuery(val.q, '$WITGROUP');
+            this.filterService.getConditionFromQuery(val.q, 'typegroup.name');
           const selectedTypeGroup =
             this.groupTypes.find(g => g.name === selectedTypeGroupName);
           if (!selectedTypeGroup.selected) {
@@ -112,7 +141,18 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
         } else {
           this.showTree = '';
         }
+        if (val.hasOwnProperty('showCompleted')) {
+          this.showCompleted = val.showCompleted;
+        } else {
+          this.showCompleted = '';
+        }
       })
     );
   }
+
+  getInfotipText(id: string) {
+    return this.infotipSource
+      .select(s => s[id])
+      .select(i => i ? i['en'] : id);
+  }    
 }

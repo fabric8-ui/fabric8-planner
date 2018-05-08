@@ -4,6 +4,7 @@ import {
   AfterViewChecked,
   Component,
   ElementRef,
+  HostListener,
   OnInit,
   OnDestroy,
   Renderer2,
@@ -23,7 +24,7 @@ import { IterationUI } from './../../models/iteration.model';
 import { FilterService } from './../../services/filter.service';
 import { CookieService } from './../../services/cookie.service';
 import { cloneDeep, sortBy, isEqual } from 'lodash';
-import { EmptyStateConfig } from 'patternfly-ng';
+import { EmptyStateConfig } from 'patternfly-ng/empty-state';
 
 // import for column
 import { datatableColumn } from './../../components/planner-list/datatable-config';
@@ -67,19 +68,20 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private spaceSource = this.store
     .select('listPage')
     .select('space')
+    .do(s => {if (!s) this.store.dispatch(new SpaceActions.Get())})
     .filter(s => !!s);
   private areaSource = this.store
     .select('listPage')
     .select('areas')
-    .filter(a => !!a);
+    .filter(a => !!a.length);
   private iterationSource = this.store
     .select('listPage')
     .select('iterations')
-    .filter(i => !!i.length);
+    .filter(i => !!i.length)
   private labelSource = this.store
     .select('listPage')
     .select('labels')
-    .filter(l => l !== null);
+    .filter(i => i !== null)
   private collaboratorSource = this.store
     .select('listPage')
     .select('collaborators')
@@ -109,9 +111,16 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private showTreeUI: boolean = false;
   private emptyStateConfig: any = {};
   private uiLockedList: boolean = false;
+  private uiLockedSidebar: boolean = false;
+  private hdrHeight: number = 0;
+  private toolbarHt: number = 0;
+  private quickaddHt: number = 0;
+  private showCompleted: boolean = false;
 
   @ViewChild('plannerLayout') plannerLayout: PlannerLayoutComponent;
-  @ViewChild('containerHeight') containerHeight: ElementRef;
+  @ViewChild('toolbar') toolbar: ElementRef;
+  @ViewChild('quickaddWrapper') quickaddWrapper: ElementRef;
+  @ViewChild('listContainer') listContainer: ElementRef;
   @ViewChild('myTable') table: any;
   @ViewChild('quickPreview') quickPreview: WorkItemPreviewPanelComponent;
 
@@ -127,12 +136,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   ) {}
 
   ngOnInit() {
-    setTimeout(() => {
-      this.resizeHeight();
-    }, 200);
-    window.addEventListener("resize", () => {
-      this.resizeHeight()
-    });
     const payload = {};
     let newFilterObj = {};
     this.emptyStateConfig = {
@@ -140,39 +143,33 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
       title: 'No Work Items Available'
     } as EmptyStateConfig;
 
-    this.store.dispatch(new SpaceActions.Get());
-
     this.eventListeners.push(
       this.spaceSource
-        .take(1)
-        .subscribe((space: Space) => {
-          this.store.dispatch(new IterationActions.Get());
-          this.store.dispatch(new GroupTypeActions.Get());
-          this.store.dispatch(new CollaboratorActions.Get());
-          this.store.dispatch(new AreaActions.Get());
-          this.store.dispatch(new WorkItemTypeActions.Get());
-          this.store.dispatch(new LabelActions.Get());
-        })
-    );
-
-    this.eventListeners.push(
-      Observable.combineLatest(
-        this.workItemTypeSource.take(1),
-        this.spaceSource.take(1),
-        this.areaSource.take(1),
-        this.iterationSource.take(1),
-        this.labelSource.take(1),
-        this.collaboratorSource.take(1),
-        this.routeSource
-      ).subscribe(([
+      .do(() => {
+        this.store.dispatch(new CollaboratorActions.Get());
+        this.store.dispatch(new AreaActions.Get());
+        this.uiLockedSidebar = true;
+        this.uiLockedList = true;
+      })
+      .switchMap(s => {
+        return Observable.combineLatest(
+          this.workItemTypeSource,
+          this.areaSource,
+          this.iterationSource.take(1),
+          this.labelSource.take(1),
+          this.collaboratorSource,
+          this.routeSource
+        );
+      })
+      .subscribe(([
         workItemTypeSource,
-        spaceSource,
         areaSource,
         iterationSource,
         labelSource,
         collaboratorSource,
         queryParams
       ]) => {
+        this.uiLockedSidebar = false;
         this.uiLockedList = true;
         let exp = this.filterService.queryToJson(queryParams.q);
         // Check for tree view
@@ -184,6 +181,12 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
           exp['$OPTS'] = {'tree-view': false};
         }
 
+        if (!queryParams.hasOwnProperty('showCompleted') && !queryParams.showCompleted) {
+          this.showCompleted = false;
+          exp['$AND'].push({"state":{"$NE":"closed"}});
+        } else {
+          this.showCompleted = true;
+        }
 
         Object.assign(payload, {
           expression: exp
@@ -228,18 +231,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     );
   }
 
-  resizeHeight() {
-    const navElemnts = document.getElementsByTagName('nav');
-    const navHeight = navElemnts[0].offsetHeight;
-    const totalHeight = window.innerHeight;
-    this.renderer.setStyle(
-      this.containerHeight.nativeElement,
-      'height',
-      (totalHeight - navHeight) + "px");
-  }
-
    //ngx-datatable methods
-
    handleReorder(event) {
     if(event.newValue !== 0) {
       this.columns[event.prevValue - 1].index = event.newValue;
@@ -269,6 +261,9 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     })
     this.updateColumnIndex();
     this.cookieService.setCookie('datatableColumn', this.columns);
+    setTimeout(() => {
+      this.workItems = [...this.workItems];
+    }, 500);
   }
 
   moveToAvailable() {
@@ -339,7 +334,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
             .subscribe(groupTypes => {
               const defaultGroupName = groupTypes[0].name;
               //Query for work item type group
-              const type_query = this.filterService.queryBuilder('$WITGROUP', this.filterService.equal_notation, defaultGroupName);
+              const type_query = this.filterService.queryBuilder('typegroup.name', this.filterService.equal_notation, defaultGroupName);
               //Query for space
               const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, spaceId);
               //Join type and space query
@@ -369,10 +364,9 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         this.allWorkItemTypes = workItemTypes;
         const selectedGroupType = groupTypes.find(gt => gt.selected);
         if (selectedGroupType) {
-          this.quickAddWorkItemTypes = workItemTypes.filter(type => {
-            return selectedGroupType
-              .typeList.findIndex(t => t.id === type.id) > -1;
-          })
+          this.quickAddWorkItemTypes = selectedGroupType.typeList.map(type => {
+            return workItemTypes.find(wit => wit.id === type.id);
+          });
         } else {
           this.quickAddWorkItemTypes = workItemTypes;
         }
@@ -535,6 +529,19 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   ngAfterViewChecked() {
+    if(document.getElementsByClassName('navbar-pf').length > 0) {
+      this.hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
+    }
+    if(this.toolbar) {
+      this.toolbarHt =  this.toolbar.nativeElement.offsetHeight;
+    }
+    if(this.quickaddWrapper) {
+      this.quickaddHt =  this.quickaddWrapper.nativeElement.offsetHeight;
+    }
+    let targetHeight = window.innerHeight - (this.hdrHeight + this.toolbarHt + this.quickaddHt);
+    if(this.listContainer) {
+      this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
+    }
     // This hack is applied to get the titles in the list in order
     if (document.getElementsByClassName('planner-hack-title-truncate').length) {
       let arr = document.getElementsByClassName('planner-hack-title-truncate');
@@ -543,4 +550,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
       }
     }
   }
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {}
 }

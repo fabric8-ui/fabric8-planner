@@ -8,29 +8,33 @@
     </b>
     <!-- type dropdown -->
     <div class="pull-left">
-      <div class="dropdown-kebab-pf" dropdown>
-        <button class="btn btn-default dropdown-toggle padding-v-0"
-          type="button"
-          dropdownToggle>
-          <i class="fa dib"
-            [ngClass]="selectedType ?
-            selectedType.icon :
-            '' ">
-          </i>
-          &nbsp;
-          {{selectedType ? selectedType.name : ''}}
-          <span class="fa fa-angle-down"></span>
-        </button>
+      <div class="dropdown" dropdown>
+        <div class="infoArea">
+          <button class="btn btn-default dropdown-toggle padding-h-10" 
+            type="button"
+            dropdownToggle>
+            <i class="fa dib"
+              [ngClass]="selectedType ?
+              selectedType.icon :
+              '' ">
+            </i>
+            <span class="padding-h-5">
+              {{selectedType ? selectedType.name : ''}}
+            </span>
+            <span class="fa fa-angle-down"></span>
+          </button>
+          <infotip [infotipText]="getInfotipText(selectedType.id) | async"></infotip>
+        </div>
         <ul class="dropdown-menu"
           role="menu"
-          aria-labelledby="dropdownKebab"
           *dropdownMenu>
           <li *ngFor="let type of workItemTypes"
               role="menuitem"
               (click)="selectType($event, type)">
             <a class="dropdown-item" href="#">
-              <i class="fa pull-left"
-                [ngClass]="type.icon"></i>&nbsp;{{type.name}}
+              <i class="fa"
+                [ngClass]="type.icon"></i>
+                <span class="padding-h-3">{{type.name}}</span>
             </a>
           </li>
         </ul>

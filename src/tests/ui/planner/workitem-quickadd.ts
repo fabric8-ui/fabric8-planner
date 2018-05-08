@@ -7,11 +7,12 @@ export class WorkItemQuickAdd extends ui.BaseElement {
   buttonsDiv = this.$('div.f8-quickadd__wiblk-btn.pull-right');
   addButton = new ui.Button(this.buttonsDiv.$$('button.btn.btn-primary').first(), 'Add Button');
   addAndOpenButton = new ui.Button(this.buttonsDiv.$$('button.btn.btn-primary').last(), 'Add and Open Button');
-  workItemTypeDropdown = new ui.Dropdown(
+  private workItemTypeDropdown = new ui.Dropdown(
     this.$('.f8-quickadd__wiblk button.dropdown-toggle'),
     this.$('.f8-quickadd__wiblk .dropdown-menu'),
     'WorkItem Type dropdown'
   );
+
   constructor(el: ElementFinder, name = 'Work Item Quick Add') {
     super(el, name);
   }
@@ -22,14 +23,14 @@ export class WorkItemQuickAdd extends ui.BaseElement {
   }
 
   async addWorkItem({ title, description = '', type = 'feature' }: WorkItem) {
-    await this.clickWhenReady();
     await this.titleTextInput.ready();
     await this.titleTextInput.enterText(title);
     await this.addAndOpenButton.untilClickable();
     await this.addButton.clickWhenReady();
-
     // TODO add more confirmation that the item has been added
     this.log('New WorkItem created', `${title} added`);
+    // The button is enabled only when the new WI is on the list.
+    await this.addButton.untilClickable();
   }
 
   async workItemTypes(): Promise<string[]>{
@@ -42,5 +43,13 @@ export class WorkItemQuickAdd extends ui.BaseElement {
       }
       return filtered;
     }, []);
+  }
+  
+  async addAndOpenWorkItem(title: string, workItemType:string) {
+    await this.workItemTypeDropdown.clickWhenReady();
+    await this.workItemTypeDropdown.select(workItemType);
+    await this.titleTextInput.enterText(title);
+    await this.addAndOpenButton.clickWhenReady();
+    this.log('New WorkItem created', `${title} added`);
   }
 }

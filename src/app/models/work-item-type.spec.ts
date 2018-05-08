@@ -9,6 +9,7 @@ describe('WorkItemTypeMapper', () => {
     let workItemTypeUI: WorkItemTypeUI;
     let workItemTypeService: WorkItemTypeService;
 
+
     workItemTypeUI = {
         id: '',
         name: '',
@@ -28,7 +29,9 @@ describe('WorkItemTypeMapper', () => {
               "kind": "area"
             }
           }
-        }
+        },
+        infotip: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        type: 'workitemtypes'
     } as WorkItemTypeUI;
 
     workItemTypeService = {

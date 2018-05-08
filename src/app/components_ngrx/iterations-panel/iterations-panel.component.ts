@@ -17,14 +17,6 @@ import { FilterService } from './../../services/filter.service';
 import { IterationUI } from '../../models/iteration.model';
 import { WorkItem } from '../../models/work-item';
 import { FabPlannerIterationModalComponent } from '../iterations-modal/iterations-modal.component';
-import {
-  Action,
-  EmptyStateConfig,
-  ListBase,
-  ListEvent,
-  TreeListComponent,
-  TreeListConfig
-} from 'patternfly-ng';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
@@ -46,6 +38,8 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   @Input() sidePanelOpen: boolean = true;
   @Input() witGroup: string = '';
   @Input() showTree: string = '';
+  @Input() showCompleted: string = '';
+  @Input() infotipText: string = '';
 
   @ViewChild('modal') modal: FabPlannerIterationModalComponent;
 
@@ -121,7 +115,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
 
   constructURL(iterationId: string) {
     //Query for work item type group
-    const type_query = this.filterService.queryBuilder('$WITGROUP', this.filterService.equal_notation, this.witGroup);
+    const type_query = this.filterService.queryBuilder('typegroup.name', this.filterService.equal_notation, this.witGroup);
     //Query for space
     const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, this.spaceId);
     //Query for iteration
@@ -133,6 +127,30 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     //this.setGroupType(witGroup);
     //second_join gives json object
     return this.filterService.jsonToQuery(third_join);
+  }
+
+  addRemoveQueryParams(iterationId: string) {
+    if (this.showCompleted && this.showTree) {
+      return {
+        q: this.constructURL(iterationId),
+        showTree: this.showTree,
+        showCompleted: this.showCompleted
+      }
+    } else if (this.showTree) {
+      return {
+        q: this.constructURL(iterationId),
+        showTree: this.showTree
+      }
+    } else if (this.showCompleted) {
+      return {
+        q: this.constructURL(iterationId),
+        showCompleted: this.showCompleted
+      }
+    } else {
+      return {
+        q: this.constructURL(iterationId)
+      }
+    }
   }
 
   getAndfilterIterations() {

@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 
-import { ToolbarModule } from 'patternfly-ng';
+import { ToolbarModule } from 'patternfly-ng/toolbar';
 
 import { CollaboratorService } from '../../services/collaborator.service';
 import { EventService } from './../../services/event.service';
@@ -31,7 +31,7 @@ import { FilterEffects } from './../../effects/filter.effects';
   imports: [
     AlmEditableModule,
     AlmIconModule,
-    BsDropdownModule.forRoot(),
+    BsDropdownModule,
     CommonModule,
     ToolbarModule,
     TooltipModule.forRoot(),

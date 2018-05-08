@@ -27,6 +27,7 @@ import { IterationUI } from './../../models/iteration.model';
 import { Store } from '@ngrx/store';
 import { AppState } from './../../states/app.state';
 import * as WorkItemActions from './../../actions/work-item.actions';
+import { InfotipState } from '../../states/index.state';
 
 @Component({
   selector: 'alm-work-item-quick-add',
@@ -62,7 +63,10 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   createId: number= 0;
   eventListeners: any[] = [];
   blockAdd: boolean = false;
-
+  infotipSource = this.store
+  .select('listPage')
+  .select('infotips');
+  
   constructor(
     private logger: Logger,
     private auth: AuthenticationService,
@@ -107,7 +111,6 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     this.workItem.attributes = new Map<string, string | number>();
     this.workItem.relationships = new WorkItemRelations();
     this.workItem.type = 'workitems';
-    this.workItem.attributes['system.state'] = 'new';
   }
 
   ngAfterViewInit() {
@@ -163,6 +166,13 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
       }
     }
 
+    // Setting state value from selected work item type
+    // This line can be removed when space template backend is in
+    // The backend will take care of setting the default state to
+    // a newly create work item
+    this.workItem.attributes['system.state'] =
+      this.selectedType.fields['system.state'].type.values[0];
+
     // Set the default iteration for new work item
     if (this.selectedIteration) {
       this.workItem.relationships.iteration = {
@@ -180,7 +190,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
       this.store.dispatch(new WorkItemActions.Add({
         createId: this.createId,
         workItem: this.workItem,
-        parentId: this.parentWorkItemId
+        parentId: this.parentWorkItemId,
+        openDetailPage: openStatus
       }));
     } else {
       this.blockAdd = false;
@@ -220,4 +231,10 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     }
     this.descHeight = this.qaDesc.nativeElement.scrollHeight + this.initialDescHeightDiff;
   }
+
+  getInfotipText(id: string) {
+    return this.infotipSource
+      .select(s => s[id])
+      .select(i => i ? i['en'] : id);
+  }    
 }

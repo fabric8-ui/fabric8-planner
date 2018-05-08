@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { cloneDeep } from 'lodash';
 import * as moment from 'moment';
-import { IMyOptions, IMyDateModel } from 'mydatepicker';
+import { IMyOptions, IMyDateModel, MyDatePicker, IMySelector } from 'mydatepicker';
 import { Broadcaster } from 'ngx-base';
 
 import { IterationUI } from '../../models/iteration.model';
@@ -37,6 +37,8 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   @ViewChild('createUpdateIterationDialog') createUpdateIterationDialog: any;
   @ViewChild('iterationSearch') iterationSearch: any;
   @ViewChild('iterationList') iterationList: any;
+  @ViewChild('startmydp') startmydp: MyDatePicker;
+  @ViewChild('endmydp') endmydp: MyDatePicker;
 
   public iteration: IterationUI;
   private validationError = false;
@@ -75,10 +77,17 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
     componentDisabled: false
   };
 
+  private startDateSelector: IMySelector = {
+    open: false
+  };
+
+  private endDateSelector: IMySelector = {
+    open: false
+  };
+
   constructor(
     private broadcaster: Broadcaster,
     private store: Store<AppState>) {}
-
 
   ngOnInit() {
     this.resetValues();
@@ -128,6 +137,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
     let aDayBeforeDate = { date: { year: aDayBefore.format('YYYY'), month: aDayBefore.format('M'), day: aDayBefore.format('D') }} as any;
     endDatePickerComponentCopy['disableUntil'] = aDayBeforeDate.date;
     startDatePickerComponentCopy['componentDisabled'] = false;
+    startDatePickerComponentCopy['disableSince'] = {year: 0, month: 0, day: 0};
     this.startDatePickerOptions = startDatePickerComponentCopy;
     this.endDatePickerOptions = endDatePickerComponentCopy;
     this.validationError = false;
@@ -141,6 +151,12 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
     this.iterationsValue = [];
     this.startDate = '';
     this.endDate = '';
+    if(this.startmydp && this.startDateSelector.open) {
+      this.startmydp.openBtnClicked();
+    }
+    if(this.endmydp && this.endDateSelector.open) {
+      this.endmydp.openBtnClicked();
+    }
   }
 
   ngOnChanges() {
@@ -225,11 +241,28 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
     this.resetValues();
   }
 
+  onStartCalendarToggle(event) {
+    this.startDateSelector = {
+      open: !this.startDateSelector.open
+    };
+  }
+
+  onEndCalendarToggle(event) {
+    this.endDateSelector = {
+      open: !this.endDateSelector.open
+    }
+  }
+
   onStartDateChanged(event: IMyDateModel) {
     // event properties are: event.date, event.jsdate, event.formatted and event.epoc
     // Format 2016-11-29T23:18:14Z
-    this.startDate = { date: event.date };
-    this.iteration.startAt = moment(event.jsdate).format('YYYY-MM-DD') + 'T12:00:00Z';
+    if (event.jsdate !== null) {
+      this.startDate = { date: event.date };
+      this.iteration.startAt = moment(event.jsdate).format('YYYY-MM-DD') + 'T12:00:00Z';
+    } else {
+      this.startDate = '';
+      this.iteration.startAt = '';
+    }
 
     let endDatePickerComponentCopy = Object.assign({}, this.endDatePickerOptions);
     endDatePickerComponentCopy['disableUntil'] = event.date;
@@ -238,8 +271,13 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
 
   onEndDateChanged(event: IMyDateModel) {
     // event properties are: event.date, event.jsdate, event.formatted and event.epoc
-    this.endDate = { date: event.date };
-    this.iteration.endAt = moment(event.jsdate).format('YYYY-MM-DD') + 'T12:00:00Z';
+    if (event.jsdate !== null) {
+      this.endDate = { date: event.date };
+      this.iteration.endAt = moment(event.jsdate).format('YYYY-MM-DD') + 'T12:00:00Z';
+    } else {
+      this.endDate = '';
+      this.iteration.endAt = '';
+    }
     let startDatePickerComponentCopy = Object.assign({}, this.startDatePickerOptions);
     startDatePickerComponentCopy['disableSince'] = event.date;
     this.startDatePickerOptions = startDatePickerComponentCopy;
