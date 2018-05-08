@@ -144,7 +144,7 @@ describe('Work Item datatable list: ', () => {
     await planner.workItemList.clickWorkItem(workitem.title);
     await planner.quickPreview.changeStateTo('open');
     await planner.quickPreview.notificationToast.untilCount(1);
-    await planner.quickPreview.notificationToast.untilHidden(); 
+    await planner.quickPreview.notificationToast.untilHidden();
     await planner.quickPreview.close();
     expect(await planner.workItemList.isTitleTextBold(workitem.title)).not.toContain('bold');
   });
@@ -155,5 +155,15 @@ describe('Work Item datatable list: ', () => {
     await planner.createWorkItem(workitem);
     expect(await planner.workItemList.hasWorkItem(workitem.title)).toBeTruthy();
     expect(await planner.workItemList.isTitleTextBold(workitem.title)).toContain('bold');
+  });
+
+  it('should filter the workitem list by Assignee', async() => {
+    let labelFilter = 'assignee: Unassigned';
+    await planner.workItemList.overlay.untilHidden();
+    let countUnassignedWorkItem = await planner.workItemList.getUnassignedWorkItemCount(' Unassigned ');
+    await planner.header.selectFilter('Assignee', 'Unassigned');
+    await planner.workItemList.overlay.untilHidden();
+    expect(await planner.header.getFilterConditions()).toContain(labelFilter);
+    expect(await planner.workItemList.datatableRow.count()).toEqual(countUnassignedWorkItem);
   });
 });
