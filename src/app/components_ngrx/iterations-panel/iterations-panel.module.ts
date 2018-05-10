@@ -15,11 +15,12 @@ import { ModalModule } from 'ngx-modal';
 import {
   WidgetsModule
 } from 'ngx-widgets';
-import { IterationService } from '../../services/iteration.service';
-import { IterationListEntryComponent } from '../iteration-list-entry/iteration-list-entry.component';
-import { IterationTreeComponent } from '../iteration-tree/iteration-tree.component';
-import { FabPlannerIterationModalComponent } from '../iterations-modal/iterations-modal.component';
+import { IterationService } from './../../services/iteration.service';
+import { AutofocusModule } from './../../widgets/autofocus/autofocus.modulte';
 import { SwitchModule } from './../../widgets/switch/switch.module';
+import { IterationListEntryComponent } from './../iteration-list-entry/iteration-list-entry.component';
+import { IterationTreeComponent } from './../iteration-tree/iteration-tree.component';
+import { FabPlannerIterationModalComponent } from './../iterations-modal/iterations-modal.component';
 import { IterationComponent } from './iterations-panel.component';
 
 // ngrx stuff
@@ -30,6 +31,7 @@ import { initialUIState } from './../../states/iteration.state';
 
 @NgModule({
   imports: [
+    AutofocusModule,
     BsDropdownModule.forRoot(),
     CollapseModule,
     CommonModule,

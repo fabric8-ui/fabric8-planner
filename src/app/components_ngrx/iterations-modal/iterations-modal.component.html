@@ -7,7 +7,7 @@
   (onClose)="actionOnClose()"
   (onSubmit)="actionOnSubmit()">
   <modal-content>
-    <div class="col-xs-12 col-sm-12 col-md-12">
+    <div *ngIf="renderContent" class="col-xs-12 col-sm-12 col-md-12">
       <div *ngIf="modalType=='update' || modalType=='create' || modalType=='createChild'">
         <div class="form-group" [class.has-error]="validationError">
           <div class="search-pf-input-group">
@@ -18,7 +18,9 @@
               placeholder="Iteration Name"
               [(ngModel)]="iteration.name"
               (keyup.enter)="actionOnSubmit()"
-              (keyup)="removeError()">
+              afinput
+              [autofocus]="modalType!='update'"
+              (keyup)="removeError()" #itrname>
             <span class="error-block">
               <span class="help-block" id="iteration-help-label">{{ validationString }}</span>
             </span>

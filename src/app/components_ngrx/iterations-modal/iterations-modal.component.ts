@@ -57,6 +57,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   iterationSearchDisable: Boolean = false;
   showIterationDropdown: Boolean = false;
   validationString: string = 'Something went wrong.';
+  renderContent: boolean = false;
 
   private startDatePickerOptions: IMyOptions = {
     dateFormat: 'dd mmm yyyy',
@@ -238,9 +239,11 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
 
   actionOnOpen() {
     // console.log('Open');
+    this.renderContent = true;
   }
 
   actionOnClose() {
+    this.renderContent = false;
     this.resetValues();
   }
 
