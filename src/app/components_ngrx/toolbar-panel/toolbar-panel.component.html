@@ -8,10 +8,10 @@
     (onFilterTypeAhead)="filterQueries($event)">
   </pfng-toolbar>
 </div>
-<div class="active-filters-section">
-  <span class="pull-left padding-right-15" 
+<div class="active-filters-section">  
+  <span class="dib margin-right-10"
     *ngIf="activeFilterFromSidePane !== ''">
-      <strong>14</strong> Matches
+    <strong>{{totalCount | async}}</strong> in {{activeFilterFromSidePanel}}
   </span>
   <div class="active-filters-div"
     *ngIf="activeFilters.length">
@@ -58,11 +58,7 @@
       </div>
     </div>
   </div>
-  <span *ngIf="activeFilterFromSidePane !== ''">
-    <strong>{{totalCount | async}}</strong> in {{activeFilterFromSidePanel}}
-  </span>
 </div>
-
 <ng-template #actionsTemplate>
 </ng-template>
 <ng-template #addTemplate>
