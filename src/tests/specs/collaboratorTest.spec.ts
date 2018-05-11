@@ -21,7 +21,14 @@ describe('Planner Collaborator Tests:', () => {
     await planner.ready();
     });
  
-   it('Non Collaborator should not be able create a workItem ', async() => {
+   it('Non Collaborator should not be able edit a workItem title', async() => {
+     await planner.workItemList.clickWorkItem('Work Item 5');
+     expect(await planner.quickPreview.titleInput.getAttribute('disabled')).toBe('true');
    });
+
+   it('Non Collaborator should not be able edit state of a workitem', async() => {
+    await planner.workItemList.clickWorkItem('Work Item 4');
+    expect(await planner.quickPreview.stateDiv.getAttribute('disabled')).toBe('true');
+  });
  });
 
