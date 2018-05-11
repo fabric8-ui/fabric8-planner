@@ -11,25 +11,28 @@ import { AutofocusDirective } from './autofocus.modulte';
 class TestComponent {}
 
 fdescribe('Unit Tests :: autofocus directive', () => {
-  let fixture, des;
-  console.log('###-1');
+  let fixture;
   beforeEach(() => {
-    console.log('###-2');
     TestBed.configureTestingModule({
-      declarations: [ TestComponent ]
+      declarations: [ TestComponent, AutofocusDirective ]
     });
-    console.log('###-2.1');
-    fixture = TestBed.createComponent(TestComponent);
-    // console.log('###-3');
-    // fixture.detectChanges(); // initial binding
-    // console.log('###-4');
-    // // all elements with an attached HighlightDirective
-    // des = fixture.debugElement.queryAll(By.directive(AutofocusDirective));
-    // console.log('###-5');
   });
 
-  it('the component should be identified by the directive', () => {
-    expect(des).not.toBeNull();
+  it('the component should be identified by the directive', async() => {
+    TestBed.overrideComponent(TestComponent, {
+      set: {
+        template: '<input afinput [autofocus]="true" />'
+      }
+    });
+    const fixture = TestBed.createComponent(TestComponent);
+    const directiveEl = fixture.debugElement.query(By.directive(AutofocusDirective));
+    expect(directiveEl).not.toBeNull();
+
+    spyOn(directiveEl.nativeElement, 'focus');
+
+    setTimeout(() => {
+      expect(directiveEl.nativeElement.focus).toHaveBeenCalled();
+    }, 200);
   });
 
 });
