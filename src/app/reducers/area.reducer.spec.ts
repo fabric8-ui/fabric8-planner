@@ -1,5 +1,5 @@
 import { AreaReducer } from './area.reducer';
-import { initialState as AreaInitialState, AreaState, initialState } from './../states/area.state';
+import { initialState as AreaInitialState, AreaState } from './../states/area.state';
 import * as AreaActions from './../actions/area.actions';
 import { AreaUI } from './../models/area.model';
 export type Action = AreaActions.All;
@@ -13,8 +13,8 @@ describe('AreaReducer:', () => {
   });
 
   it('Initial state should be an empty array', () => {
-    const intialState = [];
-    expect(AreaInitialState).toBe(initialState);
+    const initialState = [];
+    expect(AreaInitialState).toEqual(initialState);
   });
 
   it('GetSuccess action should return new state', () => {
