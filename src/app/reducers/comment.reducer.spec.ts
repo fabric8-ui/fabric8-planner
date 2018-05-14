@@ -156,4 +156,32 @@ describe('CommentReducer:', () => {
 
     expect(newState).toEqual(newCommentState);
   });
+
+  it('AddError action should return the previous state', () => {
+    const comments: CommentUI[] = [
+      {
+        id: '1',
+        body: 'comment 1',
+        markup: 'MarkUp',
+        createdAt: '00:00',
+        creator: {
+          id: '1',
+          name: 'user 1',
+          username: 'user1',
+          avatar: 'user1.jpg',
+          currentUser: false
+        },
+        bodyRendered: '<p>comment 1</p>',
+        selfLink: '/'
+      }
+    ];
+
+    const getSuccessAction = new CommentActions.GetSuccess(comments);
+    const state = CommentReducer(initialState, getSuccessAction);
+
+    const addErrorAction = new CommentActions.AddError();
+    const newState = CommentReducer(state, addErrorAction);
+
+    expect(newState).toEqual(state);
+  });
 });
