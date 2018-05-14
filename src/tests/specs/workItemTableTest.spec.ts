@@ -163,6 +163,7 @@ describe('Work Item datatable list: ', () => {
     let countUnassignedWorkItem = await planner.workItemList.getUnassignedWorkItemCount(' Unassigned ');
     await planner.header.selectFilter('Assignee', 'Unassigned');
     await planner.workItemList.overlay.untilHidden();
+    await browser.sleep(1000);
     expect(await planner.header.getFilterConditions()).toContain(labelFilter);
     expect(await planner.workItemList.datatableRow.count()).toEqual(countUnassignedWorkItem);
   });
