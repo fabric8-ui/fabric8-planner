@@ -49,39 +49,34 @@ describe('Detail View test: ', () => {
     expect(await planner.detailPage.getDescription()).toBe(updatedWorkItem.description);
   });
     
-  it('Associate workitem with an Area', async () => {
-    let workitemname = {"title": "detail page test"};
-    await planner.workItemList.openDetailPage(workitemname.title);
+  it('should associate workitem with an Area', async () => {
+    await planner.workItemList.openDetailPage(c.workItemTitle1);
     await planner.detailPage.addArea(c.dropdownareaTitle1);
     expect(await planner.detailPage.getArea()).toBe(c.areaTitle1);
   });
 
-  it('Associate workitem with an Iteration', async () => {
-    let workitemname = {"title": "detail page test"};
-    await planner.workItemList.openDetailPage(workitemname.title);
+  it('should associate workitem with an Iteration', async () => {
+    await planner.workItemList.openDetailPage(c.workItemTitle1);
     await planner.detailPage.addIteration(c.dropdownIteration1);
     expect(await planner.detailPage.getIteration()).toBe(c.iteration1);
   });
 
   it('should add comment', async () => {
-    let workitemname = {"title": "detail page test"};
-    await planner.workItemList.openDetailPage(workitemname.title);
+    await planner.workItemList.openDetailPage(c.workItemTitle1);
     await planner.detailPage.addCommentAndSave(c.comment);
     expect(await planner.detailPage.getComments()).toContain(c.comment);
   });
 
   it('should link a workitem', async () => {
     let linkType = 'blocks',
-      workItemTitle20 = 'Workitem_Title_20',
-      workitemname = {"title": "detail page test"};
-    await planner.workItemList.openDetailPage(workitemname.title);
-    await planner.detailPage.addLink(linkType, workItemTitle20);
+      workItemTitle20 = 'Workitem_Title_20';
+      await planner.workItemList.openDetailPage(c.workItemTitle1);
+      await planner.detailPage.addLink(linkType, workItemTitle20);
     expect(await planner.detailPage.getLinkedItems()).toContain(workItemTitle20);
   });
 
   it('should change the state of workitem', async () => {
-    let workitemname = {"title": "detail page test"};
-    await planner.workItemList.openDetailPage(workitemname.title);
+    await planner.workItemList.openDetailPage(c.workItemTitle1);
     await planner.detailPage.changeStateTo('open');
     expect(planner.detailPage.stateToggle.getTextWhenReady()).toContain('open');
   });

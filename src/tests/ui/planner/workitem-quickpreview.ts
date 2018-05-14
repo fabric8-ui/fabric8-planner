@@ -10,7 +10,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   /* UI elements of the Top section of the workitem preview */
   closeButton = new ui.Button(this.$('.f8-detail--close'), 'WorkItem Quick Preview close button');
   stateToggle = new ui.BaseElement(this.$('#wi-detail-state'),'WorkItem State toggle');
-  stateDropdown = new ui.Dropdown(this.stateToggle, this.$('#wi-status-dropdown'), 'WorkItem State dropdown');
+  stateDropdown = new ui.Dropdown(this.stateToggle, this.$('.open .dropdown-menu'), 'WorkItem State dropdown');
   fullDetailButton = new ui.Clickable(this.$('span.dib'), 'View full details button');
   titleDiv = new ui.BaseElement(this.$('#wi-title-div'), 'Workitem title div');
   titleInput = new ui.TextInput(this.titleDiv.$('textarea'), 'WorkItem Title Input');
