@@ -154,6 +154,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.sidePanel.getMyFiltersList()).toContain('My filter');
     await planner.sidePanel.selectcustomFilterKebab('My filter');
     await planner.sidePanel.deleteCustomQuery.clickWhenReady();
+    await planner.confirmModalButton.clickWhenReady();
     await browser.sleep(1000);
     expect(await planner.sidePanel.getMyFiltersList()).not.toContain('My filter');
   });

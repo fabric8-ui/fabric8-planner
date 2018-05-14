@@ -16,6 +16,7 @@ import { Space, Spaces } from 'ngx-fabric8-wit';
 
 import { CustomQueryModel } from '../../models/custom-query.model';
 import { FilterService } from '../../services/filter.service';
+import { ModalService } from '../../services/modal.service';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
@@ -42,6 +43,7 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
   constructor(
     private auth: AuthenticationService,
     private filterService: FilterService,
+    private modalService: ModalService,
     private route: ActivatedRoute,
     private spaces: Spaces,
     private store: Store<AppState>
@@ -132,9 +134,18 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
     event.stopPropagation();
   }
 
-  deleteCustomQuery(event, customQuery) {
-    this.stopPropagation(event);
-    this.store.dispatch(new CustomQueryActions.Delete(customQuery));
+  confirmCustomQueryDelete(event, customQuery) {
+    // this.stopPropagation(event);
+    this.modalService.openModal('Delete Filter', 'Are you sure you want to delete this filter?', 'Delete', 'deleteFilter')
+      .first()
+      .subscribe(actionKey => {
+        if (actionKey === 'deleteFilter') {
+          this.deleteCustomQuery(customQuery);
+        }
+      });
   }
 
+  deleteCustomQuery(customQuery) {
+    this.store.dispatch(new CustomQueryActions.Delete(customQuery));
+  }
 }
