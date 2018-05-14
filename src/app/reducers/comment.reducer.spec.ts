@@ -184,4 +184,66 @@ describe('CommentReducer:', () => {
 
     expect(newState).toEqual(state);
   });
+
+  it('updateSuccess action should return updates state', () => {
+    const comments: CommentUI[] = [
+      {
+        id: '1',
+        body: 'comment 1',
+        markup: 'MarkUp',
+        createdAt: '00:00',
+        creator: {
+          id: '1',
+          name: 'user 1',
+          username: 'user1',
+          avatar: 'user1.jpg',
+          currentUser: false
+        },
+        bodyRendered: '<p>comment 1</p>',
+        selfLink: '/'
+      }
+    ];
+
+    const updatedComment = {
+      id: '1',
+      body: 'comment 2',
+      markup: 'MarkUp',
+      createdAt: '00:00',
+      creator: {
+        id: '1',
+        name: 'user 1',
+        username: 'user1',
+        avatar: 'user1.jpg',
+        currentUser: false
+      },
+      bodyRendered: '<p>comment 2</p>',
+      selfLink: '/'
+    };
+
+    const newState: CommentUI[] = [
+      {
+        id: '1',
+        body: 'comment 2',
+        markup: 'MarkUp',
+        createdAt: '00:00',
+        creator: {
+          id: '1',
+          name: 'user 1',
+          username: 'user1',
+          avatar: 'user1.jpg',
+          currentUser: false
+        },
+        bodyRendered: '<p>comment 2</p>',
+        selfLink: '/'
+      }
+    ];
+
+    const getSuccessAction = new CommentActions.GetSuccess(comments);
+    const state = CommentReducer(initialState, getSuccessAction);
+
+    const updateSuccessAction = new CommentActions.UpdateSuccess(updatedComment);
+    const updatedState = CommentReducer(state, updateSuccessAction);
+
+    expect(updatedState).toEqual(updatedState);
+  });
 });
