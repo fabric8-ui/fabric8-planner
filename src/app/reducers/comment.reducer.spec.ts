@@ -246,4 +246,90 @@ describe('CommentReducer:', () => {
 
     expect(updatedState).toEqual(updatedState);
   });
+
+  it('updateError action should return previous state', () => {
+    const comments: CommentUI[] = [
+      {
+        id: '1',
+        body: 'comment 1',
+        markup: 'MarkUp',
+        createdAt: '00:00',
+        creator: {
+          id: '1',
+          name: 'user 1',
+          username: 'user1',
+          avatar: 'user1.jpg',
+          currentUser: false
+        },
+        bodyRendered: '<p>comment 1</p>',
+        selfLink: '/'
+      }
+    ];
+
+    const getSuccessAction = new CommentActions.GetSuccess(comments);
+    const state = CommentReducer(initialState, getSuccessAction);
+
+    const updateErrorAction = new CommentActions.UpdateError();
+    const newState = CommentReducer(state, updateErrorAction);
+
+    expect(state).toEqual(newState);
+  });
+
+  it('deleteSuccess action should return new state', () => {
+    const comments: CommentUI[] = [
+      {
+        id: '1',
+        body: 'comment 1',
+        markup: 'MarkUp',
+        createdAt: '00:00',
+        creator: {
+          id: '1',
+          name: 'user 1',
+          username: 'user1',
+          avatar: 'user1.jpg',
+          currentUser: false
+        },
+        bodyRendered: '<p>comment 1</p>',
+        selfLink: '/'
+      }
+    ];
+
+    const newCommentState = [];
+
+    const getSuccessAction = new CommentActions.GetSuccess(comments);
+    const state = CommentReducer(initialState, getSuccessAction);
+
+    const deleteSuccessAction = new CommentActions.DeleteSuccess(comments[0]);
+    const newState = CommentReducer(state, deleteSuccessAction);
+
+    expect(newState).toEqual(newCommentState);
+  });
+
+  it('deleteError action should return previous state', () => {
+    const comments: CommentUI[] = [
+      {
+        id: '1',
+        body: 'comment 1',
+        markup: 'MarkUp',
+        createdAt: '00:00',
+        creator: {
+          id: '1',
+          name: 'user 1',
+          username: 'user1',
+          avatar: 'user1.jpg',
+          currentUser: false
+        },
+        bodyRendered: '<p>comment 1</p>',
+        selfLink: '/'
+      }
+    ];
+
+    const getSuccessAction = new CommentActions.GetSuccess(comments);
+    const state = CommentReducer(initialState, getSuccessAction);
+
+    const deleteErrorAction = new CommentActions.DeleteError();
+    const newState = CommentReducer(state, deleteErrorAction);
+
+    expect(newState).toEqual(newState);
+  });
 });
