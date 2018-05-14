@@ -77,7 +77,7 @@ describe('Detail View test: ', () => {
 
   it('should change the state of workitem', async () => {
     await planner.workItemList.openDetailPage(c.workItemTitle1);
-    await planner.detailPage.changeStateTo('open');
+    await planner.detailPage.changeState('open');
     expect(planner.detailPage.stateToggle.getTextWhenReady()).toContain('open');
   });
 });
