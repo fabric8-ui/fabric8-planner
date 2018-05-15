@@ -26,8 +26,7 @@ describe('Detail View test: ', () => {
   });
   
   it('should open detail view and apply label', async () => {
-    let workitemname = {"title": "detail page test"},
-      label = 'Label1';
+    let workitemname = {"title": "detail page test"};
     await planner.createWorkItem(workitemname);
     await planner.workItemList.openDetailPage(workitemname.title);
     await planner.waitUntilUrlContains('detail');
