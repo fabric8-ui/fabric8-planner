@@ -11,13 +11,12 @@ describe('Detail View test: ', () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
-    // This is necessary since the planner takes time to load on prod/prod-preview
-    await browser.sleep(5000);
+    await planner.waitUntilUrlContains('typegroup');
     await planner.ready();
   });
 
   beforeEach( async () => {
-    await planner.workItemList.untilUrlContains('typegroup');
+    await planner.waitUntilUrlContains('typegroup');
     await planner.ready();
   });
 
@@ -70,8 +69,8 @@ describe('Detail View test: ', () => {
   it('should link a workitem', async () => {
     let linkType = 'blocks',
       workItemTitle20 = 'Workitem_Title_20';
-      await planner.workItemList.openDetailPage(c.workItemTitle1);
-      await planner.detailPage.addLink(linkType, workItemTitle20);
+    await planner.workItemList.openDetailPage(c.workItemTitle1);
+    await planner.detailPage.addLink(linkType, workItemTitle20);
     expect(await planner.detailPage.getLinkedItems()).toContain(workItemTitle20);
   });
 
