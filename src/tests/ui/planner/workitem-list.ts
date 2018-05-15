@@ -9,6 +9,7 @@ export class WorkItemList extends BaseElement {
   datatableHeaderdiv = new ui.BaseElement(this.$('.datatable-header'),'datatable header div');
   datatableHeaderCell = new ui.BaseElementArray(this.$$('datatable-header-cell'),'datatable header cell');
   datatableHeaderCellLabel = new ui.BaseElementArray(this.$$('datatable-header-cell-label'));
+  datatableRow = new ui.BaseElementArray(this.$$('datatable-body-row'), 'datatable row');
   childWorkItemTypeDropdown = new ui.Dropdown(
     this.$('.f8-quick-add-inline .dropdown-toggle'),
     this.$('.f8-quick-add-inline .dropdown-menu'),
