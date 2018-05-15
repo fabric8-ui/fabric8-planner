@@ -25,12 +25,11 @@ export class WorkItemList extends BaseElement {
   }
 
   async clickWorkItem(title: string) {
-    await this.overlay.untilHidden();    
+    await this.overlay.untilHidden();
     await this.workItem(title).openQuickPreview();
   }
 
   async hasWorkItem(title: string): Promise<boolean> {
-    await this.workItem(title).scrollIntoView();
     return this.workItem(title).isPresent();
   }
 
@@ -73,5 +72,11 @@ export class WorkItemList extends BaseElement {
   async openDetailPage(title: string) {
     await browser.actions().mouseMove(this.workItem(title)).perform();
     await this.workItem(title).clickDetailIcon();
+  }
+
+  async getUnassignedWorkItemCount(assigneeName: string) {
+    let assignees: any = await this.$$('f8-assignee').getAttribute('innerText');
+    let unassigned:any = assignees.filter(assignee => assignee === assigneeName);
+    return unassigned.length;
   }
 };
