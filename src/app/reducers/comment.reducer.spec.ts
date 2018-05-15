@@ -1,5 +1,5 @@
 import { CommentReducer } from './comment.reducer';
-import { initialState as CommentInitialState, initialState } from './../states/comment.state';
+import { initialState as CommentInitialState } from './../states/comment.state';
 import * as CommentActions from './../actions/comment.actions';
 import { CommentUI } from './../models/comment';
 
@@ -52,7 +52,7 @@ describe('CommentReducer:', () => {
       }
     ];
     const action = new CommentActions.GetSuccess(comments);
-    const state = CommentReducer(initialState, action);
+    const state = CommentReducer(CommentInitialState, action);
 
     expect(state).toEqual(comments);
   });
@@ -149,7 +149,7 @@ describe('CommentReducer:', () => {
     ];
 
     const getSuccessAction = new CommentActions.GetSuccess(comments);
-    const state = CommentReducer(initialState, getSuccessAction);
+    const state = CommentReducer(CommentInitialState, getSuccessAction);
 
     const addSuccessAction = new CommentActions.AddSuccess(newComment);
     const newState = CommentReducer(state, addSuccessAction);
@@ -177,7 +177,7 @@ describe('CommentReducer:', () => {
     ];
 
     const getSuccessAction = new CommentActions.GetSuccess(comments);
-    const state = CommentReducer(initialState, getSuccessAction);
+    const state = CommentReducer(CommentInitialState, getSuccessAction);
 
     const addErrorAction = new CommentActions.AddError();
     const newState = CommentReducer(state, addErrorAction);
@@ -239,7 +239,7 @@ describe('CommentReducer:', () => {
     ];
 
     const getSuccessAction = new CommentActions.GetSuccess(comments);
-    const state = CommentReducer(initialState, getSuccessAction);
+    const state = CommentReducer(CommentInitialState, getSuccessAction);
 
     const updateSuccessAction = new CommentActions.UpdateSuccess(updatedComment);
     const updatedState = CommentReducer(state, updateSuccessAction);
@@ -267,7 +267,7 @@ describe('CommentReducer:', () => {
     ];
 
     const getSuccessAction = new CommentActions.GetSuccess(comments);
-    const state = CommentReducer(initialState, getSuccessAction);
+    const state = CommentReducer(CommentInitialState, getSuccessAction);
 
     const updateErrorAction = new CommentActions.UpdateError();
     const newState = CommentReducer(state, updateErrorAction);
@@ -297,7 +297,7 @@ describe('CommentReducer:', () => {
     const newCommentState = [];
 
     const getSuccessAction = new CommentActions.GetSuccess(comments);
-    const state = CommentReducer(initialState, getSuccessAction);
+    const state = CommentReducer(CommentInitialState, getSuccessAction);
 
     const deleteSuccessAction = new CommentActions.DeleteSuccess(comments[0]);
     const newState = CommentReducer(state, deleteSuccessAction);
@@ -325,7 +325,7 @@ describe('CommentReducer:', () => {
     ];
 
     const getSuccessAction = new CommentActions.GetSuccess(comments);
-    const state = CommentReducer(initialState, getSuccessAction);
+    const state = CommentReducer(CommentInitialState, getSuccessAction);
 
     const deleteErrorAction = new CommentActions.DeleteError();
     const newState = CommentReducer(state, deleteErrorAction);
