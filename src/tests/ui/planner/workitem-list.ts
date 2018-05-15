@@ -1,5 +1,5 @@
 import { BaseElement } from './../base.element';
-import { ElementFinder, by, browser } from 'protractor';
+import { ElementFinder, by } from 'protractor';
 import { WorkItemQuickAdd } from './workitem-quickadd';
 import { WorkItemListEntry } from './workitem-list-entry';
 import * as ui from '../../ui';
