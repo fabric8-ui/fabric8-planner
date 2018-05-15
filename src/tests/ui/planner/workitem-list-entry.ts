@@ -53,6 +53,5 @@ export class WorkItemListEntry extends ui.BaseElement {
 
   async clickDetailIcon() {
     await this.detailIcon.clickWhenReady();
-    await this.untilUrlContains('detail');
   }
 }

@@ -30,6 +30,7 @@ describe('Detail View test: ', () => {
       label = 'Label1';
     await planner.createWorkItem(workitemname);
     await planner.workItemList.openDetailPage(workitemname.title);
+    await planner.waitUntilUrlContains('detail');
     await planner.detailPage.addLabel(c.label);
     expect(await planner.detailPage.getLabels()).toContain(c.label);
   });
@@ -42,6 +43,7 @@ describe('Detail View test: ', () => {
     };
     await planner.createWorkItem(workitemname);
     await planner.workItemList.openDetailPage(workitemname.title);
+    await planner.waitUntilUrlContains('detail');
     await planner.detailPage.updateTitle(updatedWorkItem.title);
     expect(await planner.detailPage.titleInput.getAttribute('value')).toBe(updatedWorkItem.title);
     await planner.detailPage.updateDescription(updatedWorkItem.description);
@@ -50,18 +52,21 @@ describe('Detail View test: ', () => {
     
   it('should associate workitem with an Area', async () => {
     await planner.workItemList.openDetailPage(c.workItemTitle1);
+    await planner.waitUntilUrlContains('detail');
     await planner.detailPage.addArea(c.dropdownareaTitle1);
     expect(await planner.detailPage.getArea()).toBe(c.areaTitle1);
   });
 
   it('should associate workitem with an Iteration', async () => {
     await planner.workItemList.openDetailPage(c.workItemTitle1);
+    await planner.waitUntilUrlContains('detail');
     await planner.detailPage.addIteration(c.dropdownIteration1);
     expect(await planner.detailPage.getIteration()).toBe(c.iteration1);
   });
 
   it('should add comment', async () => {
     await planner.workItemList.openDetailPage(c.workItemTitle1);
+    await planner.waitUntilUrlContains('detail');
     await planner.detailPage.addCommentAndSave(c.comment);
     expect(await planner.detailPage.getComments()).toContain(c.comment);
   });
@@ -70,12 +75,14 @@ describe('Detail View test: ', () => {
     let linkType = 'blocks',
       workItemTitle20 = 'Workitem_Title_20';
     await planner.workItemList.openDetailPage(c.workItemTitle1);
+    await planner.waitUntilUrlContains('detail');
     await planner.detailPage.addLink(linkType, workItemTitle20);
     expect(await planner.detailPage.getLinkedItems()).toContain(workItemTitle20);
   });
 
   it('should change the state of workitem', async () => {
     await planner.workItemList.openDetailPage(c.workItemTitle1);
+    await planner.waitUntilUrlContains('detail');
     await planner.detailPage.changeState('open');
     expect(planner.detailPage.stateToggle.getTextWhenReady()).toContain('open');
   });

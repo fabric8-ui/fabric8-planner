@@ -30,7 +30,8 @@ export class WorkItemList extends BaseElement {
   }
 
   async hasWorkItem(title: string): Promise<boolean> {
-      return this.workItem(title).isPresent();
+    await this.workItem(title).scrollIntoView();
+    return this.workItem(title).isPresent();
   }
 
   workItem(title: string): WorkItemListEntry {
