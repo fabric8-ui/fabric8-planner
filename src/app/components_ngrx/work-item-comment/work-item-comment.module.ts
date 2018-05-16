@@ -19,6 +19,8 @@ import {
 import { WorkItemCommentComponent } from './work-item-comment.component';
 import { PlannerModalModule } from './../../components/modal/modal.module';
 
+import { SafePipe } from '../../pipes/safe.pipe';
+
 import { MockHttp } from '../../mock/mock-http';
 
 let providers = [];
@@ -64,9 +66,10 @@ if (process.env.ENV == 'inmemory') {
     WidgetsModule
   ],
   declarations: [
-    WorkItemCommentComponent
+    WorkItemCommentComponent,
+    SafePipe
    ],
-  exports: [ WorkItemCommentComponent ],
+  exports: [ WorkItemCommentComponent, SafePipe ],
   providers: providers
 })
 export class WorkItemCommentModule { }

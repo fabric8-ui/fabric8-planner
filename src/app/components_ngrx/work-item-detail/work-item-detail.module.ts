@@ -43,6 +43,8 @@ import { UrlService } from '../../services/url.service';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { LabelSelectorModule } from '../label-selector/label-selector.module';
 
+import { SafePipe } from '../../pipes/safe.pipe';
+
 @NgModule({
   imports: [
     AlmUserNameModule,
@@ -90,10 +92,12 @@ import { LabelSelectorModule } from '../label-selector/label-selector.module';
     TooltipConfig
   ],
   declarations: [
-    WorkItemDetailComponent
+    WorkItemDetailComponent,
+    SafePipe
   ],
   exports: [
-    WorkItemDetailComponent
+    WorkItemDetailComponent,
+    SafePipe
   ]
 })
 export class WorkItemDetailModule {}
