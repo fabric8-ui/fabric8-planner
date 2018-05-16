@@ -2,7 +2,8 @@ import { Action } from '@ngrx/store';
 import { UserUI } from './../models/user';
 import { UserState } from './../states/user.state';
 
-export const SET = '[users] Get';
+export const SET = '[users] Set';
+export const GET = '[users] Get';
 
 /**
  * This action class set the normalized user data
@@ -19,5 +20,17 @@ export class Set implements Action {
   readonly type = SET;
 }
 
+/**
+ * This action is used to get one user
+ * from server by it's ID
+ */
+export class Get implements Action {
+  payload: string;
+  constructor(payload: string) {
+    this.payload = payload;
+  }
+  readonly type = GET;
+}
+
 export type All
-  = Set
+  = Set | Get;

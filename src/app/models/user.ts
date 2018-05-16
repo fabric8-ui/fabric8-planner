@@ -1,3 +1,5 @@
+import { AppState } from './../states/app.state';
+import { Store } from '@ngrx/store';
 import {
   modelUI,
   modelService,
@@ -69,4 +71,11 @@ export class UserMapper implements Mapper<UserService, UserUI> {
       arg, this.uiToServiceMapTree
     )
   }
+}
+
+class UserResolver {
+  constructor(store: Store<AppState>) {
+
+  }
+
 }
