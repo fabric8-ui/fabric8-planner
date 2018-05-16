@@ -20,6 +20,7 @@ import {
   transition,
   trigger
 } from '@angular/animations';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Params, NavigationExtras } from '@angular/router';
 import { Location }               from '@angular/common';
 import { Router }                 from '@angular/router';
@@ -154,7 +155,8 @@ export class WorkItemQuickPreviewComponent implements OnInit, OnDestroy {
     private spaces: Spaces,
     private store: Store<AppState>,
     private userService: UserService,
-    private workItemService: WorkItemService
+    private workItemService: WorkItemService,
+    private sanitizer: DomSanitizer
   ) {}
 
   @HostListener('document:click', ['$event.target','$event.target.classList.contains('+'"assigned_user"'+')'])
@@ -227,7 +229,7 @@ export class WorkItemQuickPreviewComponent implements OnInit, OnDestroy {
       .subscribe(renderedHtml => {
         callBack(
           rawText,
-          renderedHtml
+          this.sanitizer.bypassSecurityTrustHtml(renderedHtml)
         );
       })
   }
