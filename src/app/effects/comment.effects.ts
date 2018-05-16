@@ -1,6 +1,7 @@
 import { Store } from '@ngrx/store';
 import { Actions, Effect } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
+import { cloneDeep } from 'lodash';
 import * as CommentActions from './../actions/comment.actions';
 import { AppState } from './../states/app.state';
 import { Observable } from 'rxjs';
@@ -8,8 +9,7 @@ import { WorkItemService } from './../services/work-item.service';
 import {
   CommentService,
   CommentMapper,
-  CommentUI,
-  CommentCreatorResolver
+  CommentUI
 } from './../models/comment';
 import {
   Notification,
@@ -28,7 +28,8 @@ export class CommentEffects {
     private workItemService: WorkItemService,
     private store: Store<AppState>,
     private userMapper: UserMapper,
-    private notifications: Notifications
+    private notifications: Notifications,
+    private commentMapper: CommentMapper
   ) {}
 
   @Effect() getWorkItemComments$: Observable<Action> = this.actions$
@@ -46,17 +47,11 @@ export class CommentEffects {
       return this.workItemService.resolveComments(payload)
         .map((comments) => {
           return comments.data.map(comment => {
-            const cMapper = new CommentMapper(this.userMapper);
-            const commentUI = cMapper.toUIModel(comment);
-            const creatorResolver = new CommentCreatorResolver(commentUI);
-            creatorResolver.resolveCreator(collaborators);
-            return creatorResolver.getComment();
+            return this.commentMapper.toUIModel(comment);
           })
         })
         .map((comments: CommentUI[]) => {
-          return new CommentActions.GetSuccess(
-            comments
-          )
+          return new CommentActions.GetSuccess(comments);
         })
         .catch(e => {
           try {
@@ -85,12 +80,8 @@ export class CommentEffects {
       const collaborators = cp.collaborators;
       return this.workItemService.createComment(payload.url, payload.comment)
         .map((comment) => {
-          const cMapper = new CommentMapper(this.userMapper);
-          const commentUI = cMapper.toUIModel(comment);
-          const creatorResolver = new CommentCreatorResolver(commentUI);
-          creatorResolver.resolveCreator(collaborators);
           return new CommentActions.AddSuccess(
-            creatorResolver.getComment()
+            this.commentMapper.toUIModel(comment)
           );
         })
         .catch(e => {
@@ -118,16 +109,11 @@ export class CommentEffects {
     .switchMap((cp) => {
       const payload = cp.payload;
       const collaborators = cp.collaborators;
-      const cMapper = new CommentMapper(this.userMapper);
-      const comment = cMapper.toServiceModel(payload);
+      const comment = this.commentMapper.toServiceModel(payload);
       return this.workItemService.updateComment(comment)
         .map((comment: CommentService) => {
-          const cMapper = new CommentMapper(this.userMapper);
-          const commentUI = cMapper.toUIModel(comment);
-          const creatorResolver = new CommentCreatorResolver(commentUI);
-          creatorResolver.resolveCreator(collaborators);
           return new CommentActions.UpdateSuccess(
-            creatorResolver.getComment()
+            this.commentMapper.toUIModel(comment)
           );
         })
         .catch(e => {
@@ -147,11 +133,9 @@ export class CommentEffects {
     .ofType<CommentActions.Delete>(CommentActions.DELETE)
     .map(action => action.payload)
     .switchMap((payload) => {
-      const cMapper = new CommentMapper(this.userMapper);
-      const comment = cMapper.toServiceModel(payload);
+      const comment = this.commentMapper.toServiceModel(payload);
       return this.workItemService.deleteComment(comment)
         .map(() => {
-          const cMapper = new CommentMapper(this.userMapper);
           return new CommentActions.DeleteSuccess(payload);
         })
         .catch(e => {

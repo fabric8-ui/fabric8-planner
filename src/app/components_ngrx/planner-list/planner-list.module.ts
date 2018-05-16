@@ -52,6 +52,13 @@ import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { UrlService } from '../../services/url.service';
 import { InfotipService } from '../../services/infotip.service';
 
+// Data Resolvers and Mappers
+import { CommentMapper } from './../../models/comment';
+import {
+  UserResolver,
+  UserMapper
+} from './../../models/user';
+
 let providers = [];
 
 if (process.env.ENV == 'inmemory') {
@@ -97,7 +104,11 @@ if (process.env.ENV == 'inmemory') {
     CookieService,
     WorkItemDataService,
     UrlService,
-    InfotipService
+    InfotipService,
+
+    CommentMapper,
+    UserResolver,
+    UserMapper
   ];
 }
 

@@ -1,4 +1,4 @@
-<div class="f8-comment" 
+<div class="f8-comment"
   id="wi-comment">
   <ul class="f8-comment-content nav nav-tabs nav-tabs-pf"
     id="wi-comment-content"
@@ -40,20 +40,20 @@
     <div>
       <div class="f8-comment__wrap"
         *ngFor='let comment of comments; let counter = index'>
-        <div>
+        <div *ngIf="comment.creator | async as creator">
           <div class="user-avatar margin-right-10 pull-left">
             <img class="user-assign-avatar"
               id="{{'comment_avatar_' + counter}}"
               placement="right"
               container="body"
-              tooltip="{{comment.creator.name}}"
-              *ngIf="comment.creator.avatar"
-              [src]="comment.creator.avatar | almAvatarSize:30"
+              tooltip="{{creator.name}}"
+              *ngIf="creator.avatar"
+              [src]="creator.avatar | almAvatarSize:30"
             />
           </div>
           <div class="dropdown dropdown-kebab-pf pull-right dropdown" dropdown>
             <button class="btn btn-link dropdown-toggle"
-              *ngIf="loggedIn && (loggedInUser?.id === comment.creator.id)"
+              *ngIf="loggedIn && (loggedInUser?.id === creator.id)"
               id="commentActionsKebab"
               type="button"
               dropdownToggle
@@ -75,7 +75,7 @@
               <h5 class="f8-comment-author pull-left">
                 <strong  class="truncate"
                   id="{{'comment_username_' + counter}}">
-                  {{comment.creator.name}}
+                  {{creator.name}}
                 </strong>
               </h5>
               <small class="f8-comment--create-time pull-right"
@@ -90,7 +90,7 @@
                   loggedIn &&
                   (
                     commentEditable ||
-                    (loggedInUser?.id === comment.creator.id)
+                    (loggedInUser?.id === creator.id)
                   )
                 )"
                 [rawText]="comment.body"

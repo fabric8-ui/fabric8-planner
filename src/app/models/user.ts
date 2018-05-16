@@ -1,5 +1,8 @@
-import { AppState } from './../states/app.state';
+import { Observable } from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { User, Profile } from 'ngx-login-client';
+import { AppState } from './../states/app.state';
 import {
   modelUI,
   modelService,
@@ -7,7 +10,8 @@ import {
   MapTree,
   switchModel
 } from './common.model';
-import { User, Profile } from 'ngx-login-client';
+import { Get as GetUserAction } from './../actions/user.actions';
+
 
 
 export interface UserService extends modelService {
@@ -24,6 +28,7 @@ export interface UserUI extends modelUI {
   currentUser: boolean;
 }
 
+@Injectable()
 export class UserMapper implements Mapper<UserService, UserUI> {
 
   serviceToUiMapTree: MapTree = [{
@@ -73,9 +78,23 @@ export class UserMapper implements Mapper<UserService, UserUI> {
   }
 }
 
-class UserResolver {
+@Injectable()
+export class UserResolver {
+  store: Store<AppState>;
   constructor(store: Store<AppState>) {
-
+    this.store = store;
   }
 
+  getUserObservableById(id: string): Observable<UserUI> {
+    return this.store.select('listPage')
+      .select('users').select(users => users[id])
+      // If the desired user doesn't exist then fetch it
+      .do(user => {
+        if(!user) {
+          this.store.dispatch(new GetUserAction(id))
+        }
+      })
+      // filter the pipe based on availability of the user
+      .filter(user => !!user);
+  }
 }
