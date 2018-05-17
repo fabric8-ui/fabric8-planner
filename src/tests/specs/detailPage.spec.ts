@@ -43,6 +43,7 @@ describe('Detail View test: ', () => {
     await planner.createWorkItem(workitemname);
     await planner.workItemList.openDetailPage(workitemname.title);
     await planner.waitUntilUrlContains('detail');
+    await planner.detailPage.titleInput.untilTextIsPresentInValue(workitemname.title);
     await planner.detailPage.updateTitle(updatedWorkItem.title);
     expect(await planner.detailPage.titleInput.getAttribute('value')).toBe(updatedWorkItem.title);
     await planner.detailPage.updateDescription(updatedWorkItem.description);
@@ -75,6 +76,7 @@ describe('Detail View test: ', () => {
       workItemTitle20 = 'Workitem_Title_20';
     await planner.workItemList.openDetailPage(c.workItemTitle1);
     await planner.waitUntilUrlContains('detail');
+    await planner.detailPage.ready();
     await planner.detailPage.addLink(linkType, workItemTitle20);
     expect(await planner.detailPage.getLinkedItems()).toContain(workItemTitle20);
   });
