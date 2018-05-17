@@ -2,6 +2,7 @@ import { GlobalSettings } from '../../shared/globals';
 import { HttpModule, Http, XHRBackend, RequestOptions } from '@angular/http';
 import { AuthenticationService } from 'ngx-login-client';
 import { HttpService } from './../../services/http-service';
+import { SafePipeModule } from '../../pipes/safe.module';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -18,8 +19,6 @@ import {
 
 import { WorkItemCommentComponent } from './work-item-comment.component';
 import { PlannerModalModule } from './../../components/modal/modal.module';
-
-import { SafePipe } from '../../pipes/safe.pipe';
 
 import { MockHttp } from '../../mock/mock-http';
 
@@ -63,13 +62,13 @@ if (process.env.ENV == 'inmemory') {
     RouterModule,
     HttpModule,
     TooltipModule,
-    WidgetsModule
+    WidgetsModule,
+    SafePipeModule
   ],
   declarations: [
-    WorkItemCommentComponent,
-    SafePipe
+    WorkItemCommentComponent
    ],
-  exports: [ WorkItemCommentComponent, SafePipe ],
+  exports: [ WorkItemCommentComponent ],
   providers: providers
 })
 export class WorkItemCommentModule { }

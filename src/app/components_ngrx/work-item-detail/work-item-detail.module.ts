@@ -42,8 +42,7 @@ import { LinkTypeState, initialState as initialLinkTypeState } from './../../sta
 import { UrlService } from '../../services/url.service';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { LabelSelectorModule } from '../label-selector/label-selector.module';
-
-import { SafePipe } from '../../pipes/safe.pipe';
+import { SafePipeModule } from '../../pipes/safe.module';
 
 @NgModule({
   imports: [
@@ -82,7 +81,8 @@ import { SafePipe } from '../../pipes/safe.pipe';
       DetailWorkItemEffects,
       LinkTypeEffects,
       WorkItemLinkEffects
-    ])
+    ]),
+    SafePipeModule
   ],
   providers: [
     UserMapper,
@@ -92,12 +92,10 @@ import { SafePipe } from '../../pipes/safe.pipe';
     TooltipConfig
   ],
   declarations: [
-    WorkItemDetailComponent,
-    SafePipe
+    WorkItemDetailComponent
   ],
   exports: [
-    WorkItemDetailComponent,
-    SafePipe
+    WorkItemDetailComponent
   ]
 })
 export class WorkItemDetailModule {}
