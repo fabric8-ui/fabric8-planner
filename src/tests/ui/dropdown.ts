@@ -18,14 +18,17 @@ class DropdownItem extends BaseElement {
   async select() {
     await this.run(`select item: '${this.name}'`, async () => {
       await this.parent.ready();
-      await this.ready();
-      await this.click();
-    })
+      try {
+        await this.clickWhenReady();
+      } catch(e) {
+        await this.click();
+      }
+      })
   }
 }
 
 
-class DropdownMenu extends BaseElement {
+export class DropdownMenu extends BaseElement {
 
   constructor(element: ElementFinder, name: string = '') {
     super(element, name);

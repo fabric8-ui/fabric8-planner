@@ -7,6 +7,9 @@ import { AppState } from './../states/app.state';
 import { Observable } from 'rxjs';
 import { WorkItemService as WIService } from './../services/work-item.service';
 import { WorkItemMapper, WorkItem, WorkItemService, WorkItemResolver, WorkItemUI } from './../models/work-item';
+import { Router, ActivatedRoute } from '@angular/router';
+import { FilterService } from '../services/filter.service';
+import * as util from './work-item-utils';
 
 export type Action = WorkItemActions.All;
 
@@ -19,7 +22,10 @@ export class WorkItemEffects {
     private actions$: Actions,
     private workItemService: WIService,
     private store: Store<AppState>,
-    private notifications: Notifications
+    private notifications: Notifications,
+    private router: Router,
+    private route: ActivatedRoute,
+    private filterService: FilterService,
   ){}
 
   resolveWorkItems(
@@ -77,13 +83,14 @@ export class WorkItemEffects {
           wItem.createId = createID;
           return wItem;
         })
+        .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w))
         .mergeMap(wItem => {
           // If a child item is created
           if (parentId) {
             wItem.parentID = parentId;
 
             // TODO : solve the hack :: link the item
-            const linkPayload = this.createLinkObject(
+            const linkPayload = util.createLinkObject(
               parentId,
               wItem.id,
               '25c326a7-6d03-4f5a-b23b-86a9ee4171e9'
@@ -106,6 +113,10 @@ export class WorkItemEffects {
               if (!parent.childrenLoaded && parent.hasChildren) {
                 return new WorkItemActions.GetChildren(parent);
               } else {
+                if(payload.openDetailPage){
+                  this.router.navigateByUrl(this.router.url.split('plan')[0] + 'plan/detail/' + wItem.number,
+                                            {relativeTo: this.route});
+                }
                 return new WorkItemActions.AddSuccess(wItem);
               }
             });
@@ -119,6 +130,10 @@ export class WorkItemEffects {
               } as Notification);
             } catch (e) {
               console.log('Work item is added.');
+            }
+            if(payload.openDetailPage){
+              this.router.navigateByUrl(this.router.url.split('plan')[0] + 'plan/detail/' + wItem.number,
+                                        {relativeTo: this.route});
             }
             return Observable.of(new WorkItemActions.AddSuccess(wItem));
           }
@@ -242,11 +257,11 @@ export class WorkItemEffects {
         const state = wp.state;
         return this.workItemService.update(payload)
           .map(w => this.resolveWorkItems([w], state)[0])
+          .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w))
           .map(w => {
             const item = state.workItems.find(i => i.id === w.id);
             if(item) {
               w.treeStatus = item.treeStatus;
-              w.bold = item.bold;
               w.childrenLoaded = item.childrenLoaded;
               w.parentID = item.parentID;
             }
@@ -279,34 +294,7 @@ export class WorkItemEffects {
       });
 
 
-    createLinkObject(parentWorkItemId: string, childWorkItemId: string, linkId: string) {
-      return {
-        'type': 'workitemlinks',
-        'attributes': {
-          'version': 0
-        },
-        'relationships': {
-          'link_type': {
-            'data': {
-              'id': linkId,
-              'type': 'workitemlinktypes'
-            }
-          },
-          'source': {
-            'data': {
-              'id': parentWorkItemId,
-              'type': 'workitems'
-            }
-          },
-          'target': {
-            'data': {
-              'id': childWorkItemId,
-              'type': 'workitems'
-            }
-          }
-        }
-      };
-    }
+    
 
     @Effect() Reorder: Observable<Action> = this.actions$
       .ofType<WorkItemActions.Reoder>(WorkItemActions.REORDER)

@@ -115,6 +115,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private hdrHeight: number = 0;
   private toolbarHt: number = 0;
   private quickaddHt: number = 0;
+  private showCompleted: boolean = false;
 
   @ViewChild('plannerLayout') plannerLayout: PlannerLayoutComponent;
   @ViewChild('toolbar') toolbar: ElementRef;
@@ -145,6 +146,8 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     this.eventListeners.push(
       this.spaceSource
       .do(() => {
+        this.store.dispatch(new CollaboratorActions.Get());
+        this.store.dispatch(new AreaActions.Get());
         this.uiLockedSidebar = true;
         this.uiLockedList = true;
       })
@@ -169,6 +172,31 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         this.uiLockedSidebar = false;
         this.uiLockedList = true;
         let exp = this.filterService.queryToJson(queryParams.q);
+
+        if (!queryParams.hasOwnProperty('showCompleted') && !queryParams.showCompleted) {
+          this.showCompleted = false;
+          // not closed state
+          // TODO remove hard coded states and
+          // use meta-states when available
+          let stateQuery = {};
+          ['closed', 'Done', 'Removed'].forEach(state => {
+            stateQuery = this.filterService.queryJoiner(
+              stateQuery,
+              this.filterService.and_notation,
+              this.filterService.queryBuilder(
+                'state', this.filterService.not_equal_notation, state
+              )
+            )
+          });
+          exp = this.filterService.queryJoiner(
+            exp,
+            this.filterService.and_notation,
+            stateQuery
+          );
+        } else {
+          this.showCompleted = true;
+        }
+
         // Check for tree view
         if (queryParams.hasOwnProperty('showTree') && queryParams.showTree) {
           this.showTree = true;
@@ -177,7 +205,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
           this.showTree = false;
           exp['$OPTS'] = {'tree-view': false};
         }
-
 
         Object.assign(payload, {
           expression: exp
@@ -252,6 +279,9 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     })
     this.updateColumnIndex();
     this.cookieService.setCookie('datatableColumn', this.columns);
+    setTimeout(() => {
+      this.workItems = [...this.workItems];
+    }, 500);
   }
 
   moveToAvailable() {
@@ -526,7 +556,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     if(this.quickaddWrapper) {
       this.quickaddHt =  this.quickaddWrapper.nativeElement.offsetHeight;
     }
-    let targetHeight = window.innerHeight - (this.hdrHeight + this.toolbarHt + this.quickaddHt + 25); // add 25 for experimental bar height
+    let targetHeight = window.innerHeight - (this.hdrHeight + this.toolbarHt + this.quickaddHt);
     if(this.listContainer) {
       this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
     }

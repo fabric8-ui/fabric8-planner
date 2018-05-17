@@ -16,6 +16,7 @@ import { PlannerListComponent } from './planner-list.component';
 
 import { HttpService } from '../../services/http-service';
 import { MockHttp } from '../../mock/mock-http';
+import { CustomQueryService } from './../../services/custom-query.service';
 import { WorkItemService } from './../../services/work-item.service';
 import { IterationService } from './../../services/iteration.service';
 import { GlobalSettings } from './../../shared/globals';
@@ -49,6 +50,7 @@ import { WorkItemReducer } from './../../reducers/work-item.reducer';
 import { AlmIconModule } from 'ngx-widgets';
 import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { UrlService } from '../../services/url.service';
+import { InfotipService } from '../../services/infotip.service';
 
 let providers = [];
 
@@ -59,6 +61,7 @@ if (process.env.ENV == 'inmemory') {
       provide: HttpService,
       useClass: MockHttp
     },
+    CustomQueryService,
     IterationService,
     TooltipConfig,
     GlobalSettings,
@@ -69,7 +72,8 @@ if (process.env.ENV == 'inmemory') {
     BsDropdownConfig,
     CookieService,
     WorkItemDataService,
-    UrlService
+    UrlService,
+    InfotipService
   ];
 } else {
   providers = [
@@ -81,6 +85,7 @@ if (process.env.ENV == 'inmemory') {
       },
       deps: [XHRBackend, RequestOptions, AuthenticationService]
     },
+    CustomQueryService,
     IterationService,
     TooltipConfig,
     GlobalSettings,
@@ -91,7 +96,8 @@ if (process.env.ENV == 'inmemory') {
     BsDropdownConfig,
     CookieService,
     WorkItemDataService,
-    UrlService
+    UrlService,
+    InfotipService
   ];
 }
 
@@ -117,22 +123,26 @@ if (process.env.ENV == 'inmemory') {
         labels: reducers.LabelReducer,
         areas: reducers.AreaReducer,
         collaborators: reducers.CollaboratorReducer,
+        customQueries: reducers.CustomQueryReducer,
         groupTypes: reducers.GroupTypeReducer,
         space: reducers.SpaceReducer,
         workItemTypes: reducers.WorkItemTypeReducer,
         workItems: reducers.WorkItemReducer,
-        workItemStates: reducers.WorkItemStateReducer
+        workItemStates: reducers.WorkItemStateReducer,
+        infotips: reducers.InfotipReducer
       }, {
       initialState: {
         iterations: states.initialIterationState,
         labels: states.initialLabelState,
         areas: states.initialAreaState,
         collaborators: states.initialCollaboratorState,
+        customQueries: states.initialCustomQueryState,
         groupTypes: states.initialGroupTypeState,
         space: states.initialSpaceState,
         workItemTypes: states.initialWorkItemTypeState,
         workItems: states.initialWorkItemState,
-        workItemStates: states.initialWIState
+        workItemStates: states.initialWIState,
+        infotips: states.initialInfotipState
       }
     }),
     EffectsModule.forFeature([
@@ -140,10 +150,12 @@ if (process.env.ENV == 'inmemory') {
       effects.LabelEffects,
       effects.AreaEffects,
       effects.CollaboratorEffects,
+      effects.CustomQueryEffects,
       effects.GroupTypeEffects,
       effects.SpaceEffects,
       effects.WorkItemTypeEffects,
-      effects.WorkItemEffects
+      effects.WorkItemEffects,
+      effects.InfotipEffects
     ])
   ],
   declarations: [

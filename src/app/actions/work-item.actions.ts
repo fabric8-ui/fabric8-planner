@@ -16,15 +16,18 @@ export const GET_CHILDREN_SUCCESS = '[workItem] GetChildrenSuccess';
 export const GET_CHILDREN_ERROR = '[workItem] GetChildrenError';
 export const REORDER = '[workItem] Reorder';
 export const REORDER_ERROR = '[workItem] ReorderError';
-export const UPDATE_WORKITEM_ITERATION= '[workItem] UpdateWorkitemIteration'
+export const UPDATE_WORKITEM_ITERATION= '[workItem] UpdateWorkitemIteration';
+export const CREATE_LINK = '[workItemLink] CreateLink';
+export const DELETE_LINK = '[workItemLink] DeleteLink';
 
 export class Add implements Action {
-  payload: {workItem: WorkItemService, createId: number, parentId: string};
+  payload: {workItem: WorkItemService, createId: number, parentId: string, openDetailPage: boolean};
   constructor(
     payload: {
       workItem: WorkItemService,
       createId: number,
-      parentId: string
+      parentId: string,
+      openDetailPage: boolean
     }
   ) {
     this.payload = payload;
@@ -136,6 +139,38 @@ export class UpdateWorkitemIteration implements Action {
   }) { this.payload = payload; }
 }
 
+export class CreateLink implements Action {
+  payload: {
+    source: WorkItemUI,
+    target: WorkItemUI,
+    sourceTreeStatus: string
+  }
+  constructor(payload: {
+    source: WorkItemUI,
+    target: WorkItemUI,
+    sourceTreeStatus: string
+  }) {
+    this.payload = payload;
+  }
+  readonly type = CREATE_LINK;
+}
+
+export class DeleteLink implements Action {
+  payload: {
+    source: WorkItemUI,
+    target: WorkItemUI,
+    sourceTreeStatus: string
+  }
+  constructor(payload: {
+    source: WorkItemUI,
+    target: WorkItemUI,
+    sourceTreeStatus: string
+  }) {
+    this.payload = payload;
+  }
+  readonly type = DELETE_LINK;
+}
+
 export type All
   = Add
   | Get
@@ -151,3 +186,5 @@ export type All
   | GetChildrenError
   | Reoder
   | UpdateWorkitemIteration
+  | CreateLink
+  | DeleteLink

@@ -6,6 +6,7 @@ import * as support from './../../support';
 export class WorkItemQuickPreview extends ui.BaseElement {
   // TODO - move loading animation out of here. It doesn't belong here.
   loadingAnimation = new ui.BaseElementArray($$('.spinner'), 'Loading spinner animation');
+  notificationToast = new ui.BaseElementArray($$('pfng-toast-notification'), 'Notification Toast');
   /* UI elements of the Top section of the workitem preview */
   closeButton = new ui.Button(this.$('.f8-detail--close'), 'WorkItem Quick Preview close button');
   stateDropdown = new ui.Dropdown(this.$('.dropdown-toggle'), this.$('#wi-status-dropdown'), 'WorkItem State dropdown');
@@ -24,6 +25,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   assigneeDropdownCloseButton = new ui.Button(
     this.$('#f8-add-assignee-dropdown .close-pointer'),
     'Assignee dropdown close button');
+  assigneeDropdownMenu = new ui.BaseElement(
+    this.$('assignee-selector div.select-dropdown'),
+    'Assignee dropdown menu');
   assigneeDiv = new ui.BaseElement(this.$('f8-assignee'), 'Assignee List Div');
   areaDropdown = new ui.Dropdown(
     this.$('#area-dropdown > div > span'),
@@ -78,7 +82,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   searchWorkItem = new ui.TextInput(this.linksDiv.$('#workitem-link-search'),'Workitem search');
   workItemDropdown = new ui.Dropdown(
     this.searchWorkItem,
-    this.$('.dropdown-menu.dropdown-ul'),
+    this.$('.dropdown.open .dropdown-menu.dropdown-ul'),
     'select workitem'
   );
   linkButton = new ui.Button(this.linksDiv.$('#bind-link'),'link Button');
@@ -91,7 +95,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   commentsField = new ui.Clickable(this.commentDiv.$('.editor-box.editor-preview.placeholder'), 'comments clickable field');
   commentsInputField = new ui.TextInput(this.commentDiv.$('.editor-box.editor-markdown'), 'comment input field');
   commentSaveButton = new ui.Button(this.commentDiv.$('.btn-save'), 'Comment save button');
-  commentCancelButton = new ui.Button(this.commentDiv.$$('.fl.btn.btn-primary.pull-right.action-btn').first(), 'Comment cancel button');
+  commentCancelButton = new ui.Button(this.commentDiv.$('.fl.btn.btn-default.pull-right.action-btn'), 'Comment cancel button');
   commentsText = new ui.BaseElementArray(this.$$('.f8-comment-body .editor-box.editor-preview'), 'Comment List');
 
   constructor(ele: ElementFinder, name: string = '') {
@@ -110,23 +114,29 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async addAssignee(assignee: string) {
+    await this.loadingAnimation.untilCount(0);
     await this.assigneeDropdown.clickWhenReady();
-    await this.assigneeDropdown.select(assignee)
+    await this.assigneeDropdown.select(assignee);
     await this.assigneeDropdownCloseButton.clickWhenReady();
+    await this.loadingAnimation.untilCount(0);
   }
 
   async addArea(areaTitle: string) {
     await this.loadingAnimation.untilCount(0);
+    await browser.sleep(2000);
     await this.areaDropdown.clickWhenReady();
     await this.areaDropdown.select(areaTitle);
     await this.areaSaveButton.clickWhenReady();
+    await this.loadingAnimation.untilCount(0);
   }
 
   async addIteration(iterationTitle: string) {
     await this.loadingAnimation.untilCount(0);
+    await browser.sleep(2000);
     await this.iterationDropdown.clickWhenReady();
     await this.iterationDropdown.select(iterationTitle);
     await this.iterationSaveButton.clickWhenReady();
+    await this.notificationToast.untilCount(1);
   }
 
   async typeaHeadSearch(iterationTitle: string) {
@@ -142,6 +152,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async addCommentAndSave(comment: string) {
+    await this.ready()
     await this.addComment(comment);
     await this.commentSaveButton.clickWhenReady();
   }
@@ -163,14 +174,10 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.linkTypeDropdown.clickWhenReady();
     await this.linkTypeDropdown.select(link);
     await this.searchWorkItem.enterText(workItem);
+    await browser.sleep(1000);
     await this.workItemDropdown.select(workItem);
     await this.linkButton.isPresent();
     await this.linkButton.clickWhenReady();
-  }
-
-  async close() {
-    await this.closeButton.clickWhenReady();
-    await browser.sleep(1000);
   }
 
   async createNewLabel(label: string) {
@@ -182,59 +189,81 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.labelDropdownCloseButton.clickWhenReady();
   }
 
-  async hasArea(areaName: string) {
+  // Try to click on the close button, if it fails, wait for notification to disappear
+  async close() {
+    while(true) {
+      try {
+        await this.closeButton.clickWhenReady();
+        break;
+      } catch(e) {
+        await browser.sleep(1000);
+        await this.notificationToast.untilCount(0);
+      }
+    }
+  }
+
+  async getArea() {
     await this.loadingAnimation.untilCount(0);
     let area = await this.areaDropdown.getTextWhenReady();
-    return area === areaName;
+    return area;
   }
 
-  async hasCreator(name: string): Promise<Boolean> {
+  async getCreator() {
     await this.loadingAnimation.untilCount(0);
+    // We need the explicit sleep since the creator name doesn't load instantly
+    await browser.sleep(3000);
     let creator = await this.creatorusername.getTextWhenReady();
-    return creator === name;
+    return creator;
   }
 
-  async hasCreatorAvatar(avatarUrl: string): Promise<Boolean> {
+  async getCreatorAvatar() {
     await this.loadingAnimation.untilCount(0);
     let creator = await this.creatorAvatar.getAttribute('src');
-    return creator === avatarUrl;
+    return creator;
   }
 
-  async hasAssignee(name: string): Promise<Boolean> {
+  async getAssignees() {
     await this.loadingAnimation.untilCount(0);
     await this.assigneeDiv.untilDisplayed();
+    await browser.sleep(5000);
     let assigneeList = await this.assigneeDiv.getTextWhenReady();
-    return assigneeList.indexOf(name) > -1;
+    return assigneeList;
   }
 
-  async hasComment(comment: string): Promise<Boolean> {
-    let commentList = await this.commentsText.getTextWhenReady();
-    return commentList.indexOf(comment) > -1;
+  async getComments() {
+    await this.ready();
+    await this.commentDiv.scrollIntoView();
+    let commentList:String = "" ;
+    if (await this.commentsText.isPresent()) {
+      commentList = await this.commentsText.getTextWhenReady();
+    }
+    return commentList;
   }
 
-  async hasCreationTime(time: string): Promise<Boolean> {
+  async getCreationTime() {
     let origTime = await this.creationTimeDiv.getTextWhenReady()
-    return time === origTime;
+    return origTime;
   }
 
-  async hasDescription(description: string): Promise<Boolean> {
-    return await this.descriptionTextarea.getTextWhenReady() == description;
+  async getDescription() {
+    return await this.descriptionTextarea.getTextWhenReady();
   }
 
-  async hasIteration(iterationTitle: string): Promise<Boolean> {
+  async getIteration() {
     await this.loadingAnimation.untilCount(0);
+    await browser.sleep(1000);    
     let iteration = await this.iterationDropdown.getTextWhenReady();
-    return iteration === iterationTitle;
+    return iteration;
   }
 
-  async hasLabel(label: string) : Promise<Boolean> {
+  async getLabels() {
     let labelList = await this.labelListDiv.getTextWhenReady();
-    return labelList.indexOf(label) > -1;
+    return labelList;
   }
 
-  async hasLinkedItem(linkItem:string) : Promise<Boolean> {
+  async getLinkedItems() {
     let linkList = await this.linklistItem.getTextWhenReady();
-    return linkList.indexOf(linkItem) > -1;
+    return linkList;
   }
 
   async updateTitle(title: string, append: boolean = false) {
@@ -252,18 +281,20 @@ export class WorkItemQuickPreview extends ui.BaseElement {
       await this.descriptionTextarea.clear();
     }
     await this.descriptionTextarea.enterText(description);
+    await this.descriptionSaveButton.scrollIntoView();
     await this.descriptionSaveButton.clickWhenReady();
+    await this.descriptionSaveButton.untilHidden();
   }
 
   async openDescriptionBox(){
-    await this.descriptionDiv.clickWhenReady();
+    await browser.actions().mouseMove(this.descriptionDiv).perform();
     await this.descriptionEditIcon.clickWhenReady();
   }
 
   async isSaveButtonDisplayed() {
     try {
       return await this.descriptionSaveButton.isDisplayed();
-    } 
+    }
     catch (exception) {
       return false;
     }
@@ -274,7 +305,12 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.addAssignee(assignee);
   }
 
-  async hasTitleError(error: string) {
-    return await this.titleErrorMessage.getTextWhenReady() === error;
+  async getTitleError() {
+    return await this.titleErrorMessage.getTextWhenReady();
+  }
+
+  async changeStateTo(state: string) {
+    await this.stateDropdown.clickWhenReady();
+    await this.stateDropdown.select(state);
   }
 }

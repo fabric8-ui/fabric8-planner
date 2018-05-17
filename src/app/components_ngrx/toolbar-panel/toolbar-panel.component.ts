@@ -12,6 +12,7 @@ import {
   EventEmitter,
   ChangeDetectorRef
 } from '@angular/core';
+import { AsyncPipe } from '@angular/common'
 import {
   Router,
   ActivatedRoute,
@@ -42,9 +43,9 @@ import { GroupTypeUI } from './../../models/group-types.model';
 // ngrx stuff
 import { Store } from '@ngrx/store';
 import { AppState } from './../../states/app.state';
+import * as CustomQueryActions from './../../actions/custom-query.actions';
 import * as FilterActions from './../../actions/filter.actions';
 import * as SpaceActions from './../../actions/space.actions';
-
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -68,22 +69,22 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   eventListeners: any[] = [];
   existingAllowedQueryParams: Object = {};
   filterConfig: FilterConfig = {
-      fields: [{
-        id: 'type',
-        title:  'Select',
-        placeholder: 'Select a filter type',
-        type: 'select'
-      }],
-      appliedFilters: [],
-      resultsCount: -1, // Hide
-      selectedCount: 0,
-      totalCount: 0,
-      tooltipPlacement: 'right'
-    } as FilterConfig;
+    fields: [{
+      id: 'type',
+      title:  'Select',
+      placeholder: 'Select a filter type',
+      type: 'select'
+    }],
+    appliedFilters: [],
+    resultsCount: -1, // Hide
+    selectedCount: 0,
+    totalCount: 0,
+    tooltipPlacement: 'right'
+  } as FilterConfig;
   toolbarConfig: ToolbarConfig = {
-      actionConfig: {},
-      filterConfig: this.filterConfig
-    } as ToolbarConfig;
+    actionConfig: {},
+    filterConfig: this.filterConfig
+  } as ToolbarConfig;
   allowedFilterKeys: string[] = [];
   allowedMultipleFilterKeys: string[] = [
     'label'
@@ -92,6 +93,9 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     'title'
   ];
 
+  showSaveFilterButton: boolean = true;
+  isFilterSaveOpen: boolean = false;
+
   // the type of the list is changed (Hierarchy/Flat).
   currentListType: string = 'Hierarchy';
 
@@ -99,15 +103,15 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private savedFIlterFieldQueries = {};
 
   private separator = {
-          id: 'separator',
-          value: null,
-          separator: true
-      };
+    id: 'separator',
+    value: null,
+    separator: true
+  };
   private loader = {
-          id: 'loader',
-          value: 'Loading...',
-          iconStyleClass: 'fa fa-spinner'
-      };
+    id: 'loader',
+    value: 'Loading...',
+    iconStyleClass: 'fa fa-spinner'
+  };
   private areaData: Observable<AreaUI[]>;
   private allUsersData: Observable<UserUI[]>;
   private workItemTypeData: Observable<WorkItemTypeUI[]>;
@@ -121,8 +125,15 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private activeFilters = [];
   private activeFilterFromSidePanel: string = '';
   private currentQuery: string = '';
+  private totalCount: Observable<number>;
 
   private isShowTreeOn: boolean = false;
+  private isShowCompletedOn: boolean = false;
+  private isStateFilterSelected: boolean = false;
+
+  private routeSource = this.route.queryParams
+    .filter(p => p.hasOwnProperty('q'));
+  private queryExp;
 
   constructor(
     private router: Router,
@@ -153,6 +164,36 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.context !== 'boardview') {
       this.allowedFilterKeys.push('state');
     }
+    this.routeSource.subscribe(queryParam => this.queryExp = queryParam.q);
+
+    const customQueriesData = this.store
+      .select('listPage')
+      .select('customQueries')
+      .filter(customQueries => !!customQueries.length);
+      this.totalCount = this.store
+      .select('listPage')
+      .select('workItems')
+      .map(items => {
+        if(this.isShowTreeOn) {
+          return items.filter(item => item.bold === true).length;
+        } else {
+          return items.length;
+        }
+      })
+
+    this.eventListeners.push(
+      customQueriesData.subscribe(queries => {
+        const selected = queries.find(q => q.selected);
+        if (selected) {
+          // if any selected saved filter found
+          // then save filter button will not be shown
+          // to avoid duplication
+          this.showSaveFilterButton = false;
+        } else {
+          this.showSaveFilterButton = true;
+        }
+      })
+    );
   }
 
   ngAfterViewInit(): void {
@@ -204,7 +245,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     /*
      * The current version of the patternfly filter dropdown does not fully support the async
      * update of the filterConfig.fields fields set. It does not refresh the widget on field
-     * array change. The current workaround is to add a "dummy" entry "Select Filter.." as
+     * array change. The current workaround is to add a 'dummy' entry 'Select Filter..' as
      * the first entry in the fields array. When the user selects a new value from the
      * filter list, the implementation works subsequently.
      */
@@ -252,6 +293,10 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectFilterType(event: FilterEvent) {
+    this.isStateFilterSelected = false;
+    if (event.field.id === 'state') {
+      this.isStateFilterSelected = true;
+    }
     const filterMap = this.getFilterMap();
     if (Object.keys(filterMap).indexOf(event.field.id) > -1) {
       const index = this.filterConfig.fields.findIndex(i => i.id === event.field.id);
@@ -385,7 +430,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         datasource: this.workItemTypeData,
         datamap: (witypes: WorkItemTypeUI[]) => {
           return {
-            queries: witypes.map(witype => {return {id: witype.id, value: witype.name, iconStyleClass: witype.icon}}),
+            queries: witypes.sort((a, b) => (a.name > b.name ? 1 : 0)).map(witype => ({ id: witype.id, value: witype.name, iconStyleClass: witype.icon })),
             primaryQueries: []
           }
         },
@@ -489,7 +534,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           case 'creator':
           case 'assignee':
             const user = users.find(u => u.id === f.value);
-            f['displayValue'] = user ? user.username : f.value;
+            f['displayValue'] = f.value == 'null' ? 'Unassigned' :
+              (user ? user.username : f.value);
             break;
           case 'area':
             const area = areas.find(a => a.id === f.value);
@@ -554,6 +600,24 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  saveFilters(filterName: string) {
+    if (filterName !== '') {
+      //let exp = JSON.stringify(this.filterService.queryToJson(this.queryExp));
+      let exp = this.queryExp;
+      let e1 = this.filterService.queryToJson(exp);
+      let str = '' + JSON.stringify(e1);
+      let customQuery = {
+        'attributes': {
+          'fields': str,
+          'title': filterName
+        },
+        'type': 'queries'
+      };
+      this.store.dispatch(new CustomQueryActions.Add(customQuery));
+      this.closeFilterSave();
+    }
+  }
+
   showTreeToggle(e) {
     let queryParams = cloneDeep(this.route.snapshot.queryParams);
     if (e.target.checked) {
@@ -561,6 +625,21 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       if (queryParams.hasOwnProperty('showTree')) {
         delete queryParams['showTree'];
+      }
+    }
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams
+    });
+  }
+
+  showCompletedToggle(e) {
+    let queryParams = cloneDeep(this.route.snapshot.queryParams);
+    if (e.target.checked) {
+      queryParams['showCompleted'] = true;
+    } else {
+      if (queryParams.hasOwnProperty('showCompleted')) {
+        delete queryParams['showCompleted'];
       }
     }
     this.router.navigate([], {
@@ -580,5 +659,22 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.isShowTreeOn = false;
     }
+    if (currentParams.hasOwnProperty('showCompleted')) {
+      if (currentParams['showCompleted'] === 'true') {
+        this.isShowCompletedOn = true;
+      } else if (currentParams['showCompleted'] === 'false') {
+        this.isShowCompletedOn = false;
+      }
+    } else {
+      this.isShowCompletedOn = false;
+    }
+  }
+
+  closeFilterSave() {
+    this.isFilterSaveOpen = false;
+  }
+
+  saveFilterDropdownChange(value: boolean) {
+    this.isFilterSaveOpen = value;
   }
 }

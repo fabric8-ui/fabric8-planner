@@ -33,8 +33,9 @@ export class WorkItemTypeEffects {
     .withLatestFrom(this.store.select('listPage').select('space'))
     .switchMap(([action, space]) => {
       return this.workItemService.getWorkItemTypes2(
-        space.links.self + '/workitemtypes'
+        space.relationships.workitemtypes.links.related
       )
+      .map(types => types.filter(t => t.attributes['can-construct']))
       .map((types: WorkItemTypeService[]) => {
         const witm = new WorkItemTypeMapper();
         const wiTypes = types.map(t => witm.toUIModel(t));

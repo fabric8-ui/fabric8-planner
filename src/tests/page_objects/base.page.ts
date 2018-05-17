@@ -1,4 +1,4 @@
-import { browser } from 'protractor';
+import { browser, ExpectedConditions } from 'protractor';
 import * as mixins from '../mixins';
 import * as support from '../support';
 
@@ -46,7 +46,8 @@ export abstract class BasePage {
     if (this.url === undefined ) {
       throw Error('Trying to open an undefined url');
     }
-
+    this.log("Authenticating with Auth and Refresh token");
+    await support.loginWithTokens();
     this.log('Opening', this.url)
     let currentUrl = await browser.getCurrentUrl();
     this.debug('at  :', currentUrl);
@@ -56,6 +57,10 @@ export abstract class BasePage {
 
     let urlNow = await browser.getCurrentUrl();
     this.debug('now :', urlNow);
+  }
+
+  async waitUntilUrlContains(text: string) {
+    await browser.wait(ExpectedConditions.urlContains(text));
   }
 }
 

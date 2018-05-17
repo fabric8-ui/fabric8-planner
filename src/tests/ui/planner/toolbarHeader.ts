@@ -1,8 +1,9 @@
 import { BaseElement } from './../base.element';
-import { ElementFinder } from 'protractor';
+import { ElementFinder, browser, $$ } from 'protractor';
 import * as ui from '../../ui';
 
 export class ToolbarHeader extends BaseElement {
+  notificationToast = new ui.BaseElementArray($$('pfng-toast-notification'), 'Notification Toast');
   header = new BaseElement(this.$('.toolbar-pf-view-selector'), 'header div');
   showTree = new BaseElement(this.$('.toolbar-pf-view-selector #showTree'), 'show Tree');
   filterDropdown = new ui.Dropdown(
@@ -16,19 +17,34 @@ export class ToolbarHeader extends BaseElement {
     'Select Filter Condition'
   );
   private clearAllFilter = new ui.Clickable(this.$('.clear-filters'), 'Clear All filters');
+  showCompleted = new BaseElement(this.$('.toolbar-pf-view-selector #showCompleted'), 'Show Completed');
+  saveFilter = new ui.Clickable(this.$('.save-filters'), 'Save');
+  saveFilterDialog = new BaseElement(this.$('.save-filter-dropdown'));
+  saveFilterBtn = new ui.Button(this.saveFilterDialog.$('.save-cq-btn'),'Save');
+  closeBtn = new ui.Button(this.$('.cancel-cq-btn'),'Cancel');
+  titleTextInput = new ui.TextInput(this.saveFilterDialog.$('input.form-control'), 'Query Title');
+  activeFiltersList = new ui.BaseElementArray(this.$$('.active-filters-div li'), 'Active filters div');
 
   constructor(el: ElementFinder, name = 'ToolBar Header') {
     super(el, name);
   }
 
   async ready() {
+    await super.ready();
     await this.header.untilPresent();
   }
 
   async clickShowTree() {
     await this.ready();
-    await this.showTree.untilDisplayed();
-    await this.showTree.clickWhenReady();
+    while(true) {
+      try {
+        await this.showTree.clickWhenReady();
+        break;
+      } catch(e) {
+        await browser.sleep(1000);
+        await this.notificationToast.untilCount(0);
+      }
+    }
   }
 
   async selectFilter(Label: string, LabelTest: string) {
@@ -41,5 +57,29 @@ export class ToolbarHeader extends BaseElement {
 
   async clickClearAllFilters() {
     await this.clearAllFilter.clickWhenReady();
+  }
+
+  async clickShowCompleted() {
+    await this.ready();
+    await this.showCompleted.untilDisplayed();
+    while(true) {
+      try {
+        await this.showCompleted.clickWhenReady();
+        break;
+      } catch(e) {
+        await browser.sleep(1000);
+        await this.notificationToast.untilCount(0);
+      }
+    }
+  }
+
+  async saveFilters(title) {
+    await this.saveFilter.clickWhenReady();
+    await this.titleTextInput.enterText(title);
+    await this.saveFilterBtn.clickWhenReady();
+  }
+
+  async getFilterConditions() {
+    return await this.activeFiltersList.getTextWhenReady();
   }
 }

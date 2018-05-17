@@ -311,7 +311,8 @@ export class WorkItemService {
           '/namedspaces' +
           '/' + owner +
           '/' + space +
-          '/workitems/' + id
+          '/workitems/' + id,
+          {'no-header': null}
         )
         .map(item => item.json().data)
         .catch((error: Error | any) => {
@@ -637,7 +638,8 @@ export class WorkItemService {
       if (workItemType) {
         return Observable.of(workItemType);
       } else {
-        let workItemTypeUrl = this._currentSpace.links.self + '/workitemtypes/' + id;
+        let workItemTypeUrl = this._currentSpace.links.self.split('/spaces/')[0] +
+          '/workitemtypes/' + id;
         return this.http.get(workItemTypeUrl)
           .map((response) => {
             workItemType = response.json().data as WorkItemType;
@@ -835,34 +837,12 @@ export class WorkItemService {
    *
    * @return Promise of LinkType[]
    */
-  getAllLinkTypes(workItem: WorkItem): Observable<any> {
-    let workItemLinkTypesUrl = this._currentSpace.links.self + '/workitemlinktypes';
-    return this.http.get(workItemLinkTypesUrl)
+  getAllLinkTypes(url: string): Observable<any> {
+    return this.http.get(url)
       .catch((error: Error | any) => {
         this.notifyError('Getting link meta info failed (forward).', error);
         return Observable.throw(new Error(error.message));
       });
-  }
-
-  /**
-   * Usage: This function fetches all the work item link types
-   * Store it in an instance variable
-   *
-   * @return Promise of LinkType[]
-   */
-  getLinkTypes(workItem: WorkItem): Observable<Object> {
-    return this.getAllLinkTypes(workItem)
-        .map(item => {
-          let linkTypes: Object = {};
-          linkTypes['forwardLinks'] = item.json().data;
-          linkTypes['backwardLinks'] = item.json().data;
-          return linkTypes;
-        })
-        .map((linkTypes: any) => { return this.formatLinkTypes(linkTypes); })
-        .catch((err) => {
-          console.log(err);
-          return Observable.of({});
-        });
   }
 
   formatLinkTypes(linkTypes: any): any {

@@ -62,8 +62,11 @@
     }
   }
 }
-.show-tree__label {
+.checkbox-label {
   font-size: 13px;
+  &.inactive {
+    opacity: 0.5;
+  }
 }
 
 .active-filters-section {
@@ -86,6 +89,18 @@
         padding-left: 5px;
         padding-right: 5px;
         list-style: none;
+      }
+    }
+    .save-filter-dropdown {
+      display: inline;
+      .dropdown-menu {
+        right: 0px;
+        padding-left: 10px;
+        padding-right: 10px;
+        min-width: 300px;
+        .save-filter-action {
+          margin-top: 10px;
+        }
       }
     }
     .clickable {

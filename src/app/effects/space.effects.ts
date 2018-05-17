@@ -10,12 +10,14 @@ import {
 } from "ngx-base";
 
 import * as CollaboratorActions from './../actions/collaborator.actions';
+import * as CustomQueryActions from './../actions/custom-query.actions';
 import * as AreaActions from './../actions/area.actions';
 import * as FilterActions from './../actions/filter.actions';
 import * as GroupTypeActions from './../actions/group-type.actions';
 import * as IterationActions from './../actions/iteration.actions';
 import * as LabelActions from './../actions/label.actions';
 import * as WorkItemTypeActions from './../actions/work-item-type.actions';
+import * as InfotipActions from './../actions/infotip.actions';
 
 export type Action = SpaceActions.All;
 
@@ -58,6 +60,8 @@ export class SpaceEffects {
       new GroupTypeActions.Get(),
       new IterationActions.Get(),
       new LabelActions.Get(),
-      new WorkItemTypeActions.Get()
+      new WorkItemTypeActions.Get(),
+      new CustomQueryActions.Get(),
+      new InfotipActions.Get()
     ]);
 }

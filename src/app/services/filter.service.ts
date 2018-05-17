@@ -21,7 +21,7 @@ export class FilterService {
   public and_notation = '$AND';
   public or_notation = '$OR';
   public equal_notation = '$EQ';
-  public not_equal_notation = '$NEQ';
+  public not_equal_notation = '$NE';
   public in_notation = '$IN';
   public not_in_notation = '$NIN';
   public sub_str_notation = '$SUBSTR'
@@ -193,7 +193,6 @@ export class FilterService {
     let refCurrentFilter = this.getFiltersFromUrl();
     //concat both arrays
     refCurrentFilter = refCurrentFilter.concat(this.activeFilters);
-    console.log('***refCurrentFilter = ', refCurrentFilter);
     //remove duplicates
     refCurrentFilter = refCurrentFilter
     .filter((thing, index, self) => self.findIndex((t) => {return t.id === thing.id }) === index)
@@ -201,9 +200,6 @@ export class FilterService {
       if (filter.id && Object.keys(this.filtertoWorkItemMap).indexOf(filter.id) > -1) {
         let currentAttr = workItem;
         return this.filtertoWorkItemMap[filter.id].every((attr, map_index) => {
-          console.log('****** attr = ',attr);
-          console.log('****** map_index = ',map_index);
-          console.log('****** filter value = ',filter.value);
           if (Array.isArray(attr)) {
             if (Array.isArray(currentAttr)) {
               let innerAttr = currentAttr;
@@ -300,7 +296,7 @@ export class FilterService {
     if (Array.isArray(value)) {
       op[key.trim()][compare.trim()] = value.map(v => v.trim());
     } else {
-      op[key.trim()][compare.trim()] = value.trim();
+      op[key.trim()][compare.trim()] = value === null ? null : value.trim();
     }
     return op;
   }

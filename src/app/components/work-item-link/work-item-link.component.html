@@ -79,9 +79,9 @@
                   [attr.value]="selectedLinkType?.name">
                 <ul class="typeahead typeahead-long dropdown-menu"
                   role="menu" *dropdownMenu>
-                  <li *ngFor="let linkType of selectedTab | workItemLinkTypeFilterByTypeName:(linkTypes)">
+                  <!-- <li *ngFor="let linkType of selectedTab | workItemLinkTypeFilterByTypeName:(linkTypes)">
                     <a (click)="onSelectRelation(linkType)">{{linkType.name}}</a>
-                  </li>
+                  </li> -->
                 </ul>
                 <span class="input-group-addon dropdown-toggle pointer" id="wi-link-type"
                   dropdownToggle>
@@ -90,7 +90,7 @@
               </div>
             </div>
           </div>
-          <span class="col-xs-2 col-sm-2 col-md-2 text-right"> item</span>
+          <span class="col-xs-2 col-sm-2 col-md-2 text-right padding-0"> item</span>
           <div class="col-xs-10 col-sm-10 col-md-10 margin-top-15">
             <div class="combobox-container">
               <input type="hidden" name="" value="">
@@ -120,9 +120,9 @@
               </div>
             </div>
           </div>
-          <div class="col-xs-2 col-sm-2 col-md-2 text-right margin-top-15">
+          <div class="col-xs-2 col-sm-2 col-md-2 text-right margin-top-15 padding-0">
             <button
-              class="btn btn-xs padding-top-1 padding-bottom-2"
+              class="btn btn-xs padding-v-3 width-100"
               id="bind-link"
               type="button"
               value="Link"
@@ -138,7 +138,7 @@
       <div class="f8-link__list"
         *ngIf="workItem.relationalData.linkDicts.length">
         <p class="f8-link__list-header">Links</p>
-        <div *ngFor='let linkDict of selectedTab |
+        <!-- <div *ngFor='let linkDict of selectedTab |
             workItemLinkFilterByTypeName:workItem.relationalData.linkDicts;  let counterlink = index'>
           <p class="f8-link__list-type-header">{{linkDict.linkName}}</p>
           <ul class="padding-left-0">
@@ -150,9 +150,9 @@
                   [innerHTML]="link.relationalData.source.id == workItem.id ? link.relationalData.target.title : link.relationalData.source.title">
                 </span>
               </a>
-              <!--<span id="linkSWIstate_{{counterlink}}">
+              <span id="linkSWIstate_{{counterlink}}">
                 {{link.relationalData.source.id == workItem.id ? link.relationalData.target.state : link.relationalData.source.state}}
-              </span>-->
+              </span>
               <a *ngIf="loggedIn"
                 (click)="deleteLink($event, link, workItem)">
                 <i class="pull-right pficon pficon-close list-close-icon margin-top-5"
@@ -160,7 +160,7 @@
               </a>
             </li>
           </ul>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

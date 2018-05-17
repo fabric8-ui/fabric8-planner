@@ -20,6 +20,9 @@ export class WorkItemType extends modelService{
       guidedChildTypes?: {
         data?: WorkItemType[]
       },
+      infoTip?: {
+        data?: string;
+      },
       space?: Space
     }
 }
@@ -44,7 +47,10 @@ export interface WorkItemTypeUI extends modelUI {
   type: string;
   description: string;
   childTypes: any;
-  fields: Map<string, WorkItemTypeField>;
+  infotip: string;
+  // TODO: [Symbol.toStringTag]' is missing in type fix
+  // `any` should go away
+  fields: Map<string, WorkItemTypeField> | any;
 }
 
 export class WorkItemTypeMapper implements Mapper<WorkItemTypeService, WorkItemTypeUI> {
@@ -76,8 +82,16 @@ export class WorkItemTypeMapper implements Mapper<WorkItemTypeService, WorkItemT
       }, {
         toPath: ['type'],
         toValue: 'workitemtypes'
-      }
-    ];
+      }, {
+        fromPath: ['relationships','infotip','data'],
+        toPath: ['infotip'],
+        toFunction: function(value) {
+          if (value === null) {
+            return 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+          }
+          return value;
+        }
+    }];
 
     uiToServiceMapTree: MapTree = [{
         toPath: ['id'],
