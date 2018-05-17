@@ -26,3 +26,17 @@
 .padding-left-0 {
   padding-left: 0;
 }
+//infotip css
+.popover-container {
+  //changing minimum width from 235px to 375px to avoid overlapping of workitem rows 
+  //in the planner list with the infotip popover.
+  min-width: 375px;
+  cursor: default;
+}
+.infoArea:hover,
+.f8-itr__panel-hdr h3:hover,
+.f8-group-filter__type:hover {
+  .infotip-icon {
+    opacity: 1;
+  }
+}

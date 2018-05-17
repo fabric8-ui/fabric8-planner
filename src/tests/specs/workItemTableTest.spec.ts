@@ -8,13 +8,16 @@ describe('Work Item datatable list: ', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
 
-  beforeEach( async () => {
+  beforeAll( async () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
-    // This is necessary since the planner takes time to load on prod/prod-preview
-    await browser.sleep(5000);
+    await planner.waitUntilUrlContains('typegroup');
     await planner.ready();
+  });
+
+  beforeEach( async () => {
+    await planner.resetState();
   });
 
   it('should open settings button and hide columns', async () => {
@@ -23,6 +26,10 @@ describe('Work Item datatable list: ', () => {
     await planner.settings.selectAttribute(c.attribute1);
     await planner.settings.moveToAvailableAttribute();
     expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(8);
+    await planner.settings.clickSettings();    
+    await planner.settings.selectAttribute(c.attribute1);
+    await planner.settings.moveToDisplayedAttribute();
+    expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(9);
   });
 
   it('quick add should be disable for flat view', async() => {
@@ -30,6 +37,8 @@ describe('Work Item datatable list: ', () => {
     await browser.sleep(2000);
     await planner.workItemList.overlay.untilHidden();
     expect(await planner.workItemList.getInlineQuickAddClass(c.workItemTitle1)).toContain('disable');
+    await planner.header.clickShowTree();
+    await planner.workItemList.overlay.untilHidden();    
   });
 
   // This test doesn't work on mock data. Hence, skip it.
@@ -85,13 +94,16 @@ describe('Work Item datatable list: ', () => {
   });
 
   it('list should not update when new label is added', async() => {
+    await planner.workItemList.workItem(c.workItemTitle7).scrollIntoView();
     await planner.workItemList.workItem(c.workItemTitle7).clickExpandWorkItem();
     await browser.sleep(3000);
     expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
     await planner.workItemList.clickWorkItem(c.workItemTitle7);
     await planner.quickPreview.createNewLabel(c.newLabel1);
-    await browser.sleep(3000);
+    await planner.quickPreview.close();
+    await planner.workItemList.workItem(c.workItemTitle13).scrollIntoView();
     expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
+    await planner.workItemList.workItem(c.workItemTitle7).clickExpandWorkItem();
   });
 
   it('list should not update when new iteration is added', async() => {
@@ -100,8 +112,7 @@ describe('Work Item datatable list: ', () => {
     expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
     await planner.sidePanel.createNewIteration();
     await planner.iteration.addNewIteration(c.newIteration1, c.iteration3);
-    await planner.iteration.clickCreateIteration();    
-    await browser.sleep(3000);
+    await planner.iteration.clickCreateIteration();
     expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
   });
   
@@ -110,11 +121,51 @@ describe('Work Item datatable list: ', () => {
     await planner.sidePanel.clickRequirement();
     await planner.workItemList.workItem(c.workItemTitle17).clickInlineQuickAdd();
     await planner.createInlineWorkItem(workitemname);
-    await browser.sleep(3000);
+    await planner.quickPreview.notificationToast.untilHidden();
     await planner.sidePanel.clickScenarios();
-    await browser.sleep(3000);
+    await planner.waitUntilUrlContains('typegroup.name:Scenarios');
     await planner.sidePanel.clickRequirement();
-    await browser.sleep(3000);
+    await planner.waitUntilUrlContains('typegroup.name:Requirements');
+    await planner.workItemList.overlay.untilAbsent();
     expect(await planner.workItemList.hasWorkItem(workitemname.title)).toBeTruthy();
-  })
+  });
+
+  it('clicking on label should filter the workitem list by label', async() => {
+    let labelFilter = 'label: '+c.label2;
+    await planner.workItemList.clickWorkItemLabel(c.workItemTitle7);
+    expect(await planner.header.getFilterConditions()).toContain(labelFilter);
+    await planner.header.clickShowTree();
+    expect(await planner.header.getFilterConditions()).toContain(labelFilter);
+  });
+
+  it('should update the workitem List on workitem edit', async() => {
+    let workitem = {'title': 'TITLE_TEXT'};
+    await planner.header.selectFilter('State', 'new');
+    await planner.createWorkItem(workitem);
+    await planner.workItemList.clickWorkItem(workitem.title);
+    await planner.quickPreview.changeStateTo('open');
+    await planner.quickPreview.notificationToast.untilCount(1);
+    await planner.quickPreview.notificationToast.untilHidden();
+    await planner.quickPreview.close();
+    expect(await planner.workItemList.isTitleTextBold(workitem.title)).not.toContain('bold');
+  });
+
+  it('should make the title bold based on filter when adding a new workitem', async() => {
+    let workitem = {'title': 'Scenario'};
+    await planner.header.selectFilter('State', 'new');
+    await planner.createWorkItem(workitem);
+    expect(await planner.workItemList.hasWorkItem(workitem.title)).toBeTruthy();
+    expect(await planner.workItemList.isTitleTextBold(workitem.title)).toContain('bold');
+  });
+
+  it('should filter the workitem list by Assignee', async() => {
+    let labelFilter = 'assignee: Unassigned';
+    await planner.workItemList.overlay.untilHidden();
+    let countUnassignedWorkItem = await planner.workItemList.getUnassignedWorkItemCount(' Unassigned ');
+    await planner.header.selectFilter('Assignee', 'Unassigned');
+    await planner.workItemList.overlay.untilHidden();
+    await browser.sleep(1000);
+    expect(await planner.header.getFilterConditions()).toContain(labelFilter);
+    expect(await planner.workItemList.datatableRow.count()).toEqual(countUnassignedWorkItem);
+  });
 });

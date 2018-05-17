@@ -1,4 +1,4 @@
-import { $, browser } from 'protractor';
+import { $, browser, Key } from 'protractor';
 import { v4 as uuid } from 'uuid';
 import { AppPage } from '../app.page';
 import * as planner from './../../ui/planner';
@@ -15,6 +15,7 @@ export class PlannerPage extends AppPage {
   settings = new planner.Settings($('div.f8-wi-list__settings'));
   iteration = new planner.Iteration($('fab-planner-iteration-modal'));
   detailPage = new planner.WorkItemDetailPage($('work-item-detail'));
+  confirmModalButton = new planner.WorkItemList($('#modal-confirm'));
 
   constructor(url: string){
     super(url);
@@ -44,4 +45,9 @@ export class PlannerPage extends AppPage {
     await this.inlineQuickAdd.addInlineWorkItem(item);
   }
 
+  async resetState() {
+    await this.sidePanel.clickScenarios();
+    await $('body').sendKeys(Key.ESCAPE);
+    await this.quickPreview.notificationToast.untilHidden();
+  }
 }
