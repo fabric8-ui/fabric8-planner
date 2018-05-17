@@ -44,5 +44,17 @@ export class UserEffects {
           const mappedUser: UserUI = userMapper.toUIModel(user);
           return new UserActions.Set(normalizeArray<UserUI>([mappedUser]));
         })
+    })
+    .catch(e => {
+      try {
+        this.notifications.message({
+          message: `Problem in user details`,
+          type: NotificationType.DANGER
+        } as Notification);
+      } catch (e) {
+        console.log('Problem in user details');
+      }
+      return Observable.of(new UserActions.GetError());
     });
+;
 }

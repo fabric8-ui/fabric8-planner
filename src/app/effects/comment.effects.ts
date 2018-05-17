@@ -1,7 +1,6 @@
 import { Store } from '@ngrx/store';
 import { Actions, Effect } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
-import { cloneDeep } from 'lodash';
 import * as CommentActions from './../actions/comment.actions';
 import { AppState } from './../states/app.state';
 import { Observable } from 'rxjs';
@@ -28,9 +27,9 @@ export class CommentEffects {
     private workItemService: WorkItemService,
     private store: Store<AppState>,
     private userMapper: UserMapper,
-    private notifications: Notifications,
-    private commentMapper: CommentMapper
+    private notifications: Notifications
   ) {}
+  private commentMapper: CommentMapper = new CommentMapper();
 
   @Effect() getWorkItemComments$: Observable<Action> = this.actions$
     .ofType<CommentActions.Get>(CommentActions.GET)

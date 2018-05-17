@@ -79,7 +79,7 @@ export class UserMapper implements Mapper<UserService, UserUI> {
 }
 
 @Injectable()
-export class UserResolver {
+export class UserQuery {
   store: Store<AppState>;
   constructor(store: Store<AppState>) {
     this.store = store;

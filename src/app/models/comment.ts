@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { cloneDeep } from 'lodash';
 import { Observable } from 'rxjs/Observable';
 import { User } from 'ngx-login-client';
 
-import { UserUI, UserMapper, UserResolver } from './user';
+import { UserUI, UserMapper, UserQuery } from './user';
 import {
   Mapper,
   MapTree,
   switchModel,
   modelService
 } from './common.model';
+import { AppState } from './../states/app.state';
 
 export class Comment extends modelService {
     attributes: CommentAttributes;
@@ -53,16 +55,16 @@ export interface CommentUI {
   body: string;
   markup: string;
   createdAt: string;
-  creator: Observable<UserUI>;
+  creatorId: string;
+  creator?: Observable<UserUI>;
   bodyRendered: string;
   selfLink: string;
 }
 
 export interface CommentService extends Comment {}
 
-@Injectable()
 export class CommentMapper implements Mapper<CommentService, CommentUI> {
-  constructor(private userResolver: UserResolver){}
+  constructor(){}
 
   serviceToUiMapTree: MapTree = [{
     fromPath: ['id'],
@@ -81,8 +83,7 @@ export class CommentMapper implements Mapper<CommentService, CommentUI> {
     toPath: ['bodyRendered']
   }, {
     fromPath: ['relationships', 'creator', 'data', 'id'],
-    toPath: ['creator'],
-    toFunction: (val) => this.userResolver.getUserObservableById(val)
+    toPath: ['creatorId'],
   }, {
     fromPath: ['links', 'self'],
     toPath: ['selfLink']
@@ -121,5 +122,33 @@ export class CommentMapper implements Mapper<CommentService, CommentUI> {
     return switchModel<CommentUI, CommentService>(
       arg, this.uiToServiceMapTree
     )
+  }
+}
+
+
+@Injectable()
+export class CommentQuery {
+  private commentSource = this.store
+    .select(state => state.detailPage)
+    .select(state => state.comments);
+  constructor(
+    private store: Store<AppState>,
+    private userQuery: UserQuery
+  ){}
+
+  getComments(commentIds: string[]) {
+    // Not needed now
+  }
+
+  getCommentsWithCreators() {
+    return this.commentSource
+      .map(comments => {
+        return comments.map(comment => {
+          return {
+            ...comment,
+            creator: this.userQuery.getUserObservableById(comment.creatorId)
+          };
+        })
+      })
   }
 }

@@ -1,15 +1,17 @@
+
 import { Action } from '@ngrx/store';
 import { UserUI } from './../models/user';
 import { UserState } from './../states/user.state';
 
 export const SET = '[users] Set';
 export const GET = '[users] Get';
+export const GET_ERROR = '[users] GetError';
 
 /**
  * This action class set the normalized user data
  * Be it one user or number of users we can use
  * this action to update the user state
- * The payload value is a disctionary of users
+ * The payload value is a dictionary of users
  * where the id is the key and value is the entire
  */
 export class Set implements Action {
@@ -32,5 +34,9 @@ export class Get implements Action {
   readonly type = GET;
 }
 
+export class GetError implements Action {
+  readonly type = GET_ERROR;
+}
+
 export type All
-  = Set | Get;
+  = Set | Get | GetError;
