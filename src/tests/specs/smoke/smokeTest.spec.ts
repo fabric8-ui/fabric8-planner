@@ -12,8 +12,7 @@ describe('Planner Smoke Tests:', () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
-    // This is necessary since the planner takes time to load on prod/prod-preview
-    await browser.sleep(5000);
+    await planner.waitUntilUrlContains('typegroup');
     await planner.ready();
   });
 
@@ -145,6 +144,18 @@ describe('Planner Smoke Tests:', () => {
     await planner.header.saveFilters('Query 1');
     await planner.workItemList.overlay.untilHidden();
     expect(await planner.sidePanel.getMyFiltersList()).toContain('Query 1');
+  });
+
+  it('Delete custom query', async() => {
+    await planner.sidePanel.clickRequirement();
+    await planner.header.selectFilter('State', 'resolved');
+    await planner.header.saveFilters('My filter');
+    expect(await planner.sidePanel.getMyFiltersList()).toContain('My filter');
+    await planner.sidePanel.selectcustomFilterKebab('My filter');
+    await planner.sidePanel.deleteCustomQuery.clickWhenReady();
+    await planner.confirmModalButton.clickWhenReady();
+    await browser.sleep(1000);
+    expect(await planner.sidePanel.getMyFiltersList()).not.toContain('My filter');
   });
 
   it('Update work item with a label and validate description', async() => {
