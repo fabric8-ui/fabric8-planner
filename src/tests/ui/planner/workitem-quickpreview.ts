@@ -166,14 +166,15 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.labelDropdown.clickWhenReady()
     await this.labelDropdown.select(label);
     await this.labelDropdownCloseButton.clickWhenReady();
+    await this.loadingAnimation.untilCount(0);
   }
 
-  async addLink(link: string, workItem: string) {
+  async addLink(link: string, searchWorkItem: string, workItem: string) {
     await this.linksToggleButton.clickWhenReady();
     await this.createLinkButton.clickWhenReady();
     await this.linkTypeDropdown.clickWhenReady();
     await this.linkTypeDropdown.select(link);
-    await this.searchWorkItem.enterText(workItem);
+    await this.searchWorkItem.enterText(searchWorkItem);
     await browser.sleep(1000);
     await this.workItemDropdown.select(workItem);
     await this.linkButton.isPresent();
@@ -187,6 +188,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.createLabelSaveButton.clickWhenReady();
     await this.labelDropdown.select(label);
     await this.labelDropdownCloseButton.clickWhenReady();
+    await this.loadingAnimation.untilCount(0);
   }
 
   // Try to click on the close button, if it fails, wait for notification to disappear
@@ -251,7 +253,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
 
   async getIteration() {
     await this.loadingAnimation.untilCount(0);
-    await browser.sleep(1000);    
+    await browser.sleep(1000);
     let iteration = await this.iterationDropdown.getTextWhenReady();
     return iteration;
   }

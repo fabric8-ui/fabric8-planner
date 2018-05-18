@@ -18,6 +18,7 @@ describe('Work Item datatable list: ', () => {
 
   beforeEach( async () => {
     await planner.resetState();
+    await planner.ready();
   });
 
   it('should open settings button and hide columns', async () => {
@@ -26,7 +27,7 @@ describe('Work Item datatable list: ', () => {
     await planner.settings.selectAttribute(c.attribute1);
     await planner.settings.moveToAvailableAttribute();
     expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(8);
-    await planner.settings.clickSettings();    
+    await planner.settings.clickSettings();
     await planner.settings.selectAttribute(c.attribute1);
     await planner.settings.moveToDisplayedAttribute();
     expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(9);
@@ -38,7 +39,7 @@ describe('Work Item datatable list: ', () => {
     await planner.workItemList.overlay.untilHidden();
     expect(await planner.workItemList.getInlineQuickAddClass(c.workItemTitle1)).toContain('disable');
     await planner.header.clickShowTree();
-    await planner.workItemList.overlay.untilHidden();    
+    await planner.workItemList.overlay.untilHidden();
   });
 
   // This test doesn't work on mock data. Hence, skip it.

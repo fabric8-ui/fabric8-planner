@@ -27,6 +27,7 @@ describe('Iteration test', () => {
     let year = await planner.iteration.getYear();
     let lastDayOfMonth = await planner.iteration.getLastDayOfMonth();
     await planner.iteration.clickCreateIteration();
+    await browser.sleep(1000);
     expect(await planner.sidePanel.getIterationDate()).toContain('new Iteration [Active]'+month+' 1, '+year+' - '+month+' '+ lastDayOfMonth, +year+'\n');
   });
   
@@ -37,6 +38,7 @@ describe('Iteration test', () => {
     await planner.sidePanel.createNewIteration();
     await planner.iteration.addNewIteration(newIteration, parentIteration);
     await planner.iteration.clickCreateIteration();
+    await browser.sleep(1000);
     await planner.sidePanel.clickExpander(iteration);
     expect(await planner.sidePanel.getIterationList()).toContain(newIteration);
   });
