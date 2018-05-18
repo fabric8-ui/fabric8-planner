@@ -27,7 +27,14 @@ export class SpacesService implements Spaces {
   }
 
   getAllSpaces() {
+    // Note: this only retrieves the first page of the spaces list
+    // for simplification.
     return this.http.get(this.baseApiUrl + 'spaces')
+            .map(response => response.json().data);
+  }
+
+  getSpace(id: string) {
+    return this.http.get(this.baseApiUrl + 'spaces/' + id)
             .map(response => response.json().data);
   }
 }
