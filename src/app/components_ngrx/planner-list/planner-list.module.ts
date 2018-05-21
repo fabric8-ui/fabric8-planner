@@ -50,6 +50,8 @@ import { WorkItemReducer } from './../../reducers/work-item.reducer';
 import { AlmIconModule } from 'ngx-widgets';
 import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { UrlService } from '../../services/url.service';
+import { InfotipService } from '../../services/infotip.service';
+import { ClickOutModule } from '../../widgets/clickout/clickout.module';
 
 let providers = [];
 
@@ -71,7 +73,8 @@ if (process.env.ENV == 'inmemory') {
     BsDropdownConfig,
     CookieService,
     WorkItemDataService,
-    UrlService
+    UrlService,
+    InfotipService
   ];
 } else {
   providers = [
@@ -94,7 +97,8 @@ if (process.env.ENV == 'inmemory') {
     BsDropdownConfig,
     CookieService,
     WorkItemDataService,
-    UrlService
+    UrlService,
+    InfotipService
   ];
 }
 
@@ -103,6 +107,7 @@ if (process.env.ENV == 'inmemory') {
     AlmIconModule,
     AssigneesModule,
     CommonModule,
+    ClickOutModule,
     PlannerListRoutingModule,
     PlannerLayoutModule,
     PlannerModalModule,
@@ -125,7 +130,8 @@ if (process.env.ENV == 'inmemory') {
         space: reducers.SpaceReducer,
         workItemTypes: reducers.WorkItemTypeReducer,
         workItems: reducers.WorkItemReducer,
-        workItemStates: reducers.WorkItemStateReducer
+        workItemStates: reducers.WorkItemStateReducer,
+        infotips: reducers.InfotipReducer
       }, {
       initialState: {
         iterations: states.initialIterationState,
@@ -137,7 +143,8 @@ if (process.env.ENV == 'inmemory') {
         space: states.initialSpaceState,
         workItemTypes: states.initialWorkItemTypeState,
         workItems: states.initialWorkItemState,
-        workItemStates: states.initialWIState
+        workItemStates: states.initialWIState,
+        infotips: states.initialInfotipState
       }
     }),
     EffectsModule.forFeature([
@@ -149,7 +156,8 @@ if (process.env.ENV == 'inmemory') {
       effects.GroupTypeEffects,
       effects.SpaceEffects,
       effects.WorkItemTypeEffects,
-      effects.WorkItemEffects
+      effects.WorkItemEffects,
+      effects.InfotipEffects
     ])
   ],
   declarations: [

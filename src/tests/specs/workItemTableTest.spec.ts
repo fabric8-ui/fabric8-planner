@@ -12,8 +12,7 @@ describe('Work Item datatable list: ', () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
-    // This is necessary since the planner takes time to load on prod/prod-preview
-    await browser.sleep(5000);
+    await planner.waitUntilUrlContains('typegroup');
     await planner.ready();
   });
 
@@ -95,15 +94,16 @@ describe('Work Item datatable list: ', () => {
   });
 
   it('list should not update when new label is added', async() => {
+    await planner.workItemList.workItem(c.workItemTitle7).scrollIntoView();
     await planner.workItemList.workItem(c.workItemTitle7).clickExpandWorkItem();
     await browser.sleep(3000);
     expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
     await planner.workItemList.clickWorkItem(c.workItemTitle7);
     await planner.quickPreview.createNewLabel(c.newLabel1);
-    await planner.quickPreview.close();    
-    await browser.sleep(3000);
+    await planner.quickPreview.close();
+    await planner.workItemList.workItem(c.workItemTitle13).scrollIntoView();
     expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
-    await planner.workItemList.workItem(c.workItemTitle7).clickExpandWorkItem();    
+    await planner.workItemList.workItem(c.workItemTitle7).clickExpandWorkItem();
   });
 
   it('list should not update when new iteration is added', async() => {
@@ -112,7 +112,7 @@ describe('Work Item datatable list: ', () => {
     expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
     await planner.sidePanel.createNewIteration();
     await planner.iteration.addNewIteration(c.newIteration1, c.iteration3);
-    await planner.iteration.clickCreateIteration();    
+    await planner.iteration.clickCreateIteration();
     expect(await planner.workItemList.hasWorkItem(c.workItemTitle13)).toBeTruthy();
   });
   
@@ -123,8 +123,9 @@ describe('Work Item datatable list: ', () => {
     await planner.createInlineWorkItem(workitemname);
     await planner.quickPreview.notificationToast.untilHidden();
     await planner.sidePanel.clickScenarios();
-    await browser.sleep(3000);
+    await planner.waitUntilUrlContains('typegroup.name:Scenarios');
     await planner.sidePanel.clickRequirement();
+    await planner.waitUntilUrlContains('typegroup.name:Requirements');
     await planner.workItemList.overlay.untilAbsent();
     expect(await planner.workItemList.hasWorkItem(workitemname.title)).toBeTruthy();
   });
@@ -135,5 +136,36 @@ describe('Work Item datatable list: ', () => {
     expect(await planner.header.getFilterConditions()).toContain(labelFilter);
     await planner.header.clickShowTree();
     expect(await planner.header.getFilterConditions()).toContain(labelFilter);
+  });
+
+  it('should update the workitem List on workitem edit', async() => {
+    let workitem = {'title': 'TITLE_TEXT'};
+    await planner.header.selectFilter('State', 'new');
+    await planner.createWorkItem(workitem);
+    await planner.workItemList.clickWorkItem(workitem.title);
+    await planner.quickPreview.changeStateTo('open');
+    await planner.quickPreview.notificationToast.untilCount(1);
+    await planner.quickPreview.notificationToast.untilHidden();
+    await planner.quickPreview.close();
+    expect(await planner.workItemList.isTitleTextBold(workitem.title)).not.toContain('bold');
+  });
+
+  it('should make the title bold based on filter when adding a new workitem', async() => {
+    let workitem = {'title': 'Scenario'};
+    await planner.header.selectFilter('State', 'new');
+    await planner.createWorkItem(workitem);
+    expect(await planner.workItemList.hasWorkItem(workitem.title)).toBeTruthy();
+    expect(await planner.workItemList.isTitleTextBold(workitem.title)).toContain('bold');
+  });
+
+  it('should filter the workitem list by Assignee', async() => {
+    let labelFilter = 'assignee: Unassigned';
+    await planner.workItemList.overlay.untilHidden();
+    let countUnassignedWorkItem = await planner.workItemList.getUnassignedWorkItemCount(' Unassigned ');
+    await planner.header.selectFilter('Assignee', 'Unassigned');
+    await planner.workItemList.overlay.untilHidden();
+    await browser.sleep(1000);
+    expect(await planner.header.getFilterConditions()).toContain(labelFilter);
+    expect(await planner.workItemList.datatableRow.count()).toEqual(countUnassignedWorkItem);
   });
 });
