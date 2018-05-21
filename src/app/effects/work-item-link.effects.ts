@@ -12,12 +12,14 @@ import {
   Notifications,
   NotificationType
 } from "ngx-base";
+import { WorkItemMapper, WorkItemResolver } from './../models/work-item';
 
 export type Action = WorkItemLinkActions.All;
 
 @Injectable()
 export class WorkItemLinkEffects {
-  private wilMapper = new WorkItemLinkMapper();
+  private wilMapper: WorkItemLinkMapper = new WorkItemLinkMapper();
+  private workItemMapper: WorkItemMapper = new WorkItemMapper();
 
   constructor(
     private actions$: Actions,
@@ -58,11 +60,11 @@ export class WorkItemLinkEffects {
 
   @Effect() createLink$: Observable<Action> = this.actions$
     .ofType<WorkItemLinkActions.Add>(WorkItemLinkActions.ADD)
-    .withLatestFrom(this.store.select('listPage').select('workItems'))
-    .map(([action, workItems]) => {
+    .withLatestFrom(this.store.select('listPage'))
+    .map(([action, state]) => {
       return {
         payload: action.payload,
-        workItems: workItems
+        state: state
       }
     })
     .switchMap(p => {
@@ -73,35 +75,50 @@ export class WorkItemLinkEffects {
           link.relationships.link_type.data = includes.find(i => i.id === link.relationships.link_type.data.id);
           link.relationships.source.data = includes.find(i => i.id === link.relationships.source.data.id);
           link.relationships.target.data = includes.find(i => i.id === link.relationships.target.data.id);
-          let sourceWIIndex = p.workItems.findIndex(w => w.id === p.payload.relationships.source.data.id);
-          let targetWIIndex = p.workItems.findIndex(w => w.id === p.payload.relationships.target.data.id);
+          let sourceWIIndex = p.state.workItems.findIndex(w => w.id === p.payload.relationships.source.data.id);
+          let targetWIIndex = p.state.workItems.findIndex(w => w.id === p.payload.relationships.target.data.id);
           let sourceWorkItem;
           let targetWorkItem;
-
           // the tree will updated
           // only if it is parent-child relationship
           if (link.relationships['link_type'].data.id === '25c326a7-6d03-4f5a-b23b-86a9ee4171e9') {
             if (sourceWIIndex > -1) {
-              sourceWorkItem = p.workItems[sourceWIIndex];
+              sourceWorkItem = p.state.workItems[sourceWIIndex];
+            } else {
+              const sourceWorkItemUI = this.workItemMapper.toUIModel(link.relationships.source.data);
+              const workItemResolver = new WorkItemResolver(sourceWorkItemUI);
+              workItemResolver.resolveArea(p.state.areas);
+              workItemResolver.resolveIteration(p.state.iterations);
+              workItemResolver.resolveCreator(p.state.collaborators);
+              workItemResolver.resolveAssignees(p.state.collaborators);
+              workItemResolver.resolveType(p.state.workItemTypes);
+              sourceWorkItem = workItemResolver.getWorkItem();
             }
             if (targetWIIndex > -1) {
-              targetWorkItem = p.workItems[targetWIIndex];
+              targetWorkItem = p.state.workItems[targetWIIndex];
+            } else {
+              const targetWorkItemUI = this.workItemMapper.toUIModel(link.relationships.target.data);
+              const workItemResolver = new WorkItemResolver(targetWorkItemUI);
+              workItemResolver.resolveArea(p.state.areas);
+              workItemResolver.resolveIteration(p.state.iterations);
+              workItemResolver.resolveCreator(p.state.collaborators);
+              workItemResolver.resolveAssignees(p.state.collaborators);
+              workItemResolver.resolveType(p.state.workItemTypes);
+              targetWorkItem = workItemResolver.getWorkItem();
             }
-            if (sourceWIIndex > -1 && targetWIIndex > -1) {
-              if (sourceWorkItem.treeStatus === 'expanded' ||
-              sourceWorkItem.childrenLoaded) {
-                this.store.dispatch(new WorkItemActions.CreateLink({
-                  source: sourceWorkItem,
-                  target: targetWorkItem,
-                  sourceTreeStatus: sourceWorkItem.treeStatus
-                }));
-              } else {
-                this.store.dispatch(new WorkItemActions.CreateLink({
-                  source: sourceWorkItem,
-                  target: targetWorkItem,
-                  sourceTreeStatus: sourceWorkItem.treeStatus
-                }));
-              }
+            if (sourceWorkItem.treeStatus === 'expanded' ||
+            sourceWorkItem.childrenLoaded) {
+              this.store.dispatch(new WorkItemActions.CreateLink({
+                source: sourceWorkItem,
+                target: targetWorkItem,
+                sourceTreeStatus: sourceWorkItem.treeStatus
+              }));
+            } else {
+              this.store.dispatch(new WorkItemActions.CreateLink({
+                source: sourceWorkItem,
+                target: targetWorkItem,
+                sourceTreeStatus: sourceWorkItem.treeStatus
+              }));
             }
           }
           return new WorkItemLinkActions.AddSuccess(
