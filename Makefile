@@ -1,13 +1,11 @@
 # First off, let's fetch in the executables installed with npm
 PATH  := node_modules/.bin:$(PATH)
 
-.PHONY: build
-
-.PHONY: watch
-
 build: processjs processcss processhtml processfiles
 
 watch: watchjs watchcss watchhtml watchfiles
+
+clean: cleancache cleandist cleanimages cleanmodules cleantemp
 
 processjs:
 	# Compiling TypeScript to JavaScript...
@@ -41,6 +39,7 @@ processhtml:
 		htmlname=$$(basename $$htmlfile); \
 		htmlpath="$${htmlfile/src/dist}"; \
 		htmldest="$${htmlpath/$$htmlname/}"; \
+		mkdir -p $$htmldest; \
 		cp $$htmlfile $$htmldest; \
 	done
 
@@ -49,7 +48,21 @@ watchhtml:
 
 processfiles:
 	# Copying LICENSE README.adoc & package.json over to dist/
+	mkdir -p dist
 	@cp LICENSE README.adoc package.json dist/
 
 watchfiles:
 	@chokidar --verbose 'LICENSE' 'README.adoc' 'package.json' -c 'make processfiles'
+
+cleancache: ; @npm cache clean
+
+cleandist: ; @rm -rf dist
+
+cleanimages:
+	@sudo docker stop $$(sudo docker ps -aq --filter "name=fabric8-planner")
+	@sudo docker rm $$(sudo docker ps -aq --filter "name=fabric8-planner")
+	@sudo docker rmi $$(sudo docker images -aq --filter "reference=fabric8-planner-*")
+
+cleanmodules: ; @rm -rf node_modules
+
+cleantemp: ; @rm -rf tmp coverage typings .sass-cache
