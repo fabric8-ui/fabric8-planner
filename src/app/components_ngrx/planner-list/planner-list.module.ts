@@ -51,6 +51,7 @@ import { AlmIconModule } from 'ngx-widgets';
 import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { UrlService } from '../../services/url.service';
 import { InfotipService } from '../../services/infotip.service';
+import { ClickOutModule } from '../../widgets/clickout/clickout.module';
 
 // Data Querries
 import { CommentQuery } from './../../models/comment';
@@ -113,6 +114,7 @@ if (process.env.ENV == 'inmemory') {
     AlmIconModule,
     AssigneesModule,
     CommonModule,
+    ClickOutModule,
     PlannerListRoutingModule,
     PlannerLayoutModule,
     PlannerModalModule,
