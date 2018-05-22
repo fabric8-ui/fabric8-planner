@@ -29,8 +29,6 @@ import { WorkItemService } from '../../services/work-item.service';
 })
 export class AssigneeSelectorComponent {
 
-  @ViewChild('userSearch') userSearch: any;
-  @ViewChild('userList') userList: any;
   @ViewChild('dropdown') dropdownRef: SelectDropdownComponent;
 
   @Input() loggedInUser: UserUI;
@@ -69,8 +67,10 @@ export class AssigneeSelectorComponent {
   }
 
   selectedAssignees: UserUI[] = [];
+  _selectedAssigneesBackup: UserUI[] = [];
   @Input('selectedAssignees') set selectedAssigneesSetter(val) {
     this.selectedAssignees = cloneDeep(val);
+    this._selectedAssigneesBackup = cloneDeep(val);
     this.updateSelection();
   }
 
@@ -149,7 +149,20 @@ export class AssigneeSelectorComponent {
     this.onOpenAssignee.emit('open');
   }
   onClose(event) {
-    this.onCloseAssignee.emit(cloneDeep(this.selectedAssignees));
+    // Setting search input to empty string
+    this.dropdownRef.setSearchText('');
+    // Thus reset the value
+    this.assignees = cloneDeep(this.backup);
+
+    const compare1 = this.selectedAssignees.filter(i => this._selectedAssigneesBackup.findIndex(
+      b => b.id === i.id
+    ) === -1);
+    const compare2 = this._selectedAssigneesBackup.filter(i => this.selectedAssignees.findIndex(
+      b => b.id === i.id
+    ) === -1);
+    if (compare1.length !== 0 || compare2.length !== 0) {
+      this.onCloseAssignee.emit(cloneDeep(this.selectedAssignees));
+    }
   }
 
   openDropdown() {
