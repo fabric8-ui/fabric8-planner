@@ -7,6 +7,8 @@ watch: watchjs watchcss watchhtml watchfiles
 
 clean: cleancache cleandist cleanimages cleanmodules cleantemp
 
+test: testunit
+
 processjs:
 	# Compiling TypeScript to JavaScript...
 	# (according to the configs set in default tsconfig.json)
@@ -66,3 +68,5 @@ cleanimages:
 cleanmodules: ; @rm -rf node_modules
 
 cleantemp: ; @rm -rf tmp coverage typings .sass-cache
+
+testunit: ; @./node_modules/karma/bin/karma start
