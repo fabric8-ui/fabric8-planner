@@ -94,7 +94,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle7);
     await planner.quickPreview.typeaHeadSearch(c.randomText);
     expect(await planner.quickPreview.iterationDropdown.menu.getTextWhenReady()).toBe('No matches found.');
-    await planner.quickPreview.iterationCancelButton.clickWhenReady();
+    await planner.quickPreview.iterationDropdownCloseButton.clickWhenReady();
     await planner.quickPreview.iterationDropdown.clickWhenReady();
     expect(await planner.quickPreview.iterationDropdown.menu.getTextWhenReady()).not.toBe('No matches found.');
   });
@@ -144,6 +144,18 @@ describe('Planner Smoke Tests:', () => {
     await planner.header.saveFilters('Query 1');
     await planner.workItemList.overlay.untilHidden();
     expect(await planner.sidePanel.getMyFiltersList()).toContain('Query 1');
+  });
+
+  it('Delete custom query', async() => {
+    await planner.sidePanel.clickRequirement();
+    await planner.header.selectFilter('State', 'resolved');
+    await planner.header.saveFilters('My filter');
+    expect(await planner.sidePanel.getMyFiltersList()).toContain('My filter');
+    await planner.sidePanel.selectcustomFilterKebab('My filter');
+    await planner.sidePanel.deleteCustomQuery.clickWhenReady();
+    await planner.confirmModalButton.clickWhenReady();
+    await browser.sleep(1000);
+    expect(await planner.sidePanel.getMyFiltersList()).not.toContain('My filter');
   });
 
   it('Update work item with a label and validate description', async() => {

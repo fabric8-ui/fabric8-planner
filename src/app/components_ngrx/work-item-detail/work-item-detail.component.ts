@@ -1,3 +1,5 @@
+import { WorkItemTypeControlService } from './../../services/work-item-type-control.service';
+import { FormGroup } from '@angular/forms';
 import { LabelUI } from './../../models/label.model';
 import { IterationUI } from './../../models/iteration.model';
 import { AreaUI } from './../../models/area.model';
@@ -107,9 +109,11 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   private titleCallback = null;
   private descCallback = null;
   private _areas: AreaUI[] = [];
-  private areas: any[] = []; // this goes in dropdown component
+  private areas: any[] = []; // this goes in selector component
+  private selectedAreas: any[] = []; // this goes in selector component
   private _iterations: IterationUI[] = [];
-  private iterations: any[] = []; // this goes in dropdown component
+  private iterations: any[] = []; // this goes in selector component
+  private selectedIterations: any[] = []; // this goes in selector component
   private labels: LabelUI[] = [];
   private wiTypes: WorkItemTypeUI[] = [];
 
@@ -121,6 +125,9 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   private loadingAssignees: boolean = false;
   private loggedInUser: UserUI = null;
   private listenToEsc: boolean = false;
+  private dynamicFormGroup: FormGroup;
+  private dynamicFormDataArray: any;
+  private dynamicKeyValueFields: {key: string; value: string | number | null; field: any}[];
 
   constructor(
     private store: Store<AppState>,
@@ -129,7 +136,8 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     private urlService: UrlService,
     private auth: AuthenticationService,
     private renderer: Renderer2,
-    private workItemService: WorkItemService
+    private workItemService: WorkItemService,
+    private workItemTypeControlService: WorkItemTypeControlService,
   ) {
 
   }
@@ -190,7 +198,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
       .subscribe(workItem => {
         if((this.detailContext === 'preview')
         && this.descMarkdown && this.workItem.id !== workItem.id) {
-          this.descMarkdown.closeClick();
+          this.descMarkdown.deactivateEditor();
         }
 
         this.workItem = workItem;
@@ -202,6 +210,24 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
         this.loadingArea = false;
         this.loadingIteration = false;
         this.loadingLabels = false;
+
+        // init dynamic form
+        if (this.workItem.type) {
+          this.dynamicFormGroup = this.workItemTypeControlService.toFormGroup(this.workItem);
+          this.dynamicFormDataArray = this.workItemTypeControlService.toAttributeArray(this.workItem.type.fields);
+          this.dynamicKeyValueFields = this.workItem.type.dynamicfields.map(item => {
+            return {
+              key: item,
+              value: this.workItem.dynamicfields[item],
+              field: this.workItem.type.fields[item]
+            };
+          });
+        }
+
+        if((this.detailContext === 'preview')
+        && (this.descMarkdown)) {
+          this.descMarkdown.deactivateEditor();
+        }
 
         // set title on update
         if (this.titleCallback !== null) {
@@ -259,6 +285,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
       workItem['link'] = this.workItem.link;
       workItem['id'] = this.workItem.id;
       workItem['title'] = value;
+      workItem['type'] = this.workItem.type;
       this.store.dispatch(new WorkItemActions.Update(workItem));
     }
   }
@@ -269,6 +296,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
       workItem['version'] = this.workItem.version;
       workItem['link'] = this.workItem.link;
       workItem['id'] = this.workItem.id;
+      workItem['type'] = this.workItem.type;
 
       workItem['state'] = state;
       this.store.dispatch(new WorkItemActions.Update(workItem));
@@ -281,7 +309,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
-
+    workItem['type'] = this.workItem.type;
     workItem['assignees'] = users;
     this.store.dispatch(new WorkItemActions.Update(workItem));
   }
@@ -295,19 +323,17 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
         cssLabelClass: undefined
       }
     });
+    this.selectedAreas = this.areas.filter(a => a.selected);
   }
 
-  focusArea() {
-
-  }
-
-  areaUpdated(areaID) {
+  areaUpdated(event) {
+    const areaID = event[0].key;
     this.loadingArea = true;
     let workItem = {} as WorkItemUI;
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
-
+    workItem['type'] = this.workItem.type;
     workItem['area'] = this._areas.find(a => a.id === areaID);
     this.store.dispatch(new WorkItemActions.Update(workItem));
   }
@@ -321,18 +347,17 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
         cssLabelClass: undefined
       }
     });
+    this.selectedIterations = this.iterations.filter(i => i.selected);
   }
 
-  focusIteration() {
-
-  }
-
-  iterationUpdated(iterationID) {
+  iterationUpdated(event) {
+    const iterationID = event[0].key;
     this.loadingIteration = true;
     let workItem = {} as WorkItemUI;
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
+    workItem['type'] = this.workItem.type;
 
     workItem['iteration'] = this._iterations.find(a => a.id === iterationID);
     this.store.dispatch(new WorkItemActions.Update(workItem));
@@ -344,6 +369,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
+    workItem['type'] = this.workItem.type;
 
     workItem['labels'] = labels;
     this.store.dispatch(new WorkItemActions.Update(workItem));
@@ -355,6 +381,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
+    workItem['type'] = this.workItem.type;
 
     workItem['labels'] = this.workItem.labels.filter(l => l.id != label.id);
     this.store.dispatch(new WorkItemActions.Update(workItem));
@@ -379,8 +406,25 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
+    workItem['type'] = this.workItem.type;
+    workItem['description'] = {
+      content: rawText,
+      markup: 'Markdown'
+    };
+    this.store.dispatch(new WorkItemActions.Update(workItem));
+  }
 
-    workItem['description'] = rawText;
+  dynamicFieldUpdated(event) {
+    let workItem = {} as WorkItemUI;
+    //let dynamicfield[event]
+    workItem['version'] = this.workItem.version;
+    workItem['link'] = this.workItem.link;
+    workItem['id'] = this.workItem.id;
+    workItem['type'] = this.workItem.type;
+
+    workItem['dynamicfields'] = {};
+    workItem['dynamicfields'][event.key] = event.newValue;
+
     this.store.dispatch(new WorkItemActions.Update(workItem));
   }
 
