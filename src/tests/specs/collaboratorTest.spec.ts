@@ -17,22 +17,22 @@ describe('Planner Collaborator Tests:', () => {
     let URL = url.replace(urlPathName,'/rbajpai-test-preview/DO_NOT_DELETE/plan');
     planner1 = new PlannerPage(URL);
     await browser.get(URL);
-    await browser.sleep(5000);
+    await planner.waitUntilUrlContains('typegroup');
     await planner.ready();
   });
  
   it('Non Collaborator should not be able edit a workItem title', async() => {
-    await planner.workItemList.clickWorkItem('Work Item 5');
+    await planner1.workItemList.clickWorkItem('Work Item 5');
     expect(await planner.quickPreview.titleInput.getAttribute('disabled')).toBe('true');
   });
 
   it('Non Collaborator should not be able edit state of a workitem', async() => {
-    await planner.workItemList.clickWorkItem('Work Item 4');
+    await planner1.workItemList.clickWorkItem('Work Item 4');
     expect(await planner.quickPreview.stateDiv.getAttribute('disabled')).toBe('true');
   });
 
   it('Non collaborator should not be able to add assignee', async() => {
-    await planner.workItemList.clickWorkItem('Work Item 4');
+    await planner1.workItemList.clickWorkItem('Work Item 4');
     expect(await planner.quickPreview.assigneeDropdownSelector.getTextWhenReady()).not.toBe(' Add Assignee ');
   });
 
