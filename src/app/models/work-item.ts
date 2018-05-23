@@ -117,9 +117,10 @@ export interface WorkItemUI {
   state: string;
   descriptionMarkup: string;
   descriptionRendered: string;
-  description: string;
+  description: string | {content: string, markup: 'Markdown', rendered?: string};
   version: number;
   order: number;
+  dynamicfields?: any;
 
   area: AreaUI;
   iteration: IterationUI;
@@ -149,7 +150,6 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
   areaMapper = new AreaMapper();
   userMapper = new UserMapper();
   labelMapper = new LabelMapper();
-  commentMapper = new CommentMapper(this.userMapper);
 
   serviceToUiMapTree: MapTree = [{
       fromPath: ['id'],
@@ -276,12 +276,9 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
       fromPath: ['state'],
       toPath: ['attributes','system.state'],
     }, {
-      toPath: ['attributes','system.description.markup'],
-      toValue: 'Markdown'
-    }, {
       fromPath: ['descriptionRendered'],
       toPath: ['attributes','system.description.rendered'],
-    },  {
+    }, {
       fromPath: ['description'],
       toPath: ['attributes','system.description'],
     }, {
@@ -340,6 +337,33 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
       toValue: 'workitems'
     }
   ];
+
+  toDynamicUIModel(arg: WorkItemService, dynamicFields) {
+    let serviceToDyanmicUiMapTree: MapTree = [];
+    for(let i = 0; i < dynamicFields.length; i++) {
+      serviceToDyanmicUiMapTree.push({
+        toPath: ['dynamicfields', dynamicFields[i]],
+        fromPath: ['attributes', dynamicFields[i]]
+      });
+    }
+    return switchModel<WorkItemService, any>(
+      arg, serviceToDyanmicUiMapTree
+    );
+  }
+
+  toDyanmicServiceModel(arg: WorkItemUI) {
+    let dynamicUiToServiceMapTree: MapTree = [];
+    for(let i = 0; i < arg.type.dynamicfields.length; i++) {
+      dynamicUiToServiceMapTree.push({
+        toPath: ['attributes', arg.type.dynamicfields[i]],
+        fromPath: ['dynamicfields', arg.type.dynamicfields[i]]
+      });
+    }
+    const serviceModel = switchModel<WorkItemUI, any>(
+      arg, dynamicUiToServiceMapTree
+    );
+    return cleanObject(serviceModel);
+  }
 
   toUIModel(arg: WorkItemService): WorkItemUI {
     return switchModel<WorkItemService, WorkItemUI>(

@@ -51,6 +51,11 @@ import { AlmIconModule } from 'ngx-widgets';
 import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { UrlService } from '../../services/url.service';
 import { InfotipService } from '../../services/infotip.service';
+import { ClickOutModule } from '../../widgets/clickout/clickout.module';
+
+// Data Querries
+import { CommentQuery } from './../../models/comment';
+import { UserQuery } from './../../models/user';
 
 let providers = [];
 
@@ -97,7 +102,10 @@ if (process.env.ENV == 'inmemory') {
     CookieService,
     WorkItemDataService,
     UrlService,
-    InfotipService
+    InfotipService,
+
+    CommentQuery,
+    UserQuery
   ];
 }
 
@@ -106,6 +114,7 @@ if (process.env.ENV == 'inmemory') {
     AlmIconModule,
     AssigneesModule,
     CommonModule,
+    ClickOutModule,
     PlannerListRoutingModule,
     PlannerLayoutModule,
     PlannerModalModule,
@@ -129,7 +138,8 @@ if (process.env.ENV == 'inmemory') {
         workItemTypes: reducers.WorkItemTypeReducer,
         workItems: reducers.WorkItemReducer,
         workItemStates: reducers.WorkItemStateReducer,
-        infotips: reducers.InfotipReducer
+        infotips: reducers.InfotipReducer,
+        users: reducers.UserReducer
       }, {
       initialState: {
         iterations: states.initialIterationState,
@@ -142,7 +152,8 @@ if (process.env.ENV == 'inmemory') {
         workItemTypes: states.initialWorkItemTypeState,
         workItems: states.initialWorkItemState,
         workItemStates: states.initialWIState,
-        infotips: states.initialInfotipState
+        infotips: states.initialInfotipState,
+        users: states.inititalUserState
       }
     }),
     EffectsModule.forFeature([
@@ -155,7 +166,8 @@ if (process.env.ENV == 'inmemory') {
       effects.SpaceEffects,
       effects.WorkItemTypeEffects,
       effects.WorkItemEffects,
-      effects.InfotipEffects
+      effects.InfotipEffects,
+      effects.UserEffects
     ])
   ],
   declarations: [
