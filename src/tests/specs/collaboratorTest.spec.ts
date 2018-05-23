@@ -36,5 +36,10 @@ describe('Planner Collaborator Tests:', () => {
     expect(await planner.quickPreview.assigneeDropdownSelector.getTextWhenReady()).not.toBe(' Add Assignee ');
   });
 
+  it('Non collaborator should Comment and Save', async() => {
+    await planner1.workItemList.clickWorkItem('Work Item 4');
+    await planner.quickPreview.addCommentAndSave(c.comment);
+    expect(await planner.quickPreview.getComments()).toContain(c.comment);
+  });
  });
 
