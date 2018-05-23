@@ -3,7 +3,7 @@ import { PlannerPage } from '../page_objects/planner';
 import * as support from '../support';
 
 
-fdescribe('Planner Collaborator Tests:', () => {
+describe('Planner Collaborator Tests:', () => {
   let planner: PlannerPage;
   let planner1: PlannerPage;
   let c = new support.Constants();
@@ -19,16 +19,22 @@ fdescribe('Planner Collaborator Tests:', () => {
     await browser.get(URL);
     await browser.sleep(5000);
     await planner.ready();
-    });
+  });
  
-   it('Non Collaborator should not be able edit a workItem title', async() => {
-     await planner.workItemList.clickWorkItem('Work Item 5');
-     expect(await planner.quickPreview.titleInput.getAttribute('disabled')).toBe('true');
-   });
+  it('Non Collaborator should not be able edit a workItem title', async() => {
+    await planner.workItemList.clickWorkItem('Work Item 5');
+    expect(await planner.quickPreview.titleInput.getAttribute('disabled')).toBe('true');
+  });
 
-   it('Non Collaborator should not be able edit state of a workitem', async() => {
+  it('Non Collaborator should not be able edit state of a workitem', async() => {
     await planner.workItemList.clickWorkItem('Work Item 4');
     expect(await planner.quickPreview.stateDiv.getAttribute('disabled')).toBe('true');
   });
+
+  it('Non collaborator should not be able to add assignee', async() => {
+    await planner.workItemList.clickWorkItem('Work Item 4');
+    expect(await planner.quickPreview.assigneeDropdownSelector.getTextWhenReady()).not.toBe(' Add Assignee ');
+  });
+
  });
 
