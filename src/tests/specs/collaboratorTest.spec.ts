@@ -23,23 +23,35 @@ describe('Planner Collaborator Tests:', () => {
  
   it('Non Collaborator should not be able edit a workItem title', async() => {
     await planner1.workItemList.clickWorkItem('Work Item 5');
-    expect(await planner.quickPreview.titleInput.getAttribute('disabled')).toBe('true');
+    expect(await planner1.quickPreview.titleInput.getAttribute('disabled')).toBe('true');
   });
 
   it('Non Collaborator should not be able edit state of a workitem', async() => {
     await planner1.workItemList.clickWorkItem('Work Item 4');
-    expect(await planner.quickPreview.stateDiv.getAttribute('disabled')).toBe('true');
+    expect(await planner1.quickPreview.stateDiv.getAttribute('disabled')).toBe('true');
   });
 
   it('Non collaborator should not be able to add assignee', async() => {
     await planner1.workItemList.clickWorkItem('Work Item 4');
-    expect(await planner.quickPreview.assigneeDropdownSelector.getTextWhenReady()).not.toBe(' Add Assignee ');
+    expect(await planner1.quickPreview.assigneeDropdownSelector.getTextWhenReady()).not.toBe(' Add Assignee ');
   });
 
   it('Non collaborator should Comment and Save', async() => {
     await planner1.workItemList.clickWorkItem('Work Item 4');
-    await planner.quickPreview.addCommentAndSave(c.comment);
-    expect(await planner.quickPreview.getComments()).toContain(c.comment);
+    await planner1.quickPreview.addCommentAndSave(c.comment);
+    expect(await planner1.quickPreview.getComments()).toContain(c.comment);
+  });
+
+  it('Non collaborator should not be able to update Area ', async() => {
+    await planner1.workItemList.clickWorkItem('Work Item 3');
+    await planner1.quickPreview.areaDropdown.clickWhenReady();
+    expect(await planner1.quickPreview.areaDropdown.getAttribute('class')).not.toContain('show');
+  });
+
+  it('Non collaborator should not be able to update Iteration ', async() => {
+    await planner1.workItemList.clickWorkItem('Work Item 3');
+    await planner1.quickPreview.iterationDropdown.clickWhenReady();
+    expect(await planner1.quickPreview.iterationDropdown.getAttribute('class')).not.toContain('show');
   });
  });
 
