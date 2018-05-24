@@ -65,7 +65,8 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
     openSelectorOnInputClick: true,
     editableDateField: false,
     showClearDateBtn: false,
-    componentDisabled: false
+    componentDisabled: false,
+    yearSelector: false
   };
 
   private endDatePickerOptions: IMyOptions = {
@@ -74,7 +75,8 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
     openSelectorOnInputClick: true,
     editableDateField: false,
     showClearDateBtn: false,
-    componentDisabled: false
+    componentDisabled: false,
+    yearSelector: false
   };
 
   private startDateSelector: IMySelector = {
