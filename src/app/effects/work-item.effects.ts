@@ -10,6 +10,7 @@ import { WorkItemMapper, WorkItem, WorkItemService, WorkItemResolver, WorkItemUI
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilterService } from '../services/filter.service';
 import * as util from './work-item-utils';
+import { cleanObject } from '../models/common.model';
 
 export type Action = WorkItemActions.All;
 
@@ -52,7 +53,9 @@ export class WorkItemEffects {
       workItemResolver.resolveType(state.workItemTypes);
       workItemResolver.resolveAssignees(state.collaborators);
       workItemResolver.resolveWiLabels(state.labels);
-      return workItemResolver.getWorkItem();
+      let wiu = workItemResolver.getWorkItem();
+      let wid = this.workItemMapper.toDynamicUIModel(wi, wiu.type.dynamicfields);
+      return { ...wiu, ...wid };
     });
   }
 
@@ -80,8 +83,11 @@ export class WorkItemEffects {
           workItemResolver.resolveCreator(state.collaborators);
           workItemResolver.resolveType(state.workItemTypes);
           const wItem = workItemResolver.getWorkItem();
+          let wid = this.workItemMapper.toDynamicUIModel(
+            item, wItem.type.dynamicfields
+          );
           wItem.createId = createID;
-          return wItem;
+          return { ...wItem, ...wid };
         })
         .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w))
         .mergeMap(wItem => {
@@ -253,7 +259,20 @@ export class WorkItemEffects {
         };
       })
       .switchMap(wp => {
-        const payload = this.workItemMapper.toServiceModel(wp.payload);
+        // This order must be followed
+        // because baseType is needed for dynamic fields
+        const dynamicPayload = this.workItemMapper.toDyanmicServiceModel(wp.payload);
+        const staticPayload = this.workItemMapper.toServiceModel(wp.payload);
+
+        // We don't update work item type
+        // So we remove it from the payload
+        const payload = cleanObject({
+          ...staticPayload,
+          ...{ attributes: {
+               ...staticPayload.attributes,
+               ...dynamicPayload.attributes
+          }}
+        }, ['baseType']);
         const state = wp.state;
         return this.workItemService.update(payload)
           .map(w => this.resolveWorkItems([w], state)[0])
@@ -294,7 +313,7 @@ export class WorkItemEffects {
       });
 
 
-    
+
 
     @Effect() Reorder: Observable<Action> = this.actions$
       .ofType<WorkItemActions.Reoder>(WorkItemActions.REORDER)

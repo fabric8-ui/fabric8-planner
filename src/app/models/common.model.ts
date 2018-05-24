@@ -1,5 +1,5 @@
 export interface modelUI {
-  id: string;
+  id?: string;
   name?: string;
 }
 
@@ -22,6 +22,7 @@ export interface MapTree {
     toFunction?: any;
   };
   length: number;
+  push: any;
 }
 
 export interface Mapper<I, O> {
@@ -127,4 +128,25 @@ export function cleanObject(obj: any, keysToRemove: string[] = []): any {
     }
   }
   return obj;
+}
+
+
+/**
+ * This function normalize the array to
+ * a key value paired dictionary
+ * @param arr
+ */
+export function normalizeArray<I>(arr: I[]): {[id: string]: I} {
+  if (!Array.isArray(arr)) {
+    throw(new Error('The input needs to be an array'));
+  }
+  let output = {};
+  arr.forEach((item, index) => {
+    if (item.hasOwnProperty('id')) {
+      output[item['id'].toString()] = item;
+    } else {
+      output[index.toString()] = item;
+    }
+  });
+  return output;
 }
