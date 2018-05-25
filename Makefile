@@ -1,12 +1,16 @@
 # First off, let's fetch in the executables installed with npm
 PATH  := node_modules/.bin:$(PATH)
 
+# Build the entire library
 build: processjs processcss processhtml processfiles
 
+# Watch build files for change, rebuild if they are changed
 watch: watchjs watchcss watchhtml watchfiles
 
+# Clean up the project
 clean: cleancache cleandist cleanimages cleanmodules cleantemp
 
+# Run tests
 test: testunit
 
 processjs:
@@ -19,21 +23,22 @@ processjs:
 		sed -i -r -e "s/templateUrl:\s+('.+')/template: require(\1)/g" $$jsfile; \
 		sed -i -r -e "s/styleUrls:\s+\[('.+')\]/styles: \[require(\1).toString()\]/g" $$jsfile; \
 	done
+	# Processing JS: DONE
 
-watchjs:
-	@chokidar --verbose 'src/**/*.ts' -c 'make processjs'
+watchjs: ; @chokidar --verbose 'src/**/*.ts' -c 'make processjs'
 
 processcss:
 	# Compiling LESS to CSS
 	# @TODO: lesshint report & failOnError
+	# @TODO: Compile only the changed file
 	@for lessfile in `find src -name '*.less'`; do \
 		csspath="$${lessfile/src/dist}"; \
 		cssfile="$${csspath/\.less/\.css}"; \
 		lessc --source-map --autoprefix="last 2 versions" $$lessfile $$cssfile; \
 	done
+	# Processing CSS: DONE
 
-watchcss:
-	@chokidar --verbose 'src/**/*.less' -c 'make processcss'
+watchcss: ; @chokidar --verbose 'src/**/*.less' -c 'make processcss'
 
 processhtml:
 	# Copying HTML over to respective paths in dist directory
@@ -44,17 +49,17 @@ processhtml:
 		mkdir -p $$htmldest; \
 		cp $$htmlfile $$htmldest; \
 	done
+	# Processing HTML: DONE
 
-watchhtml:
-	@chokidar --verbose 'src/**/*.html' -c 'make processhtml'
+watchhtml: ; @chokidar --verbose 'src/**/*.html' -c 'make processhtml'
 
 processfiles:
 	# Copying LICENSE README.adoc & package.json over to dist/
 	mkdir -p dist
 	@cp LICENSE README.adoc package.json dist/
+	# Processing misc files: DONE
 
-watchfiles:
-	@chokidar --verbose 'LICENSE' 'README.adoc' 'package.json' -c 'make processfiles'
+watchfiles: ; @chokidar --verbose 'LICENSE' 'README.adoc' 'package.json' -c 'make processfiles'
 
 cleancache: ; @npm cache clean
 
@@ -67,6 +72,6 @@ cleanimages:
 
 cleanmodules: ; @rm -rf node_modules
 
-cleantemp: ; @rm -rf tmp coverage typings .sass-cache
+cleantemp: ; @rm -rf tmp coverage typings
 
 testunit: ; @./node_modules/karma/bin/karma start

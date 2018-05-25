@@ -141,6 +141,41 @@ v|`npm run tests \-- --smok`
 
 |===
 
+These tasks can also be run as make targets:
+
+[cols="1,1,3", options="header"]
+|===
+|Target
+|Command
+|Description
+
+| *Build*
+v|`make build`
+a| Builds the planner library.
+
+Runs `processjs` `processcss` `processhtml` & `processfiles` subroutines, which may as well be called individually with `make`
+
+| *Watch*
+v|`make watch`
+a| Watches source files for change, recompiles on change
+
+Runs `watchjs` `watchcss` `watchhtml` & `watchfiles` subroutines, which may as well be called individually with `make`
+
+| *Clean*
+v|`make clean`
+| Fully resets the project, cleaning up all artefacts
+
+Runs `cleancache` `cleandist` `cleanimages` `cleanmodules` & `cleantemp` subroutines, which may as well be called individually with `make`
+
+| *Test*
+v|`make test`
+a| Invokes tests (only runs unit tests for now)
+
+Runs `testunit` subroutine , which may as well be called individually with `make`
+
+3+a| To use the targets, run `make [make-options] _targetname_` for e.g. `$ make -j4 watch` to run watch target with 4 parallel threads.
+|===
+
 == Documentation
 The following documentation is available in the *_docs_* directory:
 
