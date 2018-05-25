@@ -22,11 +22,18 @@ describe('Quick preview tests: ', () => {
     await planner.resetState();
   });
 
-  it('should open quickpreview, create and apply label', async () => {
+  it('should open quickpreview and apply label', async () => {
+    await planner.workItemList.clickWorkItem(c.workItemTitle2);
+    await planner.quickPreview.addLabel(c.label2);
+    expect(await planner.quickPreview.getLabels()).toContain(c.label2);
+  });
+
+  it('should open quickpreview and create new label', async () => {
     let workitemname = {"title": "test labels"};
     await planner.createWorkItem(workitemname);
     await planner.workItemList.clickWorkItem(workitemname.title);
     await planner.quickPreview.createNewLabel(c.newLabel);
+    await planner.quickPreview.notificationToast.untilHidden();
     expect(await planner.quickPreview.getLabels()).toContain(c.newLabel);
   });
 
