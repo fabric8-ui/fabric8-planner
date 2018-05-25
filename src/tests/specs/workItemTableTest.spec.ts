@@ -16,7 +16,12 @@ describe('Work Item datatable list: ', () => {
   });
 
   beforeEach( async () => {
+    if(await browser.executeScript("window.location.href.indexOf('showTree=true')") === -1){
+      await planner.header.clickShowTree();
+      await planner.workItemList.overlay.untilHidden();
+    }
     await planner.ready();
+    
   });
 
   afterEach( async() => {
@@ -34,6 +39,7 @@ describe('Work Item datatable list: ', () => {
     await planner.settings.moveToDisplayedAttribute();
     expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(9);
   });
+  
 
   it('quick add should be disable for flat view', async() => {
     let title = await planner.createUniqueWorkItem();
@@ -48,7 +54,6 @@ describe('Work Item datatable list: ', () => {
 
   it('should filter work item by type', async() => {
     let workItemTypeFilter = 'workitemtype: Scenario';
-
     await planner.header.selectFilter('Workitem type', ' Scenario');
     expect(await planner.header.getFilterConditions()).toContain(workItemTypeFilter);
   });
@@ -82,39 +87,6 @@ describe('Work Item datatable list: ', () => {
     expect(await planner.workItemList.hasWorkItem(newWorkItem.title)).toBeFalsy();
   });
 
-  it('work item should show updated title when switching from flat to tree view', async() => {
-    let title = await planner.createUniqueWorkItem(),
-      updatedWorkItem = { title: 'test show updated work item'};
-
-    await planner.header.clickShowTree();
-    await planner.workItemList.overlay.untilHidden();
-    await planner.workItemList.clickWorkItem(title);
-    await planner.quickPreview.updateTitle(updatedWorkItem.title);
-    await planner.quickPreview.notificationToast.untilHidden();
-    await planner.quickPreview.close();
-    expect(await planner.workItemList.hasWorkItem(updatedWorkItem.title)).toBeTruthy();
-    await planner.header.clickShowTree();
-    await planner.workItemList.overlay.untilHidden();
-    expect(await planner.workItemList.hasWorkItem(updatedWorkItem.title)).toBeTruthy();
-  });
-
-  it('list should not update when new label is added', async() => {
-    let title = await planner.createUniqueWorkItem(),
-      childWorkItem = {
-        "title": 'test list is not updated when new label is added',
-        "type": 'Value Proposition'
-      };
-    expect(await planner.workItemList.hasWorkItem(title)).toBeTruthy();
-    await planner.workItemList.workItem(title).clickInlineQuickAdd();
-    await planner.createInlineWorkItem(childWorkItem);
-    await planner.workItemList.workItem(title).clickExpandWorkItem();
-    await browser.sleep(3000);
-    expect(await planner.workItemList.hasWorkItem(childWorkItem.title)).toBeTruthy();
-    await planner.workItemList.clickWorkItem(title);
-    await planner.quickPreview.createNewLabel(c.newLabel1);
-    await planner.quickPreview.close();
-    expect(await planner.workItemList.hasWorkItem(childWorkItem.title)).toBeTruthy();
-  });
 
   it('list should not update when new iteration is added', async() => {
     let title = await planner.createUniqueWorkItem(),
