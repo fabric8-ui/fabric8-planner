@@ -20,7 +20,7 @@ export class Constants {
   areaTitle1 = '/' + process.env.SPACE_NAME + '/Area_1';
   areaTitle2 = '/' + process.env.SPACE_NAME + '/Area_2';
   iteration1 = '/' + process.env.SPACE_NAME + '/Iteration_1/Iteration1_1';
-  iteration2 = '/' + process.env.SPACE_NAME + '/Iteration_1/Iteration1_2';
+  iteration2 = '/' + process.env.SPACE_NAME + '/Iteration_2';
   parentIteration = 'Iteration_2';
   iteration3 = '/' + process.env.SPACE_NAME;
   newWorkItem1 = {

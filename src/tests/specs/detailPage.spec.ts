@@ -11,7 +11,7 @@ describe('Detail View test: ', () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
-    await planner.waitUntilUrlContains('typegroup',60000);
+    await planner.waitUntilUrlContains('typegroup');
     await planner.ready();
 
   });
