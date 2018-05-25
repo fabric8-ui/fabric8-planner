@@ -11,22 +11,21 @@ describe('Quick preview tests: ', () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
-    await planner.waitUntilUrlContains('typegroup');
-    await planner.ready();
+    await planner.waitUntilUrlContains('typegroup', 60000);
   });
 
   beforeEach( async () => {
+    await planner.ready();
+  });
+
+  afterEach( async () => {
     await planner.resetState();
   });
 
-  it('should open quickpreview and apply label', async () => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle1);
-    await planner.quickPreview.addLabel(c.label);
-    expect(await planner.quickPreview.getLabels()).toContain(c.label);
-  });
-
-  it('should open quick preview and create new label',async () => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+  it('should open quickpreview, create and apply label', async () => {
+    let workitemname = {"title": "test labels"};
+    await planner.createWorkItem(workitemname);
+    await planner.workItemList.clickWorkItem(workitemname.title);
     await planner.quickPreview.createNewLabel(c.newLabel);
     expect(await planner.quickPreview.getLabels()).toContain(c.newLabel);
   });
@@ -34,7 +33,7 @@ describe('Quick preview tests: ', () => {
   it('should link a workitem',async () => {
     let workitemname = {"title": "link test"},
       linkType = 'blocks',
-      workItemTitle17 = 'Workitem_Title_17';
+      workItemTitle17 = 'Workitem_Title_4';
     await planner.createWorkItem(workitemname);
     await planner.workItemList.clickWorkItem(workitemname.title);
     await planner.quickPreview.addLink(linkType, workItemTitle17);
@@ -63,7 +62,7 @@ describe('Quick preview tests: ', () => {
   })
 
   it('should close assignee dropdown when clicked outside',async () => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle1);
+    await planner.workItemList.clickWorkItem(c.workItemTitle2);
     await planner.quickPreview.assigneeDropdown.clickWhenReady();
     expect(await planner.quickPreview.assigneeDropdownMenu.getAttribute('className')).toContain('show');
     await planner.quickPreview.titleInput.clickWhenReady();

@@ -1,6 +1,7 @@
 import { browser, ExpectedConditions } from 'protractor';
 import * as mixins from '../mixins';
 import * as support from '../support';
+import { timeout } from 'q';
 
 
 export enum PageOpenMode {
@@ -59,8 +60,8 @@ export abstract class BasePage {
     this.debug('now :', urlNow);
   }
 
-  async waitUntilUrlContains(text: string) {
-    await browser.wait(ExpectedConditions.urlContains(text));
+  async waitUntilUrlContains(text: string, timeout?: number) {
+    await browser.wait(ExpectedConditions.urlContains(text), timeout);
   }
 }
 
