@@ -45,9 +45,13 @@ describe('Iteration test', () => {
   });
 
   it('updating iteration should update workitem associated to iteration', async() => {
-    let dropdownIteration1 = 'Iteration_2',
+    let dropdownIteration1 = 'new Iteration2',
       updateIteration = 'Iteration 0123',
       workItemTitle1 = 'Workitem_Title_2';
+
+    await planner.sidePanel.createNewIteration();
+    await planner.iteration.addNewIteration(dropdownIteration1);
+    await planner.iteration.clickCreateIteration();
 
     await planner.workItemList.workItem(workItemTitle1).openQuickPreview();
     await planner.quickPreview.addIteration(dropdownIteration1);

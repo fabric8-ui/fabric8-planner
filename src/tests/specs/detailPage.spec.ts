@@ -13,7 +13,6 @@ describe('Detail View test: ', () => {
     await planner.openInBrowser();
     await planner.waitUntilUrlContains('typegroup');
     await planner.ready();
-
   });
 
   beforeEach( async () => {

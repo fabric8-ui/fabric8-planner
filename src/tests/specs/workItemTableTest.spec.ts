@@ -36,10 +36,12 @@ describe('Work Item datatable list: ', () => {
   });
 
   it('quick add should be disable for flat view', async() => {
+    let title = await planner.createUniqueWorkItem();
+
     await planner.header.clickShowTree();
     await browser.sleep(2000);
     await planner.workItemList.overlay.untilHidden();
-    expect(await planner.workItemList.getInlineQuickAddClass(c.workItemTitle2)).toContain('disable');
+    expect(await planner.workItemList.getInlineQuickAddClass(title)).toContain('disable');
     await planner.header.clickShowTree();
     await planner.workItemList.overlay.untilHidden();
   });
@@ -102,7 +104,7 @@ describe('Work Item datatable list: ', () => {
         "title": 'test list is not updated when new label is added',
         "type": 'Value Proposition'
       };
-
+    expect(await planner.workItemList.hasWorkItem(title)).toBeTruthy();
     await planner.workItemList.workItem(title).clickInlineQuickAdd();
     await planner.createInlineWorkItem(childWorkItem);
     await planner.workItemList.workItem(title).clickExpandWorkItem();
@@ -120,7 +122,7 @@ describe('Work Item datatable list: ', () => {
         "title": 'test list is not updated when new iteration is added',
         "type": 'Experience'
       };
-
+    expect(await planner.workItemList.hasWorkItem(title)).toBeTruthy();
     await planner.workItemList.workItem(title).clickInlineQuickAdd();
     await planner.createInlineWorkItem(childWorkItem);
     await planner.workItemList.workItem(title).clickExpandWorkItem();
@@ -131,11 +133,11 @@ describe('Work Item datatable list: ', () => {
     await planner.iteration.clickCreateIteration();
     expect(await planner.workItemList.hasWorkItem(childWorkItem.title)).toBeTruthy();
   });
-  
+
   it('matching child should be expanded initially', async() => {
     let workitemname = {"title": "child", "type": 'Bug'},
       workItemTitle4 = {"title": "Workitem_Title_4"};
-    
+
     await planner.sidePanel.clickRequirement();
     await planner.workItemList.workItem(workItemTitle4.title).clickInlineQuickAdd();
     await planner.createInlineWorkItem(workitemname);
@@ -149,8 +151,15 @@ describe('Work Item datatable list: ', () => {
   });
 
   it('clicking on label should filter the workitem list by label', async() => {
-    let labelFilter = 'label: '+c.label;
-    await planner.workItemList.clickWorkItemLabel(c.workItemTitle2);
+    let labelFilter = 'label: '+c.label,
+      workItemTitle4 = {"title": "Workitem_Title_4"};
+
+    await planner.sidePanel.clickRequirement();
+    await planner.waitUntilUrlContains('typegroup.name:Requirements');
+    await planner.workItemList.clickWorkItem(workItemTitle4.title);
+    await planner.quickPreview.addLabel(c.label);
+    await planner.quickPreview.close();
+    await planner.workItemList.clickWorkItemLabel(workItemTitle4.title);
     expect(await planner.header.getFilterConditions()).toContain(labelFilter);
     await planner.header.clickShowTree();
     expect(await planner.header.getFilterConditions()).toContain(labelFilter);
