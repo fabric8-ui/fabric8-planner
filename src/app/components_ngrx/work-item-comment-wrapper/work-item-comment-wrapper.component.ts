@@ -32,7 +32,7 @@ export class WorkItemCommentWrapperComponent implements OnInit, OnDestroy {
 
   private workItem: WorkItemUI = null;
   private comments: Observable<CommentUI[]> =
-    this.commentQuery.getCommentsWithCreators();
+    this.commentQuery.getCommentsWithChildren();
   private eventListeners: any[] = [];
 
   constructor(
@@ -46,12 +46,11 @@ export class WorkItemCommentWrapperComponent implements OnInit, OnDestroy {
     this.eventListeners.forEach(e => e.unsubscribe());
   }
 
-  createComment(event: any) {
-    const payload = {
-      url: this.workItem.commentLink,
-      comment: event
-    };
-    this.store.dispatch(new CommentActions.Add(payload));
+  createComment(newComment: CommentUI) {
+    this.commentQuery.createComment(
+       this.workItem.commentLink,
+       newComment
+    );
   }
 
   updateComment(comment) {

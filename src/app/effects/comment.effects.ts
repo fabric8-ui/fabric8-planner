@@ -67,33 +67,26 @@ export class CommentEffects {
 
   @Effect() addComment$: Observable<Action> = this.actions$
     .ofType<CommentActions.Add>(CommentActions.ADD)
-    .withLatestFrom(this.store.select('listPage').select('collaborators'))
-    .map(([action, collaborators]) => {
-      return {
-        payload: action.payload,
-        collaborators: collaborators
-      }
-    })
-    .switchMap(cp => {
-      const payload = cp.payload;
-      const collaborators = cp.collaborators;
-      return this.workItemService.createComment(payload.url, payload.comment)
-        .map((comment) => {
-          return new CommentActions.AddSuccess(
-            this.commentMapper.toUIModel(comment)
-          );
-        })
-        .catch(e => {
-          try {
-            this.notifications.message({
-              message: `Problem in add comment.`,
-              type: NotificationType.DANGER
-            } as Notification);
-          } catch (e) {
-            console.log('Problem in add comment.');
-          }
-          return Observable.of(new CommentActions.AddError());
-        })
+    .switchMap(data => {
+      return this.workItemService.createComment(
+        data.payload.url, data.payload.comment
+      )
+      .map((comment) => {
+        return new CommentActions.AddSuccess(
+          this.commentMapper.toUIModel(comment)
+        );
+      })
+      .catch(e => {
+        try {
+          this.notifications.message({
+            message: `Problem in add comment.`,
+            type: NotificationType.DANGER
+          } as Notification);
+        } catch (e) {
+          console.log('Problem in add comment.');
+        }
+        return Observable.of(new CommentActions.AddError());
+      })
     })
 
   @Effect() updateComment$: Observable<Action> = this.actions$
