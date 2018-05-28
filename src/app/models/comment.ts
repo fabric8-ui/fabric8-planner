@@ -13,7 +13,11 @@ import {
   cleanObject
 } from './common.model';
 import { AppState } from './../states/app.state';
-import { Add as AddCommentAction } from './../actions/comment.actions';
+import {
+  Add as AddCommentAction,
+  Update as UpdateCommentAction,
+  Get as GetCommentActions
+} from './../actions/comment.actions';
 
 export class Comment extends modelService {
     attributes: CommentAttributes;
@@ -188,7 +192,6 @@ export class CommentQuery {
 
   createComment(url: string, comment: CommentUI): void {
     const comMapper = new CommentMapper();
-    console.log(comMapper.toServiceModel(comment));
     this.store.dispatch(new AddCommentAction({
       comment: comMapper.toServiceModel(comment),
       url: url
@@ -196,6 +199,13 @@ export class CommentQuery {
   }
 
   updateComment(comment: CommentUI): void {
+    const comMapper = new CommentMapper();
+    this.store.dispatch(new UpdateCommentAction(
+      comMapper.toServiceModel(comment)
+    ));
+  }
 
+  dispatchGet(url: string) {
+    this.store.dispatch(new GetCommentActions(url));
   }
 }

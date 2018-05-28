@@ -60,6 +60,7 @@
     <fabric8-comment
       *ngFor="let childComment of comment.children"
       [comment]="childComment"
+      (onUpdateRequest)="updateChildComment($event)"
     ></fabric8-comment>
   </div>
 </div>

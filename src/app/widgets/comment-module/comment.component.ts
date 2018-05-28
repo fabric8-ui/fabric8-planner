@@ -27,7 +27,17 @@ export class CommentComponent {
     rawText: string, callBack: (x: string, y:string) => void
   }> = new EventEmitter();
 
+  /**
+   * This output is emitted when new comment is added
+   */
   @Output('onCreateRequest') onCreateRequest: EventEmitter<CommentUI> =
+   new EventEmitter();
+
+  /**
+   * This is an output event for any update request
+   * to the comment or it's children
+   */
+  @Output('onUpdateRequest') onUpdateRequest: EventEmitter<CommentUI> =
    new EventEmitter();
 
 
@@ -48,5 +58,20 @@ export class CommentComponent {
       parentId: this.comment.id
     } as CommentUI;
     this.onCreateRequest.emit(newComment);
+  }
+
+  updateComment(event: any, comment: CommentUI): void {
+    console.log(event, comment);
+    const rawText = event.rawText;
+    let updatedComment: CommentUI = {
+      body: rawText,
+      id: comment.id,
+      selfLink: comment.selfLink
+    } as CommentUI;
+    this.onUpdateRequest.emit(updatedComment);
+  }
+
+  updateChildComment(updatedComment: CommentUI) {
+    this.onUpdateRequest.emit(updatedComment);
   }
 }

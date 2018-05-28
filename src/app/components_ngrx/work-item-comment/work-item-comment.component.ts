@@ -84,8 +84,7 @@ export class WorkItemCommentComponent implements OnInit {
       })
   }
 
-  updateComment(event, comment): void {
-    comment.body = event.rawText;
+  updateComment(comment: CommentUI): void {
     this.update.emit(comment);
   }
 

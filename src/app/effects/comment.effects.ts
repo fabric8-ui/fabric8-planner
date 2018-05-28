@@ -91,17 +91,8 @@ export class CommentEffects {
 
   @Effect() updateComment$: Observable<Action> = this.actions$
     .ofType<CommentActions.Update>(CommentActions.UPDATE)
-    .withLatestFrom(this.store.select('listPage').select('collaborators'))
-    .map(([action, collaborators]) => {
-      return {
-        payload: action.payload,
-        collaborators: collaborators
-      }
-    })
-    .switchMap((cp) => {
-      const payload = cp.payload;
-      const collaborators = cp.collaborators;
-      const comment = this.commentMapper.toServiceModel(payload);
+    .switchMap(action => {
+      const comment = action.payload;
       return this.workItemService.updateComment(comment)
         .map((comment: CommentService) => {
           return new CommentActions.UpdateSuccess(
