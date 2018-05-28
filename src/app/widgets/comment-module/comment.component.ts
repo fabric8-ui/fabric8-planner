@@ -1,5 +1,7 @@
-import { DomSanitizer } from '@angular/platform-browser';
-import { Component, Input, EventEmitter, Output } from '@angular/core';
+import {
+  Component, Input,
+  EventEmitter, Output
+} from '@angular/core';
 
 import { CommentUI } from './../../models/comment';
 import { WorkItemService } from './../../services/work-item.service';
@@ -41,9 +43,7 @@ export class CommentComponent {
    new EventEmitter();
 
 
-  constructor(
-    private sanitizer: DomSanitizer,
-    private workItemService: WorkItemService) {}
+  constructor() {}
 
   showPreview(event: {rawText: string, callBack: (x: string, y:string) => void}): void {
     this.onPreview.emit(event);
@@ -61,7 +61,6 @@ export class CommentComponent {
   }
 
   updateComment(event: any, comment: CommentUI): void {
-    console.log(event, comment);
     const rawText = event.rawText;
     let updatedComment: CommentUI = {
       body: rawText,
