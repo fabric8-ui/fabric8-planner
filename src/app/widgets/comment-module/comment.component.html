@@ -22,7 +22,7 @@
     </small>
   </div>
 
-  <div class="width-100 pull-left">
+  <div class="width-100 pull-left comment">
     <f8-markdown
       [attr.id]="'comment_body_' + counter"
       [editAllow]="editAllow"
@@ -36,7 +36,7 @@
 
 
   <!-- Add reply section -->
-  <div class="width-100 pull-left"
+  <div class="width-100 pull-left reply"
     [class.reply-div-active]="replyActive"
     [class.reply-div]="!replyActive"
     *ngIf="!comment.parentId">
