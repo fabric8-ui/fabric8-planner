@@ -42,8 +42,8 @@
     *ngIf="!comment.parentId">
     <!-- Add reply button-->
     <button class="btn pull-right"
-      (click)="replyActive=!replyActive; replyEditor?.enableEditor();"
-    >{{ replyActive ? 'Cancel' : 'Reply' }}</button>
+      (click)="replyActive=true; replyEditor?.enableEditor();"
+    >{{ 'Reply' }}</button>
 
     <!-- Reply editor -->
     <f8-markdown
@@ -54,7 +54,8 @@
       [renderedText]="''"
       [placeholder]="'Add a new reply...'"
       (onSaveClick)="createComment($event); replyActive = false;"
-      (showPreview)="showPreview($event)">
+      (showPreview)="showPreview($event)"
+      (onCloseClick)="replyActive = false">
     </f8-markdown>
 
     <fabric8-comment

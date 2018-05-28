@@ -42,6 +42,7 @@ export class CommentComponent {
   @Output('onUpdateRequest') onUpdateRequest: EventEmitter<CommentUI> =
    new EventEmitter();
 
+  private replyActive: boolean = false;
 
   constructor() {}
 
