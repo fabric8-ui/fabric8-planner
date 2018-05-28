@@ -41,7 +41,6 @@
       <div class="f8-comment__wrap"
         *ngFor='let comment of comments; let counter = index'>
         <fabric8-comment
-          [editAllow]="loggedIn && (loggedInUser?.id === (comment.creator | async)?.id)"
           [comment]="comment"
           (onShowPreview)="showPreview($event)"
           (onCreateRequest)="createChildComment($event)"

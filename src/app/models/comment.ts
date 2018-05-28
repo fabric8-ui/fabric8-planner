@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { cloneDeep } from 'lodash';
 import { Observable } from 'rxjs/Observable';
-import { User } from 'ngx-login-client';
+import { User, UserService } from 'ngx-login-client';
 
 import { UserUI, UserMapper, UserQuery } from './user';
 import {
@@ -72,7 +72,8 @@ export interface CommentUI {
   bodyRendered: string;
   selfLink: string;
   parentId: string;
-  children?: CommentUI[]
+  children?: CommentUI[];
+  allowEdit: boolean;
 }
 
 export interface CommentService extends Comment {}
@@ -157,7 +158,8 @@ export class CommentQuery {
     .select(state => state.comments);
   constructor(
     private store: Store<AppState>,
-    private userQuery: UserQuery
+    private userQuery: UserQuery,
+    private userService: UserService
   ){}
 
   getComments(commentIds: string[]) {
@@ -173,6 +175,15 @@ export class CommentQuery {
             creator: this.userQuery.getUserObservableById(comment.creatorId)
           };
         })
+      })
+      .switchMap(comments => {
+        return this.userService.loggedInUser
+          .map(user => user ? user : {id: '0'})
+          .map(user => {
+            return comments.map(c => {
+              return {...c, allowEdit: c.creatorId === user.id};
+            })
+          })
       })
   }
 

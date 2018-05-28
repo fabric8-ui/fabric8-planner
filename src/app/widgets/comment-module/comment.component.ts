@@ -13,11 +13,6 @@ import { WorkItemService } from './../../services/work-item.service';
 })
 export class CommentComponent {
   /**
-   * This boolean value decides if the comment is editable or not
-   */
-  @Input('editAllow') editAllow: boolean = true;
-
-  /**
    * This is the comment input
    */
   @Input('comment') comment: CommentUI = null;
