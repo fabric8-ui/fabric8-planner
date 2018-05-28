@@ -157,6 +157,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.ready()
     await this.addComment(comment);
     await this.commentSaveButton.clickWhenReady();
+    await this.commentSaveButton.untilHidden();
   }
 
   async addCommentAndCancel(comment: string) {
