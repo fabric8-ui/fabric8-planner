@@ -57,6 +57,11 @@ export class WorkItemRelations {
       hasChildren: boolean;
     };
   };
+  events?: {
+    links?: {
+      related?: string;
+    }
+  };
   comments?: {
     data?: Comment[];
     links: {
@@ -132,6 +137,7 @@ export interface WorkItemUI {
   children: WorkItemUI[];
   commentLink: string;
   childrenLink: string;
+  eventLink: string;
   hasChildren: boolean;
   parentID: string;
   link: string;
@@ -210,6 +216,9 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
       fromPath: ['relationships','comments','links', 'related'],
       toPath: ['commentLink']
     }, {
+      fromPath: ['relationships','events','links', 'related'],
+      toPath: ['eventLink']
+    }, {
       fromPath: ['relationships','assignees','data'],
       toPath: ['assignees'],
       toFunction: function(assignees: UserService[]) {
@@ -282,6 +291,13 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
       fromPath: ['description'],
       toPath: ['attributes','system.description'],
     }, {
+      fromPath: ['description'],
+      toPath: ['attributes','system.description.markup'],
+      toFunction: (val) => {
+        if (val) return 'Markdown';
+        return null;
+      }
+    }, {
       fromPath: ['version'],
       toPath: ['attributes','version']
     }, {
@@ -309,6 +325,9 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
     }, {
       fromPath: ['commentLink'],
       toPath: ['relationships','comments','links', 'related']
+    },{
+      fromPath: ['eventLink'],
+      toPath: ['relationships','events','links', 'related']
     }, {
       fromPath: ['assignees'],
       toPath: ['relationships','assignees','data'],
