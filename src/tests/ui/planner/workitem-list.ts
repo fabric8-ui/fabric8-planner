@@ -31,6 +31,7 @@ export class WorkItemList extends BaseElement {
   }
 
   async hasWorkItem(title: string): Promise<boolean> {
+    await this.workItem(title).title.untilTextIsPresent(title);
     return this.workItem(title).isPresent();
   }
 
