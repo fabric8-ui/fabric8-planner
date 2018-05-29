@@ -193,7 +193,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.detailPage.titleInput.untilTextIsPresentInValue('new detail workItem');
     await planner.detailPage.close();
     await planner.waitUntilUrlContains('typegroup');
-    await planner.ready();
+    expect(await planner.workItemList.hasWorkItem('new detail workItem')).toBeTruthy();
   });
 });
 
