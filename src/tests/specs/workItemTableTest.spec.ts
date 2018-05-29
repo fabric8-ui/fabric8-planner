@@ -21,7 +21,6 @@ describe('Work Item datatable list: ', () => {
 
   afterEach( async() => {
     await planner.resetState();
-    await planner.ready();
   });
 
   it('should open settings button and hide columns', async () => {

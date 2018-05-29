@@ -15,7 +15,7 @@ exports.config = {
         isVerbose: true,
         showColors: true,
         includeStackTrace: true,
-        defaultTimeoutInterval: 60000 * 2, // 2 minute timeout
+        defaultTimeoutInterval: 60000, // 1 minute timeout
         print: function () {
         }
     },

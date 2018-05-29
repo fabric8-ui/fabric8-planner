@@ -82,7 +82,7 @@ describe('Detail View test: ', () => {
     await planner.workItemList.openDetailPage(c.workItemTitle2);
     await planner.waitUntilUrlContains('detail');
     await planner.detailPage.titleInput.untilTextIsPresentInValue(c.workItemTitle2);
-    await planner.detailPage.addLink(linkType, searchWorkItem,Workitem_Title_3);
+    await planner.detailPage.addLink(linkType, searchWorkItem, Workitem_Title_3);
     expect(await planner.detailPage.getLinkedItems()).toContain(Workitem_Title_3);
   });
 
