@@ -47,7 +47,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.updateDescription(c.updatedWorkItem.description);
     expect(await planner.quickPreview.getDescription()).toBe(c.updatedWorkItem.description);
     await planner.quickPreview.close();
-    expect(await planner.workItemList.hasWorkItem(c.newWorkItem2.title)).toBeFalsy();
+    expect(await planner.workItemList.hasWorkItem(c.newWorkItem2.title, true)).toBeFalsy();
     expect(await planner.workItemList.hasWorkItem(c.updatedWorkItem.title)).toBeTruthy();
   });
 

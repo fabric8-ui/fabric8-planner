@@ -153,10 +153,13 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async addCommentAndSave(comment: string) {
-    await this.ready()
+    await this.ready();
+    let count = await this.commentsCount.getTextWhenReady();
     await this.addComment(comment);
     await this.commentSaveButton.clickWhenReady();
     await this.commentSaveButton.untilHidden();
+    count = (parseInt(count) + 1).toString();
+    await this.commentsCount.untilTextIsPresent(count);
   }
 
   async addCommentAndCancel(comment: string) {
