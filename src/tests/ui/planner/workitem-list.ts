@@ -30,8 +30,10 @@ export class WorkItemList extends BaseElement {
     await this.workItem(title).openQuickPreview();
   }
 
-  async hasWorkItem(title: string): Promise<boolean> {
-    await this.workItem(title).title.untilTextIsPresent(title);
+  async hasWorkItem(title: string, showCompleted = false): Promise<boolean> {
+    if(!showCompleted) {
+      await this.workItem(title).untilTextIsPresent(title);
+    }
     return this.workItem(title).isPresent();
   }
 

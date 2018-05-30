@@ -97,6 +97,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   commentSaveButton = new ui.Button(this.commentDiv.$('.btn-save'), 'Comment save button');
   commentCancelButton = new ui.Button(this.commentDiv.$('.fl.btn.btn-default.pull-right.action-btn'), 'Comment cancel button');
   commentsText = new ui.BaseElementArray(this.$$('.f8-comment-body .comment .editor-box.editor-preview'), 'Comment List');
+  commentsCount = new ui.BaseElement(this.$('#total_comments'), 'comment count')
 
   constructor(ele: ElementFinder, name: string = '') {
     super(ele, name);

@@ -78,7 +78,7 @@ describe('Work Item datatable list: ', () => {
     await planner.quickPreview.close();
     await planner.header.clickShowCompleted();
     await planner.workItemList.overlay.untilHidden();
-    expect(await planner.workItemList.hasWorkItem(newWorkItem.title)).toBeFalsy();
+    expect(await planner.workItemList.hasWorkItem(newWorkItem.title, true)).toBeFalsy();
   });
 
   it('work item should show updated title when switching from flat to tree view', async() => {
