@@ -23,6 +23,10 @@ describe('Planner Smoke Tests:', () => {
     await planner.resetState();
   });
 
+  afterAll( async() => {
+    await browser.quit();
+  });
+
   it('create a work item and add/remove assignee', async () => {
     await planner.createWorkItem(c.newWorkItem1);
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem1.title)).toBeTruthy();

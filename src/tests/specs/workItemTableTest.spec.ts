@@ -23,6 +23,10 @@ describe('Work Item datatable list: ', () => {
     await planner.resetState();
   });
 
+  afterAll( async() => {
+    await browser.quit();
+  });
+
   it('should open settings button and hide columns', async () => {
     expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(9);
     await planner.settings.clickSettings();

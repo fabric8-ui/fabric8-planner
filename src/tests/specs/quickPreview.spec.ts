@@ -22,6 +22,10 @@ describe('Quick preview tests: ', () => {
     await planner.resetState();
   });
 
+  afterAll( async() => {
+    await browser.quit();
+  });
+
   it('should open quickpreview and apply label', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle2);
     await planner.quickPreview.addLabel(c.label2);

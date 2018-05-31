@@ -21,6 +21,10 @@ describe('Iteration test', () => {
     await planner.resetState();
   });
 
+  afterAll( async() => {
+    await browser.quit();
+  });
+
   it('should create a new iteration', async () => {
     let newIteration = 'new Iteration';
     let iteration3 = '/' + process.env.SPACE_NAME;

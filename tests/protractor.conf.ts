@@ -55,7 +55,9 @@ let conf: Config = {
     browserName: "chrome",
     chromeOptions: {
       args: process.env.HEADLESS_MODE === 'true'? ['--no-sandbox', '--headless'] : ['--no-sandbox']
-    }
+    },
+    shardTestFiles: true,
+    maxInstances : 3
   },
 
   // Assign the test reporter to each running instance
