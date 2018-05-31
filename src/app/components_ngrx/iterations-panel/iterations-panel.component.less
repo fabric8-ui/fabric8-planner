@@ -4,40 +4,39 @@
 .f8-itr {
   color: @color-pf-white;
   background-color: @color-pf-black-900;
-  &__panel {
+  &-hdr {
     display: block;
-    &-hdr {
-      display: block;
-      padding: 20px 15px;
-      border-left: 4px solid;
-      border-left-color: transparent;
-      cursor: default; // as item is not clickable
-      &.nohover {
-        h3 {
-          color: @color-pf-black-500;
-        }
-      }
-      &:not(.nohover):hover {
-        background: @color-pf-black-700;
+    padding: 20px 15px;
+    border-left: 4px solid;
+    border-left-color: transparent;
+    cursor: default; // as item is not clickable
+    &.nohover {
+      h3 {
+        color: @color-pf-black-500;
       }
     }
-    ul {
-      list-style: none;
-      li {
-        display: block;
-      }
-    }
-    &--nested& {
-      border-top: 1px solid;
-      border-top-color: @color-pf-black;
+    &:not(.nohover):hover {
+      background: @color-pf-black-700;
     }
   }
   &__container {
-    cursor: pointer;
-    a {
-      color: @color-pf-white;
-      &:hover {
-        text-decoration: none;
+    padding: 0;
+    list-style: none;
+    li {
+      padding-top: 5px;
+      padding-right: 15px;
+      padding-left: 40px;
+      padding-bottom: 5px;
+      &:first-child {
+        border-top: 1px solid;
+        border-top-color: @color-pf-black;
+      }
+      a {
+        padding: 5px 10px;
+        color: @color-pf-white;
+        &:hover {
+          text-decoration: none;
+        }
       }
     }
     .fa {
@@ -46,5 +45,9 @@
     &:focus {
       outline: none;
     }
+  }
+  &__list {
+    border-top: 1px solid;
+    border-top-color: @color-pf-black;
   }
 }

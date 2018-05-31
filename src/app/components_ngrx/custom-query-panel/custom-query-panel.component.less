@@ -2,54 +2,68 @@
 @import (reference) '../../../assets/stylesheets/shared/_utilities';
 
 .f8-cf {
+  display: block;
   color: @color-pf-white;
   background-color: @color-pf-black-900;
-  &__panel {
+  &__hdr {
     display: block;
-    &-hdr {
-      display: block;
-      padding: 20px 15px;
+    padding: 20px 15px;
+    border-left: 4px solid;
+    border-left-color: transparent;
+    border-bottom: 1px solid;
+    border-bottom-color: @color-pf-black;
+    cursor: default; // as item is not clickable
+    &.nohover {
+      h3 {
+        color: @color-pf-black-500;
+      }
+    }
+    &:not(.nohover):hover {
+      background: @color-pf-black-700;
+    }
+  }
+  &__list {
+    &-type {
+      outline: none;
+      padding: 10px;
+      padding-left: 45px;
       border-left: 4px solid;
       border-left-color: transparent;
-      cursor: default; // as item is not clickable
-      &.nohover {
-        h3 {
-          color: @color-pf-white;
+      &-link {
+        display: block;
+        font-size: 15px;
+        color: @color-pf-white;
+        line-height: 15px;
+        text-decoration: none;
+        outline: none;
+        &:hover {
+          color: @color-pf-blue;
+          text-decoration: none;
+          background: @color-pf-black-700;
+        }
+        &:visited, &:focus {
+          text-decoration: none;
+          outline: none;
         }
       }
-      &:not(.nohover):hover {
+      &:hover {
+        color: @color-pf-white;
         background: @color-pf-black-700;
       }
-    }
-  }
-  &__customquery-list {
-    list-style: none;
-    padding-left: 0px;
-    cursor: pointer;
-    li.f8-cf__container {
-      display: block;
-      border-left: 4px solid transparent;
-      &:hover {
-        background-color: @color-pf-black-800;
+      .fa {
+        padding: 0 5px;
+        font-size: 16px;
+        &:hover {
+          color: @color-pf-blue;
+        }
       }
-    }
-  }
-  &__container {
-    a.a-custom-query {
-      color: @color-pf-white;
-      margin-left: 40px;
-      &:hover {
-        text-decoration: none;
-      }
-    }
-    .fa {
-      width: 15px;
     }
     &:focus {
       outline: none;
     }
   }
   &--selected {
+    outline: none;
     border-left-color: @color-pf-blue !important;
     background-color: @color-pf-black-800;
   }

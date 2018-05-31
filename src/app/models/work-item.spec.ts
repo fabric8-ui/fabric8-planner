@@ -11,6 +11,7 @@ describe('WorkItemMapper', () => {
         "system.created_at": "2017-06-28T07:44:36.640764Z",
         "system.description": "Cannot resolve Area/Iteration info for new WI created in in-memory mode under Backlog > Quick Add",
         "system.description.rendered": "Cannot resolve Area/Iteration info for new WI created in in-memory mode under Backlog &gt; Quick Add",
+        "system.description.markup": "Markdown",
         "system.number": 1343,
         "system.order": 1045750,
         "system.state": "closed",
@@ -53,6 +54,11 @@ describe('WorkItemMapper', () => {
           },
           "meta": {
             "hasChildren": false
+          }
+        },
+        "events": {
+          "links": {
+            "related": "https://api.prod-preview.openshift.io/api/workitems/a85b610d-6789-4989-bfe5-ebceb5ee4ef9/events"
           }
         },
         "comments": {
@@ -133,6 +139,7 @@ describe('WorkItemMapper', () => {
           infotip: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
           dynamicfields: []
         },
+        eventLink: "https://api.prod-preview.openshift.io/api/workitems/a85b610d-6789-4989-bfe5-ebceb5ee4ef9/events",
         commentLink: 'https://api.openshift.io/api/workitems/8bccc228-bba7-43ad-b077-15fbb9148f7f/comments',
         assignees: [
           { id: '330b19d2-28d3-4b29-9abf-a324c94b437d', name: null, avatar: null, username: null,currentUser: false},
@@ -210,6 +217,11 @@ describe('WorkItemMapper', () => {
             },
             "meta": {
               "hasChildren": false
+            }
+          },
+          "events": {
+            "links": {
+              "related":"https://api.prod-preview.openshift.io/api/workitems/a85b610d-6789-4989-bfe5-ebceb5ee4ef9/events"
             }
           },
           "comments": {
