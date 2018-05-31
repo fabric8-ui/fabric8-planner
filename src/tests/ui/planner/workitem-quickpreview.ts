@@ -50,7 +50,9 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     this.$('#labelSelector .add-label'),
     this.$('#labelSelector ul.select-dropdown-menu'),
     'Label Select dropdown');
-  labelListDiv = new ui.BaseElementArray(this.$$('f8-label .label-wrapper>span'), 'label list Div');
+  labelsDiv = new ui.BaseElement(this.$('.f8-detail__labels'), ' labels Div');
+  labels = new ui.BaseElement(this.labelsDiv.$('.label-wrapper'),' labels ');
+  labelListDiv = new ui.BaseElementArray(this.labelsDiv.$$('f8-label .label-wrapper>span'), 'label list Div');
   labelDropDownDiv = new ui.BaseElement(this.$('#labelSelector .select-dropdown'), 'dropdown div');
   labelDropdownCloseButton = new ui.Clickable(this.labelDropDownDiv.$('.close-pointer'),'label dropdown close Button');
   createLabelButton = new ui.Clickable(this.labelDropDownDiv.$('.create-label-button'),'Create new label');
@@ -167,11 +169,14 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.commentCancelButton.clickWhenReady();
   }
 
-  async addLabel(label: string) {
+  async addLabel(label: string, unassignLabel=false) {
     await this.labelDropdown.clickWhenReady()
     await this.labelDropdown.select(label);
     await this.labelDropdownCloseButton.clickWhenReady();
     await this.loadingAnimation.untilCount(0);
+    if(!unassignLabel) {
+      await this.labels.untilTextIsPresent(label);
+    }
   }
 
   async addLink(link: string, searchWorkItem: string, workItem: string) {

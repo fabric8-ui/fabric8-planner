@@ -179,7 +179,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.quickPreview.getLabels()).toContain("Validate description label");
     await planner.quickPreview.close();
     await planner.workItemList.clickWorkItem(title);
-    await planner.quickPreview.addLabel("Validate description label");
+    await planner.quickPreview.addLabel("Validate description label", true);
     expect(await planner.quickPreview.getDescription()).toBe("My new description");
     await planner.quickPreview.close();
   });
