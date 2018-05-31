@@ -32,6 +32,10 @@ describe('Planner Collaborator Tests:', () => {
     await planner.workItemList.overlay.untilHidden();
   });
 
+  afterAll(async () => {
+    await browser.quit();
+  });
+
   it('Non Collaborator should not be able edit a workItem title', async () => {
     await planner1.workItemList.clickWorkItem('Work Item 5');
     expect(await planner1.quickPreview.titleInput.getAttribute('disabled')).toBe('true');

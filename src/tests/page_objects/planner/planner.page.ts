@@ -23,10 +23,11 @@ export class PlannerPage extends AppPage {
 
   async ready() {
     support.debug(' ... check if Planner page is Ready');
+    let url = await browser.getCurrentUrl();
     await super.ready();
     await this.workItemList.ready();
     await this.quickAdd.ready();
-    await this.sidePanel.ready();
+    url.includes('SDD') ? (await this.sidePanel.ready()) : await this.sidePanel.workItemsGroupAgile.ready();
     support.debug(' ... check if Planner page is Ready - OK');
   }
 
@@ -47,7 +48,8 @@ export class PlannerPage extends AppPage {
   }
 
   async resetState() {
-    await this.sidePanel.clickScenarios();
+    let url = await browser.getCurrentUrl();
+    url.includes('SDD') ? (await this.sidePanel.clickScenarios()) : await this.sidePanel.workItemsGroupAgile.clickWhenReady();
     await $('body').sendKeys(Key.ESCAPE);
   }
 }

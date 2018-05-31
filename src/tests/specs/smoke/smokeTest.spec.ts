@@ -4,7 +4,7 @@ import * as support from '../../support';
 
 /* Smoke Tests */
 
-describe('Planner Smoke Tests:', () => {
+fdescribe('Planner Smoke Tests:', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
 
@@ -22,6 +22,10 @@ describe('Planner Smoke Tests:', () => {
 
   afterEach(async () => {
     await planner.resetState();
+  });
+
+  afterAll(async () => {
+    await browser.quit();
   });
 
   it('create a work item and add/remove assignee', async () => {
@@ -77,8 +81,10 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.close();
   });
 
+  //fix for agile
   it('Associate workitem with an Area', async () => {
-    let title = await planner.createUniqueWorkItem();
+    let url = await browser.getCurrentUrl(),
+      title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.addArea(c.dropdownareaTitle1);
     expect(await planner.quickPreview.getArea()).toBe(c.areaTitle1);

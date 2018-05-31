@@ -25,6 +25,10 @@ describe('Detail View test: ', () => {
     await planner.quickPreview.close();
   });
 
+  afterAll( async() => {
+    await browser.quit();
+  });
+
   it('should open detail view and apply label', async () => {
     let workitemname = {'title': 'detail page test'};
     await planner.createWorkItem(workitemname);
