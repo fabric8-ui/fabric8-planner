@@ -36,18 +36,11 @@
     </div>
   </div>
   <div class="f8-board-card__row">
-    <div class="user-avatar pull-right margin-right-5">
-      <img
-        *ngIf="cardValue.avatar!==''"
-        placement="top"
-        tooltip="{{wItem?.attributes?.fullName}}"
-        src="{{cardValue.avatar + '&s=20'}}"
-        onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'" />
-      <span class="pficon-user not-assigned-user-icon"
-        *ngIf="cardValue.avatar==''"
-        tooltip="unassigned"
-        placement="top"></span>
-    </div>
+    <user-avatar
+      *ngIf="cardValue.avatar!==''"
+      [imgPooltip]="wItem?.attributes?.fullName"
+      [imgSrc]="cardValue.avatar + '&s=20'">
+    </user-avatar>
     <div class="margin-right-15 padding-right-15"
       tooltip="{{cardValue.title}}"
       placement="top"

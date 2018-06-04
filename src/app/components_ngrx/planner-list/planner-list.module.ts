@@ -60,6 +60,8 @@ import { WorkItemQuery } from './../../models/work-item';
 import { LabelQuery } from '../../models/label.model';
 import { IterationQuery } from '../../models/iteration.model';
 import { AreaQuery } from '../../models/area.model';
+import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
+
 
 let providers = [
     WorkItemService,
@@ -150,7 +152,8 @@ let providers = [
       effects.WorkItemEffects,
       effects.InfotipEffects,
       effects.UserEffects
-    ])
+    ]),
+    UserAvatarModule
   ],
   declarations: [
     PlannerListComponent,

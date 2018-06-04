@@ -7,6 +7,8 @@ import { MarkdownModule, WidgetsModule } from 'ngx-widgets';
 import { CommentComponent } from './comment.component';
 import { SafePipeModule } from '../../pipes/safe.module';
 
+import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
+
 @NgModule({
   declarations: [ CommentComponent],
   imports: [
@@ -14,7 +16,8 @@ import { SafePipeModule } from '../../pipes/safe.module';
     SafePipeModule,
     MarkdownModule,
     TooltipModule,
-    WidgetsModule
+    WidgetsModule,
+    UserAvatarModule
   ],
   exports: [CommentComponent]
 })

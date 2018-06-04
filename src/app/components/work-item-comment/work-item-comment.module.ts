@@ -18,6 +18,7 @@ import {
 
 import { WorkItemCommentComponent } from './work-item-comment.component';
 import { PlannerModalModule } from '../modal/modal.module';
+import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
 
 let providers = [
   {
@@ -43,7 +44,8 @@ let providers = [
     RouterModule,
     HttpModule,
     TooltipModule,
-    WidgetsModule
+    WidgetsModule,
+    UserAvatarModule
   ],
   declarations: [
     WorkItemCommentComponent

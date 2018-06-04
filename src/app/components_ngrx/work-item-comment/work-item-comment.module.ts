@@ -28,6 +28,7 @@ import {
 
 import { WorkItemCommentComponent } from './work-item-comment.component';
 import { PlannerModalModule } from './../../components/modal/modal.module';
+import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
 
 let providers = [
   {
@@ -55,7 +56,8 @@ let providers = [
     HttpModule,
     TooltipModule,
     WidgetsModule,
-    SafePipeModule
+    SafePipeModule,
+    UserAvatarModule
   ],
   declarations: [
     WorkItemCommentComponent

@@ -58,6 +58,7 @@ import { WorkItemQuery } from './../../models/work-item';
 import { CommentQuery } from './../../models/comment';
 import { LabelQuery } from './../../models/label.model';
 import { AreaQuery } from '../../models/area.model';
+import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
 
 @NgModule({
   imports: [
@@ -105,7 +106,8 @@ import { AreaQuery } from '../../models/area.model';
       LinkTypeEffects,
       WorkItemLinkEffects
     ]),
-    SafePipeModule
+    SafePipeModule,
+    UserAvatarModule
   ],
   providers: [
     CommentQuery,

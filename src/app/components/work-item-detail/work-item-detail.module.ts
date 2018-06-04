@@ -35,6 +35,7 @@ import { WorkItemTypeControlService } from '../../services/work-item-type-contro
 import { SelectDropdownModule } from './../../widgets/select-dropdown/select-dropdown.module';
 import { AssigneesModule } from './../assignee/assignee.module';
 import { AssigneeSelectorModule } from './../assignee-selector/assignee-selector.module';
+import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
 
 
 @NgModule({
@@ -62,7 +63,8 @@ import { AssigneeSelectorModule } from './../assignee-selector/assignee-selector
     RouterModule,
     SelectDropdownModule,
     WorkItemLinkModule,
-    WorkItemCommentModule
+    WorkItemCommentModule,
+    UserAvatarModule
   ],
   declarations: [
     WorkItemDetailComponent,

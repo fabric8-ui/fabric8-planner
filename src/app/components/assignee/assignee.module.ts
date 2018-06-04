@@ -4,13 +4,15 @@ import { NgModule } from '@angular/core';
 import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AssigneesComponent } from './assignee.component';
+import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
 
 @NgModule({
   imports: [
     CommonModule,
     RouterModule,
     TooltipModule,
-    BsDropdownModule
+    BsDropdownModule,
+    UserAvatarModule
   ],
   declarations: [
     AssigneesComponent

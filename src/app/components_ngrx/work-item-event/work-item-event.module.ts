@@ -10,6 +10,7 @@ import {
 import { LabelsModule } from "../labels/labels.module";
 import { TooltipModule, TooltipConfig } from "ngx-bootstrap";
 import { F8TimePipeModule } from './../../pipes/f8-time.module'
+import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
 
 @NgModule({
     imports: [
@@ -20,7 +21,8 @@ import { F8TimePipeModule } from './../../pipes/f8-time.module'
         MarkdownModule,
         CommonModule,
         TooltipModule,
-        F8TimePipeModule
+        F8TimePipeModule,
+        UserAvatarModule
     ],
     declarations: [WorkItemEventComponent],
     exports: [WorkItemEventComponent],

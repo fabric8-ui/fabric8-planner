@@ -109,14 +109,12 @@
               <span *ngIf="!workItem.relationships?.creator?.data"
                 class="pficon pficon-user user-creator-icon" id="user_creator_icon">
               </span>
-              <div class="user-avatar pull-left margin-right-10">
-                <img *ngIf="workItem.relationships?.creator?.data"
-                  placement="bottom"
-                  tooltip="{{workItem.relationships.creator.data.attributes?.fullName}}"
-                  src="{{workItem.relationships.creator.data.attributes?.imageURL + '&s=20'}}"
-                  onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'"
-                  id="WI_details_reporter_img" />
-              </div>
+              <user-avatar 
+                id="WI_details_reporter_img"
+                *ngIf="workItem.relationships?.creator?.data"
+                [imgTooltip]="workItem.relationships.creator.data.attributes?.fullName"
+                [imgSrc]="workItem.relationships.creator.data.attributes?.imageURL + '&s=20'">
+              </user-avatar>
               <div class="dib">
                 <span id="WI_details_reporter_user">
                   {{workItem.relationships?.creator?.data | almUserName:'Creator not found'}}
