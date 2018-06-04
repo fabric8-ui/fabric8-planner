@@ -96,12 +96,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private quickaddHt: number = 0;
   private showCompleted: boolean = false;
 
-  @HostListener('document:click',['$event.target'])
-  onOutsideClick(target){
-    let popovers = Array.from(document.querySelectorAll('.popover-container')) as HTMLElement[] ;
-    popovers.forEach(popover => popover.style.display = "none");
-  }
-
   @ViewChild('plannerLayout') plannerLayout: PlannerLayoutComponent;
   @ViewChild('toolbar') toolbar: ElementRef;
   @ViewChild('quickaddWrapper') quickaddWrapper: ElementRef;

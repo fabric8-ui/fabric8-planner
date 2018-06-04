@@ -1,7 +1,6 @@
 <span class="pficon-info infotip-icon"
-  (click)="handlePropagation($event)"
   [style.opacity]="pop.isOpen ? '1' : ''"   
-  [popover]="popoverTemplate" placement="right" 
+  [popover]="popoverTemplate" [outsideClick]="true" placement="right"
   containerClass="popover-container" #pop="bs-popover">
 </span>
 <ng-template #popoverTemplate>
