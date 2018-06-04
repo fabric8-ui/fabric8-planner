@@ -53,7 +53,7 @@
 
 <!-- Iteration -->
   <span id="table-iteration" *ngIf="col === 'iteration'">
-    {{row.iteration?.parentPath === '/' ? 'NA' : row.iteration?.name}}
+    {{row.iteration?.parentPath === '/' ? 'NA' : row.iteration?.name | truncate : 15}}
   </span>
 
 <!-- Creator -->
