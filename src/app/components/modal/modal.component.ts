@@ -9,8 +9,8 @@ import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'osio-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.less']
+  template: require('./modal.component.html'),
+  styles: [require('./modal.component.css').toString()]
 })
 export class ModalComponent implements OnDestroy{
 

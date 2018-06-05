@@ -28,8 +28,8 @@ import {
 
 @Component({
   selector: 'create-selector-widget',
-  templateUrl: './work-item-create-selector.component.html',
-  styleUrls: ['./work-item-create-selector.component.less']
+  template: require('./work-item-create-selector.component.html'),
+  styles: [require('./work-item-create-selector.component.css').toString()]
 })
 export class WorkItemDetailAddTypeSelectorWidgetComponent implements OnInit, AfterViewChecked{
 

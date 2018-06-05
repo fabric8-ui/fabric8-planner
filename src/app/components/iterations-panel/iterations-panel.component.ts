@@ -22,8 +22,8 @@ import { IterationTreeComponent } from '../iteration-tree/iteration-tree.compone
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'fab-planner-iteration',
-  templateUrl: './iterations-panel.component.html',
-  styleUrls: ['./iterations-panel.component.less']
+  template: require('./iterations-panel.component.html'),
+  styles: [require('./iterations-panel.component.css').toString()]
 })
 export class IterationComponent implements OnInit, OnDestroy, OnChanges {
 

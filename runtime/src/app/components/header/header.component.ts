@@ -11,8 +11,8 @@ import { MenuItem, ContextLink, SystemStatus, HeaderService } from 'osio-ngx-fra
 
 @Component({
   selector: 'planner-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.less'],
+  template: require('./header.component.html'),
+  styles: [require('./header.component.css').toString()]
 })
 export class HeaderComponent implements OnInit {
 

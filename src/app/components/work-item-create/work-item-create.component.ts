@@ -16,8 +16,8 @@ import { WorkItem } from '../../models/work-item';
 
 @Component({
   selector: 'detail-add-type-selector',
-  templateUrl: './work-item-create.component.html',
-  styleUrls: ['./work-item-create.component.less']
+  template: require('./work-item-create.component.html'),
+  styles: [require('./work-item-create.component.css').toString()]
 })
 export class WorkItemDetailAddTypeSelectorComponent implements OnInit, OnChanges {
 

@@ -31,8 +31,8 @@ export class DynamicUpdateEvent {
  */
 @Component({
   selector: 'alm-dynamic-field',
-  templateUrl: './dynamic-field.component.html',
-  styleUrls: ['./dynamic-field.component.less']
+  template: require('./dynamic-field.component.html'),
+  styles: [require('./dynamic-field.component.css').toString()]
 })
 export class DynamicFieldComponent implements OnInit {
 

@@ -12,8 +12,8 @@ import { User } from 'ngx-login-client';
 
 @Component({
   selector: 'switch',
-  templateUrl: './switch.component.html',
-  styleUrls: ['./switch.component.less']
+  template: require('./switch.component.html'),
+  styles: [require('./switch.component.css').toString()]
 })
 export class SwitchComponent {
   @Input() isChecked: Boolean;

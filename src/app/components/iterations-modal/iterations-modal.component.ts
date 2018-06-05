@@ -25,8 +25,8 @@ import { IterationModel } from '../../models/iteration.model';
 
 @Component({
   selector: 'fab-planner-iteration-modal',
-  templateUrl: './iterations-modal.component.html',
-  styleUrls: ['./iterations-modal.component.less']
+  template: require('./iterations-modal.component.html'),
+  styles: [require('./iterations-modal.component.css').toString()]
 })
 export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnChanges {
 

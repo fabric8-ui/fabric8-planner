@@ -41,8 +41,8 @@ import { WorkItem } from '../../models/work-item';
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'toolbar-panel',
-  templateUrl: './toolbar-panel.component.html',
-  styleUrls: ['./toolbar-panel.component.less']
+  template: require('./toolbar-panel.component.html'),
+  styles: [require('./toolbar-panel.component.css').toString()]
 })
 export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 

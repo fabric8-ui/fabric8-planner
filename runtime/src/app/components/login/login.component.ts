@@ -7,8 +7,8 @@ import { LoginService } from '../../services/login.service';
 
 @Component({
   selector: 'alm-login-form',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.less'],
+  template: require('./login.component.html'),
+  styles: [require('./login.component.css').toString()]
 })
 export class LoginComponent implements OnInit {
   showError: boolean = false;

@@ -9,8 +9,8 @@ import {
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'work-item-cell',
-  templateUrl: './work-item-cell.component.html',
-  styleUrls: ['./work-item-cell.component.less']
+  template: require('./work-item-cell.component.html'),
+  styles: [require('./work-item-cell.component.css').toString()]
 })
 
 export class WorkItemCellComponent {

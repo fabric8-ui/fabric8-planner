@@ -20,8 +20,8 @@ import {
 
 @Component({
   selector: 'label-selector',
-  templateUrl: './label-selector.component.html',
-  styleUrls: ['./label-selector.component.less']
+  template: require('./label-selector.component.html'),
+  styles: [require('./label-selector.component.css').toString()]
 })
 
 export class LabelSelectorComponent implements OnInit, OnChanges {

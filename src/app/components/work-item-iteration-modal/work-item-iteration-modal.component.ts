@@ -22,8 +22,8 @@ import { IterationService }  from '../../services/iteration.service';
 
 @Component({
   selector: 'fab-planner-associate-iteration-modal',
-  templateUrl: './work-item-iteration-modal.component.html',
-  styleUrls: ['./work-item-iteration-modal.component.less']
+  template: require('./work-item-iteration-modal.component.html'),
+  styles: [require('./work-item-iteration-modal.component.css').toString()]
 })
 export class FabPlannerAssociateIterationModalComponent implements OnChanges {
 

@@ -13,8 +13,8 @@ import { IterationService } from '../../services/iteration.service';
 
 @Component({
   selector: 'side-panel',
-  templateUrl: './side-panel.component.html',
-  styleUrls: ['./side-panel.component.less']
+  template: require('./side-panel.component.html'),
+  styles: [require('./side-panel.component.css').toString()]
 })
 export class SidepanelComponent implements OnInit, OnDestroy {
 

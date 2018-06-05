@@ -15,8 +15,8 @@ import { User } from 'ngx-login-client';
 
 @Component({
   selector: 'f8-assignee',
-  templateUrl: './assignee.component.html',
-  styleUrls: ['./assignee.component.less']
+  template: require('./assignee.component.html'),
+  styles: [require('./assignee.component.css').toString()]
 })
 
 export class AssigneesComponent implements OnInit {

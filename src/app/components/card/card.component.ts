@@ -18,8 +18,8 @@ export class CardValue {
 
 @Component({
   selector: 'card',
-  templateUrl: './card.component.html',
-  styleUrls: ['./card.component.less']
+  template: require('./card.component.html'),
+  styles: [require('./card.component.css').toString()]
 })
 export class CardComponent implements OnInit, OnDestroy {
 

@@ -23,8 +23,8 @@ import { WorkItemService } from '../../services/work-item.service';
 
 @Component({
   selector: 'assignee-selector',
-  templateUrl: './assignee-selector.component.html',
-  styleUrls: ['./assignee-selector.component.less']
+  template: require('./assignee-selector.component.html'),
+  styles: [require('./assignee-selector.component.css').toString()]
 })
 export class AssigneeSelectorComponent {
 

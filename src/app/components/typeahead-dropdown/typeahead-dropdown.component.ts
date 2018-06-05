@@ -32,8 +32,8 @@ export class TypeaheadDropdownValue {
  */
 @Component({
   selector: 'typeahead-dropdown',
-  templateUrl: './typeahead-dropdown.component.html',
-  styleUrls: ['./typeahead-dropdown.component.less']
+  template: require('./typeahead-dropdown.component.html'),
+  styles: [require('./typeahead-dropdown.component.css').toString()]
 })
 export class TypeaheadDropdown implements OnInit, OnChanges, OnDestroy {
 

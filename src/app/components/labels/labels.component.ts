@@ -15,8 +15,8 @@ import { LabelModel } from './../../models/label.model';
 
 @Component({
   selector: 'f8-label',
-  templateUrl: './labels.component.html',
-  styleUrls: ['./labels.component.less']
+  template: require('./labels.component.html'),
+  styles: [require('./labels.component.css').toString()]
 })
 
 export class LabelsComponent implements OnInit {

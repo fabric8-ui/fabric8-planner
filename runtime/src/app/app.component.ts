@@ -8,8 +8,8 @@ import { GlobalSettings } from './shared/globals';
 @Component({
   selector: 'f8-app',
   encapsulation: ViewEncapsulation.None,
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.less'],
+  template: require('./app.component.html'),
+  styles: [require('./app.component.css').toString()],
   providers: [GlobalSettings]
 })
 export class AppComponent implements OnInit {
