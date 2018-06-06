@@ -1,10 +1,11 @@
 <div class="f8-event__wrap">
   <user-avatar
+    class="pull-left"
     *ngIf="(event.modifier | async).avatar"
     [imgSrc]= "(event.modifier | async).avatar | almAvatarSize:30"
     container="body">
   </user-avatar>
-  <div class="f8-event-body">
+  <div class="f8-event-body margin-v-3">
     <div>
       <h5 class="f8-event-author pull-left">
         <strong class="truncate">
