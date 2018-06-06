@@ -29,34 +29,20 @@ import {
 import { WorkItemCommentComponent } from './work-item-comment.component';
 import { PlannerModalModule } from './../../components/modal/modal.module';
 
-import { MockHttp } from '../../mock/mock-http';
-
-let providers = [];
-
-if (process.env.ENV == 'inmemory') {
-  providers = [
-    GlobalSettings,
-    {
-      provide: HttpService,
-      useExisting: MockHttp
-     },
-    TooltipConfig,
-    BsDropdownConfig
-   ];
-} else {
-  providers = [
-    {
-      provide: HttpService,
-      useFactory: (backend: XHRBackend, options: RequestOptions, auth: AuthenticationService) => {
-        return new HttpService(backend, options, auth);
-      },
-      deps: [XHRBackend, RequestOptions, AuthenticationService]
-    },
-    GlobalSettings,
-    TooltipConfig,
-    BsDropdownConfig
-    ];
+export function httpfactory(backend: XHRBackend, options: RequestOptions, auth: AuthenticationService){
+  return new HttpService(backend, options, auth);
 }
+
+let providers = [
+  {
+    provide: HttpService,
+    useFactory: httpfactory,
+    deps: [XHRBackend, RequestOptions, AuthenticationService]
+  },
+  GlobalSettings,
+  TooltipConfig,
+  BsDropdownConfig
+];
 
 @NgModule({
   imports: [

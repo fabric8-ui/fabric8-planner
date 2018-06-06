@@ -15,7 +15,6 @@ import { AuthenticationService } from 'ngx-login-client';
 import { PlannerListComponent } from './planner-list.component';
 
 import { HttpService } from '../../services/http-service';
-import { MockHttp } from '../../mock/mock-http';
 import { CustomQueryService } from './../../services/custom-query.service';
 import { WorkItemService } from './../../services/work-item.service';
 import { IterationService } from './../../services/iteration.service';
@@ -58,37 +57,15 @@ import { ClickOutModule } from '../../widgets/clickout/clickout.module';
 import { CommentQuery } from './../../models/comment';
 import { UserQuery } from './../../models/user';
 
-let providers = [];
+export function httpfactory(backend: XHRBackend, options: RequestOptions, auth: AuthenticationService){
+  return new HttpService(backend, options, auth);
+}
 
-if (process.env.ENV == 'inmemory') {
-  providers = [
+let providers = [
     WorkItemService,
     {
       provide: HttpService,
-      useClass: MockHttp
-    },
-    CustomQueryService,
-    IterationService,
-    TooltipConfig,
-    GlobalSettings,
-    LabelService,
-    AreaService,
-    CollaboratorService,
-    FilterService,
-    BsDropdownConfig,
-    CookieService,
-    WorkItemDataService,
-    UrlService,
-    InfotipService
-  ];
-} else {
-  providers = [
-    WorkItemService,
-    {
-      provide: HttpService,
-      useFactory: (backend: XHRBackend, options: RequestOptions, auth: AuthenticationService) => {
-        return new HttpService(backend, options, auth);
-      },
+      useFactory: httpfactory,
       deps: [XHRBackend, RequestOptions, AuthenticationService]
     },
     CustomQueryService,
@@ -108,7 +85,6 @@ if (process.env.ENV == 'inmemory') {
     CommentQuery,
     UserQuery
   ];
-}
 
 @NgModule({
   imports: [
