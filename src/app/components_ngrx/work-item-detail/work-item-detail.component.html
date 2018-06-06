@@ -196,6 +196,7 @@
                   id="WI_details_reporter_img"
                   *ngIf="creator"
                   [imgSrc]="creator?.avatar + '&s=20'"
+                  [imgPlacement]="'bottom'"
                   [imgTooltip]="creator?.name"
                   onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'">
                 </user-avatar>

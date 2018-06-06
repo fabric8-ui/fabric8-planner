@@ -61,6 +61,7 @@
 <user-avatar 
   *ngIf="col === 'creator'"
   [imgTooltip]="row.creator?.attributes?.fullName"
+  [imgPlacement]="'left'"
   [imgSrc]="row.creator?.attributes?.imageURL + '&s=23'">
 </user-avatar>
 

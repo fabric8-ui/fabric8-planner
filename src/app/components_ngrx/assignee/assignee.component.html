@@ -7,6 +7,7 @@
       *ngFor="let assignee of assignees">
       <user-avatar
         [imgTooltip]="assignee?.name"
+        [imgPlacement]="'left'"
         [imgSrc]="assignee?.avatar + '&s=20'">
       </user-avatar>
       <span class="pointer">
@@ -19,6 +20,7 @@
       <user-avatar 
         *ngFor="let assignee of assignees | slice:0:truncateAfter"
         [imgTooltip]="assignee?.name"
+        [imgPlacement]="'left'"
         [imgSrc]="assignee?.avatar + '&s=20'">
       </user-avatar>
       <div dropdown class="pull-left margin-h-5 dropdown" placement="right">

@@ -13,6 +13,7 @@ import {
 export class UserAvatarComponent implements OnInit {
   @Input('imgSrc') imgSrc: string ;
   @Input('imgTooltip') imgTooltip: string ;
+  @Input('imgPlacement') imgPlacement: string;
   
   ngOnInit() { }
 }

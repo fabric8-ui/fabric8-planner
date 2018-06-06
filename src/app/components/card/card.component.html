@@ -38,7 +38,8 @@
   <div class="f8-board-card__row">
     <user-avatar
       *ngIf="cardValue.avatar!==''"
-      [imgPooltip]="wItem?.attributes?.fullName"
+      [imgTooltip]="wItem?.attributes?.fullName"
+      [imgPlacement]="'left'"
       [imgSrc]="cardValue.avatar + '&s=20'">
     </user-avatar>
     <div class="margin-right-15 padding-right-15"
