@@ -22,8 +22,7 @@
     let-src="src + '&s=20'"
     let-stickontop="stickontop">
     <user-avatar
-      [imgSrc]="src | almAvatarSize: 20"
-      onError="this.src='https://avatars0.githubusercontent.com/u/563119?v=3&s=20'">
+      [imgSrc]="src | almAvatarSize: 20">
     </user-avatar>
     <span *ngIf="!stickontop" [innerHTML]="name | almSearchHighlight: searchValue"></span>
     <span
