@@ -39,6 +39,7 @@ export class CommentComponent {
    new EventEmitter();
 
   @ViewChild('commentEditor') commentEditor: MarkdownComponent;
+  @ViewChild('replyEditor') replyEditor: MarkdownComponent;
 
   private replyActive: boolean = false;
 
@@ -71,7 +72,7 @@ export class CommentComponent {
     }
   }
 
-  onKeyUp(event) {
+  onCommentEditorKeyUp(event) {
     let inputText = this.commentEditor.editorInput.nativeElement.innerText.trim();
     if (inputText.length) {
       this.commentEditor.saving = false;
@@ -82,5 +83,20 @@ export class CommentComponent {
 
   updateChildComment(updatedComment: CommentUI) {
     this.onUpdateRequest.emit(updatedComment);
+  }
+
+  onReplyEditorKeyUp(event) {
+    let inputText = this.replyEditor.editorInput.nativeElement.innerText.trim();
+    if (inputText.length) {
+      this.replyEditor.saving = false;
+    } else {
+      this.replyEditor.saving = true;
+    }
+  }
+
+  onReplyClick() {
+    this.replyActive=true;
+    this.replyEditor.enableEditor();
+    this.replyEditor.saving = true;
   }
 }
