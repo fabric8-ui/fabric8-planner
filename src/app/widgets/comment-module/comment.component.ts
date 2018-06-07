@@ -1,10 +1,11 @@
 import {
   Component, Input,
-  EventEmitter, Output
+  EventEmitter, Output, ViewChild
 } from '@angular/core';
 
 import { CommentUI } from './../../models/comment';
 import { WorkItemService } from './../../services/work-item.service';
+import { MarkdownComponent } from 'ngx-widgets';
 
 @Component({
   selector: 'fabric8-comment',
@@ -37,6 +38,8 @@ export class CommentComponent {
   @Output('onUpdateRequest') onUpdateRequest: EventEmitter<CommentUI> =
    new EventEmitter();
 
+  @ViewChild('commentEditor') commentEditor: MarkdownComponent;
+
   private replyActive: boolean = false;
 
   constructor() {}
@@ -57,13 +60,24 @@ export class CommentComponent {
   }
 
   updateComment(event: any, comment: CommentUI): void {
-    const rawText = event.rawText;
-    let updatedComment: CommentUI = {
-      body: rawText,
-      id: comment.id,
-      selfLink: comment.selfLink
-    } as CommentUI;
-    this.onUpdateRequest.emit(updatedComment);
+    if (event.rawText !== "") {
+      const rawText = event.rawText;
+      let updatedComment: CommentUI = {
+        body: rawText,
+        id: comment.id,
+        selfLink: comment.selfLink
+      } as CommentUI;
+      this.onUpdateRequest.emit(updatedComment);
+    }
+  }
+
+  onKeyUp(event) {
+    let inputText = this.commentEditor.editorInput.nativeElement.innerText.trim();
+    if (inputText.length) {
+      this.commentEditor.saving = false;
+    } else {
+      this.commentEditor.saving = true;
+    }
   }
 
   updateChildComment(updatedComment: CommentUI) {

@@ -51,7 +51,9 @@ export class WorkItemCommentWrapperComponent implements OnInit, OnDestroy {
   }
 
   updateComment(comment: CommentUI) {
-    this.commentQuery.updateComment(comment);
+    if (comment.body !== "") {
+      this.commentQuery.updateComment(comment);
+    }
   }
 
   deleteComment(event: any) {}

@@ -24,6 +24,8 @@
 
   <div class="width-100 pull-left comment">
     <f8-markdown
+      #commentEditor
+      (keyup)="onKeyUp($event)"
       [attr.id]="'comment_body_' + counter"
       [editAllow]="comment.allowEdit"
       [rawText]="comment.body"
