@@ -45,7 +45,7 @@ import { PlannerListComponent } from './planner-list.component';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 import { PlannerLayoutModule } from './../../widgets/planner-layout/planner-layout.module';
 import { WorkItemService } from '../../services/work-item.service';
-import { HttpService } from '../../services/http-service';
+import { HttpService, factoryForHttpService } from '../../services/http-service';
 import { LabelService } from '../../services/label.service';
 import { AssigneesModule } from './../assignee/assignee.module';
 import { WorkItemCellComponent } from '../work-item-cell/work-item-cell.component';
@@ -60,10 +60,6 @@ import {
 import { IterationState, initialState as initialIterationState } from './../../states/iteration.state';
 import { iterationReducer } from './../../reducers/iteration-reducer';
 
-export function httpfactory(backend: XHRBackend, options: RequestOptions, auth: AuthenticationService){
-  return new HttpService(backend, options, auth);
-}
-
 let providers = [
     BsDropdownConfig,
     GlobalSettings,
@@ -73,7 +69,7 @@ let providers = [
     Logger,
     {
       provide: HttpService,
-      useFactory: httpfactory,
+      useFactory: factoryForHttpService,
       deps: [XHRBackend, RequestOptions, AuthenticationService]
     },
     LabelService,

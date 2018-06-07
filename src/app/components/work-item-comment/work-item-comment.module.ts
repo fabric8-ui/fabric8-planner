@@ -1,7 +1,7 @@
 import { GlobalSettings } from '../../shared/globals';
 import { HttpModule, Http, XHRBackend, RequestOptions } from '@angular/http';
 import { AuthenticationService } from 'ngx-login-client';
-import { HttpService } from './../../services/http-service';
+import { HttpService, factoryForHttpService } from './../../services/http-service';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -19,14 +19,10 @@ import {
 import { WorkItemCommentComponent } from './work-item-comment.component';
 import { PlannerModalModule } from '../modal/modal.module';
 
-export function httpfactory(backend: XHRBackend, options: RequestOptions, auth: AuthenticationService){
-  return new HttpService(backend, options, auth);
-}
-
 let providers = [
   {
     provide: HttpService,
-    useFactory: httpfactory,
+    useFactory: factoryForHttpService,
     deps: [XHRBackend, RequestOptions, AuthenticationService]
   },
   GlobalSettings,

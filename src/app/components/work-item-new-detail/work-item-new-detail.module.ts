@@ -4,7 +4,7 @@ import { UrlService } from './../../services/url.service';
 import { AuthenticationService } from 'ngx-login-client';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { WidgetsModule, MarkdownModule } from 'ngx-widgets';
-import { HttpService } from './../../services/http-service';
+import { HttpService, factoryForHttpService } from './../../services/http-service';
 import { WorkItemTypeControlService } from './../../services/work-item-type-control.service';
 import { WorkItemService } from './../../services/work-item.service';
 import { WorkItemDataService } from './../../services/work-item-data.service';
@@ -23,7 +23,7 @@ import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { LabelsModule } from '../labels/labels.module';
 import { WorkItemNewDetailComponent } from './work-item-new-detail.component';
 import { WorkItemNewDetailRoutingModule } from './work-item-new-detail-routing.module';
-import { WorkItemCommentModule, httpfactory } from '../work-item-comment/work-item-comment.module';
+import { WorkItemCommentModule } from '../work-item-comment/work-item-comment.module';
 import { CollaboratorService } from '../../services/collaborator.service'
 import { TypeaheadDropDownModule } from '../typeahead-dropdown/typeahead-dropdown.module';
 
@@ -33,14 +33,10 @@ import { SelectDropdownModule } from './../../widgets/select-dropdown/select-dro
 import { AssigneesModule } from './../assignee/assignee.module';
 import { AssigneeSelectorModule } from './../assignee-selector/assignee-selector.module';
 
-export function httpfactory(backend: XHRBackend, options: RequestOptions, auth: AuthenticationService){
-  return new HttpService(backend, options, auth);
-}
-
 let providers = [
   {
     provide: HttpService,
-    useFactory: httpfactory,
+    useFactory: factoryForHttpService,
     deps: [XHRBackend, RequestOptions, AuthenticationService]
   },
   AreaService,

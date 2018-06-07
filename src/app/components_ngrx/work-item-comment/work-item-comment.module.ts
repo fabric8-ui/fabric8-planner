@@ -17,7 +17,7 @@ import { AuthenticationService } from 'ngx-login-client';
 
 import { CommentModule } from './../../widgets/comment-module/comment.module';
 import { GlobalSettings } from './../../shared/globals';
-import { HttpService } from './../../services/http-service';
+import { HttpService, factoryForHttpService } from './../../services/http-service';
 import { SafePipeModule } from '../../pipes/safe.module';
 import {
   AlmEditableModule,
@@ -29,14 +29,10 @@ import {
 import { WorkItemCommentComponent } from './work-item-comment.component';
 import { PlannerModalModule } from './../../components/modal/modal.module';
 
-export function httpfactory(backend: XHRBackend, options: RequestOptions, auth: AuthenticationService){
-  return new HttpService(backend, options, auth);
-}
-
 let providers = [
   {
     provide: HttpService,
-    useFactory: httpfactory,
+    useFactory: factoryForHttpService,
     deps: [XHRBackend, RequestOptions, AuthenticationService]
   },
   GlobalSettings,

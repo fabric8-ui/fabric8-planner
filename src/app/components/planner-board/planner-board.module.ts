@@ -24,7 +24,7 @@ import {
 } from 'ngx-widgets';
 import { AuthenticationService } from 'ngx-login-client';
 
-import { HttpService } from '../../services/http-service';
+import { HttpService, factoryForHttpService } from '../../services/http-service';
 
 import {
   FabPlannerAssociateIterationModalModule
@@ -44,10 +44,6 @@ import { WorkItemService } from '../../services/work-item.service';
 import { PlannerLayoutModule } from '../../widgets/planner-layout/planner-layout.module';
 import { PlannerModalModule } from '../modal/modal.module';
 
-export function httpfactory(backend: XHRBackend, options: RequestOptions, auth: AuthenticationService){
-  return new HttpService(backend, options, auth);
-}
-
 let providers = [
   BsDropdownConfig,
   EventService,
@@ -57,7 +53,7 @@ let providers = [
   Logger,
   {
     provide: HttpService,
-    useFactory: httpfactory,
+    useFactory: factoryForHttpService,
     deps: [XHRBackend, RequestOptions, AuthenticationService]
   },
   TooltipConfig,
