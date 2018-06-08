@@ -62,12 +62,6 @@
 
 
       <!-- workitemtype field type: markup -->
-      <!-- <markdown-control
-        *ngSwitchCase="'markup'"
-        [markdownValue]="form.value[this.attributeKey].content"
-        (onUpdate)="onChangeMarkup($event)">
-      </markdown-control> -->
-
       <f8-markdown
         *ngIf="fieldValue.field.type.kind==='markup'"
         [editAllow]="editAllow"
