@@ -3,7 +3,6 @@ import { TruncateModule } from 'ng2-truncate';
 import { WorkItemTypeControlService } from './../../services/work-item-type-control.service';
 import { CommonSelectorModule } from './../common-selector/common-selector.module';
 import { LabelsModule } from './../labels/labels.module';
-import { TypeaheadDropDownModule } from './../../components/typeahead-dropdown/typeahead-dropdown.module';
 import { AlmUserNameModule } from './../../pipes/alm-user-name.module';
 import { AssigneesModule } from './../assignee/assignee.module';
 import { AssigneeSelectorModule } from './../assignee-selector/assignee-selector.module';
@@ -67,7 +66,6 @@ import { EventEffects } from '../../effects/event.effects';
     RouterModule,
     BsDropdownModule.forRoot(),
     TooltipModule.forRoot(),
-    TypeaheadDropDownModule,
     LabelsModule,
     LabelSelectorModule,
     MarkdownModule,
