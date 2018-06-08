@@ -18,7 +18,7 @@ import { IterationService } from '../../services/iteration.service';
 import { IterationListEntryComponent } from '../iteration-list-entry/iteration-list-entry.component';
 import { IterationTreeComponent } from '../iteration-tree/iteration-tree.component';
 import { ModalModule } from 'ngx-modal';
-import { SwitchModule } from './../../components/switch/switch.module';
+import { SwitchModule } from './../../widgets/switch/switch.module';
 import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { TruncateModule } from 'ng2-truncate';
 
