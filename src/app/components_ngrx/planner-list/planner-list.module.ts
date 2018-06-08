@@ -34,7 +34,7 @@ import { WorkItemQuickAddModule } from './../work-item-quick-add/work-item-quick
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { FilterColumn } from '../../pipes/column-filter.pipe';
 import { WorkItemDataService } from './../../services/work-item-data.service';
-import { PlannerModalModule } from '../../components/modal/modal.module';
+import { PlannerModalModule } from '../../widgets/modal/modal.module';
 import { TruncateModule } from 'ng2-truncate';
 
 import { CookieService } from './../../services/cookie.service';

@@ -27,8 +27,6 @@ import {
 } from 'ngx-widgets';
 
 import { WorkItemCommentComponent } from './work-item-comment.component';
-import { PlannerModalModule } from './../../components/modal/modal.module';
-
 import { MockHttp } from '../../mock/mock-http';
 
 let providers = [];
@@ -68,7 +66,6 @@ if (process.env.ENV == 'inmemory') {
     BsDropdownModule,
     FormsModule,
     MarkdownModule,
-    PlannerModalModule,
     RouterModule,
     HttpModule,
     TooltipModule,

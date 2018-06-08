@@ -22,7 +22,7 @@ import {
   WorkItemCommentWrapperModule
 } from './../work-item-comment-wrapper/work-item-comment-wrapper.module';
 import { WorkItemEventWrapperModule } from './../work-item-event-wrapper/work-item-event-wrapper.module';
-import { PlannerModalModule } from '../../components/modal/modal.module';
+import { PlannerModalModule } from '../../widgets/modal/modal.module';
 import  { WorkItemLinkModule } from './../work-item-link/work-item-link.module';
 import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component';
 import { MyDatePickerModule } from 'mydatepicker';
