@@ -14,7 +14,8 @@
           [class.dib]="sidePanelOpen"
           [class.hide]="!sidePanelOpen">
         {{ item.name }}</span>
-        <infotip 
+        <infotip
+          [infotipId]="'infotip-group-type-'+item.id"
           [class.dib]="sidePanelOpen"
           [class.hide]="!sidePanelOpen"
           [infotipText]="getInfotipText(item.id) | async">
