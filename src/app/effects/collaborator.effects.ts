@@ -1,23 +1,23 @@
-import { UserService } from 'ngx-login-client';
-import { Store } from '@ngrx/store';
-import { Actions, Effect } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
-import * as CollaboratorActions from './../actions/collaborator.actions';
-import { Observable } from 'rxjs';
-import { AppState } from './../states/app.state';
+import { Actions, Effect } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import {
   Notification,
   Notifications,
   NotificationType
-} from "ngx-base";
+} from 'ngx-base';
+import { UserService } from 'ngx-login-client';
+import { Observable } from 'rxjs';
+import * as CollaboratorActions from './../actions/collaborator.actions';
+import { AppState } from './../states/app.state';
 
+import {
+  UserMapper,
+  UserService as UserServiceModel
+} from './../models/user';
 import {
   CollaboratorService as CollabService
 } from './../services/collaborator.service';
-import {
-  UserService as UserServiceModel,
-  UserMapper
-} from './../models/user';
 
 export type Action = CollaboratorActions.All;
 
@@ -40,7 +40,7 @@ export class CollaboratorEffects {
         )
         .map((collaborators: UserServiceModel[]) => {
           const collabM = new UserMapper();
-          return collaborators.map(c => collabM.toUIModel(c))
+          return collaborators.map(c => collabM.toUIModel(c));
         })
         .mergeMap(collaborators => {
           // resolving loggedin user
@@ -50,10 +50,10 @@ export class CollaboratorEffects {
                 collaborators.map(c => {
                   c.currentUser = c.id === user.id;
                   return c;
-                })
+                });
               }
               return new CollaboratorActions.GetSuccess(collaborators);
-            })
+            });
         })
         .catch(e => {
           try {
@@ -65,6 +65,6 @@ export class CollaboratorEffects {
             console.log('Problem in fetching collaborators');
           }
           return Observable.of(new CollaboratorActions.GetError());
-        })
-    })
+        });
+    });
 }

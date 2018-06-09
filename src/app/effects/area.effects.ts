@@ -1,16 +1,16 @@
-import { Store } from '@ngrx/store';
-import { Actions, Effect } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
-import * as AreaActions from './../actions/area.actions';
+import { Actions, Effect } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { Notification, Notifications, NotificationType } from 'ngx-base';
 import { Observable } from 'rxjs';
+import * as AreaActions from './../actions/area.actions';
 import { AppState } from './../states/app.state';
-import { Notification, Notifications, NotificationType } from "ngx-base";
 
-import { AreaService as AService } from './../services/area.service';
 import {
-  AreaService,
-  AreaMapper
+  AreaMapper,
+  AreaService
 } from './../models/area.model';
+import { AreaService as AService } from './../services/area.service';
 
 export type Action = AreaActions.All;
 
@@ -21,7 +21,7 @@ export class AreaEffects {
     private areaService: AService,
     private store: Store<AppState>,
     private notifications: Notifications
-  ){}
+  ) {}
 
   @Effect() getAreas$: Observable<Action> = this.actions$
     .ofType(AreaActions.GET)
@@ -34,7 +34,7 @@ export class AreaEffects {
           const aMapper = new AreaMapper();
           return new AreaActions.GetSuccess(
             areas.map(a => aMapper.toUIModel(a))
-          )
+          );
         })
         .catch((e) => {
           try {

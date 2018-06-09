@@ -1,18 +1,18 @@
-import { Injectable } from "@angular/core";
-import { Actions, Effect } from "@ngrx/effects";
-import { Notification, Notifications, NotificationType } from "ngx-base";
-import { WorkItemService } from "./../services/work-item.service";
-import { Store } from "@ngrx/store";
-import { AppState } from "../states/app.state";
-import { Observable } from "rxjs";
+import { Injectable } from '@angular/core';
+import { Actions, Effect } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { Notification, Notifications, NotificationType } from 'ngx-base';
+import { Observable } from 'rxjs';
+import { EventMapper, EventResolver, EventService, EventUI } from '../models/event.model';
+import { AppState } from '../states/app.state';
 import * as EventActions from './../actions/event.action';
-import { EventMapper, EventUI, EventService, EventResolver } from "../models/event.model";
+import { WorkItemService } from './../services/work-item.service';
 
 export type Action = EventActions.All;
 
 @Injectable()
 export class EventEffects {
-  private eventMapper: EventMapper = 
+  private eventMapper: EventMapper =
     new EventMapper();
   constructor(
     private actions$: Actions,
@@ -26,8 +26,8 @@ export class EventEffects {
     return events.map((event: EventService) => {
       const eventUI = this.eventMapper.toUIModel(event);
       const resolvedEvent = new EventResolver(eventUI, state);
-      return {...resolvedEvent.getEvent()}
-    })
+      return {...resolvedEvent.getEvent()};
+    });
   }
 
   @Effect() getWorkItemEvents$: Observable<Action> = this.actions$
@@ -37,7 +37,7 @@ export class EventEffects {
       return {
         payload: action.payload,
         state: state
-      }
+      };
     })
     .switchMap((cp) => {
       return this.workItemService.resolveEvents(cp.payload)
@@ -58,6 +58,6 @@ export class EventEffects {
             console.log('Problem loading Events.');
           }
           return Observable.of(new EventActions.GetError());
-        })
+        });
     });
 }
