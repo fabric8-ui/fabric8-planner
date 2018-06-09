@@ -77,7 +77,7 @@
     "use-input-property-decorator": true,
     "use-output-property-decorator": true,
     "use-host-property-decorator": true,
-    "use-view-encapsulation": true,
+    // "use-view-encapsulation": true,
     "no-attribute-parameter-decorator": true,
     "no-output-named-after-standard-event": true,
     "no-input-rename": true,
@@ -92,11 +92,6 @@
     "component-class-suffix": true,
     "directive-class-suffix": true,
     "pipe-impure": true,
-    "i18n": [
-      true,
-      "check-id",
-      "check-text"
-    ],
     "template-cyclomatic-complexity": [
       true,
       5

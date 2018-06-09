@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
-  HttpModule, Http,
+  Http, HttpModule,
   RequestOptions, XHRBackend } from '@angular/http';
 import { RouterModule } from '@angular/router';
 
@@ -11,23 +11,23 @@ import {
   BsDropdownModule,
   CollapseModule,
   TooltipConfig,
-  TooltipModule,
+  TooltipModule
 } from 'ngx-bootstrap';
 import { AuthenticationService } from 'ngx-login-client';
 
-import { CommentModule } from './../../widgets/comment-module/comment.module';
-import { GlobalSettings } from './../../shared/globals';
-import { HttpService } from './../../services/http-service';
-import { SafePipeModule } from '../../pipes/safe.module';
 import {
   AlmEditableModule,
   AlmIconModule,
-  WidgetsModule,
-  MarkdownModule
+  MarkdownModule,
+  WidgetsModule
 } from 'ngx-widgets';
+import { SafePipeModule } from '../../pipes/safe.module';
+import { HttpService } from './../../services/http-service';
+import { GlobalSettings } from './../../shared/globals';
+import { CommentModule } from './../../widgets/comment-module/comment.module';
 
-import { WorkItemCommentComponent } from './work-item-comment.component';
 import { MockHttp } from '../../mock/mock-http';
+import { WorkItemCommentComponent } from './work-item-comment.component';
 
 let providers = [];
 

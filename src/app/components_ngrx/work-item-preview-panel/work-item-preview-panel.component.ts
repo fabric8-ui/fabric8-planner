@@ -1,12 +1,3 @@
-import { WorkItemUI } from './../../models/work-item';
-import {
-  Component,
-  Input,
-  EventEmitter,
-  HostListener,
-  Output,
-  OnInit
-} from '@angular/core';
 import {
   animate,
   state,
@@ -14,6 +5,15 @@ import {
   transition,
   trigger
 } from '@angular/animations';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
+import { WorkItemUI } from './../../models/work-item';
 
 @Component({
   selector: 'work-item-preview-panel',
@@ -31,7 +31,7 @@ import {
       })),
       transition('in => out', animate('200ms ease-in-out')),
       transition('out => in', animate('200ms ease-in-out'))
-    ]),
+    ])
   ]
 })
 

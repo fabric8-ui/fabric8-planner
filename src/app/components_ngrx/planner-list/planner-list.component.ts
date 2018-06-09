@@ -1,48 +1,48 @@
-import { UrlService } from './../../services/url.service';
-import { Observable } from 'rxjs/Observable';
 import {
   AfterViewChecked,
   Component,
   ElementRef,
   HostListener,
-  OnInit,
   OnDestroy,
+  OnInit,
   Renderer2,
-  ViewEncapsulation,
-  ViewChild
+  ViewChild,
+  ViewEncapsulation
 } from '@angular/core';
-import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
-import { PlannerLayoutComponent } from './../../widgets/planner-layout/planner-layout.component';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { cloneDeep, isEqual, sortBy } from 'lodash';
 import { Space } from 'ngx-fabric8-wit';
-import { WorkItemTypeUI } from '../../models/work-item-type';
 import {
   AuthenticationService,
   User,
   UserService
 } from 'ngx-login-client';
-import { IterationUI } from './../../models/iteration.model';
-import { FilterService } from './../../services/filter.service';
-import { CookieService } from './../../services/cookie.service';
-import { cloneDeep, sortBy, isEqual } from 'lodash';
 import { EmptyStateConfig } from 'patternfly-ng/empty-state';
+import { Observable } from 'rxjs/Observable';
+import { WorkItemTypeUI } from '../../models/work-item-type';
+import { IterationUI } from './../../models/iteration.model';
+import { CookieService } from './../../services/cookie.service';
+import { FilterService } from './../../services/filter.service';
+import { UrlService } from './../../services/url.service';
+import { PlannerLayoutComponent } from './../../widgets/planner-layout/planner-layout.component';
 
 // import for column
 import { datatableColumn } from './datatable-config';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
-import { AppState } from './../../states/app.state';
+import { WorkItemUI } from '../../models/work-item';
+import { WorkItemPreviewPanelComponent } from '../work-item-preview-panel/work-item-preview-panel.component';
+import * as AreaActions from './../../actions/area.actions';
+import * as CollaboratorActions from './../../actions/collaborator.actions';
+import * as GroupTypeActions from './../../actions/group-type.actions';
 // import * as actions from './../../actions/index.actions';
 import * as IterationActions from './../../actions/iteration.actions';
-import * as GroupTypeActions from './../../actions/group-type.actions';
-import * as SpaceActions from './../../actions/space.actions';
-import * as CollaboratorActions from './../../actions/collaborator.actions';
-import * as AreaActions from './../../actions/area.actions';
-import * as WorkItemTypeActions from './../../actions/work-item-type.actions';
 import * as LabelActions from './../../actions/label.actions';
-import { WorkItemUI } from '../../models/work-item';
+import * as SpaceActions from './../../actions/space.actions';
+import * as WorkItemTypeActions from './../../actions/work-item-type.actions';
 import * as WorkItemActions from './../../actions/work-item.actions';
-import { WorkItemPreviewPanelComponent } from '../work-item-preview-panel/work-item-preview-panel.component';
+import { AppState } from './../../states/app.state';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -68,7 +68,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private spaceSource = this.store
     .select('listPage')
     .select('space')
-    .do(s => {if (!s) this.store.dispatch(new SpaceActions.Get())})
+    .do(s => {if (!s) { this.store.dispatch(new SpaceActions.Get()); }})
     .filter(s => !!s);
   private areaSource = this.store
     .select('listPage')
@@ -77,11 +77,11 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private iterationSource = this.store
     .select('listPage')
     .select('iterations')
-    .filter(i => !!i.length)
+    .filter(i => !!i.length);
   private labelSource = this.store
     .select('listPage')
     .select('labels')
-    .filter(i => i !== null)
+    .filter(i => i !== null);
   private collaboratorSource = this.store
     .select('listPage')
     .select('collaborators')
@@ -186,7 +186,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
               this.filterService.queryBuilder(
                 'state', this.filterService.not_equal_notation, state
               )
-            )
+            );
           });
           exp = this.filterService.queryJoiner(
             exp,
@@ -213,13 +213,13 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
           pageSize: 200,
           filters: payload,
           isShowTree: this.showTree
-        }))
+        }));
       })
     );
 
     const queryParams = this.route.snapshot.queryParams;
-    if(Object.keys(queryParams).length === 0 ||
-      ( Object.keys(queryParams).length === 1 &&  // for in memory
+    if (Object.keys(queryParams).length === 0 ||
+      (Object.keys(queryParams).length === 1 &&  // for in memory
         Object.keys(queryParams).indexOf('token_json') > -1)) {
       this.setDefaultUrl();
     }
@@ -251,7 +251,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
 
    //ngx-datatable methods
    handleReorder(event) {
-    if(event.newValue !== 0) {
+    if (event.newValue !== 0) {
       this.columns[event.prevValue - 1].index = event.newValue;
       this.columns[event.newValue - 1].index = event.prevValue;
       this.columns = sortBy(this.columns, 'index');
@@ -262,7 +262,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   // Start: Settings(tableConfig) dropdown
 
   toggleCheckbox(event, col) {
-    if(event.target.checked) {
+    if (event.target.checked) {
       col.selected = true;
     } else {
       col.selected = false;
@@ -271,12 +271,12 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
 
   moveToDisplay() {
     this.columns.filter(col => col.selected).forEach(col => {
-      if(col.display === true) return;
+      if (col.display === true) { return; }
       col.selected = false;
       col.display = true;
       col.showInDisplay = true;
       col.available = false;
-    })
+    });
     this.updateColumnIndex();
     this.cookieService.setCookie('datatableColumn', this.columns);
     setTimeout(() => {
@@ -286,7 +286,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
 
   moveToAvailable() {
     this.columns.filter(col => col.selected).forEach(col => {
-      if(col.available === true) return;
+      if (col.available === true) { return; }
       col.selected = false;
       col.display = false;
       col.showInDisplay = false;
@@ -299,7 +299,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   updateColumnIndex() {
     let index = 0;
     this.columns.forEach(col => {
-      if(col.display === true) {
+      if (col.display === true) {
         col.index = index + 1;
         index += 1;
       } else {
@@ -320,8 +320,9 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   clickOut() {
-    if(this.isTableConfigOpen)
+    if (this.isTableConfigOpen) {
       this.isTableConfigOpen = false;
+    }
   }
 
   // End:  Setting(tableConfig) Dropdown
@@ -330,7 +331,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     if (event === 'out') {
       setTimeout(() => {
         this.sidePanelOpen = true;
-      }, 200)
+      }, 200);
     } else {
       this.sidePanelOpen = false;
     }
@@ -359,10 +360,10 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
               //Query for work item type group
               const type_query = this.filterService.queryBuilder('typegroup.name', this.filterService.equal_notation, defaultGroupName);
               //Query for space
-              const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, spaceId);
+              const space_query = this.filterService.queryBuilder('space', this.filterService.equal_notation, spaceId);
               //Join type and space query
-              const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query );
-              const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+              const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query);
+              const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query);
               //const view_query = this.filterService.queryBuilder('tree-view', this.filterService.equal_notation, 'true');
               //const third_join = this.filterService.queryJoiner(second_join);
               //second_join gives json object
@@ -403,7 +404,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         .subscribe(iteration => {
           this.selectedIteration = iteration;
         })
-    )
+    );
   }
 
   /**
@@ -423,11 +424,11 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
 
   setDataTableColumns() {
     // Cookie for datatableColumn config
-    if(!this.cookieService.getCookie(datatableColumn.length).status) {
+    if (!this.cookieService.getCookie(datatableColumn.length).status) {
       this.cookieService.setCookie('datatableColumn', datatableColumn);
       this.columns = datatableColumn;
     } else {
-      let temp = this.cookieService.getCookie(datatableColumn.length)
+      let temp = this.cookieService.getCookie(datatableColumn.length);
       this.columns = temp.array;
     }
   }
@@ -535,7 +536,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
 
   onRowDrop(event) {
     console.log(event);
-    if(event.source.id === event.target.id) {
+    if (event.source.id === event.target.id) {
       return;
     }
     this.uiLockedList = true;
@@ -543,7 +544,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
       workitem: event.source,
       destinationWorkitemID: event.target.id,
       direction: 'above'
-    }
+    };
     this.store.dispatch(new WorkItemActions.Reoder(payload));
   }
 
@@ -552,23 +553,23 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   ngAfterViewChecked() {
-    if(document.getElementsByClassName('navbar-pf').length > 0) {
+    if (document.getElementsByClassName('navbar-pf').length > 0) {
       this.hdrHeight = (document.getElementsByClassName('navbar-pf')[0] as HTMLElement).offsetHeight;
     }
-    if(this.toolbar) {
+    if (this.toolbar) {
       this.toolbarHt =  this.toolbar.nativeElement.offsetHeight;
     }
-    if(this.quickaddWrapper) {
+    if (this.quickaddWrapper) {
       this.quickaddHt =  this.quickaddWrapper.nativeElement.offsetHeight;
     }
     let targetHeight = window.innerHeight - (this.hdrHeight + this.toolbarHt + this.quickaddHt);
-    if(this.listContainer) {
-      this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + "px");
+    if (this.listContainer) {
+      this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + 'px');
     }
     // This hack is applied to get the titles in the list in order
     if (document.getElementsByClassName('planner-hack-title-truncate').length) {
       let arr = document.getElementsByClassName('planner-hack-title-truncate');
-      for(let i = 0; i < arr.length; i++) {
+      for (let i = 0; i < arr.length; i++) {
         arr[i].parentElement.style.display = 'flex';
       }
     }

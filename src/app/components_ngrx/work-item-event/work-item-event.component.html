@@ -10,7 +10,7 @@
       <div>
         <h5 class="f8-event-author pull-left">
           <strong class="truncate">
-            {{(event.modifier | async).name.split(' ')[0]}}
+            {{ (event.modifier | async).name.split(' ')[0] }}
           </strong>
           <span class="dib" style="vertical-align: text-top"
             *ngIf="textType === 'description'">
@@ -21,16 +21,16 @@
             style="vertical-align: top"
             *ngIf="textType === 'attribute'" >
             <span [innerHTML]=intermediateText></span>
-            <i> '{{event.oldValue}}' </i>
+            <i> '{{ event.oldValue }}' </i>
             {{ toText }} 
-            <i> '{{event.newValue}}'</i>
+            <i> '{{ event.newValue }}'</i>
           </span>
           <span class="dib" style="vertical-align: text-top"
             *ngIf="textType === 'relationship'" >
             <span [innerHTML]=intermediateText></span>
-            <i *ngFor="let item of event.newValueRelationships"> '{{item.name}}' </i>
+            <i *ngFor="let item of event.newValueRelationships"> '{{ item.name }}' </i>
             <ng-container *ngIf="toText">{{ toText }} 
-              <i *ngFor="let item of event.oldValueRelationships"> '{{item.name}}'</i>
+              <i *ngFor="let item of event.oldValueRelationships"> '{{ item.name }}'</i>
             </ng-container>
           </span>
           <div class="audit-trail__label"
@@ -58,7 +58,7 @@
         <small class="f8-event--create-time" 
           style="vertical-align: text-top"
           [tooltip]="event.timestamp | date:'medium'">
-          | {{event.timestamp | f8Time}}
+          | {{ event.timestamp | f8Time }}
         </small>
       </div>
     </div>

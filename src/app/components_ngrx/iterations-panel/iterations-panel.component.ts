@@ -1,28 +1,28 @@
-import { Params, ActivatedRoute } from '@angular/router';
 import {
-  Component, OnInit, OnDestroy,
-  TemplateRef, Input, OnChanges,
+  Component, Input, OnChanges,
+  OnDestroy, OnInit, TemplateRef,
   ViewChild, ViewEncapsulation
 } from '@angular/core';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
-import { Broadcaster, Logger, Notification, NotificationType, Notifications } from 'ngx-base';
+import { Broadcaster, Logger, Notification, Notifications, NotificationType } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
 
+import { IterationUI } from '../../models/iteration.model';
+import { WorkItem } from '../../models/work-item';
 import { GroupTypesService } from '../../services/group-types.service';
 import { IterationService } from '../../services/iteration.service';
 import { WorkItemService }   from '../../services/work-item.service';
-import { FilterService } from './../../services/filter.service';
-import { IterationUI } from '../../models/iteration.model';
-import { WorkItem } from '../../models/work-item';
 import { FabPlannerIterationModalComponent } from '../iterations-modal/iterations-modal.component';
+import { FilterService } from './../../services/filter.service';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
+import * as IterationActions from './../../actions/iteration.actions';
 import { AppState } from './../../states/app.state';
 import { IterationState, IterationUIState } from './../../states/iteration.state';
-import * as IterationActions from './../../actions/iteration.actions';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -51,7 +51,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   allIterations: IterationUI[] = [];
   eventListeners: any[] = [];
   treeIterations: IterationUI[] = [];
-  activeIterations:IterationUI[] = [];
+  activeIterations: IterationUI[] = [];
   spaceId: string = '';
   startedCheckingURL: boolean = false;
 
@@ -90,14 +90,14 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
           this.allIterations = [];
           this.activeIterations = [];
         }
-      })
+      });
   }
 
   ngOnChanges() {
     if (this.takeFromInput) {
       // do not display the root iteration on the iteration panel.
       this.allIterations = [];
-      for (let i=0; i<this.iterations.length; i++) {
+      for (let i = 0; i < this.iterations.length; i++) {
         if (!this.iterationService.isRootIteration(this.iterations[i].parentPath)) {
           this.allIterations.push(this.iterations[i]);
         }
@@ -117,12 +117,12 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     //Query for work item type group
     const type_query = this.filterService.queryBuilder('typegroup.name', this.filterService.equal_notation, this.witGroup);
     //Query for space
-    const space_query = this.filterService.queryBuilder('space',this.filterService.equal_notation, this.spaceId);
+    const space_query = this.filterService.queryBuilder('space', this.filterService.equal_notation, this.spaceId);
     //Query for iteration
-    const iteration_query = this.filterService.queryBuilder('iteration',this.filterService.equal_notation, iterationId);
+    const iteration_query = this.filterService.queryBuilder('iteration', this.filterService.equal_notation, iterationId);
     //Join type and space query
-    const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query );
-    const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query );
+    const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query);
+    const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query);
     const third_join = this.filterService.queryJoiner(second_join, this.filterService.and_notation, iteration_query);
     //this.setGroupType(witGroup);
     //second_join gives json object
@@ -135,21 +135,21 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
         q: this.constructURL(iterationId),
         showTree: this.showTree,
         showCompleted: this.showCompleted
-      }
+      };
     } else if (this.showTree) {
       return {
         q: this.constructURL(iterationId),
         showTree: this.showTree
-      }
+      };
     } else if (this.showCompleted) {
       return {
         q: this.constructURL(iterationId),
         showCompleted: this.showCompleted
-      }
+      };
     } else {
       return {
         q: this.constructURL(iterationId)
-      }
+      };
     }
   }
 
@@ -157,7 +157,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     if (this.takeFromInput) {
       // do not display the root iteration on the iteration panel.
       this.allIterations = [];
-      for (let i=0; i<this.iterations.length; i++) {
+      for (let i = 0; i < this.iterations.length; i++) {
         if (!this.iterationService.isRootIteration(this.iterations[i].parentPath)) {
           this.allIterations.push(this.iterations[i]);
         }
@@ -242,10 +242,10 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
         this.updateItemCounts();
         try {
         this.notifications.message({
-            message: workItem.attributes['system.title']+' has been associated with '+workItem.relationships.iteration.data.attributes['name'],
+            message: workItem.attributes['system.title'] + ' has been associated with ' + workItem.relationships.iteration.data.attributes['name'],
             type: NotificationType.SUCCESS
           } as Notification);
-        } catch(error) {
+        } catch (error) {
           console.log('Error in displaying notification. work item associated with iteration.');
         }
       },
@@ -256,10 +256,10 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
             message: 'Something went wrong. Please try again',
             type: NotificationType.DANGER
           } as Notification);
-        } catch(error) {
+        } catch (error) {
           console.log('Error in displaying notification. Error in work item association with iteration.');
         }
-      })
+      });
   }
 
   kebabMenuClick(event: Event) {

@@ -3,15 +3,15 @@ import {
   EventEmitter,
   Input,
   Output,
-  SimpleChanges,
-  SimpleChange
+  SimpleChange,
+  SimpleChanges
 } from '@angular/core';
-import { IterationListEntryComponent } from '../iteration-list-entry/iteration-list-entry.component'
 import { IterationUI } from '../../models/iteration.model';
+import { IterationListEntryComponent } from '../iteration-list-entry/iteration-list-entry.component';
 
 @Component({
     selector: 'iteration-tree',
-    templateUrl: './iteration-tree.component.html',
+    templateUrl: './iteration-tree.component.html'
 })
 
 export class IterationTreeComponent {

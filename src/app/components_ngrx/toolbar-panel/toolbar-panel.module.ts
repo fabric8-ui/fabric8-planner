@@ -7,9 +7,9 @@ import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ToolbarModule } from 'patternfly-ng/toolbar';
 
 import { CollaboratorService } from '../../services/collaborator.service';
-import { EventService } from './../../services/event.service';
 import { FilterService } from '../../services/filter.service';
 import { WorkItemService } from '../../services/work-item.service';
+import { EventService } from './../../services/event.service';
 import { ToolbarPanelComponent } from './toolbar-panel.component';
 
 import {
@@ -19,13 +19,13 @@ import {
 } from 'ngx-widgets';
 
 //ngrx stuff
-import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
+import { FilterEffects } from './../../effects/filter.effects';
 import { FilterReducer } from './../../reducers/filter.reducer';
 import {
   initialState as initialFilterState
 } from './../../states/filter.state';
-import { FilterEffects } from './../../effects/filter.effects';
 
 @NgModule({
   imports: [

@@ -1,39 +1,39 @@
-import { WorkItemTypeControlService } from './../../services/work-item-type-control.service';
-import { FormGroup } from '@angular/forms';
-import { LabelUI } from './../../models/label.model';
-import { IterationUI } from './../../models/iteration.model';
-import { AreaUI } from './../../models/area.model';
-import { UserUI } from './../../models/user';
-import { WorkItemTypeUI } from './../../models/work-item-type';
-import { AuthenticationService } from 'ngx-login-client';
-import { UrlService } from './../../services/url.service';
-import { GetWorkItem } from './../../actions/detail-work-item.actions';
-import { Observable } from 'rxjs/Observable';
-import { ActivatedRoute, Router } from '@angular/router';
 import {
   AfterViewChecked,
-  Component, Input, OnInit,
-  OnDestroy, Output, EventEmitter,
-  ElementRef, ViewChild, Renderer2, HostListener
+  Component, ElementRef, EventEmitter,
+  HostListener, Input, OnDestroy,
+  OnInit, Output, Renderer2, ViewChild
 } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
-import { InlineInputComponent } from './../../widgets/inlineinput/inlineinput.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthenticationService } from 'ngx-login-client';
 import { MarkdownComponent } from 'ngx-widgets';
+import { Observable } from 'rxjs/Observable';
+import { GetWorkItem } from './../../actions/detail-work-item.actions';
+import { AreaUI } from './../../models/area.model';
+import { IterationUI } from './../../models/iteration.model';
+import { LabelUI } from './../../models/label.model';
+import { UserUI } from './../../models/user';
+import { WorkItemTypeUI } from './../../models/work-item-type';
+import { UrlService } from './../../services/url.service';
+import { WorkItemTypeControlService } from './../../services/work-item-type-control.service';
+import { InlineInputComponent } from './../../widgets/inlineinput/inlineinput.component';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
-import { AppState } from './../../states/app.state';
-import { WorkItemUI } from './../../models/work-item';
-import * as WorkItemActions from './../../actions/work-item.actions';
-import * as DetailWorkItemActions from './../../actions/detail-work-item.actions';
-import * as IterationActions from './../../actions/iteration.actions';
-import * as GroupTypeActions from './../../actions/group-type.actions';
-import * as SpaceActions from './../../actions/space.actions';
-import * as CollaboratorActions from './../../actions/collaborator.actions';
 import * as AreaActions from './../../actions/area.actions';
-import * as WorkItemTypeActions from './../../actions/work-item-type.actions';
+import * as CollaboratorActions from './../../actions/collaborator.actions';
+import * as DetailWorkItemActions from './../../actions/detail-work-item.actions';
+import * as GroupTypeActions from './../../actions/group-type.actions';
+import * as IterationActions from './../../actions/iteration.actions';
 import * as LabelActions from './../../actions/label.actions';
+import * as SpaceActions from './../../actions/space.actions';
+import * as WorkItemTypeActions from './../../actions/work-item-type.actions';
+import * as WorkItemActions from './../../actions/work-item.actions';
+import { WorkItemUI } from './../../models/work-item';
 import { WorkItemService } from './../../services/work-item.service';
+import { AppState } from './../../states/app.state';
 
 @Component({
   selector: 'work-item-detail',
@@ -49,7 +49,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   private spaceSource = this.store
     .select('listPage')
     .select('space')
-    .do(s => {if (!s) this.store.dispatch(new SpaceActions.Get())})
+    .do(s => {if (!s) { this.store.dispatch(new SpaceActions.Get()); }})
     .filter(s => !!s);
   private areaSource = this.store
     .select('listPage')
@@ -61,7 +61,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     .filter(i => !!i.length);
   private labelSource = this.store
     .select('listPage')
-    .select('labels')
+    .select('labels');
   private collaboratorSource = this.store
     .select('listPage')
     .select('collaborators')
@@ -160,21 +160,21 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
       this.workItemSubscriber.unsubscribe();
       this.workItemSubscriber = null;
     }
-    if(document.getElementsByTagName('body')[0].style.overflow === "hidden") {
+    if (document.getElementsByTagName('body')[0].style.overflow === 'hidden') {
       document.getElementsByTagName('body')[0].removeAttribute('style');
     }
   }
 
   ngAfterViewChecked() {
-    if(this.detailContext === 'detail') {
-      if(this.detailHeader) {
-        let HdrDivHeight:any =  this.detailHeader.nativeElement.offsetHeight;
-        let targetHeight:any = window.innerHeight - HdrDivHeight - 90;
-        this.renderer.setStyle(this.detailContent.nativeElement, 'height', targetHeight + "px");
+    if (this.detailContext === 'detail') {
+      if (this.detailHeader) {
+        let HdrDivHeight: any =  this.detailHeader.nativeElement.offsetHeight;
+        let targetHeight: any = window.innerHeight - HdrDivHeight - 90;
+        this.renderer.setStyle(this.detailContent.nativeElement, 'height', targetHeight + 'px');
       }
     }
-    if(document.getElementsByTagName('body')) {
-      document.getElementsByTagName('body')[0].style.overflow = "hidden";
+    if (document.getElementsByTagName('body')) {
+      document.getElementsByTagName('body')[0].style.overflow = 'hidden';
     }
   }
 
@@ -182,7 +182,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     this.workItemSubscriber =
       this.spaceSource
       .switchMap(s => {
-        return this.combinedSources
+        return this.combinedSources;
       })
       .switchMap(([areas, iterations, labels, collabs, states, type]) => {
         this.collaborators = collabs.filter(c => !c.currentUser);
@@ -198,7 +198,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
       })
       .filter(w => w !== null)
       .subscribe(workItem => {
-        if((this.detailContext === 'preview')
+        if ((this.detailContext === 'preview')
         && this.descMarkdown && this.workItem.id !== workItem.id) {
           this.descMarkdown.deactivateEditor();
         }
@@ -226,7 +226,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
           });
         }
 
-        if((this.detailContext === 'preview')
+        if ((this.detailContext === 'preview')
         && (this.descMarkdown)) {
           this.descMarkdown.deactivateEditor();
         }
@@ -320,10 +320,10 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     this.areas = this._areas.map(a => {
       return {
         key: a.id,
-        value: (a.parentPathResolved!='/'?a.parentPathResolved:'') + '/' + a.name,
+        value: (a.parentPathResolved != '/' ? a.parentPathResolved : '') + '/' + a.name,
         selected: a.id === this.workItem.area.id,
         cssLabelClass: undefined
-      }
+      };
     });
     this.selectedAreas = this.areas.filter(a => a.selected);
   }
@@ -344,10 +344,10 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     this.iterations = this._iterations.map(i => {
       return {
         key: i.id,
-        value: (i.resolvedParentPath!='/'?i.resolvedParentPath:'') + '/' + i.name,
+        value: (i.resolvedParentPath != '/' ? i.resolvedParentPath : '') + '/' + i.name,
         selected: i.id === this.workItem.iteration.id,
         cssLabelClass: undefined
-      }
+      };
     });
     this.selectedIterations = this.iterations.filter(i => i.selected);
   }
@@ -398,7 +398,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
           rawText,
           this.sanitizer.bypassSecurityTrustHtml(renderedHtml)
         );
-      })
+      });
   }
 
   descUpdate(event: any): void {
