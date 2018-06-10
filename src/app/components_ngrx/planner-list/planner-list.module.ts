@@ -17,12 +17,11 @@ import { PlannerListComponent } from './planner-list.component';
 import { TruncateModule } from 'ng2-truncate';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
-import { MockHttp } from '../../mock/mock-http';
 import { FilterColumn } from '../../pipes/column-filter.pipe';
-import { HttpService } from '../../services/http-service';
 import { PlannerModalModule } from '../../widgets/modal/modal.module';
 import { AreaService } from './../../services/area.service';
 import { CollaboratorService } from './../../services/collaborator.service';
+import { HttpService, factoryForHttpService } from '../../services/http-service';
 import { CustomQueryService } from './../../services/custom-query.service';
 import { IterationService } from './../../services/iteration.service';
 import { LabelService } from './../../services/label.service';
@@ -58,37 +57,11 @@ import { ClickOutModule } from '../../widgets/clickout/clickout.module';
 import { CommentQuery } from './../../models/comment';
 import { UserQuery } from './../../models/user';
 
-let providers = [];
-
-if (process.env.ENV == 'inmemory') {
-  providers = [
+let providers = [
     WorkItemService,
     {
       provide: HttpService,
-      useClass: MockHttp
-    },
-    CustomQueryService,
-    IterationService,
-    TooltipConfig,
-    GlobalSettings,
-    LabelService,
-    AreaService,
-    CollaboratorService,
-    FilterService,
-    BsDropdownConfig,
-    CookieService,
-    WorkItemDataService,
-    UrlService,
-    InfotipService
-  ];
-} else {
-  providers = [
-    WorkItemService,
-    {
-      provide: HttpService,
-      useFactory: (backend: XHRBackend, options: RequestOptions, auth: AuthenticationService) => {
-        return new HttpService(backend, options, auth);
-      },
+      useFactory: factoryForHttpService,
       deps: [XHRBackend, RequestOptions, AuthenticationService]
     },
     CustomQueryService,
@@ -108,7 +81,6 @@ if (process.env.ENV == 'inmemory') {
     CommentQuery,
     UserQuery
   ];
-}
 
 @NgModule({
   imports: [

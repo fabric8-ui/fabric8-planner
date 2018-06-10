@@ -4,7 +4,6 @@ import { Http, HttpModule, RequestOptions, XHRBackend } from '@angular/http';
 import { CollapseModule } from 'ngx-bootstrap';
 import { AuthenticationService } from 'ngx-login-client';
 import { EmptyStateModule } from 'patternfly-ng/empty-state';
-import { MockHttp } from '../../mock/mock-http';
 import { EventQuery } from '../../models/event.model';
 import { GlobalSettings } from '../../shared/globals';
 import { WorkItemEventModule } from '../work-item-event/work-item-event.module';

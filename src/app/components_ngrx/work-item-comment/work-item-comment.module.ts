@@ -15,6 +15,8 @@ import {
 } from 'ngx-bootstrap';
 import { AuthenticationService } from 'ngx-login-client';
 
+
+import { HttpService, factoryForHttpService } from './../../services/http-service';
 import {
   AlmEditableModule,
   AlmIconModule,
@@ -22,39 +24,20 @@ import {
   WidgetsModule
 } from 'ngx-widgets';
 import { SafePipeModule } from '../../pipes/safe.module';
-import { HttpService } from './../../services/http-service';
 import { GlobalSettings } from './../../shared/globals';
 import { CommentModule } from './../../widgets/comment-module/comment.module';
+import { WorkItemCommentWrapperComponent } from '../work-item-comment-wrapper/work-item-comment-wrapper.component';
 
-import { MockHttp } from '../../mock/mock-http';
-import { WorkItemCommentComponent } from './work-item-comment.component';
-
-let providers = [];
-
-if (process.env.ENV == 'inmemory') {
-  providers = [
-    GlobalSettings,
-    {
-      provide: HttpService,
-      useExisting: MockHttp
-     },
-    TooltipConfig,
-    BsDropdownConfig
-   ];
-} else {
-  providers = [
-    {
-      provide: HttpService,
-      useFactory: (backend: XHRBackend, options: RequestOptions, auth: AuthenticationService) => {
-        return new HttpService(backend, options, auth);
-      },
-      deps: [XHRBackend, RequestOptions, AuthenticationService]
-    },
-    GlobalSettings,
-    TooltipConfig,
-    BsDropdownConfig
-    ];
-}
+let providers = [
+  {
+    provide: HttpService,
+    useFactory: factoryForHttpService,
+    deps: [XHRBackend, RequestOptions, AuthenticationService]
+  },
+  GlobalSettings,
+  TooltipConfig,
+  BsDropdownConfig
+];
 
 @NgModule({
   imports: [
@@ -73,9 +56,9 @@ if (process.env.ENV == 'inmemory') {
     SafePipeModule
   ],
   declarations: [
-    WorkItemCommentComponent
+    WorkItemCommentWrapperComponent
    ],
-  exports: [ WorkItemCommentComponent ],
+  exports: [ WorkItemCommentWrapperComponent ],
   providers: providers
 })
 export class WorkItemCommentModule { }
