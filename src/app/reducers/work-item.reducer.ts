@@ -1,14 +1,14 @@
-import { State, ActionReducer } from '@ngrx/store';
-import * as WorkItemActions from './../actions/work-item.actions';
-import { WorkItemState, initialState } from './../states/work-item.state';
+import { ActionReducer, State } from '@ngrx/store';
 import { cloneDeep } from 'lodash';
+import * as WorkItemActions from './../actions/work-item.actions';
+import { initialState, WorkItemState } from './../states/work-item.state';
 
 import { WorkItem } from './../models/work-item';
 
 export type Action = WorkItemActions.All;
 
 export const WorkItemReducer: ActionReducer<WorkItemState> = (state = initialState, action: Action) => {
-  switch(action.type) {
+  switch (action.type) {
 
     case WorkItemActions.ADD_SUCCESS: {
       if (action.payload.parentID) {
@@ -75,8 +75,8 @@ export const WorkItemReducer: ActionReducer<WorkItemState> = (state = initialSta
 
     case WorkItemActions.UPDATE_WORKITEM_ITERATION: {
       state.forEach((i) => {
-        if(i.iteration.id === action.payload.iteration.id){
-          i.iteration = action.payload.iteration
+        if (i.iteration.id === action.payload.iteration.id) {
+          i.iteration = action.payload.iteration;
         }
       });
       return [...state];
@@ -112,4 +112,4 @@ export const WorkItemReducer: ActionReducer<WorkItemState> = (state = initialSta
       return state;
     }
   }
-}
+};

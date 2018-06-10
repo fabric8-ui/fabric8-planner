@@ -1,22 +1,22 @@
+import { State } from '@ngrx/store';
+import { ActionReducer } from '@ngrx/store';
 import { cloneDeep } from 'lodash';
 import * as IterationActions from '.././actions/iteration.actions';
-import { State } from '@ngrx/store';
 import { IterationModel } from './../models/iteration.model';
-import { ActionReducer } from '@ngrx/store';
 import {
-  IterationState,
   initialState,
-  IterationUIState,
-  initialUIState
+  initialUIState,
+  IterationState,
+  IterationUIState
 } from './../states/iteration.state';
 
 export type Action = IterationActions.All;
 
 export const iterationReducer: ActionReducer<IterationState> =
-  ( state = initialState, action: Action) => {
-    switch( action.type ) {
+  (state = initialState, action: Action) => {
+    switch (action.type) {
       case IterationActions.GET_SUCCESS:
-        return action.payload
+        return action.payload;
 
       case IterationActions.ADD_SUCCESS:
         const parent = action.payload.parent;
@@ -26,7 +26,7 @@ export const iterationReducer: ActionReducer<IterationState> =
           if (parentIndex > -1) {
             state[parentIndex].hasChildren = true;
           }
-          if(state[parentIndex].children) {
+          if (state[parentIndex].children) {
             state[parentIndex].children = [
               action.payload.iteration,
               ...state[parentIndex].children
@@ -50,7 +50,7 @@ export const iterationReducer: ActionReducer<IterationState> =
             ...state.slice(0, index),
             updatedIteration,
             ...state.slice(index + 1)
-          ]
+          ];
           const parentIndex = state.findIndex(i => i.id === updatedIteration.parentId);
           if (parentIndex > -1 && state[parentIndex].children) {
             const childIndex =
@@ -60,7 +60,7 @@ export const iterationReducer: ActionReducer<IterationState> =
                 ...state[parentIndex].children.slice(0, childIndex),
                 state[index],
                 ...state[parentIndex].children.slice(childIndex + 1)
-              ]
+              ];
             }
           }
         }
@@ -72,14 +72,14 @@ export const iterationReducer: ActionReducer<IterationState> =
             item => item.id === action.payload.id
           );
           if (itIndex > -1) {
-            for(let i = 0; i < state.length; i++) {
+            for (let i = 0; i < state.length; i++) {
               state[i].selected = i === itIndex;
             }
           }
 
           // Expand all the parents
           let pId = state[itIndex].parentId;
-          while(pId) {
+          while (pId) {
             const pIndex = state.findIndex(
               item => item.id === pId
             );
@@ -89,7 +89,7 @@ export const iterationReducer: ActionReducer<IterationState> =
             }
           }
         } else {
-          for(let i = 0; i < state.length; i++) {
+          for (let i = 0; i < state.length; i++) {
             state[i].selected = false;
             state[i].showChildren = false;
           }
@@ -108,12 +108,12 @@ export const iterationReducer: ActionReducer<IterationState> =
       default:
         return state;
     }
-  }
+  };
 
 export const iterationUiReducer: ActionReducer<IterationUIState> =
-  ( s = initialUIState, action: Action) => {
+  (s = initialUIState, action: Action) => {
     const state = cloneDeep(s);
-    switch( action.type ) {
+    switch (action.type) {
       case IterationActions.UPDATE_SUCCESS:
       case IterationActions.ADD_SUCCESS:
         state.error = '';
@@ -139,4 +139,4 @@ export const iterationUiReducer: ActionReducer<IterationUIState> =
       default:
         return state;
     }
-  }
+  };

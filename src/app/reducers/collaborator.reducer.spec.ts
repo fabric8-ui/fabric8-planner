@@ -1,7 +1,7 @@
-import { CollaboratorReducer } from './collaborator.reducer';
-import { initialState as CollaboratorInitialState } from './../states/collaborator.state';
 import * as CollaboratorActions from './../actions/collaborator.actions';
 import { UserUI } from './../models/user';
+import { initialState as CollaboratorInitialState } from './../states/collaborator.state';
+import { CollaboratorReducer } from './collaborator.reducer';
 
 export type Action = CollaboratorActions.All;
 
@@ -21,14 +21,14 @@ describe('CollaboratorReducer:', () => {
   it('GetSuccess action should return new state', () => {
     const collaborators: UserUI[] = [
       {
-        id: "1",
+        id: '1',
         name: 'user 1',
         avatar: 'user1.jpg',
         username: 'user1',
         currentUser: false
       },
       {
-        id: "2",
+        id: '2',
         name: 'user 2',
         avatar: 'user2.jpg',
         username: 'user2',
@@ -45,14 +45,14 @@ describe('CollaboratorReducer:', () => {
   it('GetError action should return previous state', () => {
     const previousState: UserUI[] = [
       {
-        id: "1",
+        id: '1',
         name: 'user 1',
         avatar: 'user1.jpg',
         username: 'user1',
         currentUser: false
       },
       {
-        id: "2",
+        id: '2',
         name: 'user 2',
         avatar: 'user2.jpg',
         username: 'user2',
