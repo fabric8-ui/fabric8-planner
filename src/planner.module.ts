@@ -2,10 +2,10 @@ import { NgModule } from '@angular/core';
 
 import { PlannerListModule } from './app/components_ngrx/planner-list/planner-list.module';
 
-import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-import * as reducers from './app/reducers/index.reducer';
+import { StoreModule } from '@ngrx/store';
 import  * as effects from './app/effects/index.effects';
+import * as reducers from './app/reducers/index.reducer';
 
 @NgModule({
   imports: [StoreModule.forRoot({
