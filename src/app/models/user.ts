@@ -1,17 +1,16 @@
-import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { User, Profile } from 'ngx-login-client';
+import { Profile, User } from 'ngx-login-client';
+import { Observable } from 'rxjs/Observable';
+import { Get as GetUserAction } from './../actions/user.actions';
 import { AppState } from './../states/app.state';
 import {
-  modelUI,
-  modelService,
   Mapper,
   MapTree,
+  modelService,
+  modelUI,
   switchModel
 } from './common.model';
-import { Get as GetUserAction } from './../actions/user.actions';
-
 
 
 export interface UserService extends modelService {
@@ -19,7 +18,7 @@ export interface UserService extends modelService {
   links?: {
     self?: string;
     related?: string;
-  }
+  };
 }
 
 export interface UserUI extends modelUI {
@@ -68,13 +67,13 @@ export class UserMapper implements Mapper<UserService, UserUI> {
   toUIModel(arg: UserService): UserUI {
     return switchModel<UserService, UserUI> (
       arg, this.serviceToUiMapTree
-    )
+    );
   }
 
   toServiceModel(arg: UserUI): UserService {
     return switchModel<UserUI, UserService> (
       arg, this.uiToServiceMapTree
-    )
+    );
   }
 }
 
@@ -90,8 +89,8 @@ export class UserQuery {
       .select('users').select(users => users[id])
       // If the desired user doesn't exist then fetch it
       .do(user => {
-        if(!user) {
-          this.store.dispatch(new GetUserAction(id))
+        if (!user) {
+          this.store.dispatch(new GetUserAction(id));
         }
       })
       // filter the pipe based on availability of the user

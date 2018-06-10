@@ -1,8 +1,8 @@
 import {
-  modelUI,
-  modelService,
   Mapper,
   MapTree,
+  modelService,
+  modelUI,
   switchModel
 } from './common.model';
 
@@ -60,7 +60,7 @@ export class IterationRelations {
   };
 }
 
-export interface IterationService extends IterationModel {};
+export interface IterationService extends IterationModel {}
 
 export interface IterationUI extends modelUI {
   parentPath: string; // attributes / parent_path
@@ -87,40 +87,40 @@ export class IterationMapper implements Mapper<IterationModel, IterationUI> {
       fromPath: ['id'],
       toPath: ['id']
     }, {
-      fromPath: ['attributes','name'],
+      fromPath: ['attributes', 'name'],
       toPath: ['name']
     }, {
-      fromPath: ['attributes','parent_path'],
+      fromPath: ['attributes', 'parent_path'],
       toPath: ['parentPath']
     }, {
-      fromPath: ['attributes','resolved_parent_path'],
+      fromPath: ['attributes', 'resolved_parent_path'],
       toPath: ['resolvedParentPath']
     }, {
-      fromPath: ['attributes','user_active'],
+      fromPath: ['attributes', 'user_active'],
       toPath: ['userActive']
     }, {
-      fromPath: ['attributes','active_status'],
+      fromPath: ['attributes', 'active_status'],
       toPath: ['isActive']
     }, {
-      fromPath: ['attributes','startAt'],
+      fromPath: ['attributes', 'startAt'],
       toPath: ['startAt']
     }, {
-      fromPath: ['attributes','endAt'],
+      fromPath: ['attributes', 'endAt'],
       toPath: ['endAt']
     }, {
-      fromPath: ['attributes','description'],
+      fromPath: ['attributes', 'description'],
       toPath: ['description']
     }, {
-      fromPath: ['attributes','state'],
+      fromPath: ['attributes', 'state'],
       toPath: ['state']
     }, {
-      fromPath: ['links','self'],
+      fromPath: ['links', 'self'],
       toPath: ['link']
     }, {
-      fromPath: ['relationships','workitems','meta','total'],
+      fromPath: ['relationships', 'workitems', 'meta', 'total'],
       toPath: ['workItemTotalCount']
     }, {
-      fromPath: ['relationships','workitems','meta','closed'],
+      fromPath: ['relationships', 'workitems', 'meta', 'closed'],
       toPath: ['workItemClosedCount']
     }, {
       fromPath: ['hasChildren'],
@@ -143,46 +143,46 @@ export class IterationMapper implements Mapper<IterationModel, IterationUI> {
       toPath: ['id']
     }, {
       fromPath: ['name'],
-      toPath: ['attributes','name'],
+      toPath: ['attributes', 'name']
     }, {
       fromPath: ['parentPath'],
-      toPath: ['attributes','parent_path'],
+      toPath: ['attributes', 'parent_path']
     }, {
-      fromPath: ['resolvedParentPath'],      
-      toPath: ['attributes','resolved_parent_path'],
+      fromPath: ['resolvedParentPath'],
+      toPath: ['attributes', 'resolved_parent_path']
     }, {
-      fromPath: ['userActive'],      
-      toPath: ['attributes','user_active'],
+      fromPath: ['userActive'],
+      toPath: ['attributes', 'user_active']
     }, {
       fromPath: ['isActive'],
-      toPath: ['attributes','active_status'],
+      toPath: ['attributes', 'active_status']
     }, {
       fromPath: ['startAt'],
-      toPath: ['attributes','startAt'],
+      toPath: ['attributes', 'startAt']
     }, {
-      fromPath: ['endAt'],      
-      toPath: ['attributes','endAt'],
+      fromPath: ['endAt'],
+      toPath: ['attributes', 'endAt']
     }, {
       fromPath: ['description'],
-      toPath: ['attributes','description'],
+      toPath: ['attributes', 'description']
     }, {
       fromPath: ['state'],
-      toPath: ['attributes','state'],
+      toPath: ['attributes', 'state']
     }, {
       fromPath: ['link'],
-      toPath: ['links','self'],
-    }, {      
-      fromPath: ['workItemTotalCount'],
-      toPath: ['relationships','workitems','meta','total'],
+      toPath: ['links', 'self']
     }, {
-      fromPath: ['workItemClosedCount'],      
-      toPath: ['relationships','workitems','meta','closed'],
+      fromPath: ['workItemTotalCount'],
+      toPath: ['relationships', 'workitems', 'meta', 'total']
+    }, {
+      fromPath: ['workItemClosedCount'],
+      toPath: ['relationships', 'workitems', 'meta', 'closed']
     }, {
       fromPath: ['hasChildren'],
       toPath: ['hasChildren']
     }, {
-      fromPath: ['parentId'],      
-      toPath: ['relationships', 'parent', 'data', 'id'],
+      fromPath: ['parentId'],
+      toPath: ['relationships', 'parent', 'data', 'id']
     }, {
       toPath: ['relationships', 'parent', 'data', 'type'],
       toValue: 'iterations'

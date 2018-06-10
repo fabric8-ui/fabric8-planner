@@ -139,7 +139,7 @@
     // "no-for-in-array": true,
     //    "no-implicit-dependencies": true,
     //    "no-inferred-empty-object-type": true,
-    "no-invalid-template-strings": true,
+    "no-invalid-template-strings": false,
     "no-misused-new": true,
     //    "no-null-keyword": true,
     //    "no-object-literal-type-assertion": true,

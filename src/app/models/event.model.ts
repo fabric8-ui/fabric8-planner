@@ -1,19 +1,19 @@
+import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { cloneDeep } from 'lodash';
+import { UserService } from 'ngx-login-client';
+import { Observable } from 'rxjs';
+import { AppState } from './../states/app.state';
+import { AreaModel, AreaUI } from './area.model';
 import {
   Mapper,
   MapTree,
-  switchModel,
-  modelService
+  modelService,
+  switchModel
 } from './common.model';
-import { AppState } from './../states/app.state';
-import { UserUI, UserQuery } from './user';
-import { IterationUI, IterationModel } from './iteration.model';
-import { AreaUI, AreaModel } from './area.model';
-import { LabelUI, LabelModel } from './label.model';
-import { UserService } from 'ngx-login-client';
-import { cloneDeep } from 'lodash';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { IterationModel, IterationUI } from './iteration.model';
+import { LabelModel, LabelUI } from './label.model';
+import { UserQuery, UserUI } from './user';
 
 
 export class Event extends modelService {
@@ -38,13 +38,13 @@ export class EventRelationships {
       }
       type: string;
     }
-  }
+  };
   newValue?: {
     data?: AreaModel[] | IterationModel[] | UserService[] | LabelModel[];
-  }
+  };
   oldValue?: {
     data?: AreaModel[] | IterationModel[] | UserService[] | LabelModel[];
-  }
+  };
 }
 
 export interface EventUI {
@@ -84,12 +84,13 @@ export class EventMapper implements Mapper<EventService, EventUI> {
     toPath: ['newValueRelationships'],
     toFunction: (newValue) => {
       if (newValue !== null) {
-        if(newValue.hasOwnProperty('data')){
-          return newValue["data"]
-        }else
+        if (newValue.hasOwnProperty('data')) {
+          return newValue['data'];
+        } else {
           return [];
+        }
       } else {
-        return newValue
+        return newValue;
       }
     }
   }, {
@@ -97,30 +98,31 @@ export class EventMapper implements Mapper<EventService, EventUI> {
     toPath: ['oldValueRelationships'],
     toFunction: (oldValue) => {
         if (oldValue !== null) {
-        if(oldValue.hasOwnProperty('data'))
-          return oldValue["data"]
-        else
+        if (oldValue.hasOwnProperty('data')) {
+          return oldValue['data'];
+        } else {
           return [];
+        }
       } else {
-        return oldValue
+        return oldValue;
       }
     }
   }, {
     toPath: ['type'],
     toValue: null
-  },];
+  }];
   uiToServiceMapTree: MapTree;
 
   toUIModel(arg: EventService): EventUI {
     return switchModel<EventService, EventUI>(
       arg, this.serviceToUiMapTree
-    )
+    );
   }
 
   toServiceModel(arg: EventUI): EventService {
     return switchModel<EventUI, EventService>(
       arg, this.uiToServiceMapTree
-    )
+    );
   }
 }
 
@@ -200,8 +202,8 @@ export class EventQuery {
           return {
             ...event,
             modifier: this.userQuery.getUserObservableById(event.modifierId)
-          }
-        })
-      })
+          };
+        });
+      });
   }
 }

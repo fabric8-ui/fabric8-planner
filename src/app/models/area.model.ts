@@ -1,9 +1,9 @@
 import {
-  modelUI,
-  modelService,
   Mapper,
   MapTree,
-  switchModel,
+  modelService,
+  modelUI,
+  switchModel
 } from './common.model';
 export class AreaModel extends modelService {
   attributes?: AreaAttributes;
@@ -83,12 +83,12 @@ export class AreaMapper implements Mapper<AreaService, AreaUI> {
   toUIModel(arg: AreaService): AreaUI {
     return switchModel<AreaService, AreaUI> (
       arg, this.serviceToUiMapTree
-    )
+    );
   }
 
   toServiceModel(arg: AreaUI): AreaService {
     return switchModel<AreaUI, AreaService> (
       arg, this.uiToServiceMapTree
-    )
+    );
   }
 }

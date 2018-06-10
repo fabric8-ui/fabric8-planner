@@ -1,8 +1,8 @@
 import {
-  modelUI,
-  modelService,
   Mapper,
   MapTree,
+  modelService,
+  modelUI,
   switchModel
 } from './common.model';
 
@@ -13,12 +13,12 @@ export class LabelModel extends modelService {
 }
 
 export class LabelAttributes {
-  "background-color"?: string;
-  "border-color"?: string;
-  "created-at"?: string;
+  'background-color'?: string;
+  'border-color'?: string;
+  'created-at'?: string;
   name: string;
-  "text-color"?: string;
-  "updated-at"?: string;
+  'text-color'?: string;
+  'updated-at'?: string;
   version?: number;
 }
 
@@ -37,7 +37,7 @@ export class LabelRelationships {
       related: string;
       self: string;
     }
-  }
+  };
 }
 
 export interface LabelService extends LabelModel {}
@@ -55,19 +55,19 @@ export class LabelMapper implements Mapper<LabelService, LabelUI> {
       fromPath: ['id'],
       toPath: ['id']
     }, {
-      fromPath: ['attributes','name'],
+      fromPath: ['attributes', 'name'],
       toPath: ['name']
     }, {
-      fromPath: ['attributes','background-color'],
+      fromPath: ['attributes', 'background-color'],
       toPath: ['backgroundColor']
     }, {
-      fromPath: ['attributes','version'],
+      fromPath: ['attributes', 'version'],
       toPath: ['version']
     }, {
-      fromPath: ['attributes','border-color'],
+      fromPath: ['attributes', 'border-color'],
       toPath: ['borderColor']
     }, {
-      fromPath: ['attributes','text-color'],
+      fromPath: ['attributes', 'text-color'],
       toPath: ['textColor']
     }
   ];
@@ -77,19 +77,19 @@ export class LabelMapper implements Mapper<LabelService, LabelUI> {
       toPath: ['id']
     }, {
       fromPath: ['name'],
-      toPath: ['attributes','name'],
+      toPath: ['attributes', 'name']
     }, {
       fromPath: ['backgroundColor'],
-      toPath: ['attributes','background-color'],
+      toPath: ['attributes', 'background-color']
     }, {
       fromPath: ['version'],
-      toPath: ['attributes','version'],
+      toPath: ['attributes', 'version']
     }, {
       fromPath: ['borderColor'],
-      toPath: ['attributes','border-color'],
+      toPath: ['attributes', 'border-color']
     }, {
       fromPath: ['textColor'],
-      toPath: ['attributes','text-color'],
+      toPath: ['attributes', 'text-color']
     }, {
       toPath: ['type'],
       toValue: 'labels'
