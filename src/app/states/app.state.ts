@@ -34,5 +34,5 @@ export interface AppState {
 
   workItemLink: {
     workItems: states.WorkItemState
-  }
-};
+  };
+}

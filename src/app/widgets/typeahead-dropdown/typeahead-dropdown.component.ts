@@ -1,13 +1,13 @@
 import {
   Component,
+  EventEmitter,
   Input,
-  Output,
-  ViewChild,
-  OnInit,
   OnChanges,
   OnDestroy,
+  OnInit,
+  Output,
   SimpleChanges,
-  EventEmitter } from '@angular/core';
+  ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { cloneDeep, isEqual } from 'lodash';
@@ -35,7 +35,7 @@ export class TypeaheadDropdownValue {
   templateUrl: './typeahead-dropdown.component.html',
   styleUrls: ['./typeahead-dropdown.component.less']
 })
-export class TypeaheadDropdown implements OnInit, OnChanges, OnDestroy {
+export class TypeaheadDropdownComponent implements OnInit, OnChanges, OnDestroy {
 
   // array of possible values
   @Input() protected values: TypeaheadDropdownValue[];
@@ -59,7 +59,7 @@ export class TypeaheadDropdown implements OnInit, OnChanges, OnDestroy {
     private logger: Logger,
     private auth: AuthenticationService,
     private broadcaster: Broadcaster
-  ){}
+  ) {}
 
   ngOnInit(): void {
     this.proxyValues = cloneDeep(this.values);
@@ -116,9 +116,11 @@ export class TypeaheadDropdown implements OnInit, OnChanges, OnDestroy {
   }
 
   protected getInitialValue() {
-    for (let i=0; i<this.proxyValues.length; i++)
-      if (this.proxyValues[i].selected)
+    for (let i = 0; i < this.proxyValues.length; i++) {
+      if (this.proxyValues[i].selected) {
         return this.proxyValues[i];
+      }
+    }
     // this only happens if there was no
     // "selected" value in the list
     return {

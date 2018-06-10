@@ -1,6 +1,6 @@
 import {
-  Component, Input,
-  EventEmitter, Output
+  Component, EventEmitter,
+  Input, Output
 } from '@angular/core';
 
 import { CommentUI } from './../../models/comment';
@@ -20,8 +20,8 @@ export class CommentComponent {
   /**
    * Event to show preview in markdown
    */
-  @Output('onShowPreview') onPreview: EventEmitter<{
-    rawText: string, callBack: (x: string, y:string) => void
+  @Output('onShowPreview') onShowPreview: EventEmitter<{
+    rawText: string, callBack: (x: string, y: string) => void
   }> = new EventEmitter();
 
   /**
@@ -41,8 +41,8 @@ export class CommentComponent {
 
   constructor() {}
 
-  showPreview(event: {rawText: string, callBack: (x: string, y:string) => void}): void {
-    this.onPreview.emit(event);
+  showPreview(event: {rawText: string, callBack: (x: string, y: string) => void}): void {
+    this.onShowPreview.emit(event);
   }
 
   createComment(event): void {

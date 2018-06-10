@@ -1,15 +1,15 @@
 import {
   Component,
   ElementRef,
-  ViewEncapsulation,
+  EventEmitter,
+  HostListener,
   Input,
-  Output,
   OnChanges,
   OnInit,
-  ViewChild,
-  EventEmitter,
+  Output,
   SimpleChanges,
-  HostListener
+  ViewChild,
+  ViewEncapsulation
 } from '@angular/core';
 
 @Component({
@@ -23,7 +23,7 @@ export class InlineInputComponent implements OnInit {
   @ViewChild('input') inputField: ElementRef;
 
   @Input() type: string = 'string';
-  @Input('disabled') readOnly: boolean = false;
+  @Input('disabled') disabled: boolean = false;
   @Input('value') set input(val) {
     const v = this.convertSpecialChar(val);
     this.inputValue = v;
@@ -46,7 +46,7 @@ export class InlineInputComponent implements OnInit {
 
   startEditing(event: Event, onLineClick: boolean) {
     this.errorMessage = '';
-    if (this.readOnly) return;
+    if (this.disabled) { return; }
     if (!this.editing &&
       ((onLineClick && this.onLineClickEdit) || !onLineClick)) {
       this.editing = true;
@@ -85,17 +85,16 @@ export class InlineInputComponent implements OnInit {
   handleSave(value: string, error: string) {
     this.errorMessage = error;
     this.saving = false;
-    if (this.errorMessage) {}
-    else {
+    if (this.errorMessage) {} else {
       this.editing = false;
       this.inputValue = value;
     }
   }
 
   convertSpecialChar(str: string) {
-    return str.replace(/&amp;/g, "&")
-      .replace(/&gt;/g, ">")
-      .replace(/&lt;/g, "<")
+    return str.replace(/&amp;/g, '&')
+      .replace(/&gt;/g, '>')
+      .replace(/&lt;/g, '<')
       .replace(/&#34;/g, '"')
       .replace(/&#39;/g, "'");
   }
@@ -107,8 +106,8 @@ export class InlineInputComponent implements OnInit {
   }
   onkeyDown(event, text) {
     let keycode = event.keyCode ? event.keyCode : event.which;
-    if(this.editing && keycode !== 13) {
-      if(this.type === 'float' &&
+    if (this.editing && keycode !== 13) {
+      if (this.type === 'float' &&
         this.inputField.nativeElement.value.indexOf('.') > -1 &&
         keycode === 190) {
         event.preventDefault();
@@ -116,7 +115,7 @@ export class InlineInputComponent implements OnInit {
       }
       switch (this.type) {
         case 'integer':
-          if(this.checkInteger(keycode, event)){
+          if (this.checkInteger(keycode, event)) {
             this.isNotValid = false;
           } else {
             this.isNotValid = true;
@@ -124,7 +123,7 @@ export class InlineInputComponent implements OnInit {
           }
           break;
         case 'float':
-          if(this.checkInteger(keycode, event) || keycode === 190) {
+          if (this.checkInteger(keycode, event) || keycode === 190) {
             this.isNotValid = false;
           } else {
             this.isNotValid = true;

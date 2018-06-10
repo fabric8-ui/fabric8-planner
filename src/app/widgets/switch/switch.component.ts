@@ -1,12 +1,12 @@
 import {
   Component,
-  OnInit,
-  Input,
-  Output,
   EventEmitter,
-  SimpleChanges,
+  Input,
+  OnChanges,
   OnDestroy,
-  OnChanges
+  OnInit,
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import { User } from 'ngx-login-client';
 

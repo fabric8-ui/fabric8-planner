@@ -1,14 +1,14 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   OnInit,
   Output,
   TemplateRef,
-  ViewEncapsulation,
   ViewChild,
-  HostListener,
-  ElementRef
+  ViewEncapsulation
 } from '@angular/core';
 
 @Component({
@@ -61,7 +61,7 @@ export class SelectDropdownComponent implements OnInit {
   }
 
   clickOut() {
-    if(this.displayDropdown) {
+    if (this.displayDropdown) {
       this.closeDropdown();
     }
   }

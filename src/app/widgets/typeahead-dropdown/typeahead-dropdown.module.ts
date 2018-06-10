@@ -4,15 +4,15 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 
 import {
-  WidgetsModule,
+  WidgetsModule
 } from 'ngx-widgets';
 
+import { TruncateModule } from 'ng2-truncate';
 import { CollapseModule } from 'ngx-bootstrap';
 import { ModalModule } from 'ngx-modal';
-import { GroupTypesModule } from '../group-types-panel/group-types-panel.module';
-import { IterationModule } from '../iterations-panel/iterations-panel.module';
-import { TypeaheadDropdown } from './typeahead-dropdown.component';
-import { TruncateModule } from 'ng2-truncate';
+import { GroupTypesModule } from '../../components_ngrx/group-types-panel/group-types-panel.module';
+import { IterationModule } from '../../components_ngrx/iterations-panel/iterations-panel.module';
+import { TypeaheadDropdownComponent } from './typeahead-dropdown.component';
 
 @NgModule({
   imports: [
@@ -26,8 +26,8 @@ import { TruncateModule } from 'ng2-truncate';
     WidgetsModule
   ],
   declarations: [
-    TypeaheadDropdown
+    TypeaheadDropdownComponent
   ],
-  exports: [TypeaheadDropdown]
+  exports: [TypeaheadDropdownComponent]
 })
 export class TypeaheadDropDownModule { }

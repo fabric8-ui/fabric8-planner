@@ -1,7 +1,7 @@
 
 import { TestBed } from '@angular/core/testing';
-import { CommentComponent } from './comment.component';
 import { CommentUI } from '../../models/comment';
+import { CommentComponent } from './comment.component';
 
 describe('Unit Test :: Testing comment module', () => {
   it('should emit event on show preview', () => {
@@ -15,7 +15,7 @@ describe('Unit Test :: Testing comment module', () => {
         .toBe(
           showPreviewInput.rawText, 'Emits the correct rawtext'
         );
-    })
+    });
     comp.showPreview(showPreviewInput);
   });
 
@@ -30,7 +30,7 @@ describe('Unit Test :: Testing comment module', () => {
         .toBe(
           showPreviewInput.rawText, 'Emits the correct rawtext'
         );
-    })
+    });
     comp.showPreview(showPreviewInput);
   });
 
@@ -52,7 +52,7 @@ describe('Unit Test :: Testing comment module', () => {
         .toBe(
           'comment-1', 'Emits the correct parentId'
         );
-    })
+    });
     comp.createComment(createCommentInput);
   });
 
@@ -76,7 +76,7 @@ describe('Unit Test :: Testing comment module', () => {
         .toBe(
           'comment-1', 'Emits the correct parentId'
         );
-    })
+    });
     comp.updateComment(updateCommentInput, comment);
   });
 });

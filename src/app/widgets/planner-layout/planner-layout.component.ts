@@ -1,4 +1,11 @@
 import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger
+} from '@angular/animations';
+import {
   Component,
   EventEmitter,
   Input,
@@ -6,13 +13,6 @@ import {
   Output,
   TemplateRef
 } from '@angular/core';
-import {
-  animate,
-  state,
-  style,
-  transition,
-  trigger
-} from '@angular/animations';
 
 
 @Component({
@@ -40,7 +40,7 @@ import {
         marginLeft: '320px'
       })),
       transition('in <=> out', animate('400ms ease-in-out'))
-    ]),
+    ])
   ]
 })
 
