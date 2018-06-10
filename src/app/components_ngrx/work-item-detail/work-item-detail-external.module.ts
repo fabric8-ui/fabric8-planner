@@ -4,11 +4,11 @@ import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { AuthenticationService } from 'ngx-login-client';
 import { AreaService } from './../../services/area.service';
 import { CollaboratorService } from './../../services/collaborator.service';
+import { factoryForHttpService, HttpService } from './../../services/http-service';
 import { IterationService } from './../../services/iteration.service';
 import { LabelService } from './../../services/label.service';
 import { WorkItemService } from './../../services/work-item.service';
 import { GlobalSettings } from './../../shared/globals';
-import { HttpService, factoryForHttpService } from './../../services/http-service';
 import { WorkItemDetailRoutingModule } from './work-item-detail-routing.module';
 import { WorkItemDetailModule } from './work-item-detail.module';
 
