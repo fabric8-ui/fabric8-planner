@@ -15,7 +15,6 @@ import {
 } from 'ngx-bootstrap';
 import { AuthenticationService } from 'ngx-login-client';
 
-
 import {
   AlmEditableModule,
   AlmIconModule,
@@ -27,6 +26,7 @@ import { WorkItemCommentWrapperComponent } from '../work-item-comment-wrapper/wo
 import { factoryForHttpService, HttpService } from './../../services/http-service';
 import { GlobalSettings } from './../../shared/globals';
 import { CommentModule } from './../../widgets/comment-module/comment.module';
+import { WorkItemCommentComponent } from './work-item-comment.component';
 
 let providers = [
   {
@@ -56,9 +56,9 @@ let providers = [
     SafePipeModule
   ],
   declarations: [
-    WorkItemCommentWrapperComponent
+    WorkItemCommentComponent
    ],
-  exports: [ WorkItemCommentWrapperComponent ],
+  exports: [ WorkItemCommentComponent ],
   providers: providers
 })
 export class WorkItemCommentModule { }
