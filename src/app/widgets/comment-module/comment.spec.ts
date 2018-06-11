@@ -10,7 +10,7 @@ describe('Unit Test :: Testing comment module', () => {
       rawText: 'some text',
       callBack: (a, b) => {}
     };
-    comp.onPreview.subscribe(item => {
+    comp.onShowPreview.subscribe(item => {
       expect(item.rawText)
         .toBe(
           showPreviewInput.rawText, 'Emits the correct rawtext'
@@ -25,7 +25,7 @@ describe('Unit Test :: Testing comment module', () => {
       rawText: 'some text',
       callBack: (a, b) => {}
     };
-    comp.onPreview.subscribe(item => {
+    comp.onShowPreview.subscribe(item => {
       expect(item.rawText)
         .toBe(
           showPreviewInput.rawText, 'Emits the correct rawtext'
