@@ -11,7 +11,7 @@ import { IterationListEntryComponent } from '../iteration-list-entry/iteration-l
 
 @Component({
     selector: 'iteration-tree',
-    templateUrl: './iteration-tree.component.html',
+    templateUrl: './iteration-tree.component.html'
 })
 
 export class IterationTreeComponent {

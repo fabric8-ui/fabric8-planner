@@ -81,9 +81,9 @@
     // "use-view-encapsulation": true,
     "no-attribute-parameter-decorator": true,
     "no-output-named-after-standard-event": true,
-    "no-input-rename": true,
-    "no-output-rename": true,
-    "no-output-on-prefix": true,
+    // "no-input-rename": true,
+    // "no-output-rename": true,
+    // "no-output-on-prefix": true,
     "no-forward-ref": true,
     "no-unused-css": true,
     "use-life-cycle-interface": true,
@@ -93,14 +93,14 @@
     "component-class-suffix": true,
     "directive-class-suffix": true,
     "pipe-impure": true,
-    "template-cyclomatic-complexity": [
-      true,
-      5
-    ],
-    "template-conditional-complexity": [
-      true,
-      4
-    ],
+    // "template-cyclomatic-complexity": [
+    //   true,
+    //   5
+    // ],
+    // "template-conditional-complexity": [
+    //   true,
+    //   4
+    // ],
     // -------------- End of Angular rules ------------
     "typedef-whitespace": [
       true,

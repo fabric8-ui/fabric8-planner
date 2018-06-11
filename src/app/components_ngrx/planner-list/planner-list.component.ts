@@ -46,9 +46,6 @@ import { AppState } from './../../states/app.state';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
-  host: {
-    'class': ''
-  },
   selector: 'alm-work-item-list',
   templateUrl: './planner-list.component.html',
   styleUrls: ['./planner-list.component.less']

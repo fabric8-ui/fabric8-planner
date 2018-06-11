@@ -17,7 +17,7 @@ import { WorkItemUI } from './../../models/work-item';
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'work-item-comment-wrapper',
-  templateUrl: './work-item-comment-wrapper.component.html',
+  templateUrl: './work-item-comment-wrapper.component.html'
 })
 
 export class WorkItemCommentWrapperComponent implements OnInit, OnDestroy {
