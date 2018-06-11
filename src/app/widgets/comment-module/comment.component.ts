@@ -1,8 +1,8 @@
 import {
   Component, Input,
-  EventEmitter, Output
+  EventEmitter, Output, ViewChild
 } from '@angular/core';
-
+import { MarkdownComponent } from 'ngx-widgets';
 import { CommentUI } from './../../models/comment';
 import { WorkItemService } from './../../services/work-item.service';
 
@@ -37,6 +37,9 @@ export class CommentComponent {
   @Output('onUpdateRequest') onUpdateRequest: EventEmitter<CommentUI> =
    new EventEmitter();
 
+  @ViewChild('commentEditor') commentEditor: MarkdownComponent;
+  @ViewChild('replyEditor') replyEditor: MarkdownComponent;
+
   private replyActive: boolean = false;
 
   constructor() {}
@@ -57,16 +60,42 @@ export class CommentComponent {
   }
 
   updateComment(event: any, comment: CommentUI): void {
-    const rawText = event.rawText;
-    let updatedComment: CommentUI = {
-      body: rawText,
-      id: comment.id,
-      selfLink: comment.selfLink
-    } as CommentUI;
-    this.onUpdateRequest.emit(updatedComment);
+    if (event.rawText !== "") {
+      const rawText = event.rawText;
+      let updatedComment: CommentUI = {
+        body: rawText,
+        id: comment.id,
+        selfLink: comment.selfLink
+      } as CommentUI;
+      this.onUpdateRequest.emit(updatedComment);
+    }
+  }
+
+  onCommentEditorKeyUp(event) {
+    let inputText = this.commentEditor.editorInput.nativeElement.innerText.trim();
+    if (inputText.length) {
+      this.commentEditor.saving = false;
+    } else {
+      this.commentEditor.saving = true;
+    }
   }
 
   updateChildComment(updatedComment: CommentUI) {
     this.onUpdateRequest.emit(updatedComment);
+  }
+
+  onReplyEditorKeyUp(event) {
+    let inputText = this.replyEditor.editorInput.nativeElement.innerText.trim();
+    if (inputText.length) {
+      this.replyEditor.saving = false;
+    } else {
+      this.replyEditor.saving = true;
+    }
+  }
+
+  onReplyClick() {
+    this.replyActive=true;
+    this.replyEditor.enableEditor();
+    this.replyEditor.saving = true;
   }
 }

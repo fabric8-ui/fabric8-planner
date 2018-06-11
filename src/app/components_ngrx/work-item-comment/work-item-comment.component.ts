@@ -85,7 +85,9 @@ export class WorkItemCommentComponent implements OnInit {
   }
 
   updateComment(comment: CommentUI): void {
-    this.update.emit(comment);
+    if (comment.body !== "") {
+      this.update.emit(comment);
+    }
   }
 
   onCommentEdit($event, inpId, saveBtnId) {
