@@ -19,10 +19,10 @@
     </span>
   </ng-template>
   <ng-template #dropdownItem let-name="name"
-    let-src="src + '&s=20'"
+    let-src="src | almAvatarSize: 25"
     let-stickontop="stickontop">
     <user-avatar
-      [imgSrc]="src | almAvatarSize: 20">
+      [imgSrc]="src">
     </user-avatar>
     <span *ngIf="!stickontop" [innerHTML]="name | almSearchHighlight: searchValue"></span>
     <span

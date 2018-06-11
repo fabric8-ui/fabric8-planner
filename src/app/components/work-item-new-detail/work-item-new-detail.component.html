@@ -114,7 +114,7 @@
                 *ngIf="workItem.relationships?.creator?.data"
                 [imgTooltip]="workItem.relationships.creator.data.attributes?.fullName"
                 [imgPlacement]="'bottom'"
-                [imgSrc]="workItem.relationships.creator.data.attributes?.imageURL + '&s=20'">
+                [imgSrc]="workItem.relationships.creator.data.attributes?.imageURL | almAvatarSize: 25">
               </user-avatar>
               <div class="dib">
                 <span id="WI_details_reporter_user">

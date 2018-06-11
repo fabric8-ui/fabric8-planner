@@ -4,7 +4,7 @@
     id="{{'comment_avatar_' + comment.id}}"
     *ngIf="(comment.creator | async)?.avatar"
     container="body"
-    [imgSrc]="(comment.creator | async)?.avatar | almAvatarSize:30">
+    [imgSrc]="(comment.creator | async)?.avatar | almAvatarSize: 25">
   </user-avatar>
   <div>
     <h5 class="f8-comment-author pull-left">

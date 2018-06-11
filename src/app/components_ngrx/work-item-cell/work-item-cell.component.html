@@ -59,8 +59,8 @@
 <!-- Creator -->
 <user-avatar
   *ngIf="col === 'creator'"
-  [imgSrc]= "{{(row.creatorObs | async)?.avatar + '&s=23'}}"
-  [imgTooltip]= "{{(row.creatorObs | async)?.name}}"
+  [imgSrc]= "(row.creatorObs | async)?.avatar | almAvatarSize: 25"
+  [imgTooltip]= "(row.creatorObs | async)?.name"
   [imgPlacement]="'left'">
 </user-avatar>
 <!-- Assignee -->

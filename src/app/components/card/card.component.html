@@ -40,7 +40,7 @@
       *ngIf="cardValue.avatar!==''"
       [imgTooltip]="wItem?.attributes?.fullName"
       [imgPlacement]="'left'"
-      [imgSrc]="cardValue.avatar + '&s=20'">
+      [imgSrc]="cardValue.avatar | almAvatarSize: 25">
     </user-avatar>
     <div class="margin-right-15 padding-right-15"
       tooltip="{{cardValue.title}}"

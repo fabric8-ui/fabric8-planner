@@ -47,7 +47,7 @@
             container="body"
             [imgTooltip]="comment.relationships['created-by']?.data?.attributes?.fullName"
             [imgPlacement]="'bottom'"
-            [imgSrc]="comment.relationships['created-by']?.data?.attributes?.imageURL | almAvatarSize:30">
+            [imgSrc]="comment.relationships['created-by']?.data?.attributes?.imageURL | almAvatarSize: 25">
           </user-avatar>
           <div class="dropdown dropdown-kebab-pf pull-right dropdown" dropdown>
             <button class="btn btn-link dropdown-toggle"
