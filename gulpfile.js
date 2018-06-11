@@ -73,8 +73,8 @@ mach.copyToDist = function (srcArr) {
 
 //TSLint
 
-mach.tslint = function() {
-  return gulp.src('src/app/**/*.ts')
+mach.tslint = function(src) {
+  return gulp.src(src)
     .pipe(tslint({
       formatter: 'verbose',
       configuration: 'tslint.json' 
@@ -114,7 +114,7 @@ mach.transpileLESS = function (src, debug) {
 gulp.task('build', function (done) {
 
   // app (default)
-  mach.tslint(); // Report all the linter errors
+  mach.tslint(appSrc + '/app/**/*.ts'); // Report all the linter errors
   mach.transpileTS(); // Transpile *.ts to *.js; _then_ post-process require statements to load templates
   mach.transpileLESS(appSrc + '/**/*.less'); // Transpile and minify less, storing results in distPath.
   mach.copyToDist(['src/**/*.html']); // Copy template html files to distPath
@@ -130,7 +130,7 @@ gulp.task('build', function (done) {
   if (argv.watch) {
     gulp.watch([appSrc + '/app/**/*.ts', '!' + appSrc + '/app/**/*.spec.ts']).on('change', function (e) {
       util.log(util.colors.cyan(e) + ' has been changed. Compiling TypeScript.');
-      mach.tslint();
+      mach.tslint(e); // 
       mach.transpileTS();
     });
     gulp.watch(appSrc + '/app/**/*.less').on('change', function (e) {
