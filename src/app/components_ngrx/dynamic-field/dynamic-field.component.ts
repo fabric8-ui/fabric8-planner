@@ -104,7 +104,7 @@ export class DynamicFieldComponent implements OnInit {
   }
 
   // event when value is updated, emits new value as the event.
-  @Output() onUpdate = new EventEmitter();
+  @Output() readonly onUpdate = new EventEmitter();
 
   // the attribute key we're dealing with.
   attributeKey: string;

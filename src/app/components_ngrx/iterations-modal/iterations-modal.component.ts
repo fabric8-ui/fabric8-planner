@@ -31,8 +31,7 @@ import * as IterationActions from './../../actions/iteration.actions';
 })
 export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnChanges {
 
-  @Output()
-  public onSubmit = new EventEmitter();
+  @Output() readonly onSubmit = new EventEmitter();
 
   @ViewChild('createUpdateIterationDialog') createUpdateIterationDialog: any;
   @ViewChild('iterationSearch') iterationSearch: any;

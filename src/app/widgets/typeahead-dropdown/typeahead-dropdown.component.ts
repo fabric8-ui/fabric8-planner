@@ -42,8 +42,8 @@ export class TypeaheadDropdownComponent implements OnInit, OnChanges, OnDestroy 
   @Input() protected noValueLabel: string;
 
   // event when value is updated, emits new value as the event.
-  @Output() protected onUpdate = new EventEmitter();
-  @Output() protected onFocus = new EventEmitter();
+  @Output() readonly protected onUpdate = new EventEmitter();
+  @Output() readonly protected onFocus = new EventEmitter();
 
   @ViewChild('valueSearch') protected valueSearch: any;
   @ViewChild('valueList') protected valueList: any;

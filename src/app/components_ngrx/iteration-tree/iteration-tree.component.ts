@@ -22,9 +22,9 @@ export class IterationTreeComponent {
   @Input() showTree: string = '';
   @Input() showCompleted: string = '';
 
-  @Output() onEditIteration = new EventEmitter<IterationUI>();
-  @Output() onCloseIteration = new EventEmitter<IterationUI>();
-  @Output() onCreateIteration = new EventEmitter<IterationUI>();
+  @Output() readonly onEditIteration = new EventEmitter<IterationUI>();
+  @Output() readonly onCloseIteration = new EventEmitter<IterationUI>();
+  @Output() readonly onCreateIteration = new EventEmitter<IterationUI>();
 
   editIteration(iteration) {
     this.onEditIteration.emit(iteration);

@@ -31,7 +31,7 @@ import { AppState } from './../../states/app.state';
 export class WorkItemLinkComponent implements OnInit {
   @Input() loggedIn: Boolean;
   @Input() detailContext: string; // It should be detail or preview
-  @Output() onLinkClick = new EventEmitter();
+  @Output() readonly onLinkClick = new EventEmitter();
   @ViewChild('searchResultList') searchResultList: any;
   @ViewChild('linkTypeSelector') linkTypeSelector: ElementRef;
   @ViewChild('wiSearchBox') wiSearchBox: ElementRef;

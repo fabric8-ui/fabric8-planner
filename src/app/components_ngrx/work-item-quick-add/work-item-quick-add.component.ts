@@ -47,7 +47,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   @Input() selectedIteration: IterationUI = null;
   @Input() wilistview: string = 'wi-list-view';
 
-  @Output() onStartCreateWI: EventEmitter<any> = new EventEmitter();
+  @Output() readonly onStartCreateWI: EventEmitter<any> = new EventEmitter();
 
   error: any = false;
   workItem: WorkItemService;

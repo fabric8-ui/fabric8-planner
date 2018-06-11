@@ -37,8 +37,8 @@ import { WorkItemUI } from './../../models/work-item';
 
 export class WorkItemPreviewPanelComponent implements OnInit {
 
-  @Output('onOpen') onOpen: EventEmitter<any> = new EventEmitter();
-  @Output('onClose') onClose: EventEmitter<any> = new EventEmitter();
+  @Output('onOpen') readonly onOpen: EventEmitter<any> = new EventEmitter();
+  @Output('onClose') readonly onClose: EventEmitter<any> = new EventEmitter();
 
   private panelState: 'in' | 'out' = 'out';
   private workItem: WorkItemUI = null;

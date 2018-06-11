@@ -17,7 +17,7 @@ import { User } from 'ngx-login-client';
 })
 export class SwitchComponent {
   @Input() isChecked: Boolean;
-  @Output() onChecked = new EventEmitter();
+  @Output() readonly onChecked = new EventEmitter();
 
   toggleSwitch(event) {
     this.onChecked.emit(event);

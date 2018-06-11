@@ -18,9 +18,9 @@ export class WorkItemCellComponent {
     }
     @Input() col: string;
     @Input() row: object;
-    @Output() onDetailPreview = new EventEmitter();
-    @Output() onQuickPreview = new EventEmitter();
-    @Output() clickLabel = new EventEmitter();
+    @Output() readonly onDetailPreview = new EventEmitter();
+    @Output() readonly onQuickPreview = new EventEmitter();
+    @Output() readonly clickLabel = new EventEmitter();
 
     onDetail(Event: MouseEvent, id: string) {
       this.onDetailPreview.emit(id);

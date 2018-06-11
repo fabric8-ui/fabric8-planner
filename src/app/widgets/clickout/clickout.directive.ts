@@ -15,7 +15,7 @@ export class ClickOutDirective {
 
   @Input('exclude') exclude: string;
 
-  @Output('clickOut') clickOut: EventEmitter<any> = new EventEmitter();
+  @Output('clickOut') readonly clickOut: EventEmitter<any> = new EventEmitter();
 
   @HostListener('document:click', ['$event', '$event.target'])
   onClick(event: MouseEvent, target: HTMLElement): void {

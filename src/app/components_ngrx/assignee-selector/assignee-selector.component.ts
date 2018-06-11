@@ -73,9 +73,9 @@ export class AssigneeSelectorComponent {
     this.updateSelection();
   }
 
-  @Output() onSelectAssignee: EventEmitter<UserUI[]> = new EventEmitter();
-  @Output() onOpenAssignee: EventEmitter<any> = new EventEmitter();
-  @Output() onCloseAssignee: EventEmitter<UserUI[]> = new EventEmitter();
+  @Output() readonly onSelectAssignee: EventEmitter<UserUI[]> = new EventEmitter();
+  @Output() readonly onOpenAssignee: EventEmitter<any> = new EventEmitter();
+  @Output() readonly onCloseAssignee: EventEmitter<UserUI[]> = new EventEmitter();
 
   workItem: WorkItem;
   workItemRef: WorkItem;

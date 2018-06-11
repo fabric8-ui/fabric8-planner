@@ -25,9 +25,9 @@ export class WorkItemCommentComponent implements OnInit, AfterViewInit {
   @Input() comments: CommentUI[];
   @Input() loggedIn: Boolean;
   @Input() loggedInUser: User;
-  @Output() create = new EventEmitter<CommentUI>();
-  @Output() update = new EventEmitter<CommentUI>();
-  @Output() delete = new EventEmitter<CommentUI>();
+  @Output() readonly create = new EventEmitter<CommentUI>();
+  @Output() readonly update = new EventEmitter<CommentUI>();
+  @Output() readonly delete = new EventEmitter<CommentUI>();
 
   isCollapsedComments: Boolean = false;
   commentEditable: Boolean = false;

@@ -26,8 +26,8 @@ export class LabelsComponent {
   @Input() truncateAfter: number;
   @Input() allowDelete: boolean;
   @Input() context: string = '';
-  @Output() onLabelClick = new EventEmitter();
-  @Output() onRemoveLabel = new EventEmitter();
+  @Output() readonly onLabelClick = new EventEmitter();
+  @Output() readonly onRemoveLabel = new EventEmitter();
 
   private labels: LabelUI[] = [];
   private showMore: boolean = false;

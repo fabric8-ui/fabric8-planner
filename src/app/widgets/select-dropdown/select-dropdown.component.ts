@@ -25,10 +25,10 @@ export class SelectDropdownComponent implements OnInit {
   @Input() showSearch: boolean = false;
   @Input() disabled: boolean = false;
 
-  @Output() onSelect: EventEmitter<any> = new EventEmitter();
-  @Output() onSearch: EventEmitter<any> = new EventEmitter();
-  @Output() onOpen: EventEmitter<any> = new EventEmitter();
-  @Output() onClose: EventEmitter<any> = new EventEmitter();
+  @Output() readonly onSelect: EventEmitter<any> = new EventEmitter();
+  @Output() readonly onSearch: EventEmitter<any> = new EventEmitter();
+  @Output() readonly onOpen: EventEmitter<any> = new EventEmitter();
+  @Output() readonly onClose: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('searchInput') searchInput: ElementRef;
 

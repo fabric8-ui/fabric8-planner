@@ -54,9 +54,9 @@ export class CommonSelectorComponent {
   @Input('noValueLabel') noValueLabel: string = 'None';
   @Input('allowUpdate') allowUpdate: boolean = true;
 
-  @Output() onSelectItem: EventEmitter<any[]> = new EventEmitter();
-  @Output() onOpenSelector: EventEmitter<any> = new EventEmitter();
-  @Output() onCloseSelector: EventEmitter<any[]> = new EventEmitter();
+  @Output() readonly onSelectItem: EventEmitter<any[]> = new EventEmitter();
+  @Output() readonly onOpenSelector: EventEmitter<any> = new EventEmitter();
+  @Output() readonly onCloseSelector: EventEmitter<any[]> = new EventEmitter();
 
   users: User[] = [];
 

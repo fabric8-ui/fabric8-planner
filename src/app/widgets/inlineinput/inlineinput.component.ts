@@ -32,7 +32,7 @@ export class InlineInputComponent implements OnInit {
   @Input() placeholder: string = 'Enter text here';
   @Input() onLineClickEdit: boolean = true;
 
-  @Output() onSave = new EventEmitter();
+  @Output() readonly onSave = new EventEmitter();
 
   private inputValue: string = '';
   private saving: boolean = false;

@@ -98,7 +98,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     }
   }
 
-  @Output() closePreview: EventEmitter<any> = new EventEmitter();
+  @Output() readonly closePreview: EventEmitter<any> = new EventEmitter();
 
   private workItem: WorkItemUI = null;
   private detailContext: 'preview' | 'detail' = 'preview';
