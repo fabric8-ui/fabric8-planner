@@ -8,6 +8,7 @@ import { CommentComponent } from './comment.component';
 import { SafePipeModule } from '../../pipes/safe.module';
 
 @NgModule({
+  declarations: [ CommentComponent],
   imports: [
     CommonModule,
     SafePipeModule,
@@ -15,7 +16,6 @@ import { SafePipeModule } from '../../pipes/safe.module';
     TooltipModule,
     WidgetsModule
   ],
-  declarations: [ CommentComponent],
   exports: [CommentComponent]
 })
 export class CommentModule { }

@@ -2,10 +2,9 @@ import {
   Component, Input,
   EventEmitter, Output, ViewChild
 } from '@angular/core';
-
+import { MarkdownComponent } from 'ngx-widgets';
 import { CommentUI } from './../../models/comment';
 import { WorkItemService } from './../../services/work-item.service';
-import { MarkdownComponent } from 'ngx-widgets';
 
 @Component({
   selector: 'fabric8-comment',
