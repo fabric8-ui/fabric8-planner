@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 
+import { PlannerBoardModule } from './app/components_ngrx/planner-board/planner-board.module';
 import { PlannerListModule } from './app/components_ngrx/planner-list/planner-list.module';
 
 import { EffectsModule } from '@ngrx/effects';
@@ -32,7 +33,8 @@ import * as reducers from './app/reducers/index.reducer';
   declarations: [
   ],
   exports: [
-    PlannerListModule
+    PlannerListModule,
+    PlannerBoardModule
   ]
 })
 export class PlannerModule {

@@ -13,3 +13,4 @@ export { WorkItemQuickAddModule } from './app/components_ngrx/work-item-quick-ad
 export { HttpService } from './app/services/http-service';
 
 export { PlannerListModule } from './app/components_ngrx/planner-list/planner-list.module';
+export { PlannerBoardModule } from './app/components_ngrx/planner-board/planner-board.module';
