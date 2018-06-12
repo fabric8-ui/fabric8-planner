@@ -130,7 +130,6 @@ gulp.task('build', function (done) {
   if (argv.watch) {
     gulp.watch([appSrc + '/app/**/*.ts', '!' + appSrc + '/app/**/*.spec.ts']).on('change', function (e) {
       util.log(util.colors.cyan(e) + ' has been changed. Compiling TypeScript.');
-      mach.tslint(e); // 
       mach.transpileTS();
     });
     gulp.watch(appSrc + '/app/**/*.less').on('change', function (e) {
