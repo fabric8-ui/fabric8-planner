@@ -593,7 +593,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  saveFilters(filterName: string) {
+  saveFilters(filterSaveInp,filterName: string) {
     if (filterName !== '') {
       //let exp = JSON.stringify(this.filterService.queryToJson(this.queryExp));
       let exp = this.queryExp;
@@ -608,6 +608,9 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       };
       this.store.dispatch(new CustomQueryActions.Add(customQuery));
       this.closeFilterSave();
+      if(filterSaveInp) {
+        filterSaveInp.value = '';
+      }
     }
   }
 
