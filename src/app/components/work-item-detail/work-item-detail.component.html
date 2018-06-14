@@ -1,6 +1,6 @@
 <div class="f8-quick-preview"
   [@slideInOut]="panelState">
-  <div class="width-100"  
+  <div class="width-100"
     id="workItemDetail_Wrapper"
     *ngIf="workItem">
     <form
@@ -13,7 +13,7 @@
             class="pficon pficon-close pull-right f8-quick-preview--close"
             (click)="closePreview()">
           </span>
-          <div class="form-group width-100 pull-left mobile-bar 
+          <div class="form-group width-100 pull-left mobile-bar
                       padding-h-10 padding-v-5 margin-0">
             <span class="detail-created-date pull-right"
               *ngIf="workItem.id">
@@ -31,7 +31,7 @@
                   id="wi-type-icon" title="{{workItem.relationships?.baseType?.data?.attributes?.name}}"></span>
                 {{workItem.relationships?.baseType?.data?.attributes?.name}}
               </ng-template>
-              <h3 class="detail-id" 
+              <h3 class="detail-id"
                 id="wi-detail-id"
                 *ngIf="workItem.id">
                   {{workItem.attributes['system.number']}}
@@ -67,14 +67,14 @@
                     *ngIf="loggedIn" ></span>
                 </button>
                 <ul class="dropdown-ul dropdown-menu"
-                  id="wi-status-dropdown" 
-                  role="menu" 
+                  id="wi-status-dropdown"
+                  role="menu"
                   *dropdownMenu>
-                  <li class="dropdown-li" 
+                  <li class="dropdown-li"
                     (click)="onChangeState(state)"
                     *ngFor="let state of workItem.relationships?.baseType?.data?.attributes?.fields['system.state'].type.values;">
                     <a>
-                      <span class='dropdown-icon' 
+                      <span class='dropdown-icon'
                         almIcon [iconType]="state"></span>
                       <span class='dropdown-text'>{{state}}</span>
                     </a>
@@ -83,7 +83,7 @@
               </div>
               <a class="pull-right">
                 <span class="dib margin-right-3">
-                  <a [routerLink]="[constructUrl(workItem)]" 
+                  <a [routerLink]="[constructUrl(workItem)]"
                     [queryParams]="queryParams">
                     View full details
                   </a>
@@ -117,7 +117,7 @@
                   <span *ngIf="loadingAssignees"
                     class="spinner spinner-sm spinner-inline">
                   </span>
-                  <f8-assignee *ngIf="!loadingAssignees" 
+                  <f8-assignee *ngIf="!loadingAssignees"
                     [showFullName]="true"
                     [assignees]="workItem.relationships?.assignees?.data ?
                       workItem.relationships?.assignees?.data : []">
@@ -145,10 +145,10 @@
                 </label>
                 <div class="detail-creator-content">
                   <span *ngIf="!workItem.relationships?.creator?.data"
-                    class="pficon pficon-user user-creator-icon" 
+                    class="pficon pficon-user user-creator-icon"
                     id="user_creator_icon">
                   </span>
-                  <user-avatar 
+                  <user-avatar
                     id="WI_details_reporter_img"
                     *ngIf="workItem.relationships?.creator?.data"
                     [imgTooltip]="workItem.relationships.creator.data.attributes?.fullName"
@@ -172,13 +172,13 @@
                   <span *ngIf="loadingArea"
                     class="spinner spinner-sm spinner-inline">
                   </span>
-                  <typeahead-dropdown 
+                  <typeahead-dropdown
                     class="area-dropdown"
                     id="area-dropdown"
                     #areaSelectbox
                     *ngIf="!loadingArea"
-                    noValueLabel="None" 
-                    [values]="areas" 
+                    noValueLabel="None"
+                    [values]="areas"
                     (onFocus)="focusArea()"
                     (onUpdate)="areaUpdated($event)">
                   </typeahead-dropdown>
@@ -189,7 +189,7 @@
             <!--Iteration-->
             <div class="form-group">
               <div class="width-100 pull-left detail-iteration-wrap">
-                <label class="control-label" 
+                <label class="control-label"
                   id="iteration_label">
                   {{workItem.relationships?.baseType?.data?.attributes?.fields['system.iteration']?.label || 'Label'}}
                 </label>
@@ -197,14 +197,14 @@
                   <span *ngIf="loadingIteration"
                     class="spinner spinner-sm spinner-inline">
                   </span>
-                  <typeahead-dropdown 
+                  <typeahead-dropdown
                     class="iteration-dropdown"
                     id="iteration-dropdown"
                     *ngIf="!loadingIteration"
-                    #iterationSelectbox 
-                    noValueLabel="None" 
+                    #iterationSelectbox
+                    noValueLabel="None"
                     [values]="iterations"
-                    (onFocus)="focusIteration()" 
+                    (onFocus)="focusIteration()"
                     (onUpdate)="iterationUpdated($event)">
                   </typeahead-dropdown>
                 </div>
@@ -227,7 +227,7 @@
                       [allowDelete]="true"
                       (onLabelClick)="onLabelClick($event)">
                   </f8-label>
-                  <div class="label-selector-wrapper" 
+                  <div class="label-selector-wrapper"
                     *ngIf="loggedIn && !loadingLabels" >
                     <label-selector
                       id="labelSelector"
@@ -269,7 +269,7 @@
             </div>
             <!-- Description End -->
           </div>
-          <div class="width-100 pull-left start-coding-wrap" 
+          <div class="width-100 pull-left start-coding-wrap"
             *ngIf="loggedIn && workItem.relationships?.codebase?.links?.meta?.edit">
             <div class="form-group">
               <label class="control-label" id="coding_label">
@@ -278,7 +278,7 @@
               <div class="form-control-static start-coding">
                 <a class="btn btn-default"
                   id="start-coding-link"
-                  target="_blank" 
+                  target="_blank"
                   href="{{workItem.relationships?.codebase?.links?.meta?.edit}}">
                   Start Coding
                 </a>
@@ -288,8 +288,8 @@
         </div>
       </fieldset>
     </form>
-    <div 
-      class="work-item-section" 
+    <div
+      class="work-item-section"
       *ngIf="workItem.id">
       <alm-work-item-link
         [workItem]="workItem"

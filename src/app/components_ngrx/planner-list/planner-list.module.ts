@@ -47,7 +47,7 @@ import * as reducers from './../../reducers/index.reducer';
 import * as effects from './../../effects/index.effects';
 import { WorkItemReducer } from './../../reducers/work-item.reducer';
 
-import { AlmIconModule } from 'ngx-widgets';
+import { AlmIconModule, WidgetsModule } from 'ngx-widgets';
 import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { UrlService } from '../../services/url.service';
 import { InfotipService } from '../../services/infotip.service';
@@ -110,6 +110,7 @@ let providers = [
     BsDropdownModule.forRoot(),
     NgxDatatableModule,
     WorkItemPreviewPanelModule,
+    WidgetsModule,
     TruncateModule,
     StoreModule.forFeature('listPage', {
         iterations: reducers.iterationReducer,
