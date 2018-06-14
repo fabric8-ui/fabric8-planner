@@ -195,9 +195,7 @@
                 <user-avatar
                   id="WI_details_reporter_img"
                   *ngIf="creator"
-                  [imgSrc]="creator?.avatar | almAvatarSize: 25"
-                  [imgPlacement]="'bottom'"
-                  [imgTooltip]="creator?.name">
+                  [imgSrc]="creator?.avatar | almAvatarSize: 25">
                 </user-avatar>
                 <div class="dib">
                   <span id="WI_details_reporter_user">
