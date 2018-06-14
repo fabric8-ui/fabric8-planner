@@ -24,6 +24,7 @@ import { IterationComponent } from './iterations-panel.component';
 
 // ngrx stuff
 import { StoreModule } from '@ngrx/store';
+import { IterationQuery } from '../../models/iteration.model';
 import { iterationUiReducer } from './../../reducers/iteration-reducer';
 import { initialUIState } from './../../states/iteration.state';
 
@@ -57,6 +58,6 @@ import { initialUIState } from './../../states/iteration.state';
     IterationTreeComponent
   ],
   exports: [IterationComponent],
-  providers: [BsDropdownConfig, IterationService, TooltipConfig]
+  providers: [BsDropdownConfig, IterationService, TooltipConfig, IterationQuery]
 })
 export class IterationModule { }

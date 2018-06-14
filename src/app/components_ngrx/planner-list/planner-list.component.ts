@@ -20,7 +20,7 @@ import {
 import { EmptyStateConfig } from 'patternfly-ng/empty-state';
 import { Observable } from 'rxjs/Observable';
 import { WorkItemTypeUI } from '../../models/work-item-type';
-import { IterationUI } from './../../models/iteration.model';
+import { IterationQuery, IterationUI } from './../../models/iteration.model';
 import { CookieService } from './../../services/cookie.service';
 import { FilterService } from './../../services/filter.service';
 import { UrlService } from './../../services/url.service';
@@ -31,7 +31,9 @@ import { datatableColumn } from './datatable-config';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
-import { WorkItemUI } from '../../models/work-item';
+import { AreaQuery } from '../../models/area.model';
+import { UserQuery } from '../../models/user';
+import { WorkItemQuery, WorkItemUI } from '../../models/work-item';
 import { WorkItemPreviewPanelComponent } from '../work-item-preview-panel/work-item-preview-panel.component';
 import * as AreaActions from './../../actions/area.actions';
 import * as CollaboratorActions from './../../actions/collaborator.actions';
@@ -42,6 +44,7 @@ import * as LabelActions from './../../actions/label.actions';
 import * as SpaceActions from './../../actions/space.actions';
 import * as WorkItemTypeActions from './../../actions/work-item-type.actions';
 import * as WorkItemActions from './../../actions/work-item.actions';
+import { LabelQuery } from './../../models/label.model';
 import { AppState } from './../../states/app.state';
 
 @Component({
@@ -67,30 +70,15 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     .select('space')
     .do(s => {if (!s) { this.store.dispatch(new SpaceActions.Get()); }})
     .filter(s => !!s);
-  private areaSource = this.store
-    .select('listPage')
-    .select('areas')
+  private areaSource = this.areaQuery.getAreas()
     .filter(a => !!a.length);
-  private iterationSource = this.store
-    .select('listPage')
-    .select('iterations')
+  private labelSource = this.labelQuery.getLables();
+  private iterationSource = this.iterationQuery.getIterations()
     .filter(i => !!i.length);
-  private labelSource = this.store
-    .select('listPage')
-    .select('labels')
+  private selectedIterationSource = this.iterationQuery.getSelectedIteration()
     .filter(i => i !== null);
-  private collaboratorSource = this.store
-    .select('listPage')
-    .select('collaborators')
-    .filter(c => !!c.length);
-  private selectedIterationSource = this.store
-    .select('listPage')
-    .select('iterations')
-    .filter(its => !!its.length)
-    .map(its => its.find(it => it.selected));
-  private workItemSource = this.store
-    .select('listPage')
-    .select('workItems');
+  private collaboratorSource = this.userQuery.getCollaborators();
+  private workItemSource = this.workItemQuery.getWorkItems();
   private routeSource = this.route.queryParams
     .filter(p => p.hasOwnProperty('q'));
   private quickAddWorkItemTypes: WorkItemTypeUI[] = [];
@@ -129,7 +117,12 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     private auth: AuthenticationService,
     private filterService: FilterService,
     private cookieService: CookieService,
-    private urlService: UrlService
+    private urlService: UrlService,
+    private iterationQuery: IterationQuery,
+    private userQuery: UserQuery,
+    private labelQuery: LabelQuery,
+    private workItemQuery: WorkItemQuery,
+    private areaQuery: AreaQuery
   ) {}
 
   ngOnInit() {
@@ -222,7 +215,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     }
     this.loggedIn = this.auth.isLoggedIn();
     this.setWorkItemTypes();
-    this.setSelectedIterationForQuickAdd();
     this.setWorkItems();
     this.setDataTableColumns();
 
@@ -392,15 +384,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
           this.quickAddWorkItemTypes = workItemTypes;
         }
       })
-    );
-  }
-
-  setSelectedIterationForQuickAdd() {
-    this.eventListeners.push(
-      this.selectedIterationSource
-        .subscribe(iteration => {
-          this.selectedIteration = iteration;
-        })
     );
   }
 

@@ -9,7 +9,6 @@ import { AuthenticationService } from 'ngx-login-client';
 import { MarkdownModule, WidgetsModule } from 'ngx-widgets';
 import { PlannerModalModule } from '../../widgets/modal/modal.module';
 import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component';
-import { CommentQuery } from './../../models/comment';
 import { UserMapper, UserQuery } from './../../models/user';
 import { AlmUserNameModule } from './../../pipes/alm-user-name.module';
 import { WorkItemTypeControlService } from './../../services/work-item-type-control.service';
@@ -52,6 +51,12 @@ import { SafePipeModule } from '../../pipes/safe.module';
 import { EventReducer } from '../../reducers/event.reducer';
 import { UrlService } from '../../services/url.service';
 import { LabelSelectorModule } from '../label-selector/label-selector.module';
+
+import { AreaQuery } from '../../models/area.model';
+import { IterationQuery } from '../../models/iteration.model';
+import { CommentQuery } from './../../models/comment';
+import { LabelQuery } from './../../models/label.model';
+import { WorkItemQuery } from './../../models/work-item';
 
 @NgModule({
   imports: [
@@ -102,13 +107,17 @@ import { LabelSelectorModule } from '../label-selector/label-selector.module';
   ],
   providers: [
     CommentQuery,
+    LabelQuery,
     UserQuery,
     UserMapper,
     UrlService,
     BsDropdownConfig,
     AuthenticationService,
     TooltipConfig,
-    WorkItemTypeControlService
+    WorkItemTypeControlService,
+    IterationQuery,
+    WorkItemQuery,
+    AreaQuery
   ],
   declarations: [
     WorkItemDetailComponent,

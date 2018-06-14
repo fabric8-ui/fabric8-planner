@@ -17,7 +17,7 @@ import * as moment from 'moment';
 import { IMyDateModel, IMyOptions, IMySelector, MyDatePicker } from 'mydatepicker';
 import { Broadcaster } from 'ngx-base';
 
-import { IterationUI } from '../../models/iteration.model';
+import { IterationQuery, IterationUI } from '../../models/iteration.model';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
@@ -88,7 +88,8 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
 
   constructor(
     private broadcaster: Broadcaster,
-    private store: Store<AppState>) {}
+    private store: Store<AppState>,
+    private iterationQuery: IterationQuery) {}
 
   ngOnInit() {
     this.resetValues();
@@ -304,8 +305,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   }
 
   getIterations() {
-    this.store.select('listPage')
-      .select('iterations')
+    this.iterationQuery.getIterations()
       .subscribe((iterations: IterationUI[]) => {
         this.iterations = iterations;
         this.iterationsValue = [];

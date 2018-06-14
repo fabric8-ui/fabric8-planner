@@ -22,6 +22,7 @@ import { AuthenticationService } from 'ngx-login-client';
 import { WorkItem, WorkItemRelations, WorkItemService } from '../../models/work-item';
 import { WorkItemTypeUI } from '../../models/work-item-type';
 import { IterationUI } from './../../models/iteration.model';
+import { WorkItemQuery } from './../../models/work-item';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
@@ -72,7 +73,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     private auth: AuthenticationService,
     private route: ActivatedRoute,
     private renderer: Renderer2,
-    private store: Store<AppState>) {}
+    private store: Store<AppState>,
+    private workItemQuery: WorkItemQuery) {}
 
   ngOnInit(): void {
     this.createWorkItemObj();
@@ -82,9 +84,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
 
     // listen for item added
     this.eventListeners.push(
-      this.store
-        .select('listPage')
-        .select('workItems')
+      this.workItemQuery.getWorkItems()
         .filter(items => !!items.length)
         .subscribe(items => {
           // const addedItem = items.find(item => item.createId === this.createId);

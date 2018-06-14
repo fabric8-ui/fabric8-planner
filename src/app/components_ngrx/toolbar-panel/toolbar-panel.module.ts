@@ -21,6 +21,8 @@ import {
 //ngrx stuff
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { AreaQuery } from '../../models/area.model';
+import { IterationQuery } from '../../models/iteration.model';
 import { FilterEffects } from './../../effects/filter.effects';
 import { FilterReducer } from './../../reducers/filter.reducer';
 import {
@@ -54,7 +56,9 @@ import {
     FilterService,
     TooltipConfig,
     WorkItemService,
-    EventService
+    EventService,
+    IterationQuery,
+    AreaQuery
   ],
   exports: [ToolbarPanelComponent]
 })

@@ -10,6 +10,8 @@ import { IterationService } from '.././services/iteration.service';
 import { UpdateWorkitemIteration } from '../actions/work-item.actions';
 import { IterationMapper, IterationUI } from '../models/iteration.model';
 
+import { normalizeArray } from '../models/common.model';
+
 
 @Injectable()
 export class IterationEffects {
@@ -17,14 +19,6 @@ export class IterationEffects {
                private iterationService: IterationService,
                private notifications: Notifications,
                private store: Store<AppState>) {
-  }
-
-  resolveChildren(iterations: IterationUI[]): IterationUI[] {
-    for (let i = 0; i < iterations.length; i++) {
-      iterations[i].children =
-        iterations.filter(it => it.parentId === iterations[i].id);
-    }
-    return iterations;
   }
 
   @Effect() getIterations$: Observable<Action> = this.actions$
@@ -38,10 +32,7 @@ export class IterationEffects {
            const itMapper = new IterationMapper();
            return iterations.map(it => itMapper.toUIModel(it));
         })
-        .map(iterations => {
-          return this.resolveChildren(iterations);
-        })
-        .map(iterations => (new IterationActions.GetSuccess(iterations)))
+        .map(iterations => (new IterationActions.GetSuccess(normalizeArray(iterations))))
         .catch(() => Observable.of(new IterationActions.GetError()));
     });
 
