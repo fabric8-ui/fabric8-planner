@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { TooltipConfig, TooltipModule } from 'ngx-bootstrap';
 import { UserAvatarComponent } from './user-avatar.component';
 
 describe('UserAvatarComponent', () => {
@@ -7,7 +9,14 @@ describe('UserAvatarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UserAvatarComponent ]
+      imports: [
+        CommonModule,
+        TooltipModule.forRoot()
+      ],
+      declarations: [ UserAvatarComponent ],
+      providers: [
+        TooltipConfig
+      ]
     })
     .compileComponents();
   }));
