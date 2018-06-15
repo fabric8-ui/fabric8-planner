@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
-  HttpModule, Http,
+  Http, HttpModule,
   RequestOptions, XHRBackend } from '@angular/http';
 import { RouterModule } from '@angular/router';
 
@@ -11,24 +11,22 @@ import {
   BsDropdownModule,
   CollapseModule,
   TooltipConfig,
-  TooltipModule,
+  TooltipModule
 } from 'ngx-bootstrap';
 import { AuthenticationService } from 'ngx-login-client';
 
-import { CommentModule } from './../../widgets/comment-module/comment.module';
-import { GlobalSettings } from './../../shared/globals';
-import { HttpService, factoryForHttpService } from './../../services/http-service';
-import { SafePipeModule } from '../../pipes/safe.module';
 import {
   AlmEditableModule,
   AlmIconModule,
-  WidgetsModule,
-  MarkdownModule
+  MarkdownModule,
+  WidgetsModule
 } from 'ngx-widgets';
-
-import { WorkItemCommentComponent } from './work-item-comment.component';
-import { PlannerModalModule } from './../../components/modal/modal.module';
+import { SafePipeModule } from '../../pipes/safe.module';
+import { factoryForHttpService, HttpService } from './../../services/http-service';
+import { GlobalSettings } from './../../shared/globals';
+import { CommentModule } from './../../widgets/comment-module/comment.module';
 import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
+import { WorkItemCommentComponent } from './work-item-comment.component';
 
 let providers = [
   {
@@ -51,7 +49,6 @@ let providers = [
     BsDropdownModule,
     FormsModule,
     MarkdownModule,
-    PlannerModalModule,
     RouterModule,
     HttpModule,
     TooltipModule,
