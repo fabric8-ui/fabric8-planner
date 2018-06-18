@@ -23,7 +23,7 @@
         [imgPlacement]="'left'"
         [imgSrc]="assignee?.avatar | almAvatarSize: 25">
       </user-avatar>
-      <div dropdown class="pull-left margin-h-5 dropdown" placement="right">
+      <div dropdown class="dib dropdown" placement="right">
         <span dropdownToggle class="dib dropdown-toggle pointer"
           *ngIf="truncateAfter!==undefined && assignees.length > 3">
             {{ assignees.length - truncateAfter }}+
