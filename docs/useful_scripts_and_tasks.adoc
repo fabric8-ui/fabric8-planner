@@ -13,7 +13,7 @@ The following table lists the available npm scripts managed with `gulp` tasks:
 |Command
 |Description
 
-.7+| Build
+.6+| Build
 
 | *[default]* app
 v|`npm run build` or
@@ -39,10 +39,6 @@ v|`npm run build \-- --validate`
 | watch
 v|`npm run build \-- --watch`
 | Rebuilds planner library on file changes
-
-| lint
-v|`npm run lint-check`
-| Checks for linter error
 
 .7+| Clean
 
@@ -75,8 +71,13 @@ v|`npm run clean \-- --modules`
 v|`npm run clean \-- --temp`
 | Removes temp files and artifacts
 
+.1+| TsLint
 
-.3+| Tests
+| lint
+v|`npm run lint-check`
+| Checks for linter error
+
+.1+| Tests
 
 | unit
 v|`npm run tests \-- --unit`
@@ -84,11 +85,11 @@ v|`npm run tests \-- --unit`
 //Commented out as not yet implemented
 //| func
 //v|`npm run tests \-- --func`
-| Runs the functional tests
+//| Runs the functional tests
 
 //| smok
 //v|`npm run tests \-- --smok`
-| Runs the smoke tests
+//| Runs the smoke tests
 
 |===
 
