@@ -71,7 +71,7 @@ v|`npm run clean \-- --modules`
 v|`npm run clean \-- --temp`
 | Removes temp files and artifacts
 
-.1+| TsLint
+.1+| TSLint
 
 | lint
 v|`npm run lint-check`
