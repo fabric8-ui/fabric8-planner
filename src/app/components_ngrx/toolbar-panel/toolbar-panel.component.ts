@@ -607,8 +607,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         'type': 'queries'
       };
       this.store.dispatch(new CustomQueryActions.Add(customQuery));
-      this.closeFilterSave();
-      filterSaveInp.value = '';
+      this.closeFilterSave(filterSaveInp);
     }
   }
 
@@ -664,8 +663,9 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  closeFilterSave() {
+  closeFilterSave(filterSaveInp: HTMLInputElement) {
     this.isFilterSaveOpen = false;
+    filterSaveInp.value = '';
   }
 
   saveFilterDropdownChange(value: boolean) {
