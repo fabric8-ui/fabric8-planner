@@ -131,7 +131,7 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
           let selectedTypeGroup: GroupTypeUI;
           const selectedTypeGroupName =
             this.filterService.getConditionFromQuery(val.q, 'typegroup.name');
-          if(selectedTypeGroupName) {
+          if (selectedTypeGroupName) {
             selectedTypeGroup =
               this.groupTypes.find(g => g.name === selectedTypeGroupName);
           }

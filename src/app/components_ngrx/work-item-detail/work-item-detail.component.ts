@@ -247,7 +247,7 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     if (this.detailContext === 'detail') {
       this.navigateBack();
     } else {
-      if(this.inlineInput) {
+      if (this.inlineInput) {
         this.inlineInput.closeClick();
       }
       this.closePreview.emit();
