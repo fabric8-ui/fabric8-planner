@@ -71,11 +71,11 @@ v|`npm run clean \-- --modules`
 v|`npm run clean \-- --temp`
 | Removes temp files and artifacts
 
-.1+| TSLint
+.1+| Lint
 
-| lint
+| check
 v|`npm run lint-check`
-| Checks for linter error
+| Checks for linter error using TSLint
 
 .1+| Tests
 
