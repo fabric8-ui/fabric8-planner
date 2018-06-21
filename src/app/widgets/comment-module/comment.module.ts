@@ -4,8 +4,10 @@ import { NgModule } from '@angular/core';
 import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { MarkdownModule, WidgetsModule } from 'ngx-widgets';
 
-import { CommentComponent } from './comment.component';
 import { SafePipeModule } from '../../pipes/safe.module';
+import { CommentComponent } from './comment.component';
+
+import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
 
 @NgModule({
   declarations: [ CommentComponent],
@@ -14,7 +16,8 @@ import { SafePipeModule } from '../../pipes/safe.module';
     SafePipeModule,
     MarkdownModule,
     TooltipModule,
-    WidgetsModule
+    WidgetsModule,
+    UserAvatarModule
   ],
   exports: [CommentComponent]
 })

@@ -1,20 +1,20 @@
-import { Store } from '@ngrx/store';
-import { Actions, Effect } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
-import * as DetailWorkItemActions from './../actions/detail-work-item.actions';
-import { AppState } from './../states/app.state';
-import { Observable } from 'rxjs';
-import { WorkItemService as WIService } from './../services/work-item.service';
-import {
-  WorkItemMapper, WorkItem,
-  WorkItemService, WorkItemResolver,
-  WorkItemUI
-} from './../models/work-item';
+import { Actions, Effect } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import {
   Notification,
   Notifications,
   NotificationType
-} from "ngx-base";
+} from 'ngx-base';
+import { Observable } from 'rxjs';
+import * as DetailWorkItemActions from './../actions/detail-work-item.actions';
+import {
+  WorkItem, WorkItemMapper,
+  WorkItemResolver, WorkItemService,
+  WorkItemUI
+} from './../models/work-item';
+import { WorkItemService as WIService } from './../services/work-item.service';
+import { AppState } from './../states/app.state';
 
 export type Action = DetailWorkItemActions.All;
 
@@ -28,7 +28,7 @@ export class DetailWorkItemEffects {
     private workItemService: WIService,
     private store: Store<AppState>,
     private notifications: Notifications
-  ){}
+  ) {}
 
   resolveWorkItems(
     workItems, state,
@@ -48,12 +48,7 @@ export class DetailWorkItemEffects {
         }
       }
       const workItemResolver = new WorkItemResolver(workItemUI);
-      workItemResolver.resolveArea(state.areas);
-      workItemResolver.resolveIteration(state.iterations);
-      workItemResolver.resolveCreator(state.collaborators);
       workItemResolver.resolveType(state.workItemTypes);
-      workItemResolver.resolveAssignees(state.collaborators);
-      workItemResolver.resolveWiLabels(state.labels);
       const wItem = workItemResolver.getWorkItem();
       let wid = this.workItemMapper.toDynamicUIModel(
         wi, wItem.type.dynamicfields
@@ -74,7 +69,9 @@ export class DetailWorkItemEffects {
     .switchMap(wp => {
       const state = wp.state;
       const payload = wp.payload;
-      const workItem = state.workItems.find(w => w.number === payload.number);
+      const workItem = Object.keys(state.workItems.entities)
+        .map(id => state.workItems.entities[id])
+        .find(w => w.number === payload.number);
       // If work item found in the existing list
       if (workItem) {
         return Observable
@@ -98,9 +95,9 @@ export class DetailWorkItemEffects {
               type: NotificationType.DANGER
             } as Notification);
           } catch (e) {
-            console.log('Problem in getting work item.')
+            console.log('Problem in getting work item.');
           }
           return Observable.of(new DetailWorkItemActions.GetWorkItemError());
-        })
-    })
+        });
+    });
 }

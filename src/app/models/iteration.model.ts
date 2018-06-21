@@ -1,8 +1,13 @@
+import { Injectable } from '@angular/core';
+import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { AppState, ListPage } from '../states/app.state';
+import  {IterationService as Service } from './../services/iteration.service';
 import {
-  modelUI,
-  modelService,
   Mapper,
   MapTree,
+  modelService,
+  modelUI,
   switchModel
 } from './common.model';
 
@@ -60,7 +65,7 @@ export class IterationRelations {
   };
 }
 
-export interface IterationService extends IterationModel {};
+export interface IterationService extends IterationModel {}
 
 export interface IterationUI extends modelUI {
   parentPath: string; // attributes / parent_path
@@ -87,40 +92,40 @@ export class IterationMapper implements Mapper<IterationModel, IterationUI> {
       fromPath: ['id'],
       toPath: ['id']
     }, {
-      fromPath: ['attributes','name'],
+      fromPath: ['attributes', 'name'],
       toPath: ['name']
     }, {
-      fromPath: ['attributes','parent_path'],
+      fromPath: ['attributes', 'parent_path'],
       toPath: ['parentPath']
     }, {
-      fromPath: ['attributes','resolved_parent_path'],
+      fromPath: ['attributes', 'resolved_parent_path'],
       toPath: ['resolvedParentPath']
     }, {
-      fromPath: ['attributes','user_active'],
+      fromPath: ['attributes', 'user_active'],
       toPath: ['userActive']
     }, {
-      fromPath: ['attributes','active_status'],
+      fromPath: ['attributes', 'active_status'],
       toPath: ['isActive']
     }, {
-      fromPath: ['attributes','startAt'],
+      fromPath: ['attributes', 'startAt'],
       toPath: ['startAt']
     }, {
-      fromPath: ['attributes','endAt'],
+      fromPath: ['attributes', 'endAt'],
       toPath: ['endAt']
     }, {
-      fromPath: ['attributes','description'],
+      fromPath: ['attributes', 'description'],
       toPath: ['description']
     }, {
-      fromPath: ['attributes','state'],
+      fromPath: ['attributes', 'state'],
       toPath: ['state']
     }, {
-      fromPath: ['links','self'],
+      fromPath: ['links', 'self'],
       toPath: ['link']
     }, {
-      fromPath: ['relationships','workitems','meta','total'],
+      fromPath: ['relationships', 'workitems', 'meta', 'total'],
       toPath: ['workItemTotalCount']
     }, {
-      fromPath: ['relationships','workitems','meta','closed'],
+      fromPath: ['relationships', 'workitems', 'meta', 'closed'],
       toPath: ['workItemClosedCount']
     }, {
       fromPath: ['hasChildren'],
@@ -143,46 +148,46 @@ export class IterationMapper implements Mapper<IterationModel, IterationUI> {
       toPath: ['id']
     }, {
       fromPath: ['name'],
-      toPath: ['attributes','name'],
+      toPath: ['attributes', 'name']
     }, {
       fromPath: ['parentPath'],
-      toPath: ['attributes','parent_path'],
+      toPath: ['attributes', 'parent_path']
     }, {
-      fromPath: ['resolvedParentPath'],      
-      toPath: ['attributes','resolved_parent_path'],
+      fromPath: ['resolvedParentPath'],
+      toPath: ['attributes', 'resolved_parent_path']
     }, {
-      fromPath: ['userActive'],      
-      toPath: ['attributes','user_active'],
+      fromPath: ['userActive'],
+      toPath: ['attributes', 'user_active']
     }, {
       fromPath: ['isActive'],
-      toPath: ['attributes','active_status'],
+      toPath: ['attributes', 'active_status']
     }, {
       fromPath: ['startAt'],
-      toPath: ['attributes','startAt'],
+      toPath: ['attributes', 'startAt']
     }, {
-      fromPath: ['endAt'],      
-      toPath: ['attributes','endAt'],
+      fromPath: ['endAt'],
+      toPath: ['attributes', 'endAt']
     }, {
       fromPath: ['description'],
-      toPath: ['attributes','description'],
+      toPath: ['attributes', 'description']
     }, {
       fromPath: ['state'],
-      toPath: ['attributes','state'],
+      toPath: ['attributes', 'state']
     }, {
       fromPath: ['link'],
-      toPath: ['links','self'],
-    }, {      
-      fromPath: ['workItemTotalCount'],
-      toPath: ['relationships','workitems','meta','total'],
+      toPath: ['links', 'self']
     }, {
-      fromPath: ['workItemClosedCount'],      
-      toPath: ['relationships','workitems','meta','closed'],
+      fromPath: ['workItemTotalCount'],
+      toPath: ['relationships', 'workitems', 'meta', 'total']
+    }, {
+      fromPath: ['workItemClosedCount'],
+      toPath: ['relationships', 'workitems', 'meta', 'closed']
     }, {
       fromPath: ['hasChildren'],
       toPath: ['hasChildren']
     }, {
-      fromPath: ['parentId'],      
-      toPath: ['relationships', 'parent', 'data', 'id'],
+      fromPath: ['parentId'],
+      toPath: ['relationships', 'parent', 'data', 'id']
     }, {
       toPath: ['relationships', 'parent', 'data', 'type'],
       toValue: 'iterations'
@@ -202,5 +207,67 @@ export class IterationMapper implements Mapper<IterationModel, IterationUI> {
     return switchModel<IterationUI, IterationService>(
       arg, this.uiToServiceMapTree
     );
+  }
+}
+
+@Injectable()
+export class IterationQuery {
+  private listPageSelector = createFeatureSelector<ListPage>('listPage');
+  private iterationSelector = createSelector(
+    this.listPageSelector,
+    (state) => state.iterations
+  );
+  private iterationSource = this.store.select(this.iterationSelector);
+
+  constructor(private store: Store<AppState>,
+    private iterationService: Service) {}
+
+  getIterations(): Observable<IterationUI[]> {
+    return this.iterationSource.map(iterations => {
+      return Object.keys(iterations).map(id => iterations[id]);
+    });
+  }
+
+  getIterationObservableById(id: string): Observable<IterationUI> {
+    return this.iterationSource.select(state => state[id]);
+  }
+
+  getSelectedIteration(): Observable<IterationUI> {
+    return this.getIterations()
+      .map((iterations: IterationUI[]) => {
+        return iterations.filter(it => it.selected);
+      })
+      .map(iterations => {
+        if (iterations.length === 1) {
+          return iterations[0];
+        } return null;
+      });
+  }
+
+  getIterationsWithChildren(): Observable<IterationUI[]> {
+    return this.getIterations()
+      .map(iterations => {
+        for (let i = 0; i < iterations.length; i++) {
+          iterations[i].children = iterations.filter(it => it.parentId === iterations[i].id);
+        }
+        let allIterations = iterations.filter((i: IterationUI) => {
+          return !this.iterationService.isRootIteration(i.parentPath);
+        });
+        return allIterations;
+      });
+  }
+
+  getIterationForTree(): Observable<IterationUI[]> {
+    return this.getIterationsWithChildren().
+      map((iterations: IterationUI[]) => {
+        return this.iterationService.getTopLevelIterations2(iterations);
+      });
+  }
+
+  getActiveIterations(): Observable<IterationUI[]> {
+    return this.getIterations()
+      .map((iterations: IterationUI[]) => {
+        return iterations.filter((iteration: IterationUI) => iteration.isActive);
+    });
   }
 }

@@ -1,8 +1,10 @@
 import { IterationUI } from './../models/iteration.model';
 
-export type IterationState = IterationUI[];
+export type IterationState = {
+  [iterationId: string]: IterationUI
+};
 
-export const initialState: IterationState = [] as IterationState;
+export const initialState: IterationState = {} as IterationState;
 
 export interface IterationUIState {
   modalLoading: boolean;
@@ -14,4 +16,4 @@ export const initialUIState: IterationUIState = {
   modalLoading: false,
   error: '',
   success: ''
-}
+};

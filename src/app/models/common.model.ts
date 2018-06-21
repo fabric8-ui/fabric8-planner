@@ -8,6 +8,13 @@ export class modelService {
   type: string;
 }
 
+export interface CommonSelectorUI {
+  key: string;
+  value: string;
+  selected: boolean;
+  cssLabelClass: string | undefined;
+}
+
 export interface MapTree {
   [index: number]: {
     fromPath?: string[];
@@ -58,7 +65,7 @@ export function switchModel<I, O>(input: I, mapTree: MapTree): O {
       let fromCurrentVal: any = input;
       if (fromCurrentVal !== null && typeof(fromCurrentVal) !== 'undefined') {
         // Get the value to be mapped from service model
-        for(let j = 0; j < fromPath.length; j++) {
+        for (let j = 0; j < fromPath.length; j++) {
           if (fromCurrentVal.hasOwnProperty(fromPath[j])) {
             fromCurrentVal = fromCurrentVal[fromPath[j]];
           } else {
@@ -87,11 +94,12 @@ export function switchModel<I, O>(input: I, mapTree: MapTree): O {
 
 
 function updateObj(obj: Object, keyPath: string[], value: any) {
-  const lastKeyIndex = keyPath.length-1;
+  const lastKeyIndex = keyPath.length - 1;
   for (var i = 0; i < lastKeyIndex; ++ i) {
     const key = keyPath[i];
-    if (!(key in obj))
-      obj[key] = {}
+    if (!(key in obj)) {
+      obj[key] = {};
+    }
     obj = obj[key];
   }
   obj[keyPath[lastKeyIndex]] = value;

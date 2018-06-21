@@ -1,19 +1,18 @@
+import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { UserService } from 'ngx-login-client';
+import { Observable } from 'rxjs';
+import { AppState } from './../states/app.state';
+import { AreaModel, AreaQuery, AreaUI } from './area.model';
 import {
   Mapper,
   MapTree,
-  switchModel,
-  modelService
+  modelService,
+  switchModel
 } from './common.model';
-import { AppState } from './../states/app.state';
-import { UserUI, UserQuery } from './user';
-import { IterationUI, IterationModel } from './iteration.model';
-import { AreaUI, AreaModel } from './area.model';
-import { LabelUI, LabelModel } from './label.model';
-import { UserService } from 'ngx-login-client';
-import { cloneDeep } from 'lodash';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { IterationModel, IterationQuery, IterationUI } from './iteration.model';
+import { LabelModel, LabelQuery, LabelUI } from './label.model';
+import { UserQuery, UserUI } from './user';
 
 
 export class Event extends modelService {
@@ -38,13 +37,13 @@ export class EventRelationships {
       }
       type: string;
     }
-  }
+  };
   newValue?: {
     data?: AreaModel[] | IterationModel[] | UserService[] | LabelModel[];
-  }
+  };
   oldValue?: {
     data?: AreaModel[] | IterationModel[] | UserService[] | LabelModel[];
-  }
+  };
 }
 
 export interface EventUI {
@@ -56,6 +55,8 @@ export interface EventUI {
   modifier?: Observable<UserUI>;
   newValueRelationships: any;
   oldValueRelationships: any;
+  newValueRelationshipsObs?: Observable<IterationUI | AreaUI | UserUI>[] | Observable<LabelUI[]>;
+  oldValueRelationshipsObs?: Observable<IterationUI | AreaUI | UserUI>[] | Observable<LabelUI[]>;
   type: string | null;
 }
 
@@ -84,12 +85,18 @@ export class EventMapper implements Mapper<EventService, EventUI> {
     toPath: ['newValueRelationships'],
     toFunction: (newValue) => {
       if (newValue !== null) {
-        if(newValue.hasOwnProperty('data')){
-          return newValue["data"]
-        }else
+        if (newValue.hasOwnProperty('data')) {
+          return newValue['data'].map(item => {
+            return {
+              id: item.id,
+              type: item.type
+            };
+          });
+        } else {
           return [];
+        }
       } else {
-        return newValue
+        return newValue;
       }
     }
   }, {
@@ -97,88 +104,36 @@ export class EventMapper implements Mapper<EventService, EventUI> {
     toPath: ['oldValueRelationships'],
     toFunction: (oldValue) => {
         if (oldValue !== null) {
-        if(oldValue.hasOwnProperty('data'))
-          return oldValue["data"]
-        else
+        if (oldValue.hasOwnProperty('data')) {
+          return oldValue['data'].map(item => {
+            return {
+              id: item.id,
+              type: item.type
+            };
+          });
+        } else {
           return [];
+        }
       } else {
-        return oldValue
+        return oldValue;
       }
     }
   }, {
     toPath: ['type'],
     toValue: null
-  },];
+  }];
   uiToServiceMapTree: MapTree;
 
   toUIModel(arg: EventService): EventUI {
     return switchModel<EventService, EventUI>(
       arg, this.serviceToUiMapTree
-    )
+    );
   }
 
   toServiceModel(arg: EventUI): EventService {
     return switchModel<EventUI, EventService>(
       arg, this.uiToServiceMapTree
-    )
-  }
-}
-
-export class EventResolver {
-  constructor(private event: EventUI, private state) {
-    switch (event.name) {
-      case 'system.assignees':
-        this.resolve(state.collaborators);
-        break;
-
-      case 'system.iteration':
-        this.resolve(state.iterations);
-        break;
-
-      case 'system.area':
-        this.resolve(state.areas);
-        break;
-
-      case 'system.labels':
-        this.resolve(state.labels);
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  getEvent() {
-    return this.event;
-  }
-
-  resolve(data) {
-    let added = this.event.newValueRelationships.filter(
-      newItem => this.event.oldValueRelationships.findIndex(
-        oldItem => oldItem.id === newItem.id
-      ) === -1
     );
-
-    let removed = this.event.oldValueRelationships.filter(
-      oldItem => this.event.newValueRelationships.findIndex(
-        newItem => newItem.id === oldItem.id
-      ) === -1
-    );
-
-    this.event.newValueRelationships = added;
-    this.event.oldValueRelationships = removed;
-    if (this.event.newValueRelationships.length > 0) {
-      this.event.type = this.event.newValueRelationships[0].type;
-      this.event.newValueRelationships = this.event.newValueRelationships.map(item => {
-        return cloneDeep(data.find(u => u.id === item.id));
-      }).filter(item => !!item);
-    }
-    if (this.event.oldValueRelationships.length > 0) {
-      this.event.type = this.event.oldValueRelationships[0].type;
-      this.event.oldValueRelationships = this.event.oldValueRelationships.map(item => {
-        return cloneDeep(data.find(u => u.id === item.id));
-      }).filter(item => !!item);
-    }
   }
 }
 
@@ -190,18 +145,72 @@ export class EventQuery {
 
   constructor(
     private store: Store<AppState>,
-    private userQuery: UserQuery
+    private userQuery: UserQuery,
+    private iterationQuery: IterationQuery,
+    private areaQuery: AreaQuery,
+    private labelQuery: LabelQuery
   ) { }
 
   getEventsWithModifier(): Observable<EventUI[]> {
     return this.eventSource
       .map(events => {
         return events.map(event => {
-          return {
-            ...event,
-            modifier: this.userQuery.getUserObservableById(event.modifierId)
+          switch (event.name) {
+            case 'system.iteration':
+              return {
+                ...event,
+                modifier: this.userQuery.getUserObservableById(event.modifierId),
+                newValueRelationshipsObs: event.newValueRelationships.map(item => {
+                  return this.iterationQuery.getIterationObservableById(item.id);
+                }),
+                oldValueRelationshipsObs: event.oldValueRelationships.map(item => {
+                  return this.iterationQuery.getIterationObservableById(item.id);
+                })
+              };
+            case 'system.area':
+              return {
+                ...event,
+                modifier: this.userQuery.getUserObservableById(event.modifierId),
+                newValueRelationshipsObs: event.newValueRelationships.map(item => {
+                  return this.areaQuery.getAreaObservableById(item.id);
+                }),
+                oldValueRelationshipsObs: event.oldValueRelationships.map(item => {
+                  return this.areaQuery.getAreaObservableById(item.id);
+                })
+              };
+            case 'system.assignees':
+              return {
+                ...event,
+                modifier: this.userQuery.getUserObservableById(event.modifierId),
+                newValueRelationshipsObs: event.newValueRelationships.map(item => {
+                  return this.userQuery.getUserObservableById(item.id);
+                }),
+                oldValueRelationshipsObs: event.oldValueRelationships.map(item => {
+                  return this.userQuery.getUserObservableById(item.id);
+                })
+              };
+
+            case 'system.labels':
+              return {
+                ...event,
+                modifier: this.userQuery.getUserObservableById(event.modifierId),
+                newValueRelationshipsObs:
+                  this.labelQuery.getLabelObservablesByIds(
+                    event.newValueRelationships.map(i => i.id)
+                  ),
+                oldValueRelationshipsObs:
+                  this.labelQuery.getLabelObservablesByIds(
+                    event.oldValueRelationships.map(i => i.id)
+                  )
+              };
+
+            default:
+              return {
+                ...event,
+                modifier: this.userQuery.getUserObservableById(event.modifierId)
+              };
           }
-        })
-      })
+        });
+      });
   }
 }

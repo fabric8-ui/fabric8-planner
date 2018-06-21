@@ -1,16 +1,16 @@
-import { Store } from '@ngrx/store';
-import { Actions, Effect } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
-import { Notification, Notifications, NotificationType } from "ngx-base";
-import * as WorkItemActions from './../actions/work-item.actions';
-import { AppState } from './../states/app.state';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Actions, Effect } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { Notification, Notifications, NotificationType } from 'ngx-base';
 import { Observable } from 'rxjs';
-import { WorkItemService as WIService } from './../services/work-item.service';
-import { WorkItemMapper, WorkItem, WorkItemService, WorkItemResolver, WorkItemUI } from './../models/work-item';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FilterService } from '../services/filter.service';
-import * as util from './work-item-utils';
 import { cleanObject } from '../models/common.model';
+import { FilterService } from '../services/filter.service';
+import * as WorkItemActions from './../actions/work-item.actions';
+import { WorkItem, WorkItemMapper, WorkItemResolver, WorkItemService, WorkItemUI } from './../models/work-item';
+import { WorkItemService as WIService } from './../services/work-item.service';
+import { AppState } from './../states/app.state';
+import * as util from './work-item-utils';
 
 export type Action = WorkItemActions.All;
 
@@ -26,8 +26,8 @@ export class WorkItemEffects {
     private notifications: Notifications,
     private router: Router,
     private route: ActivatedRoute,
-    private filterService: FilterService,
-  ){}
+    private filterService: FilterService
+  ) {}
 
   resolveWorkItems(
     workItems, state,
@@ -47,12 +47,7 @@ export class WorkItemEffects {
         }
       }
       const workItemResolver = new WorkItemResolver(workItemUI);
-      workItemResolver.resolveArea(state.areas);
-      workItemResolver.resolveIteration(state.iterations);
-      workItemResolver.resolveCreator(state.collaborators);
       workItemResolver.resolveType(state.workItemTypes);
-      workItemResolver.resolveAssignees(state.collaborators);
-      workItemResolver.resolveWiLabels(state.labels);
       let wiu = workItemResolver.getWorkItem();
       let wid = this.workItemMapper.toDynamicUIModel(wi, wiu.type.dynamicfields);
       return { ...wiu, ...wid };
@@ -78,9 +73,6 @@ export class WorkItemEffects {
         .map(item => {
           const itemUI = this.workItemMapper.toUIModel(item);
           const workItemResolver = new WorkItemResolver(itemUI);
-          workItemResolver.resolveArea(state.areas);
-          workItemResolver.resolveIteration(state.iterations);
-          workItemResolver.resolveCreator(state.collaborators);
           workItemResolver.resolveType(state.workItemTypes);
           const wItem = workItemResolver.getWorkItem();
           let wid = this.workItemMapper.toDynamicUIModel(
@@ -115,11 +107,11 @@ export class WorkItemEffects {
               } catch (e) {
                 console.log('New child added.');
               }
-              const parent = state.workItems.find(w => w.id === parentId);
+              const parent = state.workItems.entities[parentId];
               if (!parent.childrenLoaded && parent.hasChildren) {
                 return new WorkItemActions.GetChildren(parent);
               } else {
-                if(payload.openDetailPage){
+                if (payload.openDetailPage) {
                   this.router.navigateByUrl(this.router.url.split('plan')[0] + 'plan/detail/' + wItem.number,
                                             {relativeTo: this.route});
                 }
@@ -137,7 +129,7 @@ export class WorkItemEffects {
             } catch (e) {
               console.log('Work item is added.');
             }
-            if(payload.openDetailPage){
+            if (payload.openDetailPage) {
               this.router.navigateByUrl(this.router.url.split('plan')[0] + 'plan/detail/' + wItem.number,
                                         {relativeTo: this.route});
             }
@@ -154,7 +146,7 @@ export class WorkItemEffects {
             console.log('Problem adding work item.');
           }
           return Observable.of(new WorkItemActions.AddError());
-        })
+        });
       });
 
   @Effect() getWorkItems$: Observable<Action> = this.actions$
@@ -200,7 +192,7 @@ export class WorkItemEffects {
             console.log('Problem loading workitems.');
           }
           return Observable.of(new WorkItemActions.GetError());
-        })
+        });
     });
 
     @Effect() getWorkItemChildren$: Observable<Action> = this.actions$
@@ -223,7 +215,7 @@ export class WorkItemEffects {
             )
             // resolve parent ID
             .map(w => {
-              w.parentID = parent.id
+              w.parentID = parent.id;
               return w;
             });
             return [...wis];
@@ -246,8 +238,8 @@ export class WorkItemEffects {
             return Observable.of(
               new WorkItemActions.GetChildrenError(parent)
             );
-          })
-      })
+          });
+      });
 
     @Effect() updateWorkItem$: Observable<Action> = this.actions$
       .ofType<WorkItemActions.Update>(WorkItemActions.UPDATE)
@@ -278,8 +270,8 @@ export class WorkItemEffects {
           .map(w => this.resolveWorkItems([w], state)[0])
           .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w))
           .map(w => {
-            const item = state.workItems.find(i => i.id === w.id);
-            if(item) {
+            const item = state.workItems.entities[w.id];
+            if (item) {
               w.treeStatus = item.treeStatus;
               w.childrenLoaded = item.childrenLoaded;
               w.parentID = item.parentID;
@@ -309,10 +301,8 @@ export class WorkItemEffects {
             return Observable.of(
               new WorkItemActions.UpdateError()
             );
-          })
+          });
       });
-
-
 
 
     @Effect() Reorder: Observable<Action> = this.actions$
@@ -332,11 +322,11 @@ export class WorkItemEffects {
             w.treeStatus = op.payload.workitem.treeStatus;
             w.bold = op.payload.workitem.bold;
             w.childrenLoaded = op.payload.workitem.childrenLoaded;
-            w.parentID = op.state.workItems.find(wi => wi.id === w.id).parentID;
+            w.parentID = op.state.workItems.entities[w.id].parentID;
             return w;
           })
           .map(w => new WorkItemActions.UpdateSuccess(w))
-          .catch( e => {
+          .catch(e => {
             try {
               this.notifications.message({
                 message: `Problem in reorder workitem.`,
@@ -346,6 +336,6 @@ export class WorkItemEffects {
               console.log('Problem in reorder workitem.');
             }
             return Observable.of(new WorkItemActions.UpdateError());
-          })
-      })
+          });
+      });
 }

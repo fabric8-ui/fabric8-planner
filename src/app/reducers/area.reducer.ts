@@ -6,9 +6,9 @@ import { AreaState, initialState } from './../states/area.state';
 export type Action = AreaActions.All;
 
 export const AreaReducer: ActionReducer<AreaState> = (state = initialState, action: Action) => {
-  switch(action.type) {
+  switch (action.type) {
     case AreaActions.GET_SUCCESS: {
-      return [...action.payload];
+      return {...action.payload};
     }
     case AreaActions.GET_ERROR: {
       return state;
@@ -17,4 +17,4 @@ export const AreaReducer: ActionReducer<AreaState> = (state = initialState, acti
       return state;
     }
   }
-}
+};

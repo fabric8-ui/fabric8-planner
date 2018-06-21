@@ -13,7 +13,6 @@ import { HttpService } from './http-service';
 
 import { Space, Spaces } from 'ngx-fabric8-wit';
 import { AreaModel } from '../models/area.model';
-import { MockHttp } from '../mock/mock-http';
 
 @Injectable()
 export class AreaService {
@@ -125,12 +124,13 @@ export class AreaService {
   getAreaById(areaId: string): Observable<AreaModel> {
     return this.getAreas().first()
     .map((resultAreas) => {
-      for (let i=0; i<resultAreas.length; i++) {
-        if (resultAreas[i].id===areaId)
+      for (let i = 0; i < resultAreas.length; i++) {
+        if (resultAreas[i].id === areaId) {
           return resultAreas[i];
         }
+        }
     })
-    .catch( err => {
+    .catch(err => {
       return Observable.throw(new Error(err.message));
     });
   }

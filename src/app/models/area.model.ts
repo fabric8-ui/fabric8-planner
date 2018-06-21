@@ -1,9 +1,13 @@
+import { Injectable } from '@angular/core';
+import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { AppState, ListPage } from '../states/app.state';
 import {
-  modelUI,
-  modelService,
   Mapper,
   MapTree,
-  switchModel,
+  modelService,
+  modelUI,
+  switchModel
 } from './common.model';
 export class AreaModel extends modelService {
   attributes?: AreaAttributes;
@@ -83,12 +87,34 @@ export class AreaMapper implements Mapper<AreaService, AreaUI> {
   toUIModel(arg: AreaService): AreaUI {
     return switchModel<AreaService, AreaUI> (
       arg, this.serviceToUiMapTree
-    )
+    );
   }
 
   toServiceModel(arg: AreaUI): AreaService {
     return switchModel<AreaUI, AreaService> (
       arg, this.uiToServiceMapTree
-    )
+    );
+  }
+}
+
+@Injectable()
+export class AreaQuery {
+  private listPageSelector = createFeatureSelector<ListPage>('listPage');
+  private areaSelector = createSelector(
+    this.listPageSelector,
+    (state) => state.areas
+  );
+  private areaSource = this.store.select(this.areaSelector);
+
+  constructor(private store: Store<AppState>) {}
+
+  getAreas(): Observable<AreaUI[]> {
+    return this.areaSource.map(areas => {
+      return Object.keys(areas).map(id => areas[id]);
+    });
+  }
+
+  getAreaObservableById(id: string): Observable<AreaUI> {
+    return this.areaSource.select(areas => areas[id]);
   }
 }
