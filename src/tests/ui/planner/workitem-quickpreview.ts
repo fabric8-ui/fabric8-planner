@@ -21,6 +21,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   titleErrorMessage = new ui.BaseElement(this.$('.error-message small'), 'WorkItem Title error message');
 
   /* UI elements for the middle section of the workitem preview */
+  assigneeSection = new ui.BaseElement(this.$('.f8-detail__assignee'), ' assignee section');
   assigneeDropdownSelector = new ui.BaseElement(this.$('assignee-selector'), ' assignee selector');
   assigneeDropdown = new ui.Dropdown(
     this.$('#f8-add-assignee'),
