@@ -1,6 +1,5 @@
-import { ExpectedConditions as until, ElementFinder } from 'protractor';
+import { ExpectedConditions as until, ElementFinder, Key } from 'protractor';
 import { BaseElement } from './base.element';
-import { protractor } from 'protractor/built/ptor';
 
 export class TextInput extends BaseElement {
 
@@ -19,7 +18,7 @@ export class TextInput extends BaseElement {
   async pressEnter() {
     await this.run('press enter', async () => {
       await this.ready();
-      await this.sendKeys(protractor.Key.ENTER);
+      await this.sendKeys(Key.ENTER);
     });
   }
 }
