@@ -85,6 +85,6 @@ export const datatableColumn = [{
   showInDisplay: true,
   maxWidth: undefined,
   minWidth: undefined,
-  width: 145
+  width: 150
 }];
 
