@@ -1,30 +1,12 @@
-import { Component, Inject, Injectable } from '@angular/core';
-import { Logger } from 'ngx-base';
-import { Spaces } from 'ngx-fabric8-wit';
-import { User, UserService } from 'ngx-login-client';
+import { Inject, Injectable } from '@angular/core';
+import { User } from 'ngx-login-client';
 import { Observable } from 'rxjs/Observable';
 import { HttpService } from './http-service';
 
 
 @Injectable()
 export class CollaboratorService {
-  constructor(private http: HttpService,
-  private logger: Logger,
-  private spaces: Spaces,
-  private userService: UserService) {
-
-  }
-
-  getCollaborators(): Observable<User[]> {
-    return this.spaces.current.switchMap((space) => {
-      // FIXME: https://github.com/fabric8-ui/ngx-fabric8-wit/issues/82
-      if (space) {
-        return this.http.get(space.links.self + '/collaborators?page[offset]=0&page[limit]=1000')
-          .map(resp => resp.json().data as User[]);
-      } else {
-        return Observable.of([] as User[]);
-      }
-    });
+  constructor(private http: HttpService) {
   }
 
   getCollaborators2(url: string): Observable<User[]> {
