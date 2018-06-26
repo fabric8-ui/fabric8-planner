@@ -52,7 +52,7 @@ export const datatableColumn = [{
   showInDiplay: false,
   maxWidth: undefined,
   minWidth: undefined,
-  width: 120
+  width: 130
 }, {
   name: 'Iteration',
   prop: 'iteration',
@@ -63,7 +63,7 @@ export const datatableColumn = [{
   showInDisplay: true,
   minWidth: undefined,
   maxWidth: undefined,
-  width: 150
+  width: 165
 }, {
   name: 'Creator',
   prop: 'creator',
