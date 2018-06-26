@@ -1,7 +1,8 @@
-import { CommentReducer } from './comment.reducer';
-import { initialState as CommentInitialState } from './../states/comment.state';
 import * as CommentActions from './../actions/comment.actions';
 import { CommentUI } from './../models/comment';
+import { CommentReducer } from './comment.reducer';
+
+import { initialState as CommentInitialState } from './../states/comment.state';
 
 export type Action = CommentActions.All;
 
@@ -25,14 +26,9 @@ describe('CommentReducer:', () => {
         body: 'comment 1',
         markup: 'MarkUp',
         createdAt: '00:00',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 1</p>',
+        parentId: null,
         selfLink: '/'
       },
       {
@@ -40,14 +36,9 @@ describe('CommentReducer:', () => {
         body: 'comment 2',
         markup: 'MarkUp',
         createdAt: '00:01',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 2</p>',
+        parentId: null,
         selfLink: '/1'
       }
     ];
@@ -64,14 +55,9 @@ describe('CommentReducer:', () => {
         body: 'comment 1',
         markup: 'MarkUp',
         createdAt: '00:00',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 1</p>',
+        parentId: null,
         selfLink: '/'
       }
     ];
@@ -88,14 +74,9 @@ describe('CommentReducer:', () => {
         body: 'comment 1',
         markup: 'MarkUp',
         createdAt: '00:00',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 1</p>',
+        parentId: null,
         selfLink: '/'
       }
     ];
@@ -104,14 +85,9 @@ describe('CommentReducer:', () => {
       body: 'comment 2',
       markup: 'MarkUp',
       createdAt: '00:00',
-      creator: {
-        id: '1',
-        name: 'user 1',
-        username: 'user1',
-        avatar: 'user1.jpg',
-        currentUser: false
-      },
+      creatorId: '1',
       bodyRendered: '<p>comment 2</p>',
+      parentId: null,
       selfLink: '/'
     };
 
@@ -121,14 +97,9 @@ describe('CommentReducer:', () => {
         body: 'comment 2',
         markup: 'MarkUp',
         createdAt: '00:00',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 2</p>',
+        parentId: null,
         selfLink: '/'
       },
       {
@@ -136,14 +107,9 @@ describe('CommentReducer:', () => {
         body: 'comment 1',
         markup: 'MarkUp',
         createdAt: '00:00',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 1</p>',
+        parentId: null,
         selfLink: '/'
       }
     ];
@@ -164,14 +130,9 @@ describe('CommentReducer:', () => {
         body: 'comment 1',
         markup: 'MarkUp',
         createdAt: '00:00',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 1</p>',
+        parentId: null,
         selfLink: '/'
       }
     ];
@@ -192,14 +153,9 @@ describe('CommentReducer:', () => {
         body: 'comment 1',
         markup: 'MarkUp',
         createdAt: '00:00',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 1</p>',
+        parentId: null,
         selfLink: '/'
       }
     ];
@@ -209,14 +165,9 @@ describe('CommentReducer:', () => {
       body: 'comment 2',
       markup: 'MarkUp',
       createdAt: '00:00',
-      creator: {
-        id: '1',
-        name: 'user 1',
-        username: 'user1',
-        avatar: 'user1.jpg',
-        currentUser: false
-      },
+      creatorId: '1',
       bodyRendered: '<p>comment 2</p>',
+      parentId: null,
       selfLink: '/'
     };
 
@@ -226,14 +177,9 @@ describe('CommentReducer:', () => {
         body: 'comment 2',
         markup: 'MarkUp',
         createdAt: '00:00',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 2</p>',
+        parentId: null,
         selfLink: '/'
       }
     ];
@@ -254,14 +200,9 @@ describe('CommentReducer:', () => {
         body: 'comment 1',
         markup: 'MarkUp',
         createdAt: '00:00',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 1</p>',
+        parentId: null,
         selfLink: '/'
       }
     ];
@@ -282,14 +223,9 @@ describe('CommentReducer:', () => {
         body: 'comment 1',
         markup: 'MarkUp',
         createdAt: '00:00',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 1</p>',
+        parentId: null,
         selfLink: '/'
       }
     ];
@@ -312,14 +248,9 @@ describe('CommentReducer:', () => {
         body: 'comment 1',
         markup: 'MarkUp',
         createdAt: '00:00',
-        creator: {
-          id: '1',
-          name: 'user 1',
-          username: 'user1',
-          avatar: 'user1.jpg',
-          currentUser: false
-        },
+        creatorId: '1',
         bodyRendered: '<p>comment 1</p>',
+        parentId: null,
         selfLink: '/'
       }
     ];
