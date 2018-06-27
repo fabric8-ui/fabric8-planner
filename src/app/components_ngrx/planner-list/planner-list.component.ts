@@ -536,14 +536,6 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     this.store.dispatch(new WorkItemActions.Reoder(payload));
   }
 
-  //This function closes infotip popover on scroll event
-  closePopover() {
-    let pops = Array.from(document.getElementsByClassName('popover-container')) as Array<HTMLElement>;
-    pops.forEach(pop => {
-      pop.style.display = 'none';
-    });
-  }
-
   ngOnDestroy() {
     this.eventListeners.forEach(e => e.unsubscribe());
   }
