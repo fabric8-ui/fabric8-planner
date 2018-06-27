@@ -23,6 +23,7 @@ import { WorkItem, WorkItemRelations, WorkItemService } from '../../models/work-
 import { WorkItemTypeUI } from '../../models/work-item-type';
 import { IterationUI } from './../../models/iteration.model';
 import { WorkItemQuery } from './../../models/work-item';
+import { FilterService } from './../../services/filter.service';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
@@ -74,7 +75,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     private route: ActivatedRoute,
     private renderer: Renderer2,
     private store: Store<AppState>,
-    private workItemQuery: WorkItemQuery) {}
+    private workItemQuery: WorkItemQuery,
+    private filterService: FilterService) {}
 
   ngOnInit(): void {
     this.createWorkItemObj();
@@ -147,6 +149,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
     if (event) {
       event.preventDefault();
     }
+    let currentRoute = cloneDeep(this.route.snapshot.queryParams);
+    let selectedIterationID = this.filterService.getConditionFromQuery(currentRoute.q, 'iteration');
     // Do we have a real title?
     // If yes, trim; if not, reassign it as a (blank) string.
     this.workItem.attributes['system.title'] =
@@ -176,10 +180,10 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
       this.selectedType.fields['system.state'].type.values[0];
 
     // Set the default iteration for new work item
-    if (this.selectedIteration) {
+    if (selectedIterationID) {
       this.workItem.relationships.iteration = {
         data: {
-          id: this.selectedIteration.id,
+          id: selectedIterationID,
           type: 'iterations'
         }
       };
