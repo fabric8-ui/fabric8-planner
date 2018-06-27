@@ -11,7 +11,7 @@ describe('Agile template tests: ', () => {
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     let url = await browser.getCurrentUrl()
-    let urlPathName = await browser.executeScript('return document.location.pathname');
+    let urlPathName:any = await browser.executeScript('return document.location.pathname');
     let URL = url.replace(urlPathName,'/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME_SCRUM + '/plan');
     planner1 = new PlannerPage(URL);
     await browser.get(URL);

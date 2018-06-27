@@ -13,7 +13,7 @@ describe('Planner Collaborator Tests:', () => {
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     let url = await browser.getCurrentUrl()
-    let urlPathName = await browser.executeScript('return document.location.pathname');
+    let urlPathName:any = await browser.executeScript('return document.location.pathname');
     let URL = url.replace(urlPathName,'/rbajpai-test-preview/DO_NOT_DELETE/plan');
     planner1 = new PlannerPage(URL);
     await browser.get(URL);
