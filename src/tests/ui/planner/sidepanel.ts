@@ -7,6 +7,7 @@ export class SidePanel extends ui.BaseElement {
   scenarioButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Scenarios')),'Side panel Scenario button');
   experienceButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Experiences')),'Side panel Experiences button');
   requirementsButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type .dib', ' Requirements')),'Side panel Requirements button');
+  workItemsGroup = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Work Items ')),'Side panel WorkItem button');
   iterationDiv = new ui.BaseElement(this.$('.f8-itr'),'Iteration div');
   createIterationButton = new ui.Button(this.iterationDiv.$('#add-iteration-icon'), 'Side panel Add Iteration Button');
   iterationList = new ui.BaseElementArray(this.$$('.f8-itr__tree .f8-itr-name'),'Iteration list');
@@ -85,5 +86,10 @@ export class SidePanel extends ui.BaseElement {
 
   async selectcustomFilterKebab(queryName: string) {
     return this.element(by.xpath("//li[contains(@class,'f8-cf__list-type')][.//span[text()='"+ queryName +"']]")).$('.dropdown-toggle').click();
+  }
+
+  // Agile template
+  async clickWorkItem() {
+    await this.workItemsGroup.clickWhenReady();
   }
 }
