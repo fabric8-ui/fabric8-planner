@@ -46,15 +46,16 @@
       <!--Labels-->
       <div class="audit-trail__label"
         *ngIf="textType === 'label'" >
-        <span [innerHTML]=intermediateText></span>
+        <span class="padding-left-5" [innerHTML]=intermediateText></span>
         <f8-label class="margin-h-5"
+          *ngIf='(event.newValueRelationshipsObs | async).length > 0'
           [labels]='event.newValueRelationshipsObs | async'
           [allowDelete]="false"
           [context]="'detail'">
         </f8-label>
         <ng-container *ngIf="toText">
           <span> {{ toText }} </span>
-          <f8-label class="margin-h-5"
+          <f8-label class="margin-left-5"
             [labels]='event.oldValueRelationshipsObs | async'
             [allowDelete]="false"
             [context]="'detail'">
@@ -62,7 +63,6 @@
         </ng-container>
       </div>
       <small class="f8-event--create-time"
-        style="vertical-align: text-top"
         [tooltip]="event.timestamp | date:'medium'">
         | {{ event.timestamp | f8Time }}
       </small>
