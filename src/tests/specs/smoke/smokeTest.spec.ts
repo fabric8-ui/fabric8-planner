@@ -15,11 +15,11 @@ describe('Planner Smoke Tests:', () => {
     await planner.waitUntilUrlContains('typegroup');
   });
 
-  beforeEach( async () => {
+  beforeEach(async () => {
     await planner.ready();
   });
 
-  afterEach( async() => {
+  afterEach(async () => {
     await planner.resetState();
   });
 
@@ -27,12 +27,12 @@ describe('Planner Smoke Tests:', () => {
     await planner.createWorkItem(c.newWorkItem1);
     expect(await planner.workItemList.hasWorkItem(c.newWorkItem1.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(c.newWorkItem1.title);
-    await planner.quickPreview.addAssignee(c.user1 + " (me)");
+    await planner.quickPreview.addAssignee(c.user1 + ' (me)');
     expect(await planner.quickPreview.getAssignees()).toContain(c.user1);
     await planner.quickPreview.close();
     await planner.workItemList.clickWorkItem(c.newWorkItem1.title);
     await browser.sleep(2000);
-    await planner.quickPreview.removeAssignee(c.user1 + " (me)");
+    await planner.quickPreview.removeAssignee(c.user1 + ' (me)');
     expect(await planner.quickPreview.getAssignees()).not.toContain(c.user1);
     await planner.quickPreview.close();
   });
@@ -184,8 +184,8 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.close();
   });
 
-  it('Create a work item and Open detail page', async() => {
-    await planner.quickAdd.addAndOpenWorkItem('new detail workItem','Scenario');
+  it('Create a work item and Open detail page', async () => {
+    await planner.quickAdd.addAndOpenWorkItem('new detail workItem', 'Scenario');
     await planner.quickPreview.notificationToast.untilCount(1);
     await planner.quickPreview.notificationToast.untilHidden();
     await planner.detailPage.closeButton.ready();
@@ -195,5 +195,16 @@ describe('Planner Smoke Tests:', () => {
     await planner.waitUntilUrlContains('typegroup');
     expect(await planner.workItemList.hasWorkItem('new detail workItem')).toBeTruthy();
   });
-});
 
+  it('Add new work-item to the selected iteration', async () => {
+    await planner.workItemList.overlay.untilHidden();
+    await planner.sidePanel.clickIteration('Iteration_1');
+    await planner.quickAdd.addWorkItem({title : 'Add new work item to iteration test'});
+    expect(await planner.workItemList.hasWorkItem('Add new work item to iteration test')).toBeTruthy();
+    await planner.quickPreview.notificationToast.untilCount(1);
+    await planner.quickPreview.notificationToast.untilHidden();
+    await planner.sidePanel.clickScenarios();
+    await planner.sidePanel.clickIteration('Iteration_1');
+    expect(await planner.workItemList.hasWorkItem('Add new work item to iteration test')).toBeTruthy();
+  });
+});
