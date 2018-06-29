@@ -6,7 +6,7 @@ import * as support from '../support';
 describe('Detail View test: ', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
-  
+
   beforeAll( async () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
@@ -84,6 +84,19 @@ describe('Detail View test: ', () => {
     await planner.detailPage.titleInput.untilTextIsPresentInValue(c.workItemTitle2);
     await planner.detailPage.addLink(linkType, searchWorkItem, Workitem_Title_3);
     expect(await planner.detailPage.getLinkedItems()).toContain(Workitem_Title_3);
+  });
+
+  it('should remove link from workitem', async () => {
+    let linkType = 'blocks',
+      searchWorkItem = '2-Workitem_Title_3',
+      Workitem_Title_3 = 'Workitem_Title_3';
+    await planner.workItemList.openDetailPage(c.workItemTitle2);
+    await planner.waitUntilUrlContains('detail');
+    await planner.detailPage.titleInput.untilTextIsPresentInValue(c.workItemTitle2);
+    await planner.detailPage.addLink(linkType, searchWorkItem, Workitem_Title_3);
+    expect(await planner.detailPage.getLinkedItems()).toContain(Workitem_Title_3);
+    await planner.detailPage.removeLink(Workitem_Title_3);
+    expect(await planner.detailPage.getLinkedItems()).not.toContain(Workitem_Title_3);
   });
 
   it('should change the state of workitem', async () => {
