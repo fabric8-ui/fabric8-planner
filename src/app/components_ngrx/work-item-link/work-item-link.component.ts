@@ -7,7 +7,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Space } from 'ngx-fabric8-wit';
 import { Observable } from 'rxjs/Observable';
 import { WorkItemLinkUI } from './../../models/link';
