@@ -38,7 +38,7 @@ describe('Unit test :: Collaborator Service', () => {
     httpService.get.and.returnValue(
       Observable.of(resp)
     );
-    collabService.getCollaborators2('').subscribe((d) => {
+    collabService.getCollaborators('').subscribe((d) => {
       expect(d).toEqual(returnValue.data);
     });
   });

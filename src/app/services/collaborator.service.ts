@@ -9,7 +9,7 @@ export class CollaboratorService {
   constructor(private http: HttpService) {
   }
 
-  getCollaborators2(url: string): Observable<User[]> {
+  getCollaborators(url: string): Observable<User[]> {
     return this.http.get(url)
       .map(resp => resp.json().data as User[]);
   }
