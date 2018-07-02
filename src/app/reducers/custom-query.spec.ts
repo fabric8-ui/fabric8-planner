@@ -99,4 +99,24 @@ describe('CustomQueryReducer: ', () => {
 
     expect(newState).toEqual(queries1);
   });
+
+  it('DeleteSuccess action should return new state', () => {
+    const action = new CustomQueryActions.GetSuccess(queries);
+    const state = CustomQueryReducer(CustomQueryInitialState, action);
+
+    const deleteAction = new CustomQueryActions.DeleteSuccess(queries[0]);
+    const newState = CustomQueryReducer(state, deleteAction);
+
+    expect(newState.length).toBe(0);
+  });
+
+  it('DeleteError action should return previous state', () => {
+    const action = new CustomQueryActions.GetSuccess(queries);
+    const state = CustomQueryReducer(CustomQueryInitialState, action);
+
+    const deleteErrorAction = new CustomQueryActions.DeleteError();
+    const previousState = CustomQueryReducer(state, deleteErrorAction);
+
+    expect(previousState).toEqual(state);
+  });
 });
