@@ -94,6 +94,9 @@ export class WorkItemLinkComponent implements OnInit {
       this.linkTypes = [...linkTypeSource];
       this.workItemLinkSource.subscribe(workItemLinks => {
         this.workItemLinks = [...workItemLinks];
+        if (!this.workItemLinks.length) {
+          this.showLinkView = false;
+        }
         this.selectedLinkType = null;
         this.selectedWorkItemId = null;
         if (this.linkTypeSelector && this.wiSearchBox) {
