@@ -7,6 +7,32 @@ import { initialState as CommentInitialState } from './../states/comment.state';
 export type Action = CommentActions.All;
 
 describe('CommentReducer:', () => {
+  let comments: CommentUI[];
+  beforeEach(() => {
+    comments = [
+      {
+        id: '1',
+        body: 'comment 1',
+        markup: 'MarkUp',
+        createdAt: '00:00',
+        creatorId: '1',
+        bodyRendered: '<p>comment 1</p>',
+        parentId: null,
+        selfLink: '/'
+      },
+      {
+        id: '2',
+        body: 'comment 2',
+        markup: 'MarkUp',
+        createdAt: '00:00',
+        creatorId: '1',
+        bodyRendered: '<p>comment 2</p>',
+        parentId: null,
+        selfLink: '/'
+      }
+    ];
+  });
+
   it('undefined action should return the default state', () => {
     const action = {} as Action;
     const state = CommentReducer(undefined, action);
@@ -20,28 +46,6 @@ describe('CommentReducer:', () => {
   });
 
   it('GetSuccess action should return new state', () => {
-    const comments: CommentUI[] = [
-      {
-        id: '1',
-        body: 'comment 1',
-        markup: 'MarkUp',
-        createdAt: '00:00',
-        creatorId: '1',
-        bodyRendered: '<p>comment 1</p>',
-        parentId: null,
-        selfLink: '/'
-      },
-      {
-        id: '2',
-        body: 'comment 2',
-        markup: 'MarkUp',
-        createdAt: '00:01',
-        creatorId: '1',
-        bodyRendered: '<p>comment 2</p>',
-        parentId: null,
-        selfLink: '/1'
-      }
-    ];
     const action = new CommentActions.GetSuccess(comments);
     const state = CommentReducer(CommentInitialState, action);
 
@@ -49,18 +53,6 @@ describe('CommentReducer:', () => {
   });
 
   it('GetError Actions should return previous state', () => {
-    const comments: CommentUI[] = [
-      {
-        id: '1',
-        body: 'comment 1',
-        markup: 'MarkUp',
-        createdAt: '00:00',
-        creatorId: '1',
-        bodyRendered: '<p>comment 1</p>',
-        parentId: null,
-        selfLink: '/'
-      }
-    ];
     const action = new CommentActions.GetError();
     const state = CommentReducer(comments, action);
 
@@ -68,37 +60,25 @@ describe('CommentReducer:', () => {
   });
 
   it('AddSuccess actions should retrun the updated state', () => {
-    const comments: CommentUI[] = [
-      {
-        id: '1',
-        body: 'comment 1',
-        markup: 'MarkUp',
-        createdAt: '00:00',
-        creatorId: '1',
-        bodyRendered: '<p>comment 1</p>',
-        parentId: null,
-        selfLink: '/'
-      }
-    ];
     const newComment: CommentUI = {
-      id: '2',
-      body: 'comment 2',
+      id: '3',
+      body: 'comment 3',
       markup: 'MarkUp',
       createdAt: '00:00',
       creatorId: '1',
-      bodyRendered: '<p>comment 2</p>',
+      bodyRendered: '<p>comment 3</p>',
       parentId: null,
       selfLink: '/'
     };
 
     const newCommentState: CommentUI[] = [
       {
-        id: '2',
-        body: 'comment 2',
+        id: '3',
+        body: 'comment 3',
         markup: 'MarkUp',
         createdAt: '00:00',
         creatorId: '1',
-        bodyRendered: '<p>comment 2</p>',
+        bodyRendered: '<p>comment 3</p>',
         parentId: null,
         selfLink: '/'
       },
@@ -109,6 +89,16 @@ describe('CommentReducer:', () => {
         createdAt: '00:00',
         creatorId: '1',
         bodyRendered: '<p>comment 1</p>',
+        parentId: null,
+        selfLink: '/'
+      },
+      {
+        id: '2',
+        body: 'comment 2',
+        markup: 'MarkUp',
+        createdAt: '00:00',
+        creatorId: '1',
+        bodyRendered: '<p>comment 2</p>',
         parentId: null,
         selfLink: '/'
       }
@@ -124,19 +114,6 @@ describe('CommentReducer:', () => {
   });
 
   it('AddError action should return the previous state', () => {
-    const comments: CommentUI[] = [
-      {
-        id: '1',
-        body: 'comment 1',
-        markup: 'MarkUp',
-        createdAt: '00:00',
-        creatorId: '1',
-        bodyRendered: '<p>comment 1</p>',
-        parentId: null,
-        selfLink: '/'
-      }
-    ];
-
     const getSuccessAction = new CommentActions.GetSuccess(comments);
     const state = CommentReducer(CommentInitialState, getSuccessAction);
 
@@ -147,26 +124,13 @@ describe('CommentReducer:', () => {
   });
 
   it('updateSuccess action should return updates state', () => {
-    const comments: CommentUI[] = [
-      {
-        id: '1',
-        body: 'comment 1',
-        markup: 'MarkUp',
-        createdAt: '00:00',
-        creatorId: '1',
-        bodyRendered: '<p>comment 1</p>',
-        parentId: null,
-        selfLink: '/'
-      }
-    ];
-
     const updatedComment = {
       id: '1',
-      body: 'comment 2',
+      body: 'This comment has been updated.',
       markup: 'MarkUp',
       createdAt: '00:00',
       creatorId: '1',
-      bodyRendered: '<p>comment 2</p>',
+      bodyRendered: '<p>This comment has been updated.</p>',
       parentId: null,
       selfLink: '/'
     };
@@ -174,6 +138,16 @@ describe('CommentReducer:', () => {
     const newState: CommentUI[] = [
       {
         id: '1',
+        body: 'This comment has been updated.',
+        markup: 'MarkUp',
+        createdAt: '00:00',
+        creatorId: '1',
+        bodyRendered: '<p>This comment has been updated.</p>',
+        parentId: null,
+        selfLink: '/'
+      },
+      {
+        id: '2',
         body: 'comment 2',
         markup: 'MarkUp',
         createdAt: '00:00',
@@ -190,22 +164,10 @@ describe('CommentReducer:', () => {
     const updateSuccessAction = new CommentActions.UpdateSuccess(updatedComment);
     const updatedState = CommentReducer(state, updateSuccessAction);
 
-    expect(updatedState).toEqual(updatedState);
+    expect(updatedState).toEqual(newState);
   });
 
   it('updateError action should return previous state', () => {
-    const comments: CommentUI[] = [
-      {
-        id: '1',
-        body: 'comment 1',
-        markup: 'MarkUp',
-        createdAt: '00:00',
-        creatorId: '1',
-        bodyRendered: '<p>comment 1</p>',
-        parentId: null,
-        selfLink: '/'
-      }
-    ];
 
     const getSuccessAction = new CommentActions.GetSuccess(comments);
     const state = CommentReducer(CommentInitialState, getSuccessAction);
@@ -217,20 +179,18 @@ describe('CommentReducer:', () => {
   });
 
   it('deleteSuccess action should return new state', () => {
-    const comments: CommentUI[] = [
+    const newCommentState = [
       {
-        id: '1',
-        body: 'comment 1',
+        id: '2',
+        body: 'comment 2',
         markup: 'MarkUp',
         createdAt: '00:00',
         creatorId: '1',
-        bodyRendered: '<p>comment 1</p>',
+        bodyRendered: '<p>comment 2</p>',
         parentId: null,
         selfLink: '/'
       }
     ];
-
-    const newCommentState = [];
 
     const getSuccessAction = new CommentActions.GetSuccess(comments);
     const state = CommentReducer(CommentInitialState, getSuccessAction);
@@ -242,18 +202,6 @@ describe('CommentReducer:', () => {
   });
 
   it('deleteError action should return previous state', () => {
-    const comments: CommentUI[] = [
-      {
-        id: '1',
-        body: 'comment 1',
-        markup: 'MarkUp',
-        createdAt: '00:00',
-        creatorId: '1',
-        bodyRendered: '<p>comment 1</p>',
-        parentId: null,
-        selfLink: '/'
-      }
-    ];
 
     const getSuccessAction = new CommentActions.GetSuccess(comments);
     const state = CommentReducer(CommentInitialState, getSuccessAction);
