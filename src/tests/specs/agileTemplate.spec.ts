@@ -28,17 +28,34 @@ describe('Agile template tests: ', () => {
   it('should have workitem types', async() => {
     await planner1.sidePanel.workItemsGroup.clickWhenReady();
     let wiTypes = await planner1.quickAdd.workItemTypes();
-    expect(wiTypes.length).toBe(5);
+    expect(wiTypes.length).toBe(6);
     expect(wiTypes[0]).toBe('Theme');
     expect(wiTypes[1]).toBe('Epic');
     expect(wiTypes[2]).toBe('Story');
     expect(wiTypes[3]).toBe('Task');
     expect(wiTypes[4]).toBe('Defect');
+    expect(wiTypes[5]).toBe('Impediment');
   });
 
-  it('should create a defect and assign priority and severity', async() => {
-    let newWorkItem = { title: "Workitem Title 1", type : "Defect"};
+  it('should create a workitem of type defect and update Effort', async() => {
+    let newWorkItem = { title: "Workitem of type Defect", type : "Defect"};
     await planner1.createWorkItem(newWorkItem);
     expect(planner1.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();
+    /* Update Effort */
+    await planner1.workItemList.clickWorkItem(newWorkItem.title);
+    await planner1.quickPreview.updateEffort("3");
+    await planner1.quickPreview.effortTextArea.untilTextIsPresentInValue("3");
+    expect(await planner1.quickPreview.effortTextArea.getAttribute("value")).toBe("3");
+  });
+
+  it('should create a workitem of type Theme and update Business value', async() => {
+    let newWorkItem = { title: "Workitem of type Theme", type : "Theme"};
+    await planner1.createWorkItem(newWorkItem);
+    expect(planner1.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();
+    /* Update Business Value */
+    await planner1.workItemList.clickWorkItem(newWorkItem.title);
+    await planner1.quickPreview.updateBusinessValue("Business value for this Theme");
+    await planner1.quickPreview.businessValue.untilTextIsPresentInValue("Business value for this Theme");
+    expect(await planner1.quickPreview.businessValue.getAttribute("value")).toBe("Business value for this Theme");
   });
 });
