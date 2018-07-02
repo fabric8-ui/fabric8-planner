@@ -22,9 +22,6 @@ describe('Agile template tests: ', () => {
     await planner1.sidePanel.workItemsGroup.clickWhenReady();
   });
 
-  afterEach( async() => {
-  });
-
   it('should have workitem types', async() => {
     await planner1.sidePanel.workItemsGroup.clickWhenReady();
     let wiTypes = await planner1.quickAdd.workItemTypes();
@@ -46,6 +43,7 @@ describe('Agile template tests: ', () => {
     await planner1.quickPreview.updateEffort("3");
     await planner1.quickPreview.effortTextArea.untilTextIsPresentInValue("3");
     expect(await planner1.quickPreview.effortTextArea.getAttribute("value")).toBe("3");
+    await planner1.quickPreview.close();
   });
 
   it('should create a workitem of type Theme and update Business value', async() => {
