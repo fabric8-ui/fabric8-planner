@@ -1,7 +1,8 @@
-import { Clickable } from './../base.element';
-import { ElementFinder, $, $$, browser, by, Key } from 'protractor';
-import * as ui from './../../ui';
+import { $, $$, browser, by, ElementFinder, Key } from 'protractor';
 import * as support from './../../support';
+import * as ui from './../../ui';
+import { Clickable } from './../base.element';
+
 
 export class WorkItemQuickPreview extends ui.BaseElement {
   // TODO - move loading animation out of here. It doesn't belong here.
