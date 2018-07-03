@@ -87,4 +87,9 @@ export class SidePanel extends ui.BaseElement {
   async selectcustomFilterKebab(queryName: string) {
     return this.element(by.xpath("//li[contains(@class,'f8-cf__list-type')][.//span[text()='" + queryName + "']]")).$('.dropdown-toggle').click();
   }
+
+  async clickIteration(iterationName: string) {
+    let iteration = new ui.BaseElement(this.element(by.xpath("//iteration-list-entry[.//span[text()='" + iterationName + "']]")));
+    await iteration.clickWhenReady();
+  }
 }
