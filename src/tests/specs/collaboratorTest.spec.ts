@@ -45,13 +45,13 @@ describe('Planner Collaborator Tests:', () => {
   it('Non collaborator should not be able to update Area ', async () => {
     await planner1.workItemList.clickWorkItem('Work Item 3');
     await planner1.quickPreview.areaDropdown.clickWhenReady();
-    expect(await planner1.quickPreview.areaDropdown.getAttribute('class')).not.toContain('show');
+    expect(await planner1.quickPreview.areaDiv.getAttribute('innerText')).not.toContain('Update area');
   });
 
   it('Non collaborator should not be able to update Iteration ', async () => {
     await planner1.workItemList.clickWorkItem('Work Item 3');
     await planner1.quickPreview.iterationDropdown.clickWhenReady();
-    expect(await planner1.quickPreview.iterationDropdown.getAttribute('class')).not.toContain('show');
+    expect(await planner1.quickPreview.iterationDiv.getAttribute('innerText')).not.toContain('Update iteration');
   });
  });
 
