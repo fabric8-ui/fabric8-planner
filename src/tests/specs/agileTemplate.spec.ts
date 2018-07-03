@@ -19,11 +19,10 @@ describe('Agile template tests: ', () => {
   });
 
   beforeEach( async () => {
-    await planner1.sidePanel.workItemsGroup.clickWhenReady();
+    await planner1.sidePanel.workItemsGroupAgile.clickWhenReady();
   });
 
   it('should have workitem types', async() => {
-    await planner1.sidePanel.workItemsGroup.clickWhenReady();
     let wiTypes = await planner1.quickAdd.workItemTypes();
     expect(wiTypes.length).toBe(6);
     expect(wiTypes[0]).toBe('Theme');

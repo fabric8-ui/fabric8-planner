@@ -103,14 +103,11 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   commentCancelButton = new ui.Button(this.commentDiv.$('.fl.btn.btn-default.pull-right.action-btn'), 'Comment cancel button');
   commentsText = new ui.BaseElementArray(this.$$('.f8-comment-body .comment .editor-box.editor-preview'), 'Comment List');
   commentsCount = new ui.BaseElement(this.$('#total_comments'), 'comment count');
-<<<<<<< HEAD
-=======
 
   /* UI elements for the Agile template of the workitem preview */
   effortTextArea = new ui.TextInput(this.$('[placeholder="Effort"]'), 'effort textarea');
   workItemsGroup = new ui.Clickable(this.element(by.cssContainingText('alm-dynamic-field .f8-dynamic-control', ' Work Items ')),'Side panel WorkItem button');
   businessValue = new ui.TextInput(this.$('textarea[placeholder="Business Value"]'), ' Business value textarea');
->>>>>>> fix(tests) : added tests for workitem of type Defect
 
   constructor(ele: ElementFinder, name: string = '') {
     super(ele, name);
