@@ -1,3 +1,5 @@
+import { BoardModelUI } from './../models/board.model';
+
 export const spaceTemplateResponse = {
    'data': {
       'attributes': {
@@ -74,3 +76,19 @@ export const boardsResponse = { 'data': [{
     ],
     'type': 'workitemboards'
   }]};
+
+export const boardUIData: BoardModelUI = {
+  'id': '000-000-002',
+  'name': 'Scenarios Board',
+    'description': 'This is the default board config for the legacy template (Experiences).',
+    'contextType': 'TypeLevelContext',
+    'context': '000-000-003',
+    'columns': [
+      {
+          'id': '000-000-005',
+          'title': 'workitemboardcolumn',
+          'columnOrder': 0,
+          'type': 'boardcolumns'
+      }
+  ]
+};

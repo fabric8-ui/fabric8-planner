@@ -1,3 +1,12 @@
+import {
+    cleanObject,
+    CommonSelectorUI,
+    Mapper,
+    MapTree,
+    modelService,
+    switchModel
+} from './common.model';
+
 export class BoardModel {
     id: string;
     attributes: {
@@ -12,21 +21,73 @@ export class BoardModel {
         spaceTemplate: {
             data: {
                 id: string;
-                type: 'spacetemplates';
+                type: string;
             }
         };
         columns: {
             data: {
                     id: string;
-                    type: 'boardcolumns';
+                    type: string;
                 }[];
         };
     };
-    included: {
+    included: ({
         id: string;
         title: string;
         columnOrder: 0;  // the left-to-right order of the column in the view
-        type: 'boardcolumns';
+        type: string;
+    } | any)[];
+    type: string;
+}
+
+
+export class BoardModelUI {
+    id: string;
+    name: string;
+    description: string;
+    contextType: string;
+    context: string;
+    columns: {
+        id: string;
+        title: string;
+        columnOrder: 0;
+        type: string;
     }[];
-    type: 'workitemboards';
+}
+
+
+export class BoardMapper implements Mapper<BoardModel, BoardModelUI> {
+    serviceToUiMapTree: MapTree = [{
+        fromPath: ['id'],
+        toPath: ['id']
+    }, {
+        fromPath: ['attributes', 'name'],
+        toPath: ['name']
+    }, {
+        fromPath: ['attributes', 'description'],
+        toPath: ['description']
+    }, {
+        fromPath: ['attributes', 'contextType'],
+        toPath: ['contextType']
+    }, {
+        fromPath: ['attributes', 'context'],
+        toPath: ['context']
+    }, {
+        fromPath: ['included'],
+        toPath: ['columns'],
+        toFunction: (data) =>
+            Array.isArray(data) ? data.filter(d => d.type === 'boardcolumns') : []
+    }];
+
+    uiToServiceMapTree: MapTree = [];
+
+    toUIModel(arg: BoardModel): BoardModelUI {
+        return switchModel<BoardModel, BoardModelUI>(
+          arg, this.serviceToUiMapTree
+        );
+    }
+
+    toServiceModel(arg: BoardModelUI): BoardModel {
+        return {} as BoardModel;
+    }
 }
