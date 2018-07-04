@@ -73,3 +73,7 @@ export {
   EventState,
   initialState as InitialEventState
 } from './event.state';
+export {
+  BoardState,
+  initialState as InitialBoardState
+} from './board.state';
