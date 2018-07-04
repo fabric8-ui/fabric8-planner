@@ -22,9 +22,7 @@ export class GetError implements Action {
   readonly type = GET_ERROR;
 }
 
-
 export type All
   = Get
   | GetSuccess
   | GetError;
-
