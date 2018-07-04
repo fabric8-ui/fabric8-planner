@@ -21,7 +21,7 @@
       left: 50%;
       text-align: center;
       color: @color-pf-black;
-      transform: translate(-50%,-50%);
+      transform: translate(-50%, -50%);
       h2 {
         margin-top: .5em;
       }
@@ -68,7 +68,7 @@
         }
         aside {
           float: right;
-          width: ~"calc(e('45% - 30px'))";
+          width: ~'calc(e("45% - 30px"))';
           height: 100%;
           padding-left: (@grid-gutter-width/6);
           padding-right: (@grid-gutter-width/6);
@@ -84,7 +84,7 @@
               font-size: @pf-icon-2x;
             }
             &:nth-child(3) {
-              margin-top: ((@grid-gutter-width/3) * 5);
+              margin-top: ((@grid-gutter-width/3)*5);
             }
           }
         }
@@ -92,7 +92,7 @@
       &-column {
         float: left;
         width: 100%;
-        height: ~"calc(e('100% - 30px'))";
+        height: ~'calc(e("100% - 30px"))';
         padding: (@grid-gutter-width/3);
         list-style: none;
         background-color: @color-pf-white;
@@ -202,14 +202,14 @@ button.btn.btn-link.dropdown-toggle:focus {
 }
 
 .planner-hack-title-truncate {
-  max-width: ~"calc(e('100% - 20px'))";
+  max-width: ~'calc(e("100% - 20px"))';
 }
 
 a.disabled {
   &:hover,
   &:focus,
   &:active {
-    color: #8b8d8f;
+    color: @color-pf-black-300;
   }
 }
 /// ng x-datatables css
@@ -225,7 +225,7 @@ a.disabled {
 .header-cell {
   font-weight: bold !important;
   overflow: visible !important;
-  color: #363636 !important;
+  color: @color-pf-black !important;
 }
 
 .datatable-row-detail {
@@ -300,7 +300,7 @@ a.quick-add-icon {
 }
 .datatable-header-cell,
 .datatable-body-cell {
-  padding: ((@grid-gutter-width/10)) ((@grid-gutter-width/3)) ;
+  padding: ((@grid-gutter-width/10)) ((@grid-gutter-width/3));
 }
 .datatable-body-cell {
   overflow-x: visible !important;

@@ -89,14 +89,14 @@ mach.transpileLESS = function (src, debug) {
     // paths: [ path.join(__dirname, 'less', 'includes') ]
   }
   return gulp.src(src)
-    .pipe(less({
-      plugins: [autoprefix]
-    }))
     .pipe(lesshint({
       configPath: './.lesshintrc' // Options
     }))
     .pipe(lesshint.reporter()) // Leave empty to use the default, "stylish"
     .pipe(lesshint.failOnError()) // Use this to fail the task on lint errors
+    .pipe(less({
+      plugins: [autoprefix]
+    }))
     .pipe(srcmaps.init())
     .pipe(less(opts))
     //.pipe(concat('styles.css'))

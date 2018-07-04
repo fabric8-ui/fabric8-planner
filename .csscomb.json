@@ -7,7 +7,6 @@
   "element-case": "lower",
   "eof-newline": true,
   "leading-zero": false,
-  "quotes": "single",
   "space-before-colon": "",
   "space-after-colon": " ",
   "space-before-combinator": "",
@@ -21,6 +20,8 @@
   "strip-spaces": true,
   "tab-size": true,
   "unitless-zero": true,
+  "verbose": true,
+  "exclude": ["src/assets/stylesheets/shared/_formulas.less"],
   "csscomb.preset": 
   [
     [
