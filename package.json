@@ -153,7 +153,7 @@
     "gulp-concat-css": "3.0.0",
     "gulp-exec": "3.0.1",
     "gulp-less": "3.4.0",
-    "gulp-lesshint": "4.1.0",
+    "gulp-lesshint": "5.0.2",
     "gulp-ngc": "0.3.3",
     "gulp-sourcemaps": "2.6.4",
     "gulp-string-replace": "1.0.0",
