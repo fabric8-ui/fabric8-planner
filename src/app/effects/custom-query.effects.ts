@@ -27,7 +27,7 @@ export class CustomQueryEffects {
 
   @Effect() GetCustomQueries$: Observable<Action> = this.actions$
     .ofType(CustomQueryActions.GET)
-    .withLatestFrom(this.store.select('listPage').select('space'))
+    .withLatestFrom(this.store.select('planner').select('space'))
     .switchMap(([action, space]) => {
       return this.customQueryService.getCustomQueries(
         space.links.self + '/queries'
@@ -54,7 +54,7 @@ export class CustomQueryEffects {
 
   @Effect() addCustomQuery$ = this.actions$
     .ofType<CustomQueryActions.Add>(CustomQueryActions.ADD)
-    .withLatestFrom(this.store.select('listPage').select('space'))
+    .withLatestFrom(this.store.select('planner').select('space'))
     .switchMap(([action, space]) => {
       let payload = action.payload;
       return this.customQueryService.create(
@@ -92,12 +92,12 @@ export class CustomQueryEffects {
 
   @Effect() deleteCustomQuery = this.actions$
     .ofType<CustomQueryActions.Delete>(CustomQueryActions.DELETE)
-    .withLatestFrom(this.store.select('listPage').select('space'))
+    .withLatestFrom(this.store.select('planner').select('space'))
     .switchMap(([action, space]) => {
       return this.customQueryService.delete(
-        action.payload, space.links.self + '/queries/' + action.payload.id
+        space.links.self + '/queries/' + action.payload.id
       )
-      .map(customQuery => {
+      .map(() => {
         return new CustomQueryActions.DeleteSuccess(action.payload);
       })
       .catch(() => {

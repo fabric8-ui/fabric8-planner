@@ -1,7 +1,13 @@
 import {
   cleanObject
 } from './common.model';
-import { WorkItemMapper, WorkItemRelations, WorkItemService, WorkItemUI } from './work-item';
+import {
+  WorkItemMapper,
+  workItemSelector,
+  WorkItemService,
+  WorkItemStateModel,
+  WorkItemUI
+} from './work-item';
 
 describe('WorkItemMapper', () => {
     const workItemMapper: WorkItemMapper = new WorkItemMapper();
@@ -132,7 +138,8 @@ describe('WorkItemMapper', () => {
         childrenLink: 'https://api.openshift.io/api/workitems/8bccc228-bba7-43ad-b077-15fbb9148f7f/children',
         treeStatus: 'disabled',
         childrenLoaded: false,
-        bold: false
+        bold: false,
+        editable: false
       } as WorkItemUI;
 
     it('should execute the canary test', () => {
@@ -434,5 +441,30 @@ describe('WorkItemMapper', () => {
         }}
       }, ['baseType']);
       expect(finalServiceModel).toEqual(serviceModel);
+    });
+});
+
+describe('WorkItemQuery :: ', () => {
+    it('Should return work items from workItemSelector', () => {
+        const state = {
+            planner: {
+              workItems: {
+                ids: [1, 2, 3],
+                entities: {
+                  1: {id: '1'} as WorkItemUI,
+                  2: {id: '2'} as WorkItemUI,
+                  3: {id: '3'} as WorkItemUI
+                }
+              }
+            }
+        };
+        expect(workItemSelector(state)).toEqual(state.planner.workItems as WorkItemStateModel);
+    });
+
+    it('Should return epty object from spaceSelector if `planner` is not there in the state', () => {
+        const state = {
+          detailsPage: {}
+        };
+        expect(workItemSelector(state)).toEqual({entities: {}, ids: []} as WorkItemStateModel);
     });
 });

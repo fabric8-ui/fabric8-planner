@@ -1,9 +1,20 @@
 import { Injectable } from '@angular/core';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
+
+// Dictionary is needed even if it's not being used in this file
+// Else you get this error
+// Exported variable 'workItemEntities' has or is using name 'Dictionary'
+// from external module "@ngrx/entity/src/models" but cannot be named.
+import { Dictionary } from '@ngrx/entity/src/models';
+
+// MemoizedSelector is needed even if it's not being used in this file
+// Else you get this error
+// Exported variable 'workItemSelector' has or is using name 'MemoizedSelector'
+// from external module "@ngrx/store/src/selector" but cannot be named.
+import { createSelector, MemoizedSelector, Store } from '@ngrx/store';
 import { cloneDeep, orderBy } from 'lodash';
 import { Observable } from 'rxjs';
-import { AppState, ListPage } from './../states/app.state';
+import { AppState, PlannerState } from './../states/app.state';
 import {
   AreaMapper, AreaModel,
   AreaQuery, AreaUI
@@ -26,6 +37,7 @@ import {
    LabelQuery, LabelUI
 } from './label.model';
 import { Link } from './link';
+import { plannerSelector } from './space';
 import { UserMapper, UserQuery, UserService, UserUI } from './user';
 import {
   WorkItemType,
@@ -151,7 +163,7 @@ export interface WorkItemUI {
   creatorObs?: Observable<UserUI>;
   type: WorkItemTypeUI;
   labels: string[];
-  labelsObs: Observable<LabelUI[]>;
+  labelsObs?: Observable<LabelUI[]>;
   comments?: CommentUI[];
   children?: WorkItemUI[];
   commentLink: string;
@@ -168,6 +180,7 @@ export interface WorkItemUI {
 
   createId?: number; // this is used to identify newly created item
   selected: boolean;
+  editable?: boolean; // Based on the logged in user this value will be changed. Default value is false
 }
 
 export interface WorkItemStateModel extends EntityState<WorkItemUI> {}
@@ -287,7 +300,11 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
     }, {
       toPath: ['bold'],
       toValue: false
+    }, {
+      toPath: ['editable'],
+      toValue: false
     }
+
   ];
 
   uiToServiceMapTree: MapTree = [{
@@ -485,6 +502,24 @@ export class WorkItemResolver {
   }
 }
 
+
+export const workItemSelector = createSelector(
+  plannerSelector,
+  // TODO
+  // This is a HACK till fabric8-ui removes the unnecessary planner imports
+  // it should just be
+  // state => state.workItems
+  state => state ? state.workItems : {entities: {}, ids: []}
+);
+export const workItemEntities = createSelector(
+  workItemSelector,
+  selectEntities
+);
+export const getAllWorkItemSelector = createSelector(
+  workItemSelector,
+  selectAll
+);
+
 @Injectable()
 export class WorkItemQuery {
   constructor(
@@ -495,52 +530,50 @@ export class WorkItemQuery {
     private labelQuery: LabelQuery
   ) {}
 
-  private listPageSelector = createFeatureSelector<ListPage>('listPage');
-  private workItemSelector = createSelector(
-    this.listPageSelector,
-    state => state.workItems
-  );
-  private workItemEntities = createSelector(
-    this.workItemSelector,
-    selectEntities
-  );
-  private getAllWorkItemSelector = createSelector(
-    this.workItemSelector,
-    selectAll
-  );
   private workItemSource = this.store
-    .select(this.getAllWorkItemSelector);
+    .select(getAllWorkItemSelector);
 
   private workItemDetailSource = this.store
     .select(state => state.detailPage)
     .select(state => state.workItem);
 
+  resolveWorkItem(workItem: WorkItemUI): WorkItemUI {
+    return {
+      ...workItem,
+      creatorObs: this.userQuery.getUserObservableById(workItem.creator),
+      assigneesObs: this.userQuery.getUserObservablesByIds(workItem.assignees),
+      iterationObs: this.iterationQuery.getIterationObservableById(workItem.iterationId),
+      areaObs: this.areaQuery.getAreaObservableById(workItem.areaId),
+      labelsObs: this.labelQuery.getLabelObservablesByIds(workItem.labels)
+    };
+  }
+
   getWorkItems(): Observable<WorkItemUI[]> {
     return this.workItemSource.map(workItems => {
-      return workItems.map(workItem => {
-        return {
-          ...workItem,
-          creatorObs: this.userQuery.getUserObservableById(workItem.creator),
-          assigneesObs: this.userQuery.getUserObservablesByIds(workItem.assignees),
-          iterationObs: this.iterationQuery.getIterationObservableById(workItem.iterationId),
-          areaObs: this.areaQuery.getAreaObservableById(workItem.areaId),
-          labelsObs: this.labelQuery.getLabelObservablesByIds(workItem.labels)
-        };
-      });
+      return workItems.map(this.resolveWorkItem.bind(this));
     });
   }
 
   getWorkItem(number: string | number): Observable<WorkItemUI> {
     return this.workItemDetailSource
-    .filter(item => item !== null)
-    .map(workItem => {
+      .filter(item => item !== null)
+      .map(this.resolveWorkItem.bind(this))
+      .switchMap(this.setWorkItemEditable.bind(this));
+  }
+
+  /**
+   * Allow edit work item
+   */
+  setWorkItemEditable(workItem: WorkItemUI): Observable<WorkItemUI> {
+    return Observable.combineLatest(
+      this.userQuery.getLoggedInUser,
+      this.userQuery.getCollaboratorIds
+    )
+    .map(([loggdInuser, collabIDs]): WorkItemUI => {
+      const allAllowedIds = loggdInuser ? [...collabIDs, workItem.creator] : [];
       return {
         ...workItem,
-        creatorObs: this.userQuery.getUserObservableById(workItem.creator),
-        assigneesObs: this.userQuery.getUserObservablesByIds(workItem.assignees),
-        iterationObs: this.store.select('listPage').select('iterations').select(workItem.iterationId),
-        areaObs: this.store.select('listPage').select('areas').select(state => state[workItem.areaId]),
-        labelsObs: this.labelQuery.getLabelObservablesByIds(workItem.labels)
+        editable: allAllowedIds.indexOf(loggdInuser.id) > -1
       };
     });
   }
@@ -592,5 +625,9 @@ export class WorkItemQuery {
             });
           });
       });
+  }
+
+  get getWorkItemEntities(): Observable<{[id: string]: WorkItemUI}> {
+    return this.store.select(workItemEntities);
   }
 }
