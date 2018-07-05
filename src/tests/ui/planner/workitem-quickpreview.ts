@@ -108,7 +108,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
 
   /* UI elements for the Agile template of the workitem preview */
   effortTextArea = new ui.TextInput(this.$('[placeholder="Effort"]'), 'effort textarea');
-  workItemsGroup = new ui.Clickable(this.element(by.cssContainingText('alm-dynamic-field .f8-dynamic-control', ' Work Items ')),'Side panel WorkItem button');
+  workItemsGroup = new ui.Clickable(this.element(by.cssContainingText('alm-dynamic-field .f8-dynamic-control', ' Work Items ')), 'Side panel WorkItem button');
   businessValue = new ui.TextInput(this.$('textarea[placeholder="Business Value"]'), ' Business value textarea');
 
   constructor(ele: ElementFinder, name: string = '') {
