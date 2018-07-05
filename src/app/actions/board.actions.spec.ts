@@ -1,16 +1,12 @@
 import { boardUIData } from '../services/board.snapshot';
 import { BoardState } from './../states/board.state';
-import {
-  Get, GET,
-  GET_BOARD_URL, GET_BOARD_URL_ERROR,
-  GET_ERROR, GET_SUCCESS, GetBoardUrl, GetBoardUrlError, GetError, GetSuccess
-} from './board.actions';
+import * as BoardActions from './board.actions';
 
 describe('Unit Test :: Board Actions', () => {
   it('GetBoard :: should create get action', () => {
-    const action = new Get('');
+    const action = new BoardActions.Get('');
     expect({...action}).toEqual({
-      type: GET,
+      type: BoardActions.GET,
       payload: ''
     });
   });
@@ -20,25 +16,25 @@ describe('Unit Test :: Board Actions', () => {
       'board-1': boardUIData
     } as BoardState;
 
-    const action = new GetSuccess(boards);
+    const action = new BoardActions.GetSuccess(boards);
     expect({...action}).toEqual({
-      type: GET_SUCCESS,
+      type: BoardActions.GET_SUCCESS,
       payload: boards
     });
   });
 
   it('GetBoardError :: should create get error action', () => {
-    const action = new GetError();
-    expect({...action}).toEqual({type: GET_ERROR});
+    const action = new BoardActions.GetError();
+    expect({...action}).toEqual({type: BoardActions.GET_ERROR});
   });
 
   it('GetBoardUrl :: should create get action', () => {
-    const action = new GetBoardUrl();
-    expect({...action}).toEqual({type: GET_BOARD_URL});
+    const action = new BoardActions.GetBoardUrl();
+    expect({...action}).toEqual({type: BoardActions.GET_BOARD_URL});
   });
 
   it('GetBoardUrlError :: should create get error action', () => {
-    const action = new GetBoardUrlError();
-    expect({...action}).toEqual({type: GET_BOARD_URL_ERROR});
+    const action = new BoardActions.GetBoardUrlError();
+    expect({...action}).toEqual({type: BoardActions.GET_BOARD_URL_ERROR});
   });
 });
