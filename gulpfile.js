@@ -82,10 +82,6 @@ mach.tslint = function(src) {
 
 // Transpile given LESS source(s) to CSS, storing results to distPath.
 mach.transpileLESS = function (src, debug) {
-  var opts = {
-    // THIS IS NEEDED FOR REFERENCE
-    // paths: [ path.join(__dirname, 'less', 'includes') ]
-  }
   return gulp.src(src)
     .pipe(lesshint({
       configPath: './.lesshintrc' // Options
