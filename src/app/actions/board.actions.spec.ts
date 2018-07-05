@@ -2,8 +2,8 @@ import { boardUIData } from '../services/board.snapshot';
 import { BoardState } from './../states/board.state';
 import {
   Get, GET,
-  GET_ERROR, GET_SUCCESS,
-  GetError, GetSuccess
+  GET_BOARD_URL, GET_BOARD_URL_ERROR,
+  GET_ERROR, GET_SUCCESS, GetBoardUrl, GetBoardUrlError, GetError, GetSuccess
 } from './board.actions';
 
 describe('Unit Test :: Board Actions', () => {
@@ -30,5 +30,15 @@ describe('Unit Test :: Board Actions', () => {
   it('GetBoardError :: should create get error action', () => {
     const action = new GetError();
     expect({...action}).toEqual({type: GET_ERROR});
+  });
+
+  it('GetBoardUrl :: should create get action', () => {
+    const action = new GetBoardUrl();
+    expect({...action}).toEqual({type: GET_BOARD_URL});
+  });
+
+  it('GetBoardUrlError :: should create get error action', () => {
+    const action = new GetBoardUrlError();
+    expect({...action}).toEqual({type: GET_BOARD_URL_ERROR});
   });
 });
