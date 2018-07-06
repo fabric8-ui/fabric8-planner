@@ -68,7 +68,7 @@
         }
         aside {
           float: right;
-          width: ~'calc(e("45% - 30px"))';
+          width: ~"calc(e('45% - 30px'))"; // lesshint-disable-line
           height: 100%;
           padding-left: (@grid-gutter-width/6);
           padding-right: (@grid-gutter-width/6);
@@ -92,7 +92,7 @@
       &-column {
         float: left;
         width: 100%;
-        height: ~'calc(e("100% - 30px"))';
+        height: ~"calc(e('100% - 30px'))"; // lesshint-disable-line
         padding: (@grid-gutter-width/3);
         list-style: none;
         background-color: @color-pf-white;
@@ -202,7 +202,7 @@ button.btn.btn-link.dropdown-toggle:focus {
 }
 
 .planner-hack-title-truncate {
-  max-width: ~'calc(e("100% - 20px"))';
+  max-width: ~"calc(e('100% - 20px'))";// lesshint-disable-line
 }
 
 a.disabled {

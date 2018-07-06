@@ -92,6 +92,7 @@ mach.transpileLESS = function (src, debug) {
     .pipe(lesshint.reporter()) // Leave empty to use the default, "stylish"
     .pipe(lesshint.failOnError()) // Use this to fail the task on lint errors
     .pipe(srcmaps.init())
+    .pipe(less())
     .pipe(srcmaps.write())
     .pipe(gulp.dest(function (file) {
       return distPath + file.base.slice(__dirname.length + 'src/'.length);
