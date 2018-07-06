@@ -24,13 +24,6 @@ export class GetError implements Action {
   readonly type = GET_ERROR;
 }
 
-export class GetBoardUrl implements Action {
-  readonly type = GET_BOARD_URL;
-}
-
-export class GetBoardUrlError implements Action {
-  readonly type = GET_BOARD_URL;
-}
 
 export type All
   = Get
