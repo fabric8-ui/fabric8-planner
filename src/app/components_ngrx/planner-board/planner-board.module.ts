@@ -10,6 +10,7 @@ import { PlannerBoardComponent } from './planner-board.component';
 
 // Data Querries
 import { AreaQuery } from '../../models/area.model';
+import { GroupTypeQuery } from '../../models/group-types.model';
 import { IterationQuery } from '../../models/iteration.model';
 import { LabelQuery } from '../../models/label.model';
 import { CommentQuery } from './../../models/comment';
@@ -27,7 +28,8 @@ import { WorkItemQuery } from './../../models/work-item';
         IterationQuery,
         WorkItemQuery,
         AreaQuery,
-        SpaceQuery
+        SpaceQuery,
+        GroupTypeQuery
     ],
     imports: [
         CommonModule,

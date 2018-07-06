@@ -8,6 +8,7 @@ import { Component, Input, OnInit } from '@angular/core';
 export class SidepanelComponent implements OnInit {
 
   @Input() sidePanelOpen: boolean = true;
+  @Input() context: string = 'list'; // 'list' or 'board'
 
   backlogSelected: boolean = true;
   typeGroupSelected: boolean = true;

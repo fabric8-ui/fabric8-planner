@@ -7,6 +7,8 @@ import {
   Renderer2,
   ViewChild
 } from '@angular/core';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { GroupTypeQuery, GroupTypeUI } from './../../models/group-types.model';
 import { SpaceQuery } from './../../models/space';
 
 @Component({
@@ -23,7 +25,10 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
 
     constructor(
       private renderer: Renderer2,
-      private spaceQuery: SpaceQuery
+      private spaceQuery: SpaceQuery,
+      private groupTypeQuery: GroupTypeQuery,
+      private route: ActivatedRoute,
+      private router: Router
     ) {}
 
     ngOnInit() {
@@ -32,7 +37,46 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
           .do(() => {
             // this.uiLockedSidebar = true;
           })
+          .switchMap(() => {
+            return this.groupTypeQuery.getFirstGroupType;
+          }).take(1)
+          .do((groupType) => {
+            this.setDefaultUrl(groupType);
+            this.checkUrl(groupType);
+          })
           .subscribe()
+      );
+    }
+
+    setDefaultUrl(groupType: GroupTypeUI) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { boardContextId: groupType.id }
+      });
+    }
+
+    checkUrl(groupType) {
+      this.eventListeners.push(
+        this.router.events
+          .filter(event => event instanceof NavigationStart)
+          .map((e: NavigationStart) => e.url)
+          .subscribe(url => {
+            if (url.indexOf('?boardContextId') === -1 &&
+              url.indexOf('/plan/board') > -1) {
+              this.setDefaultUrl(groupType);
+            }
+          })
+      );
+
+      this.eventListeners.push(
+        this.route.queryParams
+          .filter(params => params.hasOwnProperty('boardContextId'))
+          .map(params => params.boardContextId)
+          .subscribe(contextId => {
+            console.log(contextId);
+            // Fetching work item
+            // Dispatch action to fetch work items per lane for this context ID
+          })
       );
     }
 
