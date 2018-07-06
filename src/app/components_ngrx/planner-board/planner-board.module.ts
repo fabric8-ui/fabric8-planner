@@ -9,6 +9,7 @@ import { BoardService } from '../../services/board.service';
 import { InitialBoardState, InitialColumnWorkItemState } from './../../states/index.state';
 
 import { PlannerLayoutModule } from './../../widgets/planner-layout/planner-layout.module';
+import { PlannerBoardColumnModule } from './../planner-board-column/planner-board-column.module';
 import { SidepanelModule } from './../side-panel/side-panel.module';
 import { WorkItemPreviewPanelModule } from './../work-item-preview-panel/work-item-preview-panel.module';
 import { PlannerBoardRoutingModule } from './planner-board-routing.module';
@@ -40,6 +41,7 @@ import { WorkItemQuery } from './../../models/work-item';
     imports: [
         CommonModule,
         PlannerBoardRoutingModule,
+        PlannerBoardColumnModule,
         PlannerLayoutModule,
         WorkItemPreviewPanelModule,
         SidepanelModule,
