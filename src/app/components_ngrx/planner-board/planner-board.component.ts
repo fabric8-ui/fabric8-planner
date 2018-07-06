@@ -44,6 +44,13 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
             this.setDefaultUrl(groupType);
             this.checkUrl(groupType);
           })
+          .switchMap(() => {
+            return this.groupTypeQuery.getFirstGroupType;
+          }).take(1)
+          .do((groupType) => {
+            this.setDefaultUrl(groupType);
+            this.checkUrl(groupType);
+          })
           .subscribe()
       );
     }
