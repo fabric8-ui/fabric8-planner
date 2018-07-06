@@ -21,32 +21,15 @@ export class BoardEffects {
     private notifications: Notifications
   ) {}
 
-  @Effect() getBoardApi: Observable<Action> = this.actions$
-    .ofType(BoardActions.GET_BOARD_URL)
-    .withLatestFrom(this.store.select(spaceSelector))
-    .switchMap(([actions, space]) => {
-      const spaceTemplateUrl = space.relationships['space-template'].links.related;
-      return this.boardService.getBoardApiUrl(spaceTemplateUrl)
-        .map(url => new BoardActions.Get(url))
-        .catch((e) => {
-          try {
-            this.notifications.message({
-              message: `Problem in fetching Board.`,
-              type: NotificationType.DANGER
-            } as Notification);
-          } catch (e) {
-            console.log('Problem in fetching Board.');
-          }
-          return Observable.of(
-            new BoardActions.GetBoardUrlError()
-          );
-        });
-    });
-
   @Effect() getBoards: Observable<Action> = this.actions$
     .ofType<BoardActions.Get>(BoardActions.GET)
-    .switchMap((action) => {
-      return this.boardService.getBoards(action.payload)
+    .withLatestFrom(this.store.select(spaceSelector))
+    .switchMap(([action, space]) => {
+      const spaceTemplateUrl = space.relationships['space-template'].links.related;
+      return this.boardService.getBoardApiUrl(spaceTemplateUrl);
+    })
+    .switchMap((url) => {
+      return this.boardService.getBoards(url)
         .map(boards => {
           const boardmapper = new BoardMapper();
           return boards.map(board => {

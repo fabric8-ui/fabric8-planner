@@ -4,10 +4,9 @@ import * as BoardActions from './board.actions';
 
 describe('Unit Test :: Board Actions', () => {
   it('GetBoard :: should create get action', () => {
-    const action = new BoardActions.Get('');
+    const action = new BoardActions.Get();
     expect({...action}).toEqual({
-      type: BoardActions.GET,
-      payload: ''
+      type: BoardActions.GET
     });
   });
 
@@ -26,15 +25,5 @@ describe('Unit Test :: Board Actions', () => {
   it('GetBoardError :: should create get error action', () => {
     const action = new BoardActions.GetError();
     expect({...action}).toEqual({type: BoardActions.GET_ERROR});
-  });
-
-  it('GetBoardUrl :: should create get action', () => {
-    const action = new BoardActions.GetBoardUrl();
-    expect({...action}).toEqual({type: BoardActions.GET_BOARD_URL});
-  });
-
-  it('GetBoardUrlError :: should create get error action', () => {
-    const action = new BoardActions.GetBoardUrlError();
-    expect({...action}).toEqual({type: BoardActions.GET_BOARD_URL_ERROR});
   });
 });
