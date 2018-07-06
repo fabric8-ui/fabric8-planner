@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { GroupTypeQuery, GroupTypeUI } from './../../models/group-types.model';
+import { IterationQuery } from './../../models/iteration.model';
 import { SpaceQuery } from './../../models/space';
 
 @Component({
@@ -27,11 +28,13 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
       private renderer: Renderer2,
       private spaceQuery: SpaceQuery,
       private groupTypeQuery: GroupTypeQuery,
+      private iterationQuery: IterationQuery,
       private route: ActivatedRoute,
       private router: Router
     ) {}
 
     ngOnInit() {
+      this.iterationQuery.deselectAllIteration();
       this.eventListeners.push(
         this.spaceQuery.getCurrentSpace
           .do(() => {
