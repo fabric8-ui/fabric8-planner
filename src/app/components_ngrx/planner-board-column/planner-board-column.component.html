@@ -1,9 +1,13 @@
 <div class="f8-board-column">
   <div class="f8-board-column__header">
-    <span class="badge">42 </span>
-    <span class="f8-board-column__header-title">Open</span>
+    <span class="badge">{{ workItems.length }} </span>
+    <span class="f8-board-column__header-title">{{ columnName }}</span>
   </div>
   <div class="f8-board-column__body">
-      <f8-planner-card></f8-planner-card>
+    <ng-container *ngFor="let workitem of workItems | async">
+      <f8-planner-card
+        [workItem]="workitem"
+      ></f8-planner-card>
+    </ng-container>
   </div>
 </div>

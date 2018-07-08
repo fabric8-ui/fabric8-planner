@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { WorkItemUI } from './../../models/work-item';
+import { Observable } from 'rxjs';
+import { WorkItemQuery, WorkItemUI } from './../../models/work-item';
 
 @Component({
   selector: 'f8-planner-column',
@@ -8,5 +9,13 @@ import { WorkItemUI } from './../../models/work-item';
 })
 
 export class PlannerBoardColumnComponent {
-  @Input() workItems: WorkItemUI[];
+  @Input('workItemIds') set WorkItemIds(ids: string[]) {
+    // Change this to this.workItemQuery.getWorkitemsById(ids)
+    this.workItems = Observable.of([] as WorkItemUI[]);
+  }
+  @Input() columnName: string;
+
+  private workItems: Observable<WorkItemUI[]>;
+
+  constructor(private workItemQuery: WorkItemQuery) {}
 }

@@ -81,6 +81,7 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
           .map(params => params.boardContextId)
           .subscribe(contextId => {
             console.log(contextId);
+
             // Fetching work item
             // Dispatch action to fetch work items per lane for this context ID
           })

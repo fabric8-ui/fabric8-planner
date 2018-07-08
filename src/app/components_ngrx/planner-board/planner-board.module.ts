@@ -24,6 +24,7 @@ import { CommentQuery } from './../../models/comment';
 import { SpaceQuery } from './../../models/space';
 import { UserQuery } from './../../models/user';
 import { WorkItemQuery } from './../../models/work-item';
+import { F8SortByPipeModule } from './../../pipes/sort-by.module';
 
 @NgModule({
     providers: [
@@ -40,6 +41,7 @@ import { WorkItemQuery } from './../../models/work-item';
     ],
     imports: [
         CommonModule,
+        F8SortByPipeModule,
         PlannerBoardRoutingModule,
         PlannerBoardColumnModule,
         PlannerLayoutModule,
