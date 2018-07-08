@@ -52,6 +52,7 @@ export class BoardModelUI {
         title: string;
         columnOrder: 0;
         type: string;
+        workitemsId?: string[];
     }[];
 }
 
@@ -73,10 +74,18 @@ export class BoardMapper implements Mapper<BoardModel, BoardModelUI> {
         fromPath: ['attributes', 'context'],
         toPath: ['context']
     }, {
-        fromPath: ['included'],
+        fromPath: ['relationships', 'columns', 'data'],
         toPath: ['columns'],
-        toFunction: (data) =>
-            Array.isArray(data) ? data.filter(d => d.type === 'boardcolumns') : []
+        toFunction: (data) => {
+            return data.map(col => {
+              return {
+                id: col.id,
+                title: col.attributes.name,
+                columnOrder: col.attributes.columnOrder,
+                type: col.type
+              };
+            });
+        }
     }];
 
     uiToServiceMapTree: MapTree = [];
