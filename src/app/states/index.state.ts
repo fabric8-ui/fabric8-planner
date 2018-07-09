@@ -77,3 +77,8 @@ export {
   BoardState,
   initialState as InitialBoardState
 } from './board.state';
+
+export {
+  ColumnWorkItemState,
+  initialState as InitialColumnWorkItemState
+} from './column-workItem.state';

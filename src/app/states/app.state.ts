@@ -6,7 +6,8 @@ export interface AppState {
   listPage?: ListPage;
 
   boardView?: {
-    boards: states.BoardState
+    boards: states.BoardState,
+    columnWorkItem: states.ColumnWorkItemState
   };
 
   iterationPanel: {
