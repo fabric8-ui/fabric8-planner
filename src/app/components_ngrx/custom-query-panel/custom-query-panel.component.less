@@ -4,7 +4,23 @@
 :host {
   .list-group {
     display: block;
-    border-top-color: transparent;
+    padding: 20px 15px;
+    border-left: 4px solid;
+    border-left-color: transparent;
+    border-bottom: 1px solid;
+    border-bottom-color: @color-pf-black;
+    line-height: 15px;
+    cursor: default; // as item is not clickable
+    &.nohover {
+      p {
+        font-size: 15px;
+        color: @color-pf-black-500;
+        line-height: 1;
+      }
+    }
+    &:not(.nohover):hover {
+      background: @color-pf-black-700;
+    }
   }
   .f8-cf {
     display: block;
@@ -19,7 +35,7 @@
       border-bottom-color: @color-pf-black;
       line-height: 15px;
       cursor: default; // as item is not clickable
-      &.nohover {
+      &.nohover
         h3 {
           color: @color-pf-black-500;
           line-height: 1;

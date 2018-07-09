@@ -44,6 +44,7 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
     private filterService: FilterService,
     private groupTypesService: GroupTypesService,
     private route: ActivatedRoute,
+    private router: Router,
     private spaces: Spaces,
     private store: Store<AppState>
   ) {}
@@ -170,5 +171,16 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
     return this.infotipSource
       .select(s => s[id])
       .select(i => i ? i['en'] : id);
+  }
+
+  //This function navigates to the desired work item group type page
+  groupTypeClickHandler(e: MouseEvent, item: GroupTypeUI) {
+    if (!e.srcElement.classList.contains('infotip-icon')) {
+      let q = this.addRemoveQueryParams(item);
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: q
+      });
+    }
   }
 }
