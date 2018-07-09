@@ -178,7 +178,6 @@ export class WorkItemEffects {
           return [...wis];
         })
         .map((workItems: WorkItemUI[]) => {
-          console.log('##### - 1', payload.filters);
           return new WorkItemActions.GetSuccess(
             workItems
           );
