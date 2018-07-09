@@ -21,7 +21,7 @@ export class IterationTreeComponent {
   @Input() witGroup: string = '';
   @Input() showTree: string = '';
   @Input() showCompleted: string = '';
-  @Input() context: string; // 'list' or 'board'
+  @Input() context: 'list' | 'board'; // 'list' or 'board'
 
   @Output() readonly onEditIteration = new EventEmitter<IterationUI>();
   @Output() readonly onCloseIteration = new EventEmitter<IterationUI>();

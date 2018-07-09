@@ -24,7 +24,7 @@ import { AppState } from './../../states/app.state';
 export class GroupTypesComponent implements OnInit, OnDestroy {
 
   @Input() sidePanelOpen: boolean = true;
-  @Input() context: string; // 'list' or 'board'
+  @Input() context: 'list' | 'board'; // 'list' or 'board'
 
   authUser: any = null;
   infotipSource = this.store

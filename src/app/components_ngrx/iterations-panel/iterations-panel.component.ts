@@ -39,7 +39,7 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   @Input() showTree: string = '';
   @Input() showCompleted: string = '';
   @Input() infotipText: string = '';
-  @Input() context: string; // 'list' or 'board'
+  @Input() context: 'list' | 'board'; // 'list' or 'board'
 
   @ViewChild('modal') modal: FabPlannerIterationModalComponent;
 

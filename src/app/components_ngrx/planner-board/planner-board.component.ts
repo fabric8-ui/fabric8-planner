@@ -37,9 +37,6 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
       this.iterationQuery.deselectAllIteration();
       this.eventListeners.push(
         this.spaceQuery.getCurrentSpace
-          .do(() => {
-            // this.uiLockedSidebar = true;
-          })
           .switchMap(() => {
             return this.groupTypeQuery.getFirstGroupType;
           }).take(1)
