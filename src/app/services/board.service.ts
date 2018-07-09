@@ -21,7 +21,7 @@ export class BoardService {
      * Usage: this is to get the list board for a sapce
      * @param boardUrl
      */
-    getBoards(boardUrl: string): Observable<{data: BoardModel[], included: {}[]}> {
+    getBoards(boardUrl: string): Observable<BoardModel> {
         return this.http.get(boardUrl)
             .map(resp => {
                 return {

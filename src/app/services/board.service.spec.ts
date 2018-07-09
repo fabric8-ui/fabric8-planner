@@ -61,7 +61,7 @@ describe('BoardService :: ', () => {
         boardService.getBoards('')
             .subscribe((url) => {
                 expect(url).toEqual(
-                    boardsResponse.data
+                    boardsResponse
                 );
                 done();
             });

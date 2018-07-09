@@ -34,7 +34,7 @@ export class BoardEffects {
           const boardmapper = new BoardMapper();
           return boards.data.map(board => {
             board.relationships.columns.data.map(column => {
-              return board.included.filter(col => col.id === column.id);
+              return boards.included.filter(col => col.id === column.id);
             });
             return boardmapper.toUIModel(board);
           });

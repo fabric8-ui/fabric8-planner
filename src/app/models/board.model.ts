@@ -7,7 +7,7 @@ import {
     switchModel
 } from './common.model';
 
-export class BoardModel {
+export class BoardModelData {
     id: string;
     attributes: {
         name: string;
@@ -25,19 +25,25 @@ export class BoardModel {
             }
         };
         columns: {
-            data: {
-                    id: string;
-                    type: string;
-                }[];
+            data?: {
+                id: string;
+                type: string;
+            }[];
         };
     };
+    type: string;
+}
+
+export class BoardModel {
+    data: BoardModelData[];
     included: ({
-        id: string;
-        title: string;
+        attributes: {
+            id: string;
+            name: string;
+        }
         columnOrder: 0;  // the left-to-right order of the column in the view
         type: string;
     } | any)[];
-    type: string;
 }
 
 
@@ -56,7 +62,7 @@ export class BoardModelUI {
 }
 
 
-export class BoardMapper implements Mapper<BoardModel, BoardModelUI> {
+export class BoardMapper implements Mapper<BoardModelData, BoardModelUI> {
     serviceToUiMapTree: MapTree = [{
         fromPath: ['id'],
         toPath: ['id']
@@ -80,7 +86,7 @@ export class BoardMapper implements Mapper<BoardModel, BoardModelUI> {
               return {
                 id: col.id,
                 title: col.attributes.name,
-                columnOrder: col.attributes.columnOrder,
+                columnOrder: col.attributes.order,
                 type: col.type
               };
             });
@@ -89,13 +95,13 @@ export class BoardMapper implements Mapper<BoardModel, BoardModelUI> {
 
     uiToServiceMapTree: MapTree = [];
 
-    toUIModel(arg: BoardModel): BoardModelUI {
-        return switchModel<BoardModel, BoardModelUI>(
+    toUIModel(arg: BoardModelData): BoardModelUI {
+        return switchModel<BoardModelData, BoardModelUI>(
           arg, this.serviceToUiMapTree
         );
     }
 
-    toServiceModel(arg: BoardModelUI): BoardModel {
-        return {} as BoardModel;
+    toServiceModel(arg: BoardModelUI): BoardModelData {
+        return {} as BoardModelData;
     }
 }

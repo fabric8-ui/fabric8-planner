@@ -4,6 +4,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { BoardEffects } from '../../effects/board.effect';
 import { BoardReducer, ColumnWorkItemReducer } from '../../reducers/index.reducer';
+import { BoardService } from '../../services/board.service';
 import { InitialBoardState, InitialColumnWorkItemState } from './../../states/index.state';
 import { PlannerBoardRoutingModule } from './planner-board-routing.module';
 import { PlannerBoardComponent } from './planner-board.component';
@@ -26,6 +27,7 @@ import { PlannerBoardComponent } from './planner-board.component';
     ])
   ],
   declarations: [PlannerBoardComponent],
-  exports: [PlannerBoardComponent]
+  exports: [PlannerBoardComponent],
+  providers: [BoardService]
 })
 export class PlannerBoardModule {}
