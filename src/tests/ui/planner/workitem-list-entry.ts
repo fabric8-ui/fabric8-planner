@@ -13,12 +13,9 @@ export class WorkItemListEntry extends ui.BaseElement {
   treeExpander = new ui.Clickable(this.$('.tree-icon'), 'WorkItem Expander');
   labelName =  new ui.Clickable(this.element(by.cssContainingText('.label-name', 'sample_label_1')), 'WorkItem Label');
   detailIcon = new ui.Clickable(this.$('.wi-detail-icon'), 'WorkItem detail page');
-
-  // TODO
-  status: ui.BaseElement;
   iteration= new ui.BaseElement(this.$('#table-iteration'), 'Table Workitem Iteration Name');
-  creator: ui.BaseElement;
-  assignees: ui.BaseElement;
+  creator = new ui.BaseElement(this.$('.user-assign-avatar'), 'Creator column');
+  assignees = new ui.BaseElement(this.$('f8-assignee'), 'Assignee column');
 
   constructor(element: ElementFinder, name: string) {
     super(element, name);
@@ -43,6 +40,7 @@ export class WorkItemListEntry extends ui.BaseElement {
   async clickExpandWorkItem() {
     return this.treeExpander.clickWhenReady();
   }
+
   async getIterationText() {
     return this.iteration.getTextWhenReady();
   }

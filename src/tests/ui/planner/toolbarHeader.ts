@@ -73,7 +73,7 @@ export class ToolbarHeader extends BaseElement {
     }
   }
 
-  async saveFilters(title) {
+  async saveFilters(title: string) {
     await this.saveFilter.clickWhenReady();
     await this.titleTextInput.enterText(title);
     await this.saveFilterBtn.clickWhenReady();

@@ -201,7 +201,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.linkButton.clickWhenReady();
   }
 
-  async removeLink(workItem) {
+  async removeLink(workItem: string) {
     await new ui.BaseElement(this.element(by.xpath("//li[contains(@class,'f8-link__list-item')][.//span[text()='" + workItem + "']]")).$('.pficon-close')).clickWhenReady();
   }
 

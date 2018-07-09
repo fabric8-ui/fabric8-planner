@@ -22,7 +22,7 @@ export class WorkItemInlineQuickAdd extends ui.BaseElement {
     await this.addAndOpenButton.ready();
   }
 
-  async addInlineWorkItem({ title, description = '', type }: WorkItem)  {
+  async addInlineWorkItem({ title, description = '', type = '' }: WorkItem)  {
     await this.workItemTypeDropdown.clickWhenReady();
     await this.workItemTypeDropdown.select(type);
     await this.titleTextInlineInput.ready();
