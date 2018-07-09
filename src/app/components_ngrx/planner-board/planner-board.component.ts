@@ -8,6 +8,11 @@ import {
   ViewChild
 } from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { sortBy } from 'lodash';
+import { BoardQuery } from '../../models/board.model';
+import { AppState } from '../../states/app.state';
+import * as BoardActions from './../../actions/board.actions';
 import { GroupTypeQuery, GroupTypeUI } from './../../models/group-types.model';
 import { IterationQuery } from './../../models/iteration.model';
 import { SpaceQuery } from './../../models/space';
@@ -23,6 +28,7 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
     private uiLockedSidebar: boolean = false;
     private sidePanelOpen: boolean = true;
     private eventListeners: any[] = [];
+    private board$;
 
     constructor(
       private renderer: Renderer2,
@@ -30,7 +36,9 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
       private groupTypeQuery: GroupTypeQuery,
       private iterationQuery: IterationQuery,
       private route: ActivatedRoute,
-      private router: Router
+      private router: Router,
+      private store: Store<AppState>,
+      private boardQuery: BoardQuery
     ) {}
 
     ngOnInit() {
@@ -50,6 +58,7 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
           .do((groupType) => {
             this.setDefaultUrl(groupType);
             this.checkUrl(groupType);
+            this.store.dispatch(new BoardActions.Get());
           })
           .subscribe()
       );
@@ -81,7 +90,7 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
           .map(params => params.boardContextId)
           .subscribe(contextId => {
             console.log(contextId);
-
+            this.board$ = this.boardQuery.getBoardById(contextId);
             // Fetching work item
             // Dispatch action to fetch work items per lane for this context ID
           })

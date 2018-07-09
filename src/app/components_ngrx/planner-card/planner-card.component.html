@@ -6,36 +6,28 @@
           <span class="fa fa-bullseye"></span>
         </div>
         <div class="title-wrapper" (click)="titleClick(workItem, $event);">
-          <span>#2583: </span>
-          <strong>A development platform should provide as application</strong>
-          <span class="creator"> - created by viraj</span>
+          <span>{{ workItem.number }}: </span>
+          <strong>{{ workItem.title }}</strong>
+          <span class="creator"> - created by {{ (workItem.creatorObs | async).username }}</span>
         </div>
       </div>
     </ng-template>
     <div class="f8-custom-card-body">
       <div class="sprint-name truncate"
+        *ngIf="workItem.iterationObs | async as iteration"
         [placement]="top"
-        [tooltip]="'Sprint #151 Sprint #151 Sprint #151'">
-        <span>Sprint #151 Sprint #151 Sprint #151 Sprint #151 Sprint #151</span>
+        [tooltip]="iteration.resolvedParenPath + iteration.name">
+        <span>{{ iteration.name }}</span>
       </div>
       <div class="assignee">
-        <user-avatar
-          [imgSrc]="'https://avatars1.githubusercontent.com/u/2561818?v=4&s=25'">
-        </user-avatar>
-        <user-avatar
-          [imgSrc]="'https://avatars1.githubusercontent.com/u/2561818?v=4&s=25'">
-        </user-avatar>
-        <user-avatar
-          [imgSrc]="'https://avatars1.githubusercontent.com/u/2561818?v=4&s=25'">
-        </user-avatar>
+
       </div>
     </div>
     <div class="f8-custom-card-footer">
       <f8-label
-        [labels]="labels"
+        [labels]="workItem.labelsObs | async"
         [truncateAfter]='4'
-        [allowDelete]="false"
-        (onLabelClick)="labelClick($event)">
+        [allowDelete]="false">
       </f8-label>
     </div>
   </pfng-card>

@@ -10,8 +10,7 @@ import { WorkItemQuery, WorkItemUI } from './../../models/work-item';
 
 export class PlannerBoardColumnComponent {
   @Input('workItemIds') set WorkItemIds(ids: string[]) {
-    // Change this to this.workItemQuery.getWorkitemsById(ids)
-    this.workItems = Observable.of([] as WorkItemUI[]);
+    this.workItems = this.workItemQuery.getWorkItemsWithIds(ids);
   }
   @Input() columnName: string;
 
