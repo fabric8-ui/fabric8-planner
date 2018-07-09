@@ -8,6 +8,11 @@ import { BoardReducer, ColumnWorkItemReducer } from '../../reducers/index.reduce
 import { BoardService } from '../../services/board.service';
 import { InitialBoardState, InitialColumnWorkItemState } from './../../states/index.state';
 
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
+import { BoardEffects } from '../../effects/board.effect';
+import { BoardReducer, ColumnWorkItemReducer } from '../../reducers/index.reducer';
+import { InitialBoardState, InitialColumnWorkItemState } from './../../states/index.state';
 import { PlannerLayoutModule } from './../../widgets/planner-layout/planner-layout.module';
 import { PlannerBoardColumnModule } from './../planner-board-column/planner-board-column.module';
 import { SidepanelModule } from './../side-panel/side-panel.module';
