@@ -52,7 +52,6 @@ export class BoardModelUI {
         title: string;
         columnOrder: 0;
         type: string;
-        workitemsId?: string[];
     }[];
 }
 
