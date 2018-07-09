@@ -635,7 +635,11 @@ export class WorkItemQuery {
     return this.store.select(workItemEntities);
   }
 
-  getWorkitemsByIds(ids: string[]): Observable<WorkItemUI[]> {
-    return Observable.combineLatest(ids.map(id => this.getWorkItem(id)));
+  getWorkItemsWithIds(ids: string[]): Store<WorkItemUI[]> {
+    const selector = createSelector(
+      workItemEntities,
+      state => ids.map(i => this.resolveWorkItem(state[i]))
+    );
+    return this.store.select(selector);
   }
 }
