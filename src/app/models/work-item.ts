@@ -303,14 +303,10 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
       toValue: false
     }, {
       fromPath: ['relationships', 'system.boardcolumns', 'data'],
-<<<<<<< HEAD
       toPath: ['columnIds'],
       toFunction: (data) => {
         return Array.isArray(data) ? data.map(col => col.id) : null;
       }
-=======
-      toPath: ['columnsId']
->>>>>>> fix(board): add mapper in workitem and Board
     }
 
   ];
@@ -640,15 +636,21 @@ export class WorkItemQuery {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fix(workitem): add getWorkItemWithIds query to WorItemQuery
   getWorkItemsWithIds(ids: string[]): Store<WorkItemUI[]> {
     const selector = createSelector(
       workItemEntities,
       state => ids.map(i => this.resolveWorkItem(state[i]))
     );
     return this.store.select(selector);
+<<<<<<< HEAD
 =======
   getWorkitemsByIds(ids: string[]): Observable<WorkItemUI[]> {
     return Observable.combineLatest(ids.map(id => this.getWorkItem(id)));
 >>>>>>> fix(board): add mapper in workitem and Board
+=======
+>>>>>>> fix(workitem): add getWorkItemWithIds query to WorItemQuery
   }
 }
