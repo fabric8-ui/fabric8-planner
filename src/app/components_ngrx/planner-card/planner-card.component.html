@@ -1,4 +1,4 @@
-<div class="f8-custom-card" (click)="cardClick(workItem, $event);">
+<div class="f8-custom-card" (click)="cardClick(workItem, $event);" [attr.data-id]="workItem.id">
   <pfng-card [config]="config" [headerTemplate]="cardHeader">
     <ng-template #cardHeader>
       <div class="f8-custom-card-header">
