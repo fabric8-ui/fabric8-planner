@@ -4,8 +4,6 @@ import { BoardState } from '../states/board.state';
 export const GET = '[board] Get';
 export const GET_SUCCESS = '[board] GetSuccess';
 export const GET_ERROR = '[board] GetError';
-export const GET_BOARD_URL = '[board] GetBoardapiUrl';
-export const GET_BOARD_URL_ERROR = '[board] GetBoardapiUrl';
 
 export class Get implements Action {
   readonly type = GET;
