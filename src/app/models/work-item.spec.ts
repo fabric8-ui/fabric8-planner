@@ -140,7 +140,7 @@ describe('WorkItemMapper', () => {
         childrenLoaded: false,
         bold: false,
         editable: false,
-        columnsId: null
+        columnIds: null
       } as WorkItemUI;
 
     it('should execute the canary test', () => {

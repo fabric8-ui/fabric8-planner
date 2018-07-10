@@ -32,9 +32,11 @@ export class BoardEffects {
       return this.boardService.getBoards(url)
         .map(boards => {
           const boardmapper = new BoardMapper();
+          const included = normalizeArray(boards.included);
           return boards.data.map(board => {
-            board.relationships.columns.data.map(column => {
-              return boards.included.filter(col => col.id === column.id);
+            board.relationships.columns.data =
+              board.relationships.columns.data.map(col => {
+              return included[col.id];
             });
             return boardmapper.toUIModel(board);
           });

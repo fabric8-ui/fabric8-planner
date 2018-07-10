@@ -82,14 +82,14 @@ export class BoardMapper implements Mapper<BoardModelData, BoardModelUI> {
         fromPath: ['relationships', 'columns', 'data'],
         toPath: ['columns'],
         toFunction: (data) => {
-            return data.map(col => {
+            return Array.isArray(data) ? data.map(col => {
               return {
                 id: col.id,
                 title: col.attributes.name,
                 columnOrder: col.attributes.order,
                 type: col.type
               };
-            });
+            }) : [];
         }
     }];
 

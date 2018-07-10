@@ -174,10 +174,7 @@ export interface WorkItemUI {
   parentID: string;
   link: string;
   WILinkUrl: string;
-  columnsId?: {        // Columns all the board columns id
-    id: string,
-    type: string
-  }[];
+  columnIds?: string[] | null;
 
   treeStatus: 'collapsed' | 'expanded' | 'disabled' | 'loading'; // collapsed
   childrenLoaded: boolean; // false
@@ -306,7 +303,10 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
       toValue: false
     }, {
       fromPath: ['relationships', 'system.boardcolumns', 'data'],
-      toPath: ['columnsId']
+      toPath: ['columnIds'],
+      toFunction: (data) => {
+        return Array.isArray(data) ? data.map(col => col.id) : null;
+      }
     }
 
   ];

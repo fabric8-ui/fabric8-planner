@@ -59,8 +59,8 @@ describe('BoardService :: ', () => {
             )).delay(100)
         );
         boardService.getBoards('')
-            .subscribe((url) => {
-                expect(url).toEqual(
+            .subscribe((resp) => {
+                expect(resp).toEqual(
                     boardsResponse
                 );
                 done();
