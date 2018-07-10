@@ -303,6 +303,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     }
     await this.titleInput.enterText(title);
     await this.titleSaveButton.clickWhenReady();
+    await browser.sleep(2000);
   }
 
   async updateDescription(description: string, append: boolean = false) {
