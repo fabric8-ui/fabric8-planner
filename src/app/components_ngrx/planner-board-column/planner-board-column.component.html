@@ -3,11 +3,7 @@
     <span class="badge">{{ (workItems | async).length }} </span>
     <span class="f8-board-column__header-title">{{ columnName }}</span>
   </div>
-  <div class="f8-board-column__body">
-    <ng-container *ngFor="let workitem of workItems | async">
-      <f8-planner-card
-        [workItem]="workitem"
-      ></f8-planner-card>
-    </ng-container>
+  <div class="f8-board-column__wrapper">
+    <ng-container *ngTemplateOutlet="columnBody"></ng-container>
   </div>
 </div>

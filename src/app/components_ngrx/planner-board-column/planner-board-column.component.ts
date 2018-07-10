@@ -1,6 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { Observable } from 'rxjs';
-import { WorkItemQuery, WorkItemUI } from './../../models/work-item';
+import { Component, Input, TemplateRef } from '@angular/core';
 
 @Component({
   selector: 'f8-planner-column',
@@ -9,12 +7,7 @@ import { WorkItemQuery, WorkItemUI } from './../../models/work-item';
 })
 
 export class PlannerBoardColumnComponent {
-  @Input('workItemIds') set WorkItemIds(ids: string[]) {
-    this.workItems = this.workItemQuery.getWorkItemsWithIds(ids);
-  }
+  @Input() columnBody: TemplateRef<any>;
+  @Input() itemCount: number;
   @Input() columnName: string;
-
-  private workItems: Observable<WorkItemUI[]>;
-
-  constructor(private workItemQuery: WorkItemQuery) {}
 }

@@ -48,12 +48,18 @@
 
 <ng-template #sectionPanel>
   <div class="f8-wi-board" #boardContainer>
-  <ng-container *ngIf="board$ | async as board">
-    <f8-planner-column
-      *ngFor="let column of board.columns | f8SortBy: 'columnOrder'"
-      [workItemIds]="column.workItemIds | async"
-      [columnName]="column.title"
-      class="f8-planner-column"></f8-planner-column>
-  </ng-container>
+    <f8-planner-column class="f8-planner-column" *ngFor="let column of columns"
+      [columnBody]="boardColumnBody"
+      [itemCount]="column.count"
+      [columnName]="column.name">
+      <ng-template #boardColumnBody>
+        <div class="f8-board-column__body"
+          [dragula]="'board-column'"
+          [dragulaModel]="column.workItems"
+          [attr.data-id]="column.id">
+          <f8-planner-card *ngFor="let workitem of column.workItems" [workItem]="workitem"></f8-planner-card>
+        </div>
+      </ng-template>
+    </f8-planner-column>
   </div>
 </ng-template>
