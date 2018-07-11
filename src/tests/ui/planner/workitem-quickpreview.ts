@@ -192,12 +192,13 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   async addLink(link: string, searchWorkItem: string, workItem: string) {
     await this.linksToggleButton.clickWhenReady();
     await this.createLinkButton.clickWhenReady();
+    await this.linkTypeDropdown.untilDisplayed();
     await this.linkTypeDropdown.clickWhenReady();
     await this.linkTypeDropdown.select(link);
     await this.searchWorkItem.enterText(searchWorkItem);
-    await browser.sleep(1000);
+    await this.workItemDropdown.untilDisplayed();
     await this.workItemDropdown.select(workItem);
-    await this.linkButton.isPresent();
+    await this.linkButton.isDisplayed();
     await this.linkButton.clickWhenReady();
   }
 
