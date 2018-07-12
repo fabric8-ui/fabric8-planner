@@ -186,6 +186,7 @@ describe('Planner Smoke Tests:', () => {
   it('Create a work item and Open detail page', async () => {
     let workitem = { title : 'new detail workItem', type: 'Scenario'};
     await planner.quickAdd.addAndOpenWorkItem(workitem);
+    await planner.waitUntilUrlContains('detail');
     await planner.detailPage.titleInput.untilTextIsPresentInValue('new detail workItem');
     await planner.detailPage.closeButton.ready();
     expect(await browser.getCurrentUrl()).toContain('detail');
