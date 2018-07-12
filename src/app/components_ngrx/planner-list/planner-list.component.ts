@@ -154,8 +154,12 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         this.uiLockedSidebar = false;
         this.uiLockedList = true;
         let exp = this.filterService.queryToJson(queryParams.q);
-
-        if (!queryParams.hasOwnProperty('showCompleted') && !queryParams.showCompleted) {
+        let state = exp.$AND.filter(obj => {
+          if (obj.state !== undefined) {
+            return obj.state.$EQ === 'closed';
+          }
+        });
+        if (!queryParams.hasOwnProperty('showCompleted') && !queryParams.showCompleted && state.length === 0) {
           this.showCompleted = false;
           // not closed state
           // TODO remove hard coded states and
