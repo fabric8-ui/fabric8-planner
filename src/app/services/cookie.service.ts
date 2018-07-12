@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 export class CookieService {
   // Increase this by one everytime
   // a change is made in the table columns
-  datatableColumnVersion = 3;
+  datatableColumnVersion = 4;
 
   constructor() { }
 

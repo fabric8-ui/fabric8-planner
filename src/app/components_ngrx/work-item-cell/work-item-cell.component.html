@@ -53,8 +53,11 @@
 </div>
 
 <!-- Iteration -->
-<span id="table-iteration" *ngIf="col === 'iteration'">
-  {{ (row.iterationObs | async)?.parentPath === '/' ? 'NA' : (row.iterationObs | async)?.name | truncate : 18 }}
+<span id="table-iteration" 
+  *ngIf="col === 'iteration'"
+  tooltip="{{ (row.iterationObs | async)?.parentPath === '/' ? 'NA' : (row.iterationObs | async)?.name }}"
+  placement="left">
+  {{ (row.iterationObs | async)?.parentPath === '/' ? 'NA' : (row.iterationObs | async)?.name | truncate : 12 }}
 </span>
 
 <!-- Creator -->

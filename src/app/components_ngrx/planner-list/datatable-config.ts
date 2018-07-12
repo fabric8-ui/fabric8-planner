@@ -40,8 +40,8 @@ export const datatableColumn = [{
   display: true,
   showInDisplay: true,
   maxWidth: undefined,
-  minWidth: 300,
-  width: 300
+  minWidth: 200,
+  width: 220
 }, {
   name: 'State',
   prop: 'state',
@@ -63,7 +63,7 @@ export const datatableColumn = [{
   showInDisplay: true,
   minWidth: undefined,
   maxWidth: undefined,
-  width: 165
+  width: 120
 }, {
   name: 'Creator',
   prop: 'creator',
