@@ -64,7 +64,6 @@ describe('Iteration test', () => {
     await planner.sidePanel.openIterationDialogue();
     await planner.iteration.editIteration(updateIteration);
     await planner.workItemList.workItem(workItemTitle1).iteration.untilTextIsPresent(updateIteration);
-    await planner.quickPreview.notificationToast.untilCount(1);
     expect(await planner.workItemList.iterationText(workItemTitle1)).toBe(updateIteration);
   });
 
