@@ -195,7 +195,6 @@ describe('Work Item datatable list: ', () => {
     expect(await planner.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(newWorkItem.title);
     await planner.quickPreview.changeStateTo('closed');
-    await planner.quickPreview.notificationToast.untilHidden();
     await planner.quickPreview.close();
     await planner.header.selectFilter('State', 'closed');
     await planner.workItemList.overlay.untilHidden();
