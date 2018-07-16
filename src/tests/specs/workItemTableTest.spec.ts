@@ -17,6 +17,7 @@ describe('Work Item datatable list: ', () => {
 
   beforeEach(async () => {
     await planner.ready();
+    await planner.workItemList.overlay.untilHidden();
   });
 
   afterEach(async () => {

@@ -86,6 +86,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     this.$('.typeahead-long.dropdown-menu'),
     'select link type dropdown'
   );
+  workItemList = new ui.BaseElementArray(this.$$('.dropdown.open .dropdown-menu.dropdown-ul li'), 'work item list');
   searchWorkItem = new ui.TextInput(this.linksDiv.$('#workitem-link-search'), 'Workitem search');
   workItemDropdown = new ui.Dropdown(
     this.searchWorkItem,
@@ -190,15 +191,16 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async addLink(link: string, searchWorkItem: string, workItem: string) {
+    await this.linksDiv.untilTextIsPresent('Links');
     await this.linksToggleButton.clickWhenReady();
+    await this.createLinkButton.untilTextIsPresent('Create Link');
     await this.createLinkButton.clickWhenReady();
-    await this.linkTypeDropdown.untilDisplayed();
     await this.linkTypeDropdown.clickWhenReady();
     await this.linkTypeDropdown.select(link);
     await this.searchWorkItem.enterText(searchWorkItem);
-    await this.workItemDropdown.untilDisplayed();
+    await this.workItemList.untilCount(1);
     await this.workItemDropdown.select(workItem);
-    await this.linkButton.isDisplayed();
+    await this.linkButton.untilTextIsPresent('Link');
     await this.linkButton.clickWhenReady();
   }
 

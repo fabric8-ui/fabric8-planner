@@ -17,6 +17,7 @@ describe('Planner Smoke Tests:', () => {
 
   beforeEach(async () => {
     await planner.ready();
+    await planner.workItemList.overlay.untilHidden();
   });
 
   afterEach(async () => {

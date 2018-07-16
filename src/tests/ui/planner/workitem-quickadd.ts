@@ -23,6 +23,7 @@ export class WorkItemQuickAdd extends ui.BaseElement {
   }
 
   async addWorkItem({ title, description = '', type = '' }: WorkItem) {
+    await this.ready();
     await this.workItemTypeDropdown.clickWhenReady();
     await this.workItemTypeDropdown.select(type);
     await this.titleTextInput.ready();
@@ -36,6 +37,7 @@ export class WorkItemQuickAdd extends ui.BaseElement {
   }
 
   async workItemTypes(): Promise<string[]> {
+    await this.ready();
     await this.workItemTypeDropdown.clickWhenReady();
     let array = await this.workItemTypeDropdown.menu.getTextWhenReady();
     // Split array, remove invalid entries and trim the result
@@ -48,6 +50,7 @@ export class WorkItemQuickAdd extends ui.BaseElement {
   }
 
   async addAndOpenWorkItem({ title, description = '', type = '' }: WorkItem) {
+    await this.ready();
     await this.workItemTypeDropdown.clickWhenReady();
     await this.workItemTypeDropdown.select(type);
     await this.titleTextInput.enterText(title);

@@ -25,7 +25,11 @@ describe('Planner Collaborator Tests:', () => {
     planner1 = new PlannerPage(URL);
     await browser.get(URL);
     await planner.waitUntilUrlContains('typegroup');
+  });
+
+  beforeEach(async () => {
     await planner.ready();
+    await planner.workItemList.overlay.untilHidden();
   });
 
   it('Non Collaborator should not be able edit a workItem title', async () => {

@@ -75,6 +75,7 @@ export class WorkItemList extends BaseElement {
   }
 
   async openDetailPage(title: string) {
+    await this.overlay.untilHidden();
     await browser.actions().mouseMove(this.workItem(title)).perform();
     await this.workItem(title).clickDetailIcon();
   }
