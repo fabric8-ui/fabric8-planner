@@ -34,7 +34,8 @@ import { WorkItemQuery } from './../../models/work-item';
         WorkItemQuery,
         AreaQuery,
         SpaceQuery,
-        GroupTypeQuery
+        GroupTypeQuery,
+        BoardService
     ],
     imports: [
         CommonModule,
