@@ -1,6 +1,7 @@
 import { $, by, ElementFinder } from 'protractor';
 import * as support from '../../support';
 import  *  as ui from './../../ui';
+import { WorkItemList } from './workitem-list';
 
 export class SidePanel extends ui.BaseElement {
   showHideSidePanelButton = new ui.Button(this.$('.f8-sidepanel--toggle'), 'show/hide side panel button');
@@ -17,6 +18,10 @@ export class SidePanel extends ui.BaseElement {
   customQuery = new ui.BaseElement(this.$('custom-query'), 'My filters');
   customQueryList = new ui.BaseElementArray(this.$$('.f8-cf__list-type'), ' My filters list');
   deleteCustomQuery = new ui.Clickable(this.element(by.cssContainingText('.f8-cf-kebab.dropdown.open ul>li', 'Delete')), 'Custom query Dropdown Delete Option');
+  infotipIconExperience = new ui.Clickable(this.$('.infotip-group-type-44795662-db7a-44f7-a4e7-c6d41d3eff27'));
+  infotipIconRequirement = new ui.Clickable(this.$('.infotip-group-type-6d254168-6937-447f-a093-0c38404bd072'));
+  infotipPopover =  new ui.BaseElementArray(this.$$('.pficon-close'));
+  workItemList = new WorkItemList($('alm-work-item-list'));
 
   constructor(ele: ElementFinder, name: string = 'WorkItem List page Side Panel') {
     super(ele, name);
@@ -35,14 +40,17 @@ export class SidePanel extends ui.BaseElement {
 
   async clickScenarios() {
     await this.scenarioButton.clickWhenReady();
+    await this.workItemList.overlay.untilHidden();
   }
 
   async clickExperience() {
     await this.experienceButton.clickWhenReady();
+    await this.workItemList.overlay.untilHidden();
   }
 
   async clickRequirement() {
     await this.requirementsButton.clickWhenReady();
+    await this.workItemList.overlay.untilHidden();
   }
 
   async createNewIteration() {

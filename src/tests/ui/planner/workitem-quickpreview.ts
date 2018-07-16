@@ -13,7 +13,8 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   stateDiv = new ui.BaseElement(this.$('#wi-preview-state'), ' State toggle');
   iterationDropdownCloseButton = new ui.Button(this.$('.iteration-dropdown .close-pointer'), 'Iteration dropdown close button');
   areaDropdownCloseButton = new ui.Button(this.$('.area-dropdown .close-pointer'), 'Area dropdown close button');
-  stateDropdown = new ui.Dropdown(this.$('.dropdown-toggle'), this.$('#wi-status-dropdown'), 'WorkItem State dropdown');
+  stateToggle = new ui.BaseElement(this.$('.dropdown-toggle'), 'State dropdown toggle');
+  stateDropdown = new ui.Dropdown(this.stateToggle, this.$('#wi-status-dropdown'), 'WorkItem State dropdown');
   fullDetailButton = new ui.Clickable(this.$('span.dib'), 'View full details button');
   titleDiv = new ui.BaseElement(this.$('#wi-title-div'), 'Workitem title div');
   titleInput = new ui.TextInput(this.titleDiv.$('textarea'), 'WorkItem Title Input');
@@ -108,8 +109,13 @@ export class WorkItemQuickPreview extends ui.BaseElement {
 
   /* UI elements for the Agile template of the workitem preview */
   effortTextArea = new ui.TextInput(this.$('[placeholder="Effort"]'), 'effort textarea');
-  workItemsGroup = new ui.Clickable(this.element(by.cssContainingText('alm-dynamic-field .f8-dynamic-control', ' Work Items ')),'Side panel WorkItem button');
+  workItemsGroup = new ui.Clickable(this.element(by.cssContainingText('alm-dynamic-field .f8-dynamic-control', ' Work Items ')), 'Side panel WorkItem button');
   businessValue = new ui.TextInput(this.$('textarea[placeholder="Business Value"]'), ' Business value textarea');
+  storyPoints = new ui.TextInput(this.$('textarea[placeholder="Storypoints"]'), ' Storypoints textarea');
+  dynamicFieldDiv = new ui.BaseElement(this.element(by.xpath("//textarea[@placeholder='Storypoints']/ancestor::f8-inlineinput")));
+  dynamicFieldSaveButton =  new ui.Button(
+    this.dynamicFieldDiv.$('.inlineinput-btn-save'),
+    'Dynamic Fields Save Button');
 
   constructor(ele: ElementFinder, name: string = '') {
     super(ele, name);
@@ -149,7 +155,6 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.iterationDropdown.clickWhenReady();
     await this.iterationDropdown.select(iterationTitle);
     await this.iterationDropdownCloseButton.clickWhenReady();
-    await this.notificationToast.untilCount(1);
   }
 
   async typeaHeadSearch(iterationTitle: string) {
@@ -201,7 +206,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.linkButton.clickWhenReady();
   }
 
-  async removeLink(workItem) {
+  async removeLink(workItem: string) {
     await new ui.BaseElement(this.element(by.xpath("//li[contains(@class,'f8-link__list-item')][.//span[text()='" + workItem + "']]")).$('.pficon-close')).clickWhenReady();
   }
 
@@ -219,17 +224,8 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.loadingAnimation.untilCount(0);
   }
 
-  // Try to click on the close button, if it fails, wait for notification to disappear
   async close() {
-    while (true) {
-      try {
-        await this.closeButton.clickWhenReady();
-        break;
-      } catch (e) {
-        await browser.sleep(1000);
-        await this.notificationToast.untilCount(0);
-      }
-    }
+    await this.closeButton.clickWhenReady();
   }
 
   async getArea() {
@@ -303,6 +299,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     }
     await this.titleInput.enterText(title);
     await this.titleSaveButton.clickWhenReady();
+    await this.titleInput.untilTextIsPresentInValue(title);
   }
 
   async updateDescription(description: string, append: boolean = false) {
@@ -341,6 +338,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   async changeStateTo(state: string) {
     await this.stateDropdown.clickWhenReady();
     await this.stateDropdown.select(state);
+    await this.stateToggle.untilTextIsPresent(state);
   }
 
   /* Agile Template */
@@ -352,5 +350,13 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   async updateBusinessValue(businessValue: string) {
     await this.businessValue.enterText(businessValue);
     await this.businessValue.sendKeys(Key.ENTER);
+  }
+
+  async isDynamicFieldSaveButtonDisplayed() {
+    try {
+      return await this.dynamicFieldSaveButton.isDisplayed();
+    } catch (exception) {
+      return false;
+    }
   }
 }
