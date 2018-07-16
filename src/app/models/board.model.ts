@@ -16,6 +16,7 @@ import {
     modelService,
     switchModel
 } from './common.model';
+import { WorkItemQuery, WorkItemUI } from './work-item';
 
 export class BoardModelData {
     id: string;
@@ -68,7 +69,7 @@ export class BoardModelUI {
         title: string;
         columnOrder: 0;
         type: string;
-        workItemIds?: Observable<string[]>
+        workItems?: Observable<WorkItemUI[]>
     }[];
 }
 
@@ -128,15 +129,20 @@ export class BoardQuery {
     private boardSource = this.store.select(this.boards);
 
     constructor(private store: Store<AppState>,
-                private columnWorkItemQuery: ColumnWorkItemQuery) {}
+                private columnWorkItemQuery: ColumnWorkItemQuery,
+                private workItemQuery: WorkItemQuery) {}
 
     getBoardById(id: string): Observable<BoardModelUI> {
-        return this.boardSource.select(boards => boards[id])
+        return this.boardSource.filter(boards => !!boards.length)
+            .map(boards => boards[id])
             .map(board => {
                 board.columns.map(col => {
                     return {
                         ...col,
-                        workItemIds: this.columnWorkItemQuery.getWorkItemIdsByColumnId(col.id)
+                        workItems: this.columnWorkItemQuery.getWorkItemIdsByColumnId(col.id)
+                            .map(ids => {
+                                return this.workItemQuery.getWorkItemsWithIds(ids);
+                            })
                     };
                 });
                 return board;

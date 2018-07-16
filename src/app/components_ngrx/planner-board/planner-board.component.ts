@@ -156,7 +156,6 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
           .filter(params => params.hasOwnProperty('boardContextId'))
           .map(params => params.boardContextId)
           .subscribe(contextId => {
-            console.log(contextId);
             this.board$ = this.boardQuery.getBoardById(contextId);
             // Fetching work item
             // Dispatch action to fetch work items per lane for this context ID
