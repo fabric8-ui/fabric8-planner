@@ -23,8 +23,8 @@ export const ColumnWorkItemReducer: ActionReducer<ColumnWorkItemState> = (state 
       });
       return {...cwState};
     }
-    default: {
-      return state;
+    default:  {
+      return {...state};
     }
   }
 };

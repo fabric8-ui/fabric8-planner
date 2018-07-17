@@ -12,19 +12,19 @@ describe('ColumnWorkitemReducer: ', () => {
         id: '1',
         title: 'Work Item 2',
         number: '2',
-        columnIds: [ '0000-000-05', '0000-000-06']
+        columnsId: [ '0000-000-05', '0000-000-06']
       },
       {
         id: '2',
         title: 'Work Item 1',
         number: '1',
-        columnIds: ['0000-000-05', '0000-000-07']
+        columnsId: ['0000-000-05', '0000-000-07']
       },
       {
         id: '3',
         title: 'Work Item 1',
         number: '3',
-        columnIds: null
+        columnsId: null
       }
     ] as WorkItemUI[];
 
@@ -46,7 +46,7 @@ describe('ColumnWorkitemReducer: ', () => {
         id: '1',
         title: 'Work Item 1',
         number: '1',
-        columnIds: null
+        columnsId: null
       }
     ] as WorkItemUI[];
 

@@ -31,6 +31,7 @@ import { F8SortByPipeModule } from './../../pipes/sort-by.module';
 
 @NgModule({
   providers: [
+    DragulaService,
     TooltipConfig,
     BoardService,
     CommentQuery,
@@ -46,9 +47,11 @@ import { F8SortByPipeModule } from './../../pipes/sort-by.module';
   ],
   imports: [
     CommonModule,
+    DragulaModule,
     F8SortByPipeModule,
     PlannerBoardRoutingModule,
     PlannerBoardColumnModule,
+    PlannerCardModule,
     PlannerLayoutModule,
     WorkItemPreviewPanelModule,
     SidepanelModule,
