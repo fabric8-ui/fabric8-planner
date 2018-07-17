@@ -1,6 +1,7 @@
 import { GET_SUCCESS, GetSuccess } from '../actions/work-item.actions';
 import { WorkItemUI } from '../models/work-item';
 import { ColumnWorkItemState, InitialColumnWorkItemState  } from '../states/index.state';
+import { GetError } from './../actions/board.actions';
 import { ColumnWorkItemReducer } from './column-workitem.reducer';
 
 
@@ -54,5 +55,11 @@ describe('ColumnWorkitemReducer: ', () => {
 
     expect(state).toEqual(InitialColumnWorkItemState);
 
+  });
+
+  it('should return the state when some other action is dispatched', () => {
+    const action = new GetError();
+    const state = ColumnWorkItemReducer(InitialColumnWorkItemState, action);
+    expect(state).toEqual(InitialColumnWorkItemState);
   });
 });
