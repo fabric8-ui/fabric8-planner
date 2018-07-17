@@ -51,8 +51,8 @@
   <ng-container *ngIf="board$ | async as board">
     <f8-planner-column class="f8-planner-column" *ngFor="let column of board.columns"
       [columnBody]="boardColumnBody"
-      [itemCount]="(column.workItems | async).length"
-      [columnName]="column.name">
+      [itemCount]="(column.workItems | async)?.length"
+      [columnName]="column.title">
       <ng-template #boardColumnBody>
         <div class="f8-board-column__body"
           [dragula]="'board-column'"

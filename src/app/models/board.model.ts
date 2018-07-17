@@ -67,7 +67,7 @@ export class BoardModelUI {
     columns: {
         id: string;
         title: string;
-        columnOrder: 0;
+        columnOrder: number;
         type: string;
         workItems?: Observable<WorkItemUI[]>
     }[];
@@ -133,14 +133,24 @@ export class BoardQuery {
                 private workItemQuery: WorkItemQuery) {}
 
     getBoardById(id: string): Observable<BoardModelUI> {
-        return this.boardSource.filter(boards => !!boards.length)
+        return this.boardSource.filter(boards => !!boards[id])
+            .do((boards) => {
+                console.log('#### - 2 boards', boards);
+            })
             .map(boards => boards[id])
+            .do((board) => {
+                console.log('### - 2.1 - selected board', board);
+            })
             .map(board => {
-                board.columns.map(col => {
+                board.columns = board.columns
+                .map(col => {
                     return {
                         ...col,
                         workItems: this.columnWorkItemQuery.getWorkItemIdsByColumnId(col.id)
-                            .map(ids => {
+                            .do((ids) => {
+                                console.log('### - 3 - columnworkitemids', ids);
+                            })
+                            .flatMap(ids => {
                                 return this.workItemQuery.getWorkItemsWithIds(ids);
                             })
                     };
