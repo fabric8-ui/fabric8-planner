@@ -17,6 +17,22 @@ if [ -e "../jenkins-env" ]; then
   source /tmp/jenkins-env
 fi
 
+prod=true
+# Set prod to false, to run tests on prod-preview
+if [[ "$1" == "--prod-preview" ]]; then
+  prod=false
+fi
+
+if $prod; then
+  FABRIC8_WIT_API_URL="https://api.openshift.io/"
+  USER_NAME="osio-ci-planner-002"
+  BASE_URL='https://openshift.io/'
+else
+  FABRIC8_WIT_API_URL="https://api.prod-preview.openshift.io/"
+  USER_NAME="osio-ci-planner-002-preview"
+  BASE_URL='https://prod-preview.openshift.io'
+fi
+
 # We need to disable selinux for now, XXX
 /usr/sbin/setenforce 0
 
@@ -34,7 +50,7 @@ CID=$(docker run --detach=true \
 # Get all the deps in
 echo "Container name: $CID"
 
-docker exec $CID bash -c 'npm install && cd tests/ && npm install'
+docker exec $CID bash -c 'cd tests'
 
 docker exec -t -e REFRESH_TOKEN=$REFRESH_TOKEN $CID bash -c \
-  "cd tests && WEBDRIVER_VERSION=2.37 DEBUG=true HEADLESS_MODE=true USER_NAME="osio-ci-planner-002" FABRIC8_WIT_API_URL="https://api.openshift.io/" BASE_URL='https://openshift.io/' ./run_e2e_tests.sh"
+  "cd tests && WEBDRIVER_VERSION=2.37 DEBUG=true HEADLESS_MODE=true USER_NAME=$USER_NAME FABRIC8_WIT_API_URL=$FABRIC8_WIT_API_URL BASE_URL=$BASE_URL ./run_e2e_tests.sh"
