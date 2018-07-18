@@ -203,10 +203,12 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.linkTypeDropdown.clickWhenReady();
     await this.linkTypeDropdown.select(link);
     await this.searchWorkItem.enterText(searchWorkItem);
+    await browser.sleep(2000);
     await this.workItemList.untilCount(1);
     await this.workItemDropdown.select(workItem);
     await this.linkButton.untilTextIsPresent('Link');
     await this.linkButton.clickWhenReady();
+    await browser.sleep(2000);
   }
 
   async removeLink(workItem: string) {
