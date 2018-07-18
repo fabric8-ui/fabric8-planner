@@ -20,7 +20,12 @@
         <span>{{ iteration.name }}</span>
       </div>
       <div class="assignee">
-
+        <f8-assignee
+          [showFullName]="false"
+          [truncateAfter]="3"
+          [overlapAvatar]="true"
+          [assignees]="workItem.assigneesObs | async">
+        </f8-assignee>
       </div>
     </div>
     <div class="f8-custom-card-footer">
