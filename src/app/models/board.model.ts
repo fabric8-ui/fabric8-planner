@@ -6,8 +6,10 @@ import { Injectable } from '@angular/core';
 // from external module "@ngrx/store/src/selector" but cannot be named.
 import { createFeatureSelector, createSelector, MemoizedSelector, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { BoardViewState } from '../states/app.state';
-import { AppState } from '../states/index.state';
+import * as WorkItemActions from './../actions/work-item.actions';
+import { FilterService } from './../services/filter.service';
+import { BoardViewState } from './../states/app.state';
+import { AppState } from './../states/index.state';
 import {
   cleanObject,
   CommonSelectorUI,
@@ -16,6 +18,7 @@ import {
   modelService,
   switchModel
 } from './common.model';
+import { SpaceQuery } from './space';
 import { WorkItemQuery, WorkItemUI } from './work-item';
 
 export class BoardModelData {
@@ -129,11 +132,40 @@ export class BoardQuery {
   private boardSource = this.store.select(boardsEntitySelector);
 
   constructor(private store: Store<AppState>,
-        private columnWorkItemQuery: ColumnWorkItemQuery) {}
+        private columnWorkItemQuery: ColumnWorkItemQuery,
+        private spaceQuery: SpaceQuery,
+        private filterService: FilterService) {}
 
   getBoardById(id: string): Observable<BoardModelUI> {
     return this.boardSource.select(id)
       .filter(board => !!board)
+
+      .switchMap(board => Observable.combineLatest(
+        Observable.of(board),
+        this.spaceQuery.getCurrentSpace
+      ))
+      .do(([board, space]) => {
+        // Fetch work item here
+        const spaceQuery = this.filterService.queryBuilder(
+          'space', this.filterService.equal_notation, space.id
+        );
+        const initialQuery = this.filterService.queryJoiner(
+          {}, this.filterService.and_notation, spaceQuery
+        );
+        const boardQuery = this.filterService.queryBuilder(
+          'board.id', this.filterService.equal_notation, board.id
+        );
+        const finalQuery = this.filterService.queryJoiner(
+          initialQuery, this.filterService.and_notation, boardQuery
+        );
+        this.store.dispatch(new WorkItemActions.Get({
+          pageSize: 200,
+          filters: {expression: finalQuery},
+          isShowTree: false
+        }));
+      })
+      .map(([board, space]) => board)
+
       .map(board => {
         return {
           ...board,
