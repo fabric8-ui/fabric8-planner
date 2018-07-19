@@ -635,22 +635,25 @@ export class WorkItemQuery {
     return this.store.select(workItemEntities);
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> fix(workitem): add getWorkItemWithIds query to WorItemQuery
-  getWorkItemsWithIds(ids: string[]): Store<WorkItemUI[]> {
+  getWorkItemsByIds(ids: string[]): Store<WorkItemUI[]> {
     const selector = createSelector(
       workItemEntities,
-      state => ids.map(i => this.resolveWorkItem(state[i]))
+      state => {
+        return ids.map(i => state[i])
+          // Sometime
+          .filter(item => !!item)
+          .map(item => this.resolveWorkItem(item))
+          .sort((a, b) => a.order - b.order);
+      }
     );
     return this.store.select(selector);
-<<<<<<< HEAD
-=======
-  getWorkitemsByIds(ids: string[]): Observable<WorkItemUI[]> {
-    return Observable.combineLatest(ids.map(id => this.getWorkItem(id)));
->>>>>>> fix(board): add mapper in workitem and Board
-=======
->>>>>>> fix(workitem): add getWorkItemWithIds query to WorItemQuery
+  }
+
+  getWorkItemWithId(id: string): Observable<WorkItemUI> {
+    const selector = createSelector(
+      workItemEntities,
+      state => this.resolveWorkItem(state[id])
+    );
+    return this.store.select(selector);
   }
 }

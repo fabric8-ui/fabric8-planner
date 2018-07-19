@@ -13,10 +13,9 @@ export const ColumnWorkItemReducer: ActionReducer<ColumnWorkItemState> = (state 
         if (item.columnIds !== null) {
           item.columnIds.forEach(col => {
             if (cwState.hasOwnProperty(col)) {
-              cwState[col] = [...cwState[col], item.id];
+              cwState[col].add(item.id);
             } else {
-              cwState[col] = [];
-              cwState[col] = [...cwState[col], item.id];
+              cwState[col] = new Set([item.id]);
             }
           });
         }

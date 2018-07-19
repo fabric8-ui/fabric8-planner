@@ -174,6 +174,7 @@ export class BoardQuery {
               return {
                 ...col,
                 workItems: this.columnWorkItemQuery.getWorkItemsByColumnId(col.id)
+                            .filter(d => !!d.length)
               };
             })
         };
@@ -197,7 +198,7 @@ export class ColumnWorkItemQuery {
 
   getWorkItemsByColumnId(id: string): Observable<WorkItemUI[]> {
     return this.columnWorkitemSource.select(state => state[id])
-      .map(items => items || [])
-      .flatMap(ids => this.workItemQuery.getWorkItemsWithIds(ids));
+      .map(items => items || new Set<string>([]))
+      .flatMap(ids => this.workItemQuery.getWorkItemsByIds(Array.from(ids)));
   }
 }
