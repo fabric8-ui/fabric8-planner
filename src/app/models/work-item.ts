@@ -410,6 +410,15 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
         );
       }.bind(this)
     }, {
+      toPath: ['relationships', 'system.boardcolumns', 'data'],
+      fromPath: ['columnIds'],
+      toFunction: (data) => {
+        return [{
+          id: data,
+          type: 'boardcolumn'
+        }];
+      }
+    }, {
       fromPath: ['hasChildren'],
       toPath: ['relationships', 'children', 'meta', 'hasChildren']
     }, {

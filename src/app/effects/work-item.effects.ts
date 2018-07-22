@@ -6,13 +6,15 @@ import { Notification, Notifications, NotificationType } from 'ngx-base';
 import { Observable } from 'rxjs';
 import { cleanObject } from '../models/common.model';
 import { FilterService } from '../services/filter.service';
+import * as ColumnWorkItemActions from './../actions/column-workitem.action';
 import * as WorkItemActions from './../actions/work-item.actions';
 import { WorkItem, WorkItemMapper, WorkItemResolver, WorkItemService, WorkItemUI } from './../models/work-item';
 import { WorkItemService as WIService } from './../services/work-item.service';
 import { AppState } from './../states/app.state';
 import * as util from './work-item-utils';
 
-export type Action = WorkItemActions.All;
+
+export type Action = WorkItemActions.All | ColumnWorkItemActions.All;
 
 @Injectable()
 export class WorkItemEffects {
@@ -282,7 +284,7 @@ export class WorkItemEffects {
 
 
     @Effect() Reorder: Observable<Action> = this.actions$
-      .ofType<WorkItemActions.Reoder>(WorkItemActions.REORDER)
+      .ofType<WorkItemActions.Reorder>(WorkItemActions.REORDER)
       .withLatestFrom(this.store.select('planner'))
       .map(([action, state]) => {
         return {
@@ -314,4 +316,64 @@ export class WorkItemEffects {
             return Observable.of(new WorkItemActions.UpdateError());
           });
       });
+
+    @Effect() updateWorkItemFromBoard: Observable<Action> = this.actions$
+    .ofType<ColumnWorkItemActions.Update>(ColumnWorkItemActions.UPDATE)
+    .withLatestFrom(this.store.select('planner'))
+    .map(([action, state]) => {
+      return {
+        payload: action.payload,
+        state: state
+      };
+    })
+    .switchMap(wp => {
+      console.log('#### - 2');
+      // This order must be followed
+        // because baseType is needed for dynamic fields
+        const dynamicPayload = this.workItemMapper.toDyanmicServiceModel(wp.payload.workItem);
+        const staticPayload = this.workItemMapper.toServiceModel(wp.payload.workItem);
+
+        // We don't update work item type
+        // So we remove it from the payload
+        const payload = cleanObject({
+          ...staticPayload,
+          ...{ attributes: {
+               ...staticPayload.attributes,
+               ...dynamicPayload.attributes
+          }}
+        }, ['baseType']);
+        const state = wp.state;
+        return this.workItemService.update(payload)
+        .switchMap((workitem) => {
+          console.log('#### - 3');
+          let reorderPayload = wp.payload.reorder;
+          reorderPayload.workitem.version = workitem.attributes['version'];
+          const workItem = this.workItemMapper.toServiceModel(reorderPayload.workitem);
+          return this.workItemService.reOrderWorkItem(workItem, reorderPayload.destinationWorkitemID, reorderPayload.direction)
+          .map(w => {
+            console.log('#### - 4');
+            return this.resolveWorkItems([w], wp.state)[0];
+          });
+        })
+        .switchMap((w: WorkItemUI) => {
+          return [
+            new WorkItemActions.UpdateSuccess(w),
+            new ColumnWorkItemActions.UpdateSuccess({
+              workItemId: w.id,
+              prevColumnId: wp.payload.prevColumnId,
+              newColumnIds: w.columnIds
+            })];
+        })
+        .catch((e) => {
+          try {
+            this.notifications.message({
+              message: `Problem loading workitems.`,
+              type: NotificationType.DANGER
+            } as Notification);
+          } catch (e) {
+            console.log('Problem loading workitems.');
+          }
+          return Observable.of(new WorkItemActions.UpdateError());
+        });
+    });
 }

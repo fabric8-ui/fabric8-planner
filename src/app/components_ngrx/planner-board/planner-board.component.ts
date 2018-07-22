@@ -13,8 +13,11 @@ import { sortBy } from 'lodash';
 import { DragulaService } from 'ng2-dragula';
 import { Subject } from 'rxjs';
 import { BoardQuery } from '../../models/board.model';
+import { cleanObject } from '../../models/common.model';
+import { WorkItemQuery, WorkItemUI } from '../../models/work-item';
 import { AppState } from '../../states/app.state';
 import * as BoardActions from './../../actions/board.actions';
+import * as ColumnWorkItemAction from './../../actions/column-workitem.action';
 import { GroupTypeQuery, GroupTypeUI } from './../../models/group-types.model';
 import { IterationQuery } from './../../models/iteration.model';
 import { SpaceQuery } from './../../models/space';
@@ -42,9 +45,12 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
       private iterationQuery: IterationQuery,
       private boardQuery: BoardQuery,
       private route: ActivatedRoute,
-      private router: Router
+      private store: Store<AppState>,
+      private router: Router,
+      private workItemQuery: WorkItemQuery
     ) {
       this.dragulaService.drop.asObservable().takeUntil(this.destroy$).subscribe((value) => {
+        console.log(value, '#### - 0');
         this.onDrop(value.slice(1));
       });
     }
@@ -189,26 +195,37 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
     }
     onDrop(args) {
       const [el, target, source, sibling] = args;
-      let direction;
-      let destinationWorkItemID;
+      let direction: string;
+      let destinationWorkItemID: string;
       if (sibling === null && el.previousElementSibling !== null) {
         direction = 'below';
         destinationWorkItemID = el.previousElementSibling.children[0].getAttribute('data-id');
-        console.log(el.previousElementSibling, '####-1');
       } else if (sibling !== null) {
         direction = 'above';
         destinationWorkItemID = sibling.children[0].getAttribute('data-id');
       } else if (sibling === null && el.previousElementSibling === null) {
         // no reorder action dispatch only update action will dispatch
       }
-      console.log(el.previousElementSibling, '####-1');
-      const payload = {
-        workItem: el.children[0].getAttribute('data-id'),
-        destinationWorkItemID: destinationWorkItemID,
-        direction: direction
-      };
-      console.log(el.children[0].getAttribute('data-id'), '####-34');
-      console.log(destinationWorkItemID, '####-35');
-      console.log(direction, '####-36');
+      this.workItemQuery.getWorkItemWithId(el.children[0].getAttribute('data-id')).take(1).subscribe((workItem: WorkItemUI) => {
+        console.log('#### -1', target.getAttribute('data-id'), source.getAttribute('data-id'));
+        let workitem = {} as WorkItemUI;
+        workitem['version'] = workItem.version;
+        workitem['link'] = workItem.link;
+        workitem['id'] = workItem.id;
+        workitem['type'] = workItem.type;
+        const payload = {
+          workitem: workitem,
+          destinationWorkitemID: destinationWorkItemID,
+          direction: direction
+        };
+        workitem.columnIds = target.getAttribute('data-id');
+        this.store.dispatch(new ColumnWorkItemAction.Update(
+          {
+            workItem: workitem,
+            reorder: payload,
+            prevColumnId: source.getAttribute('data-id')
+          }
+        ));
+      });
     }
 }
