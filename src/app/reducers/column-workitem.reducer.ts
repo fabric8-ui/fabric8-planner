@@ -25,10 +25,16 @@ export const ColumnWorkItemReducer: ActionReducer<ColumnWorkItemState> = (state 
     }
     case ColumnWorkItemActions.UPDATE_SUCCESS: {
       const cwState = {...state};
+      console.log('#### -- 1', cwState);
       cwState[action.payload.prevColumnId].delete(action.payload.workItemId);
-      action.payload.newColumnIds.forEach(id => {
-        cwState[id].add(action.payload.workItemId);
+      action.payload.newColumnIds.forEach(col => {
+        if (cwState.hasOwnProperty(col)) {
+          cwState[col].add(action.payload.workItemId);
+        } else {
+          cwState[col] = new Set([action.payload.workItemId]);
+        }
       });
+      console.log('#### -- 2', cwState);
       return cwState;
     }
     default:  {

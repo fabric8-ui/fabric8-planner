@@ -195,7 +195,7 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
     }
     onDrop(args) {
       const [el, target, source, sibling] = args;
-      let direction: string;
+      let direction: string | null;
       let destinationWorkItemID: string;
       if (sibling === null && el.previousElementSibling !== null) {
         direction = 'below';
@@ -205,6 +205,7 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
         destinationWorkItemID = sibling.children[0].getAttribute('data-id');
       } else if (sibling === null && el.previousElementSibling === null) {
         // no reorder action dispatch only update action will dispatch
+        direction = null;
       }
       this.workItemQuery.getWorkItemWithId(el.children[0].getAttribute('data-id')).take(1).subscribe((workItem: WorkItemUI) => {
         console.log('#### -1', target.getAttribute('data-id'), source.getAttribute('data-id'));

@@ -349,20 +349,27 @@ export class WorkItemEffects {
           let reorderPayload = wp.payload.reorder;
           reorderPayload.workitem.version = workitem.attributes['version'];
           const workItem = this.workItemMapper.toServiceModel(reorderPayload.workitem);
-          return this.workItemService.reOrderWorkItem(workItem, reorderPayload.destinationWorkitemID, reorderPayload.direction)
-          .map(w => {
-            console.log('#### - 4');
-            return this.resolveWorkItems([w], wp.state)[0];
-          });
+          return reorderPayload.direction ?
+            this.workItemService.reOrderWorkItem(workItem, reorderPayload.destinationWorkitemID, reorderPayload.direction) :
+            Observable.of(workitem);
+        })
+        .map(w => {
+          console.log('#### - 4');
+          let wi = this.resolveWorkItems([w], wp.state)[0];
+          console.log('#### - 4.1');
+          return wi;
+
         })
         .switchMap((w: WorkItemUI) => {
+          console.log('#### - 5', w);
           return [
             new WorkItemActions.UpdateSuccess(w),
             new ColumnWorkItemActions.UpdateSuccess({
               workItemId: w.id,
               prevColumnId: wp.payload.prevColumnId,
               newColumnIds: w.columnIds
-            })];
+            })
+          ];
         })
         .catch((e) => {
           try {
