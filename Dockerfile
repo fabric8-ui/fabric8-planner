@@ -26,7 +26,7 @@ RUN rpm -U http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-relea
 
 RUN yum -y update && \
     yum install -y bzip2 git epel-release libappindicator \
-      tar java-1.8.0-openjdk wget unzip which gcc-c++ \
+      java-1.8.0-openjdk wget unzip which gcc-c++ \
       yum -y clean all
 
 RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
