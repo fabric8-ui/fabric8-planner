@@ -12,26 +12,26 @@ describe('ColumnWorkitemReducer: ', () => {
         id: '1',
         title: 'Work Item 2',
         number: '2',
-        columnsId: [ '0000-000-05', '0000-000-06']
+        columnIds: [ '0000-000-05', '0000-000-06']
       },
       {
         id: '2',
         title: 'Work Item 1',
         number: '1',
-        columnsId: ['0000-000-05', '0000-000-07']
+        columnIds: ['0000-000-05', '0000-000-07']
       },
       {
         id: '3',
         title: 'Work Item 1',
         number: '3',
-        columnsId: null
+        columnIds: null
       }
     ] as WorkItemUI[];
 
     const columWorkItemState: ColumnWorkItemState = {
-      '0000-000-05': ['1', '2'],
-      '0000-000-06': ['1'],
-      '0000-000-07': ['2']
+      '0000-000-05': new Set(['1', '2']),
+      '0000-000-06': new Set(['1']),
+      '0000-000-07': new Set(['2'])
     };
 
     const action = new GetSuccess(workitems);
@@ -46,7 +46,7 @@ describe('ColumnWorkitemReducer: ', () => {
         id: '1',
         title: 'Work Item 1',
         number: '1',
-        columnsId: null
+        columnIds: null
       }
     ] as WorkItemUI[];
 
