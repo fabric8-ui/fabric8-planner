@@ -174,7 +174,6 @@ export class BoardQuery {
               return {
                 ...col,
                 workItems: this.columnWorkItemQuery.getWorkItemsByColumnId(col.id)
-                            .filter(d => !!d.length)
               };
             })
         };

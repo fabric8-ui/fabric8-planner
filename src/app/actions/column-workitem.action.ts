@@ -48,6 +48,17 @@ export class UpdateSuccess implements Action {
 }
 
 export class UpdateError implements Action {
+  payload: {
+    prevColumnId: string,
+    newColumnIds: string[]
+  };
+
+  constructor(payload: {
+    prevColumnId: string,
+    newColumnIds: string[]
+  }) {
+    this.payload = payload;
+  }
   readonly type = UPDATE_ERROR;
 }
 

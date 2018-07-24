@@ -375,7 +375,12 @@ export class WorkItemEffects {
           } catch (e) {
             console.log('Problem loading workitems.');
           }
-          return Observable.of(new WorkItemActions.UpdateError());
+          return Observable.of(
+            new ColumnWorkItemActions.UpdateError({
+              prevColumnId: wp.payload.prevColumnId,
+              newColumnIds: wp.payload.workItem.columnIds
+            })
+          );
         });
     });
 }
