@@ -56,7 +56,6 @@
       <ng-template #boardColumnBody>
         <div class="f8-board-column__body"
           [dragula]="'board-column'"
-          [dragulaModel]="column.workItems | async"
           [attr.data-id]="column.id">
           <f8-planner-card *ngFor="let workitem of column.workItems | async" [workItem]="workitem"></f8-planner-card>
         </div>

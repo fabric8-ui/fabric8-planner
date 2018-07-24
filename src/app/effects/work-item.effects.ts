@@ -327,8 +327,7 @@ export class WorkItemEffects {
       };
     })
     .switchMap(wp => {
-      console.log('#### - 2');
-      // This order must be followed
+        // This order must be followed
         // because baseType is needed for dynamic fields
         const dynamicPayload = this.workItemMapper.toDyanmicServiceModel(wp.payload.workItem);
         const staticPayload = this.workItemMapper.toServiceModel(wp.payload.workItem);
@@ -345,7 +344,6 @@ export class WorkItemEffects {
         const state = wp.state;
         return this.workItemService.update(payload)
         .switchMap((workitem) => {
-          console.log('#### - 3');
           let reorderPayload = wp.payload.reorder;
           reorderPayload.workitem.version = workitem.attributes['version'];
           const workItem = this.workItemMapper.toServiceModel(reorderPayload.workitem);
@@ -354,21 +352,18 @@ export class WorkItemEffects {
             Observable.of(workitem);
         })
         .map(w => {
-          console.log('#### - 4');
           let wi = this.resolveWorkItems([w], wp.state)[0];
-          console.log('#### - 4.1');
           return wi;
 
         })
         .switchMap((w: WorkItemUI) => {
-          console.log('#### - 5', w);
           return [
+            new WorkItemActions.UpdateSuccess(w),
             new ColumnWorkItemActions.UpdateSuccess({
               workItemId: w.id,
               prevColumnId: wp.payload.prevColumnId,
               newColumnIds: w.columnIds
-            }),
-            new WorkItemActions.UpdateSuccess(w)
+            })
           ];
         })
         .catch((e) => {

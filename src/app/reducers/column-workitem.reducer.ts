@@ -25,7 +25,6 @@ export const ColumnWorkItemReducer: ActionReducer<ColumnWorkItemState> = (state 
     }
     case ColumnWorkItemActions.UPDATE_SUCCESS: {
       const cwState = {...state};
-      console.log('#### -- 1', cwState);
       cwState[action.payload.prevColumnId] =
         cwState[action.payload.prevColumnId]
           .filter(id => id !== action.payload.workItemId) ;
@@ -36,7 +35,6 @@ export const ColumnWorkItemReducer: ActionReducer<ColumnWorkItemState> = (state 
           cwState[col] = [action.payload.workItemId];
         }
       });
-      console.log('#### -- 2', cwState);
       return {...cwState};
     }
     default:  {

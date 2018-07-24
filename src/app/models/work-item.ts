@@ -414,10 +414,12 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
       fromPath: ['columnIds'],
       toFunction: (data) => {
         if (!data) {return null; }
-        return [{
-          id: data,
+        return data.map((id) => {
+          return {
+          id: id,
           type: 'boardcolumn'
-        }];
+          };
+        });
       }
     }, {
       fromPath: ['hasChildren'],
