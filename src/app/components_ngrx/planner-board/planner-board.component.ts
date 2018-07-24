@@ -21,6 +21,8 @@ import * as ColumnWorkItemAction from './../../actions/column-workitem.action';
 import { GroupTypeQuery, GroupTypeUI } from './../../models/group-types.model';
 import { IterationQuery } from './../../models/iteration.model';
 import { SpaceQuery } from './../../models/space';
+import { WorkItemPreviewPanelComponent } from './../work-item-preview-panel/work-item-preview-panel.component';
+
 
 @Component({
     selector: 'planner-board',
@@ -29,6 +31,8 @@ import { SpaceQuery } from './../../models/space';
 })
 export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestroy {
     @ViewChild('boardContainer') boardContainer: ElementRef;
+    @ViewChild('quickPreview') quickPreview: WorkItemPreviewPanelComponent;
+
 
     private uiLockedSidebar: boolean = false;
     private sidePanelOpen: boolean = true;
@@ -125,6 +129,11 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
         this.sidePanelOpen = event === 'out';
       }, 200);
     }
+
+    openQuickPreview(workItem: WorkItemUI) {
+      this.quickPreview.open(workItem);
+    }
+
     onDrop(args) {
       const [el, target, source, sibling] = args;
       let direction: string | null;
