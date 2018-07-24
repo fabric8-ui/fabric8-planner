@@ -649,11 +649,11 @@ export class WorkItemQuery {
     const selector = createSelector(
       workItemEntities,
       state => {
-        return ids.map(i => state[i])
+        return ids.length > 0 ? ids.map(i => state[i])
           // Sometime
           .filter(item => !!item)
           .map(item => this.resolveWorkItem(item))
-          .sort((a, b) => a.order - b.order);
+          .sort((a, b) => b.order - a.order) : [];
       }
     );
     return this.store.select(selector);

@@ -198,7 +198,7 @@ export class ColumnWorkItemQuery {
 
   getWorkItemsByColumnId(id: string): Observable<WorkItemUI[]> {
     return this.columnWorkitemSource.select(state => state[id])
-      .map(items => items || new Set<string>([]))
-      .flatMap(ids => this.workItemQuery.getWorkItemsByIds(Array.from(ids)));
+      .map(items => items || [])
+      .switchMap(ids => this.workItemQuery.getWorkItemsByIds(ids));
   }
 }

@@ -29,9 +29,9 @@ describe('ColumnWorkitemReducer: ', () => {
     ] as WorkItemUI[];
 
     const columWorkItemState: ColumnWorkItemState = {
-      '0000-000-05': new Set(['1', '2']),
-      '0000-000-06': new Set(['1']),
-      '0000-000-07': new Set(['2'])
+      '0000-000-05': ['1', '2'],
+      '0000-000-06': ['1'],
+      '0000-000-07': ['2']
     };
 
     const action = new GetSuccess(workitems);

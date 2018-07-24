@@ -1,5 +1,5 @@
 export type ColumnWorkItemState = {
-  [id: string]: Set<string>
+  [id: string]: string[]
 };
 
 export const initialState: ColumnWorkItemState = {} as ColumnWorkItemState;

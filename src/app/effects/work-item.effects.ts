@@ -363,12 +363,12 @@ export class WorkItemEffects {
         .switchMap((w: WorkItemUI) => {
           console.log('#### - 5', w);
           return [
-            new WorkItemActions.UpdateSuccess(w),
             new ColumnWorkItemActions.UpdateSuccess({
               workItemId: w.id,
               prevColumnId: wp.payload.prevColumnId,
               newColumnIds: w.columnIds
-            })
+            }),
+            new WorkItemActions.UpdateSuccess(w)
           ];
         })
         .catch((e) => {
