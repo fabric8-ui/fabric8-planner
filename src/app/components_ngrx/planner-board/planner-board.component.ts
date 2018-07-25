@@ -12,11 +12,11 @@ import { Store } from '@ngrx/store';
 import { sortBy } from 'lodash';
 import { DragulaService } from 'ng2-dragula';
 import { Subject } from 'rxjs';
-import { BoardQuery } from '../../models/board.model';
+import { BoardQuery, BoardUIQuery } from '../../models/board.model';
 import { cleanObject } from '../../models/common.model';
 import { WorkItemQuery, WorkItemUI } from '../../models/work-item';
 import { AppState } from '../../states/app.state';
-import * as BoardActions from './../../actions/board.actions';
+import * as BoardUIActions from './../../actions/board-ui.actions';
 import * as ColumnWorkItemAction from './../../actions/column-workitem.action';
 import { GroupTypeQuery, GroupTypeUI } from './../../models/group-types.model';
 import { IterationQuery } from './../../models/iteration.model';
@@ -51,7 +51,8 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
       private route: ActivatedRoute,
       private store: Store<AppState>,
       private router: Router,
-      private workItemQuery: WorkItemQuery
+      private workItemQuery: WorkItemQuery,
+      private boardUiQuery: BoardUIQuery
     ) {
       this.dragulaService.drop.asObservable().takeUntil(this.destroy$).subscribe((value) => {
         this.onDrop(value.slice(1));
@@ -169,6 +170,9 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
               prevColumnId: source.getAttribute('data-id')
             }
           ));
+          this.store.dispatch(
+            new BoardUIActions.LockBoard()
+          );
       });
     }
 }

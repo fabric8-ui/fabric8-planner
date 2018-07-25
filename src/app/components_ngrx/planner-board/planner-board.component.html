@@ -1,6 +1,6 @@
 <div class="container-fluid f8-wi-container" #containerHeight>
     <div class="lock-overlay-list"
-      *ngIf="uiLockedAll">
+      *ngIf="boardUiQuery.boardLocked | async">
       <div class="spinner-container">
         <h2 class="spinner"></h2>
         <h2>Loading ...</h2>

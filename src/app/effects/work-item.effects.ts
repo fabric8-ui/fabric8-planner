@@ -6,6 +6,7 @@ import { Notification, Notifications, NotificationType } from 'ngx-base';
 import { Observable } from 'rxjs';
 import { cleanObject } from '../models/common.model';
 import { FilterService } from '../services/filter.service';
+import * as BoardUIActions from './../actions/board-ui.actions';
 import * as ColumnWorkItemActions from './../actions/column-workitem.action';
 import * as WorkItemActions from './../actions/work-item.actions';
 import { WorkItem, WorkItemMapper, WorkItemResolver, WorkItemService, WorkItemUI } from './../models/work-item';
@@ -14,7 +15,7 @@ import { AppState } from './../states/app.state';
 import * as util from './work-item-utils';
 
 
-export type Action = WorkItemActions.All | ColumnWorkItemActions.All;
+export type Action = WorkItemActions.All | ColumnWorkItemActions.All | BoardUIActions.All;
 
 @Injectable()
 export class WorkItemEffects {
@@ -350,7 +351,8 @@ export class WorkItemEffects {
               workItemId: w.id,
               prevColumnId: wp.payload.prevColumnId,
               newColumnIds: w.columnIds
-            })
+            }),
+            new BoardUIActions.UnlockBoard()
           ];
         })
         .catch((e) => {
@@ -362,12 +364,13 @@ export class WorkItemEffects {
           } catch (e) {
             console.log('Problem loading workitems.');
           }
-          return Observable.of(
+          return [
             new ColumnWorkItemActions.UpdateError({
               prevColumnId: wp.payload.prevColumnId,
               newColumnIds: wp.payload.workItem.columnIds
-            })
-          );
+            }),
+            new BoardUIActions.UnlockBoard()
+          ];
         });
     });
 }

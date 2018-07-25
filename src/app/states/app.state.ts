@@ -31,6 +31,7 @@ export interface AppState {
 export interface BoardViewState {
   boards: states.BoardState;
   columnWorkItem: states.ColumnWorkItemState;
+  boardUi: states.BoardUIState;
 }
 
 export interface ListPage {}

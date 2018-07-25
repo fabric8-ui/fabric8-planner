@@ -201,3 +201,16 @@ export class ColumnWorkItemQuery {
       .switchMap(ids => this.workItemQuery.getWorkItemsByIds(ids));
   }
 }
+
+@Injectable()
+export class BoardUIQuery {
+  private boardUiSelector = createSelector(
+    boardSelector,
+    state => state.boardUi
+  );
+  constructor(private store: Store<AppState>) {}
+
+  get boardLocked(): Store<boolean> {
+    return this.store.select(this.boardUiSelector).select(state => state.lockBoard);
+  }
+}
