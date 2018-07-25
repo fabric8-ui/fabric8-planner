@@ -327,21 +327,8 @@ export class WorkItemEffects {
       };
     })
     .switchMap(wp => {
-        // This order must be followed
-        // because baseType is needed for dynamic fields
-        const dynamicPayload = this.workItemMapper.toDyanmicServiceModel(wp.payload.workItem);
         const staticPayload = this.workItemMapper.toServiceModel(wp.payload.workItem);
-
-        // We don't update work item type
-        // So we remove it from the payload
-        const payload = cleanObject({
-          ...staticPayload,
-          ...{ attributes: {
-               ...staticPayload.attributes,
-               ...dynamicPayload.attributes
-          }}
-        }, ['baseType']);
-        const state = wp.state;
+        const payload = cleanObject(staticPayload, ['baseType']);
         return this.workItemService.update(payload)
         .switchMap((workitem) => {
           let reorderPayload = wp.payload.reorder;
