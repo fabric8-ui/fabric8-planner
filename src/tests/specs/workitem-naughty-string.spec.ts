@@ -5,18 +5,15 @@ import { SidePanel } from './../ui/planner/sidepanel';
 
 
 describe('Work Item list: ', () => {
-  let planner: PlannerPage;
   let plannerAgile: PlannerPage;
   let c = new support.Constants();
+  let URL;
 
   beforeAll(async () => {
     await support.desktopTestSetup();
-    planner = new PlannerPage(browser.baseUrl);
-    await planner.openInBrowser();
-    let url = await browser.getCurrentUrl();
-    let urlPathName: any = await browser.executeScript('return document.location.pathname');
-    let URL = url.replace(urlPathName, '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME_SCRUM + '/plan');
+    URL = process.env.BASE_URL + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME_SCRUM + '/plan';
     plannerAgile = new PlannerPage(URL);
+    plannerAgile.openInBrowser();
     await browser.get(URL);
     await plannerAgile.waitUntilUrlContains('typegroup');
   });
