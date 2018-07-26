@@ -59,6 +59,7 @@
           [dragula]="'board-column'"
           [attr.data-id]="column.id">
           <f8-planner-card *ngFor="let workitem of column.workItems | async"
+            [class.item-not-draggable]="!workitem?.editable"
             [workItem]="workitem"
             (onTitleClick)="openQuickPreview($event)"></f8-planner-card>
         </div>
@@ -67,3 +68,5 @@
   </ng-container>
   </div>
 </ng-template>
+
+<osio-modal></osio-modal>

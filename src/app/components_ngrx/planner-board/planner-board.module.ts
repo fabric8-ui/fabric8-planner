@@ -31,6 +31,7 @@ import { BoardQuery, BoardUIQuery, ColumnWorkItemQuery } from '../../models/boar
 import { GroupTypeQuery } from '../../models/group-types.model';
 import { IterationQuery } from '../../models/iteration.model';
 import { LabelQuery } from '../../models/label.model';
+import { PlannerModalModule } from '../../widgets/modal/modal.module';
 import { CommentQuery } from './../../models/comment';
 import { SpaceQuery } from './../../models/space';
 import { UserQuery } from './../../models/user';
@@ -62,6 +63,7 @@ import { F8SortByPipeModule } from './../../pipes/sort-by.module';
     PlannerBoardColumnModule,
     PlannerCardModule,
     PlannerLayoutModule,
+    PlannerModalModule,
     WorkItemPreviewPanelModule,
     SidepanelModule,
     TooltipModule.forRoot(),
