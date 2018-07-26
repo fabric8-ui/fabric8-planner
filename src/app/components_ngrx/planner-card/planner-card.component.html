@@ -16,7 +16,7 @@
       <div class="sprint-name truncate"
         *ngIf="workItem.iterationObs | async as iteration"
         [placement]="top"
-        [tooltip]="iteration.resolvedParentPath + iteration.name">
+        [tooltip]="iteration.resolvedParentPath + '/' + iteration.name">
         <span>{{ iteration.name }}</span>
       </div>
       <div class="assignee">
