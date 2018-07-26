@@ -14,7 +14,8 @@
         [sidePanelContent]="sidePanel"
         [sectionContent]="sectionPanel">
       </alm-planner-layout>
-      <work-item-preview-panel #quickPreview >
+      <work-item-preview-panel #quickPreview
+        [context]="'board'">
       </work-item-preview-panel>
     </main>
 </div>
