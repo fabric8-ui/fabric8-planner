@@ -8,9 +8,11 @@ import { EventUI } from '../../models/event.model';
 })
 
 export class WorkItemEventComponent implements OnInit {
+  @Input() wiFields: object;
+
   @Input('event') set Event(event: EventUI) {
     this.event = event;
-    this.getTitle();
+    this.title = this.wiFields[event.name].label;
     switch (event.type) {
       case null:
         this.singleValueChange();
@@ -55,8 +57,12 @@ export class WorkItemEventComponent implements OnInit {
   }
 
   singleValueChange() {
-    if (this.title === 'description') {
+    if (this.title === 'Description') {
+      this.intermediateText = 'edited the ';
       this.textType = 'description';
+    } else if (this.event.oldValue === '') {
+      this.intermediateText = 'changed the ' + this.title;
+      this.textType = 'attribute';
     } else {
       this.intermediateText = 'changed the ' + this.title + ' from';
       this.textType = 'attribute';

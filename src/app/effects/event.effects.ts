@@ -60,7 +60,14 @@ export class EventEffects {
     .switchMap((cp) => {
       return this.workItemService.resolveEvents(cp.payload)
         .map((resp) => {
-          let events =  resp.filter(event => event !== null).reverse();
+          let events =  resp.filter(event => event !== null)
+            .filter(event => !(
+              event.newValue === null
+              && event.oldValue === null
+              && event.relationships.newValue === {}
+              && event.relationships.oldValue === {}
+            ))
+            .reverse();
           return this.resolveEvents(events, cp.state);
         })
         .map((events: EventUI[]) => {

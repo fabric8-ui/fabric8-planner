@@ -23,7 +23,8 @@
   <div [collapse]="isCollapsedTimeline" 
     *ngIf="(events | async).length > 0">
     <work-item-event 
-      *ngFor="let event of events | async" 
+      *ngFor="let event of events | async"
+      [wiFields]="workitem.type.fields"
       [event]="event">
     </work-item-event>
   </div>

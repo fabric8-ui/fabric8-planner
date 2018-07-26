@@ -14,7 +14,7 @@
         <!-- Decription -->
         <span class="dib" style="vertical-align: text-top"
           *ngIf="textType === 'description'">
-            edited the description
+            {{ intermediateText }} {{ title }}
         </span>
 
         <!-- Single Value Change -->
@@ -23,7 +23,7 @@
           style="vertical-align: top"
           *ngIf="textType === 'attribute'" >
           <span [innerHTML]=intermediateText></span>
-          <i> '{{ event.oldValue }}' </i>
+          <i *ngIf="event.oldValue !== ''"> '{{ event.oldValue }}' </i>
           {{ toText }}
           <i> '{{ event.newValue }}'</i>
         </span>
