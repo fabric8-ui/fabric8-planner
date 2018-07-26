@@ -142,7 +142,7 @@ export class BoardQuery {
 
       .switchMap(board => Observable.combineLatest(
         Observable.of(board),
-        this.spaceQuery.getCurrentSpace
+        this.spaceQuery.getCurrentSpace.filter(s => !!s)
       ))
       .do(([board, space]) => {
         // Fetch work item here
