@@ -8,7 +8,7 @@
         <div class="title-wrapper" (click)="titleClick(workItem, $event);">
           <span>{{ workItem.number }}: </span>
           <strong class="pointer" [innerHTML]="workItem.title"></strong>
-          <span class="creator"> - created by {{ (workItem.creatorObs | async).username }}</span>
+          <span class="creator"> - created by {{ (workItem.creatorObs | async).name }}</span>
         </div>
       </div>
     </ng-template>
@@ -16,7 +16,9 @@
       <div class="sprint-name truncate"
         *ngIf="workItem.iterationObs | async as iteration"
         [placement]="top"
-        [tooltip]="iteration.resolvedParentPath + '/' + iteration.name">
+        [tooltip]="iteration.resolvedParentPath === '/' ?
+          '/' + iteration.name :
+          iteration.resolvedParentPath + '/' + iteration.name">
         <span>{{ iteration.name }}</span>
       </div>
       <div class="assignee">

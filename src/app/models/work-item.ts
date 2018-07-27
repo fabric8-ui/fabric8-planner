@@ -417,7 +417,7 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
         return data.map((id) => {
           return {
           id: id,
-          type: 'boardcolumn'
+          type: 'boardcolumns'
           };
         });
       }
