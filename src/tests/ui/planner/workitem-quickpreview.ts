@@ -68,7 +68,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   iterationInput = new ui.TextInput(this.iterationDiv.$('.select-dropdown-search-input'), 'Iteration input');
 
   labelDropdown = new ui.Dropdown(
-    this.$('#labelSelector .add-label'),
+    this.$('#labelSelector .f8-planner__selector-dropdown'),
     this.$('#labelSelector ul.select-dropdown-menu'),
     'Label Select dropdown');
   labelsDiv = new ui.BaseElement(this.$('.f8-detail__labels'), ' labels Div');

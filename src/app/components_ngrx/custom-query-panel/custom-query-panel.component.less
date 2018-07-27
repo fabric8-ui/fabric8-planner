@@ -2,15 +2,9 @@
 @import (reference) '../../../assets/stylesheets/shared/_utilities';
 
 :host {
-  .list-group {
-    display: block;
-    border-top-color: transparent;
-  }
-  .f8-cf {
-    display: block;
-    color: @color-pf-white;
-    background-color: @color-pf-black-900;
-    &__hdr {
+  color: @color-pf-white;
+  .f8-custom-query {
+    &__header {
       display: block;
       padding: 20px 15px;
       border-bottom: 1px solid;
@@ -31,57 +25,52 @@
       }
     }
     &__list {
-      &-type {
+      outline: none;
+      padding: 10px;
+      padding-left: 45px;
+      border-left: 4px solid;
+      border-left-color: transparent;
+      transition-property: background;
+      transition-duration: 300ms;
+      transition-timing-function: ease-in;
+      &-link {
+        display: block;
+        font-size: 15px;
+        color: @color-pf-white;
+        line-height: 15px;
+        text-decoration: none;
         outline: none;
-        padding: 10px;
-        padding-left: 45px;
-        border-left: 4px solid;
-        border-left-color: transparent;
-        &-link {
-          display: block;
-          font-size: 15px;
-          color: @color-pf-white;
-          line-height: 15px;
+        &:hover {
+          color: @color-pf-blue;
+          text-decoration: none;
+        }
+        &:visited,
+        &:focus {
           text-decoration: none;
           outline: none;
-          &:hover {
-            color: @color-pf-blue;
-            text-decoration: none;
-            background: @color-pf-black-700;
-          }
-          &:visited,
-          &:focus {
-            text-decoration: none;
-            outline: none;
-          }
         }
+      }
+      &:hover {
+        color: @color-pf-white;
+        background: @color-pf-black-700;
+      }
+      .fa {
+        padding: 0 5px;
+        font-size: 16px;
         &:hover {
-          color: @color-pf-white;
-          background: @color-pf-black-700;
-        }
-        .fa {
-          padding: 0 5px;
-          font-size: 16px;
-          &:hover {
-            color: @color-pf-blue;
-          }
+          color: @color-pf-blue;
         }
       }
       &:focus {
         outline: none;
       }
-    }
-    &--selected {
-      outline: none;
-      border-left-color: @color-pf-blue !important;
-      background-color: @color-pf-black-800;
-    }
-    .dropdown-kebab-pf {
-      .btn-link {
-        color: @color-pf-white;
-      }
-      .dropdown-menu-right {
-        right: -10px;
+      &.is-selected {
+        outline: none;
+        border-left-color: @color-pf-blue;
+        background-color: @color-pf-black-800;
+        &:hover {
+          background-color: @color-pf-black-700;
+        }
       }
     }
   }

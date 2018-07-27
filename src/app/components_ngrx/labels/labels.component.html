@@ -27,7 +27,7 @@
     <span dropdownToggle (click)="moreClick($event)" class="dib dropdown-toggle pointer">
       {{ _labels.length - truncateAfter }}+
     </span>
-    <ul *dropdownMenu class="dropdown-menu label-dropdown dropdown-menu-right">
+    <ul *dropdownMenu class="dropdown-menu dropdown-menu-right">
       <li *ngFor="let label of _labels | slice:truncateAfter;">
         <span class="label" [ngStyle]="{
           'background-color': label.backgroundColor,

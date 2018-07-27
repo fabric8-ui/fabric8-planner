@@ -1,11 +1,19 @@
-<span class="pficon-info infotip-icon {{infotipId}}"
+<span class="pficon pficon-info 
+  f8-planner-infotip__icon {{infotipId}}"
+  placement="right"
   (click)="$event.preventDefault()"
-  [class.infotip--open]="pop.isOpen"
-  [popover]="popoverTemplate" [outsideClick]="true" placement="right"
-  containerClass="popover-container" #pop="bs-popover">
+  [class.is-open]="pop.isOpen"
+  [popover]="popoverTemplate" 
+  [outsideClick]="true"
+  containerClass="popover-container" 
+  #pop="bs-popover">
 </span>
 <ng-template #popoverTemplate>
-    <span class="pficon-close pull-right pointer" 
-    (click)="handlePropagation($event); pop.hide();"></span>
-  <span class="popover-text" (click)="handlePropagation($event)">{{ infotipText }}</span>
+  <span class="pficon pficon-close pull-right pointer" 
+    (click)="handlePropagation($event); pop.hide();">
+  </span>
+  <span class="f8-planner-infotip__text" 
+    (click)="handlePropagation($event)">
+      {{ infotipText }}
+  </span>
 </ng-template>

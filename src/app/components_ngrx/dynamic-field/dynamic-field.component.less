@@ -1,6 +1,12 @@
+@import (reference) '../../../assets/stylesheets/_base';
+
 .f8-dynamic-control {
   margin-bottom: 15px;
-  &-content {
+  label {
+    padding-top: 0;
+    padding-left: 15px;
+  }
+  &__content {
     padding-right: 15px;
     padding-left: 140px;
   }
@@ -8,16 +14,14 @@
     border: 0;
     cursor: pointer;
   }
-  &-edit-ico {
-    margin-left: -24px;
-    pointer-events: none;
-  }
-  &-dropdown {
-    float: left;
-    width: 30%;
-  }
-  &-datepicker {
+  &__datepicker {
     float: left;
     width: 50%;
+  }
+  &__message {
+    &.is-error {
+      color: @color-pf-red;
+      font-size: 12px;
+    }
   }
 }

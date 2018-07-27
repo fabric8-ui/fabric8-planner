@@ -175,7 +175,7 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
 
   //This function navigates to the desired work item group type page
   groupTypeClickHandler(e: MouseEvent, item: GroupTypeUI) {
-    if (!e.srcElement.classList.contains('infotip-icon')) {
+    if (!e.srcElement.classList.contains('f8-planner-infotip__icon')) {
       let q = this.addRemoveQueryParams(item);
       this.router.navigate([], {
         relativeTo: this.route,

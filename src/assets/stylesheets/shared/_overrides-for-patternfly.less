@@ -39,11 +39,12 @@
 .badge {
   font-size: @font-size-base;
 }
-.dropdown {
-  a {
-    cursor: pointer;
-    &:hover {
-      text-decoration: none;
-    }
+a {
+  cursor: pointer;
+  &:hover,
+  &:visited,
+  &:focus {
+    text-decoration: none;
+    outline: none;
   }
 }

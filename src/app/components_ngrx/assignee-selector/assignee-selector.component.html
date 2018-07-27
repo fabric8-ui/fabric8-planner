@@ -11,25 +11,27 @@
   (onOpen)="onOpen($event)"
   (onClose)="onClose($event)">
   <ng-template #toggleButtonRef>
-    <span *ngIf="editAllow" class="pointer add-label"
+    <span class="pointer f8-planner__selector-dropdown"
       id="f8-add-assignee"
+      *ngIf="editAllow"
       (click)="closeAddAssignee()">
       <i class="pficon pficon-add-circle-o padding-right-5"></i>
-      Add Assignee
+        Add Assignee
     </span>
   </ng-template>
-  <ng-template #dropdownItem let-name="name"
+  <ng-template #dropdownItem
+    let-name="name"
     let-src="src"
     let-stickontop="stickontop">
     <user-avatar
       [imgSrc]="src | almAvatarSize: 25">
     </user-avatar>
-    <span *ngIf="!stickontop" [innerHTML]="name | almSearchHighlight: searchValue"></span>
-    <strong>
-      <span
-        *ngIf="stickontop"
-        [innerHTML]="(name | almSearchHighlight: searchValue) + ' (me)'">
-      </span>
+    <span *ngIf="!stickontop" 
+      [innerHTML]="name | almSearchHighlight: searchValue">
+    </span>
+    <strong
+      *ngIf="stickontop"
+      [innerHTML]="(name | almSearchHighlight: searchValue) + ' (me)'">
     </strong>
   </ng-template>
 </f8-select-dropdown>
