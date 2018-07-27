@@ -1,7 +1,7 @@
 <!--The kebab menu can come here as adding a child should get reflected here-->
 <div class="f8-itr__tree">
-  <ul *ngIf="iterationList.length > 0"
-    class="padding-left-0">
+  <ul class="padding-left-0"
+    *ngIf="iterationList.length > 0">
     <li
       *ngFor="let iteration of iterationList">
       <iteration-list-entry
@@ -15,7 +15,8 @@
         (onCloseIteration)="closeIteration($event)"
         (onCreateIteration)="createIteration($event)">
       </iteration-list-entry>
-      <iteration-tree *ngIf="iteration.hasChildren && iteration.showChildren"
+      <iteration-tree 
+        *ngIf="iteration.hasChildren && iteration.showChildren"
         [iterationList]="iteration.children"
         [collection]="collection"
         [witGroup]="witGroup"

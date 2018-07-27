@@ -51,7 +51,7 @@
     title="{{iteration.name}}"
     [routerLink]="getRouterLink()"
     [queryParams]="addRemoveQueryParams(iteration.id)">
-      <span class="f8-itr-name truncate">
+      <span class="f8-itr__name truncate">
         {{ iteration.name | truncate : 15 }}
       </span>
       <span class="is-active-tag"
