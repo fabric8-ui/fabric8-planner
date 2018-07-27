@@ -54,8 +54,18 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
       private workItemQuery: WorkItemQuery,
       private boardUiQuery: BoardUIQuery
     ) {
+      const bag: any = this.dragulaService.find('board-column');
+      if (bag !== undefined) {
+        this.dragulaService.destroy('board-column');
+      }
       this.dragulaService.drop.asObservable().takeUntil(this.destroy$).subscribe((value) => {
         this.onDrop(value.slice(1));
+      });
+      // card is not draggable if loggedInUser is not collaborator or creator of workItem
+      this.dragulaService.setOptions('board-column', {
+        moves: (el, source, handle, sibling) => {
+          return !el.classList.contains('item-not-draggable');
+        }
       });
     }
 

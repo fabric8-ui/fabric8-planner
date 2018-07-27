@@ -574,23 +574,32 @@ export class WorkItemQuery {
     return this.workItemDetailSource
       .filter(item => item !== null)
       .map(this.resolveWorkItem.bind(this))
-      .switchMap(this.setWorkItemEditable.bind(this));
+      .switchMap(this.setWorkItemsEditable.bind(this));
   }
 
   /**
-   * Allow edit work item
+   * @description set property workItem.editable: true
+   * IF loggedInUser is a Collaborator or creator of WorkItem
+   * @param WorkItemUI || @param WorkItemUI[]
+   * @return Observable<WorkItemUI> || @return Observable<WorkItemUI[]>
    */
-  setWorkItemEditable(workItem: WorkItemUI): Observable<WorkItemUI> {
+  setWorkItemsEditable(workItems: WorkItemUI | WorkItemUI[]): Observable<WorkItemUI | WorkItemUI[]> {
+    let items = Array.isArray(workItems) ? workItems : [workItems];
     return Observable.combineLatest(
       this.userQuery.getLoggedInUser,
       this.userQuery.getCollaboratorIds
     )
-    .map(([loggdInuser, collabIDs]): WorkItemUI => {
-      const allAllowedIds = loggdInuser ? [...collabIDs, workItem.creator] : [];
-      return {
-        ...workItem,
-        editable: allAllowedIds.indexOf(loggdInuser.id) > -1
-      };
+    .map(([loggdInuser, collabIDs]): WorkItemUI[] => {
+      return items.map((item: WorkItemUI) => {
+        const allAllowedIds = loggdInuser ? [...collabIDs, item.creator] : [];
+        return {
+          ...item,
+          editable: allAllowedIds.indexOf(loggdInuser.id) > -1
+        };
+      });
+    })
+    .map(items => {
+      return Array.isArray(workItems) ? items : items[0];
     });
   }
 
@@ -647,7 +656,7 @@ export class WorkItemQuery {
     return this.store.select(workItemEntities);
   }
 
-  getWorkItemsByIds(ids: string[]): Store<WorkItemUI[]> {
+  getWorkItemsByIds(ids: string[]): Observable<WorkItemUI[]> {
     const selector = createSelector(
       workItemEntities,
       state => {
@@ -658,7 +667,8 @@ export class WorkItemQuery {
           .sort((a, b) => b.order - a.order) : [];
       }
     );
-    return this.store.select(selector);
+    return this.store.select(selector)
+      .switchMap(this.setWorkItemsEditable.bind(this));
   }
 
   getWorkItemWithId(id: string): Observable<WorkItemUI> {
