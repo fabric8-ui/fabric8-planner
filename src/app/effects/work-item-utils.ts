@@ -3,7 +3,7 @@ import { WorkItemUI } from '../models/work-item';
 
 export function workitemMatchesFilter(route, filterService, workItemService, workitem): Observable<WorkItemUI> {
   const currentRoute = route.queryParams;
-  if (currentRoute['boardContextId'] && currentRoute.hasOwnProperty('boardContextId')) {
+  if (currentRoute['q'].includes('boardContextId')) {
     return Observable.of(workitem);
   }
   if (Object.keys(currentRoute).length === 0 && currentRoute.constructor === Object) {

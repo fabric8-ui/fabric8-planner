@@ -3,7 +3,7 @@
     <ng-template #cardHeader>
       <div class="f8-custom-card-header">
         <div class="wi-type-icon-wrapper">
-          <span class="fa fa-bullseye"></span>
+          <span class="{{workItem.type?.icon}}"></span>
         </div>
         <div class="title-wrapper" (click)="titleClick(workItem, $event);">
           <span>{{ workItem.number }}: </span>
