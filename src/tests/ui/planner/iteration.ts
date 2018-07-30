@@ -7,14 +7,14 @@ export class Iteration extends ui.BaseElement {
   iterationDialog = new ui.BaseElement(this.$('.modal-content'), 'iteration Dialog');
   iterationName = new ui.TextInput(this.iterationDialog.$('#iteration-name'), 'Iteration text input');
   parentIteration = new ui.TextInput(this.iterationDialog.$('#parent-iteration'), 'parent iteration');
-  parentDropdownList = new ui.DropdownMenu(this.iterationDialog.$('.f8-iteration-modal-list'));
+  parentDropdownList = new ui.DropdownMenu(this.iterationDialog.$('.f8-itr__modal-list'));
   parentDropdown = new ui.Dropdown(
    this.parentIteration,
    this.parentDropdownList,
    'parent iteration dropdown'
   );
   createIterationButton = new ui.Button(this.iterationDialog.$('#create-iteration-button'), 'Create Iteration button');
-  datePickerDiv = new ui.BaseElement(this.$('.datepicker-container'), 'date picker div');
+  datePickerDiv = new ui.BaseElement(this.$('.f8-itr__datepicker'), 'date picker div');
   private showStartDateCalendar = new ui.Clickable(this.datePickerDiv.$$('.selection.inputnoteditable').first(), 'start date calendar');
   private showEndDateCalendar = new ui.Clickable(this.datePickerDiv.$$('.selection.inputnoteditable').last(), 'End date calendar');
   calendarDiv = new ui.BaseElement(this.$('.selector.selectorarrow.selectorarrowleft'), '');
