@@ -145,12 +145,15 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
       this.route.queryParams.subscribe(val => {
         if (val.hasOwnProperty('q')) {
           let selectedTypeGroup: GroupTypeUI;
-          if (this.context === 'board') {
-            const selectedTypeGroupId =
-            this.filterService.queryToFlat(val.q)[0].value;
+          if (val['q'].includes('boardContextId')) {
+            //filter service getConditionFromQuery returns undefined for non AND operations
+            let selectedTypeGroupId = this.filterService.getConditionFromQuery(val.q, 'boardContextId');
+            if (selectedTypeGroupId === undefined) {
+              selectedTypeGroupId = this.filterService.queryToFlat(val.q)[0].value;
+            }
             if (selectedTypeGroupId) {
               selectedTypeGroup =
-                this.groupTypes.find(g => g.name === selectedTypeGroupId);
+                this.groupTypes.find(g => g.id === selectedTypeGroupId);
             }
           } else {
             const selectedTypeGroupName =
@@ -174,15 +177,6 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
         } else {
           this.showCompleted = '';
         }
-
-        // If it's a board view then check for board context ID
-        // if (val.hasOwnProperty('boardContextId')) {
-        //   const selectedTypeGroup: GroupTypeUI =
-        //       this.groupTypes.find(g => g.id === val.boardContextId);
-        //   if (selectedTypeGroup) {
-        //     this.store.dispatch(new GroupTypeActions.SelectType(selectedTypeGroup));
-        //   }
-        // }
       })
     );
   }
