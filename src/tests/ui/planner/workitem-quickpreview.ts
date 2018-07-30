@@ -72,13 +72,13 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     this.$('#labelSelector ul.select-dropdown-menu'),
     'Label Select dropdown');
   labelsDiv = new ui.BaseElement(this.$('.f8-detail__labels'), ' labels Div');
-  labels = new ui.BaseElement(this.labelsDiv.$('.label-wrapper'), ' labels ');
-  labelListDiv = new ui.BaseElementArray(this.labelsDiv.$$('f8-label .label-wrapper>span'), 'label list Div');
+  labels = new ui.BaseElement(this.labelsDiv.$('.f8-label-wrapper'), ' labels ');
+  labelListDiv = new ui.BaseElementArray(this.labelsDiv.$$('f8-label .f8-label-wrapper>div'), 'label list Div');
   labelDropDownDiv = new ui.BaseElement(this.$('#labelSelector .select-dropdown'), 'dropdown div');
   labelDropdownCloseButton = new ui.Clickable(this.labelDropDownDiv.$('.close-pointer'), 'label dropdown close Button');
-  createLabelButton = new ui.Clickable(this.labelDropDownDiv.$('.create-label-button'), 'Create new label');
-  createLabelDiv = new ui.BaseElement(this.$('.create-label'), 'create label div');
-  createLabelInput = new ui.TextInput(this.createLabelDiv.$('.create-label-input'), 'create label input');
+  createLabelButton = new ui.Clickable(this.labelDropDownDiv.$('.f8-label__create-label-text'), 'Create new label');
+  createLabelDiv = new ui.BaseElement(this.$('.f8-label__create-label'), 'create label div');
+  createLabelInput = new ui.TextInput(this.createLabelDiv.$('.f8-label__create-label-input'), 'create label input');
   createLabelCancel = new ui.Button(this.createLabelDiv.$('.pficon-close'), 'create label cancel');
   createLabelSaveButton = new ui.Button(this.createLabelDiv.$('.fa-check'), 'create label save button');
 

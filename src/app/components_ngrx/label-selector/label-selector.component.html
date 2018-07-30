@@ -1,4 +1,5 @@
 <f8-select-dropdown
+  id="labelSelector"
   #dropdown
   [toggleButtonRef]="toggleButtonRef"
   [dropdownItem]="dropdownItem"
@@ -9,10 +10,10 @@
   (onSelect)="onSelect($event)"
   (onSearch)="onSearch($event)"
   (onOpen)="onOpen($event)"
-  (onClose)="onClose($event)"
-  id="labelSelector">
+  (onClose)="onClose($event)">
   <ng-template #toggleButtonRef>
-    <span *ngIf="allowUpdate" class="pointer f8-planner__selector-dropdown"
+    <span class="pointer f8-planner__selector-dropdown"
+      *ngIf="allowUpdate"
       (click)="closeAddLabel()">
       <i class="pficon pficon-add-circle-o padding-right-5"></i>
       Assign Label(s)
@@ -22,26 +23,28 @@
     let-color="color"
     let-border="border"
     let-name="name">
-    <div class="palet"
+    <div class="f8-label__palet"
       [ngStyle]="{'background-color': color, 'border-color': border}"></div>
     <span [innerHTML]="name | almSearchHighlight: searchValue"></span>
   </ng-template>
   <ng-template #dropdownFooter>
-    <div [class.hide]="activeAddLabel"
-      (click)="clickOnAddLabel()"
-      class="create-label-button">
+    <div class="f8-label__create-label-text"
+      [class.hide]="activeAddLabel"
+      (click)="clickOnAddLabel()">
       <span class="pficon pficon-add-circle-o"></span>
       Create new label
     </div>
-    <div [class.hide]="!activeAddLabel || colorPickerActive"
-      class="create-label">
-      <div [ngStyle]="{'background-color': newSelectedColor.color,
+    <div class="f8-label__create-label"
+      [class.hide]="!activeAddLabel || colorPickerActive">
+      <div class="f8-label__palet"
+        [ngStyle]="{'background-color': newSelectedColor.color,
         'border-color': newSelectedColor.border}"
-        (click)="toggleColorPicker()" class="palet">
+        (click)="toggleColorPicker()">
       </div>
-      <input (input)="onAddLabelInput($event.target.value)"
-        (keyup.enter)="createLabel(labelname.value)"
-        class="create-label-input" #labelname />
+      <input class="f8-label__create-label-input"
+        #labelname 
+        (input)="onAddLabelInput($event.target.value)"
+        (keyup.enter)="createLabel(labelname.value)"/>
       <button class="action-btn btn btn-primary fa fa-check"
         type="button"
         [class.disabled]="createDisabled"
@@ -52,9 +55,9 @@
         (click)="closeAddLabel()">
       </button>
     </div>
-    <div class="color-picker"
+    <div class="f8-label__color-picker"
       [class.hide]="activeAddLabel && !colorPickerActive">
-      <span class="palet clickable margin-4"
+      <span class="f8-label__palet margin-4"
         *ngFor="let color of colors"
         [ngStyle]="{'background-color': color.color, 'border-color':color.border}"
         (click)="selectColor(color); toggleColorPicker();">
