@@ -9,14 +9,12 @@ export type Action = WorkItemActions.All | ColumnWorkItemActions.All;
 export const ColumnWorkItemReducer: ActionReducer<ColumnWorkItemState> = (state = InitialColumnWorkItemState, action: Action) => {
   switch (action.type) {
     case WorkItemActions.GET_SUCCESS: {
-      let cwState = {...state};
+      let cwState = {};
       action.payload.forEach(item => {
         if (item.columnIds !== null) {
           item.columnIds.forEach(col => {
             if (cwState.hasOwnProperty(col)) {
-              if (cwState[col].findIndex(i => i === item.id) === -1) {
                 cwState[col] = [...cwState[col], item.id];
-              }
             } else {
               cwState[col] = [item.id];
             }
@@ -32,9 +30,7 @@ export const ColumnWorkItemReducer: ActionReducer<ColumnWorkItemState> = (state 
           .filter(id => id !== action.payload.workItemId) ;
       action.payload.newColumnIds.forEach(col => {
         if (cwState.hasOwnProperty(col)) {
-          if (cwState[col].findIndex(i => i === action.payload.workItemId) === -1) {
             cwState[col] = [...cwState[col], action.payload.workItemId];
-          }
         } else {
           cwState[col] = [action.payload.workItemId];
         }

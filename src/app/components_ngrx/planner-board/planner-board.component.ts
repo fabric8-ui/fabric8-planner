@@ -11,10 +11,12 @@ import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { sortBy } from 'lodash';
 import { DragulaService } from 'ng2-dragula';
+import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 import { BoardQuery, BoardUIQuery } from '../../models/board.model';
 import { cleanObject } from '../../models/common.model';
 import { WorkItemQuery, WorkItemUI } from '../../models/work-item';
+import { FilterService } from '../../services/filter.service';
 import { AppState } from '../../states/app.state';
 import * as BoardUIActions from './../../actions/board-ui.actions';
 import * as ColumnWorkItemAction from './../../actions/column-workitem.action';
@@ -52,7 +54,8 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
       private store: Store<AppState>,
       private router: Router,
       private workItemQuery: WorkItemQuery,
-      private boardUiQuery: BoardUIQuery
+      private boardUiQuery: BoardUIQuery,
+      private filterService: FilterService
     ) {
       const bag: any = this.dragulaService.find('board-column');
       if (bag !== undefined) {
@@ -85,10 +88,26 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
     }
 
     setDefaultUrl(groupType: GroupTypeUI) {
+      const queryParams = this.constructUrl(groupType);
       this.router.navigate([], {
         relativeTo: this.route,
-        queryParams: { boardContextId: groupType.id }
+        queryParams: { q: queryParams }
       });
+    }
+
+    constructUrl(witGroup: GroupTypeUI) {
+       //Query for work item type group
+      const type_query = this.filterService.queryBuilder(
+          'boardContextId', this.filterService.equal_notation, witGroup.id
+        );
+      //Query for space
+      //Join type and space query
+      const first_join = this.filterService.queryJoiner(
+        {}, this.filterService.and_notation, type_query
+      );
+      //second_join gives json object
+      return this.filterService.jsonToQuery(first_join);
+      //reverse function jsonToQuery(second_join);
     }
 
     checkUrl(groupType) {
@@ -97,7 +116,7 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
           .filter(event => event instanceof NavigationStart)
           .map((e: NavigationStart) => e.url)
           .subscribe(url => {
-            if (url.indexOf('?boardContextId') === -1 &&
+            if (url.indexOf('?q') === -1 &&
               url.indexOf('/plan/board') > -1) {
               this.setDefaultUrl(groupType);
             }
@@ -106,10 +125,23 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
 
       this.eventListeners.push(
         this.route.queryParams
-          .filter(params => params.hasOwnProperty('boardContextId'))
-          .map(params => params.boardContextId)
-          .subscribe(contextId => {
-            this.board$ = this.boardQuery.getBoardById(contextId);
+          .filter(params => params.hasOwnProperty('q'))
+          .map(params => {
+            let iterationId = this.filterService.getConditionFromQuery(params.q, 'iteration');
+            if (iterationId !== undefined) {
+              return [this.filterService.getConditionFromQuery(params.q, 'boardContextId'), iterationId];
+            } else {
+              const contextId = this.filterService.queryToFlat(params.q)[0].value;
+              return [contextId];
+            }
+          })
+          .subscribe(ids => {
+            // ids[0]: boardContextId, ids[1]: iteration
+            if (ids.length > 1) {
+              this.board$ = this.boardQuery.getBoardById(ids[0], ids[1]);
+            } else {
+              this.board$ = this.boardQuery.getBoardById(ids[0]);
+            }
             // Fetching work item
             // Dispatch action to fetch work items per lane for this context ID
           })
@@ -167,6 +199,7 @@ export class PlannerBoardComponent implements AfterViewChecked, OnInit, OnDestro
           workitem['link'] = workItem.link;
           workitem['id'] = workItem.id;
           workitem['type'] = workItem.type;
+          // Construct the payload for Reorder
           const payload = {
             workitem: workitem,
             destinationWorkitemID: destinationWorkItemID,

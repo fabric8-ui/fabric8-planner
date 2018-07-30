@@ -136,7 +136,7 @@ export class BoardQuery {
         private spaceQuery: SpaceQuery,
         private filterService: FilterService) {}
 
-  getBoardById(id: string): Observable<BoardModelUI> {
+  getBoardById(id: string, iterationID: string = ''): Observable<BoardModelUI> {
     return this.boardSource.select(id)
       .filter(board => !!board)
 
@@ -155,9 +155,17 @@ export class BoardQuery {
         const boardQuery = this.filterService.queryBuilder(
           'board.id', this.filterService.equal_notation, board.id
         );
-        const finalQuery = this.filterService.queryJoiner(
+        let finalQuery = this.filterService.queryJoiner(
           initialQuery, this.filterService.and_notation, boardQuery
         );
+        if (iterationID !== '') {
+          const iterationQuery = this.filterService.queryBuilder(
+            'iteration', this.filterService.equal_notation, iterationID
+          );
+          finalQuery = this.filterService.queryJoiner(
+            finalQuery, this.filterService.and_notation, iterationQuery
+          );
+        }
         this.store.dispatch(new WorkItemActions.Get({
           pageSize: 200,
           filters: {expression: finalQuery},
