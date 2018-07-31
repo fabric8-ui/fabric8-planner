@@ -1,12 +1,13 @@
 <div [class.f8-planner__container]="detailContext=='detail'">
-  <div class="f8-detail form-horizontal work-item-page"
+  <div class="f8-detail form-horizontal"
     id="wi-detail-form"
     *ngIf="workItem">
     <fieldset *ngIf="(workItem.typeObs | async) as type">
       <div class="f8-detail__header"
         #detailHeader>
         <span
-          class="pficon-close pull-right close f8-detail--close"
+          class="pficon pficon-close 
+          pull-right pointer f8-detail__close-icon"
           (click)="closeDetail()">
         </span>
         <div *ngIf="detailContext=='preview'">
@@ -44,8 +45,8 @@
         <div class="col-xs-12 col-sm-12 col-md-12 margin-top-15 padding-0">
           <div class="form-horizontal">
             <f8-inlineinput
-              #inlineInput
               id="wi-title-div"
+              #inlineInput
               [disabled]="!workItem?.editable"
               [value]="workItem.title"
               (onSave)="saveTitle($event)"
@@ -55,8 +56,8 @@
           </div>
         </div>
       </div>
-
-      <div class="f8-detail__detail width-100" #detailContent>
+      <div class="f8-detail__detail width-100"
+        #detailContent>
         <div
           class="col-xs-12 col-sm-12 padding-v-15"
           [class.f8-detail__detail-wrap]="detailContext=='detail'"
@@ -130,7 +131,7 @@
                   [showFullName]="true"
                   [assignees]="workItem?.assigneesObs | async">
                 </f8-assignee>
-                <div class="user-search"
+                <div class="posRel"
                   *ngIf="workItem?.editable">
                     <assignee-selector
                       [allUsers]="collaborators"
@@ -155,8 +156,8 @@
                   class="spinner spinner-sm spinner-inline">
                 </span>
                 <common-selector
+                  class="f8-area-dropdown"
                   *ngIf="!loadingArea"
-                  class="area-dropdown"
                   [allowUpdate]="workItem?.editable"
                   [noValueLabel]="'None'"
                   [headerText]="'Update area'"
@@ -181,8 +182,8 @@
                   class="spinner spinner-sm spinner-inline">
                 </span>
                 <common-selector
+                  class="f8-iteration-dropdown"
                   *ngIf="!loadingIteration"
-                  class="iteration-dropdown"
                   [allowUpdate]="workItem?.editable"
                   [headerText]="'Update iteration'"
                   [items]="iterationSource | async"
@@ -195,7 +196,6 @@
               </div>
             </section>
           </div>
-
           <!--Labels-->
           <div class="form-group">
             <section class="f8-detail__labels">
@@ -212,7 +212,7 @@
                   [allowDelete]="workItem?.editable"
                   [context]="detailContext">
                 </f8-label>
-                <div class="f8-detail__labels--selector"
+                <div class="margin-top-5"
                   *ngIf="loggedIn">
                   <label-selector
                     [allLabels]="labels"
@@ -224,7 +224,6 @@
               </div>
             </section>
           </div>
-
           <!-- Description -->
           <div class="form-group">
             <section class="f8-detail__area">
@@ -243,7 +242,6 @@
               </div>
             </section>
           </div>
-
           <div class="dynamic-fields-wrap">
             <!-- Extra fields Start -->
             <div class="form-group margin-bottom-0"
@@ -258,9 +256,8 @@
             <!-- Extra fields End -->
           </div>
         </div>
-
         <div class="col-xs-12 col-sm-12 padding-0"
-          [class.f8-detail__detail-wrap--right]="detailContext=='detail'"
+          [class.f8-detail__detail-wrap-right]="detailContext=='detail'"
           [class.f8-detail__detail-wrap]="detailContext=='detail'"
           [class.col-md-5]="detailContext=='detail'"
           [class.col-lg-5]="detailContext=='detail'"
@@ -286,5 +283,5 @@
     </fieldset>
   </div>
 </div>
-
-<osio-modal *ngIf="detailContext=='detail'"></osio-modal>
+<osio-modal *ngIf="detailContext=='detail'">
+</osio-modal>

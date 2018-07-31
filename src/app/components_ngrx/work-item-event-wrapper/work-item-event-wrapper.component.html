@@ -1,11 +1,13 @@
-<div class="f8-event" id="wi-event">
-  <ul class="f8-event-content nav nav-tabs nav-tabs-pf" 
+<div class="f8-event__wrapper"
+  id="wi-event">
+  <ul class="f8-event__list nav nav-tabs nav-tabs-pf" 
     id="wi-event-content" 
     *ngIf="true">
     <!-- Refactoring needed to toogle view -->
-    <li class="f8-toggle-caret" 
+    <li class="f8-comment__toggle" 
       (click)="isCollapsedTimeline = !isCollapsedTimeline">
-      <i class="fa fa-icon" [ngClass]="{'fa-angle-right': isCollapsedTimeline,
+      <i class="fa fa-icon" 
+        [ngClass]="{'fa-angle-right': isCollapsedTimeline,
         'fa-angle-down': !isCollapsedTimeline}">
       </i>
     </li>
@@ -30,6 +32,7 @@
   <div [collapse]="isCollapsedTimeline" 
     *ngIf="(events | async).length < 1">
     <pfng-empty-state
-        [config]="emptyStateConfig"></pfng-empty-state>
+      [config]="emptyStateConfig">
+    </pfng-empty-state>
   </div>
 </div>

@@ -1,5 +1,6 @@
 <!-- Table Inline Quick Add -->
-<div class="f8-quickadd__wiblk" #quickAddElement
+<div class="f8-quickadd__wiblk"
+  #quickAddElement
   *ngIf="wilistview === 'wi-table-view' || wilistview === 'wi-table-view-top'"
   [ngClass]="{'f8-quick-add-inline' : wilistview === 'wi-table-view'}">
   <div class="pull-left">
@@ -31,7 +32,8 @@
           <li *ngFor="let type of workItemTypes"
               role="menuitem"
               (click)="selectType($event, type)">
-            <a class="dropdown-item" href="#">
+            <a class="dropdown-item"
+              href="#">
               <i class="fa"
                 [ngClass]="type.icon"></i>
                 <span class="padding-h-3">{{ type.name }}</span>

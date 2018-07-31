@@ -1,6 +1,11 @@
   <ng-container *ngIf="assignees.length < 1">
-    <span class="dib fa fa-user-plus user-assign-icon margin-right-5"></span>
-    <small *ngIf="!overlapAvatar" class="dib">Unassigned</small>
+    <span class="dib fa fa-user-plus 
+      f8-planner__user-assign margin-right-5">
+    </span>
+    <small class="dib"
+      *ngIf="!overlapAvatar">
+        Unassigned
+    </small>
   </ng-container>
   <ng-container *ngIf="showFullName">
     <div class="dib margin-right-15 margin-bottom-7"

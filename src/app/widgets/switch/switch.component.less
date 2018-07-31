@@ -10,7 +10,7 @@
   input {
     display: none;
   }
-  &--slider {
+  &__slider {
     position: absolute;
     top: 0;
     left: 0;
@@ -33,24 +33,24 @@
       transition: .4s;
     }
   }
-  &__on {
+  &__is-on {
     display: inline-block;
     margin-top: 3px;
     margin-left: 8px;
     color: @color-pf-white;
   }
-  &__off {
+  &__is-off {
     display: inline-block;
     margin-left: 20px;
     color: @color-pf-black-900;
   }
-  input:checked+ .f8-switch--slider {
+  input:checked+ .f8-switch__slider {
     background-color: @color-pf-blue;
   }
-  input:focus+ .f8-switch--slider {
+  input:focus+ .f8-switch__slider {
     box-shadow: 0 0 1px @color-pf-blue;
   }
-  input:checked+ .f8-switch--slider:before {
+  input:checked+ .f8-switch__slider:before {
     transform: translateX(100%);
   }
 }

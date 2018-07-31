@@ -1,6 +1,8 @@
-<div [@slideInOut]="panelState" class="f8-quick-preview">
+<div class="f8-quick-preview"
+  [@slideInOut]="panelState">
   <work-item-detail
     [workItem]="workItem"
     [context]="context"
-    (closePreview)="close()"></work-item-detail>
+    (closePreview)="close()">
+  </work-item-detail>
 </div>

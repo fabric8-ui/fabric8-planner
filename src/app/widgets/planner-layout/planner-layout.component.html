@@ -1,8 +1,9 @@
-<div [@slideInOut]="sidePanelState" class="side-panel">
+<div class="f8-planner__left-panel"
+  [@slideInOut]="sidePanelState">
   <ng-container *ngTemplateOutlet="sidePanelContent">
   </ng-container>
 </div>
-<div class="content-wrapper"
+<div class="f8-planner__content-wrapper"
   [@slideInOutContent]="sidePanelState === 'in' ? 'out' : 'in'">
   <ng-container *ngTemplateOutlet="sectionContent">
   </ng-container>

@@ -45,12 +45,12 @@
         #labelname 
         (input)="onAddLabelInput($event.target.value)"
         (keyup.enter)="createLabel(labelname.value)"/>
-      <button class="action-btn btn btn-primary fa fa-check"
+      <button class="f8-planner__action-button btn btn-primary fa fa-check"
         type="button"
         [class.disabled]="createDisabled"
         (click)="createLabel(labelname.value)">
       </button>
-      <button class="action-btn btn pficon pficon-close"
+      <button class="f8-planner__action-button btn pficon pficon-close"
         type="button"
         (click)="closeAddLabel()">
       </button>

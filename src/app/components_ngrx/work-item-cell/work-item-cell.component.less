@@ -1,14 +1,4 @@
-<<<<<<< HEAD
-.type-icon {
-  min-width: 15px;
-}
-.wi-detail-title {
-  display: inline-flex;
-  width: ~'calc(e("100% - 20px"))';
-}
-=======
 @import (reference) '../../../assets/stylesheets/_base';
->>>>>>> style(wi-cell): apply guidelines for work item cells
 
 .f8-planner-cell {
   &__icon-type {
@@ -31,17 +21,17 @@
       text-decoration: none;
     }
   }
-}
-.assignees-cell {
-  .f8-assignees {
-    display: initial;
-    margin: 0 !important;
+  &__assignees {
+    .f8-assignees {
+      display: initial;
+      margin: 0 !important;
+    }
   }
-}
-.f8-planner-cell__state {
-  display: flex;
-  &-text {
-    line-height: normal;
-    white-space: normal;
+  &__state {
+    display: flex;
+    &-text {
+      line-height: normal;
+      white-space: normal;
+    }
   }
 }

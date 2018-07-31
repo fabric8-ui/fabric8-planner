@@ -1,4 +1,5 @@
-<div class="f8-link-container" id="wi-link">
+<div class="f8-link"
+  id="wi-link">
   <!-- This should be separated out as a separate component -->
   <!--
     There used to be a tab feature but since we don't need it any more
@@ -7,14 +8,14 @@
     too.
   -->
   <ul class="f8-link__nav-list nav nav-tabs nav-tabs-pf">
-    <li class="f8-toggle-caret"
+    <li class="f8-comment__toggle"
       (click)="showLinkComponent=!showLinkComponent;">
-      <i class="fa fa-icon f8-toggle-caret-right"
+      <i class="fa fa-icon f8-comment__toggle-right"
        [ngClass]="{'fa-angle-down': showLinkComponent,
             'fa-angle-right': !showLinkComponent}"></i>
     </li>
     <li
-      [class.active]="showLinkComponent"
+      [class.is-active]="showLinkComponent"
       (click)="showLinkComponent=!showLinkComponent;">
       <a *ngLet="(workItemLinksCountSource | async) as linkCount;">
         <span>Links</span>

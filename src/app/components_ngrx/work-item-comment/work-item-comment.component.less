@@ -1,16 +1,9 @@
 @import (reference) '../../../assets/stylesheets/_base';
 
 .f8-comment {
-  &-content {
+  &__content {
     li {
       text-align: center;
-      &.f8-toggle-caret {
-        display: inline-block;
-        width: 40px;
-        padding-top: 9px;
-        padding-bottom: 9px;
-        cursor: pointer;
-      }
       a {
         padding: 13px 15px;
         border: 0;
@@ -23,7 +16,7 @@
       .badge {
         margin-top: -3px;
       }// hack to align the badge
-      &.active {
+      &.is-active {
         .badge {
           color: @color-pf-white;
           background-color: @color-pf-blue-400;
@@ -31,8 +24,15 @@
       }
     }
   }
+  &__toggle {
+    display: inline-block;
+    width: 40px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    cursor: pointer;
+  }
 
-  &--input {
+  &__input {
     padding: 15px;
     background-color: @color-pf-black-100;
     div[id='wi-comment-add-comment'] {
@@ -61,19 +61,6 @@
       min-width: 10px;
       margin-top: 0;
       text-align: right;
-    }
-  }
-
-  &--editable {
-    height: auto;
-  }
-  &--noneditable {
-    height: auto;
-    word-break: break-word;
-    border-color: transparent;
-    box-shadow: none;
-    &:hover {
-      border-color: @color-pf-blue-200;
     }
   }
 }
