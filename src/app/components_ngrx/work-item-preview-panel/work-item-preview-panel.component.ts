@@ -11,9 +11,11 @@ import {
   HostListener,
   Input,
   OnInit,
-  Output
+  Output,
+  ViewChild
 } from '@angular/core';
 import { WorkItemUI } from './../../models/work-item';
+import { WorkItemDetailComponent } from './../work-item-detail/work-item-detail.component';
 
 @Component({
   selector: 'work-item-preview-panel',
@@ -36,6 +38,7 @@ import { WorkItemUI } from './../../models/work-item';
 })
 
 export class WorkItemPreviewPanelComponent implements OnInit {
+  @ViewChild('quickPreview') quickPreview: WorkItemDetailComponent;
 
   @Input() context: string = 'list';
 
