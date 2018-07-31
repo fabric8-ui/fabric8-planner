@@ -5,23 +5,9 @@
 @import './../../../assets/stylesheets/_dragula';
 
 
-.f8-wi-container {
-  .f8-wi-board {
-    background-color: @color-pf-black-100;
-    padding-top: 24px;
-    padding-right: 24px;
-    padding-bottom: 24px;
-    padding-left: 24px;
-    overflow-x: auto;
-    white-space: nowrap;
-    .f8-planner-column {
-      margin-left: 10px;
-      &:first-of-type {
-        margin-left: 0;
-      }
-    }
-  }
-  .lock-overlay-list {
+
+.f8-planner__container {
+  .f8-planner__overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -48,6 +34,21 @@
         position: relative;
         top: unset;
         left: unset;
+      }
+    }
+  }
+  .f8-wi-board {
+    background-color: @color-pf-black-100;
+    padding-top: 24px;
+    padding-right: 24px;
+    padding-bottom: 24px;
+    padding-left: 24px;
+    overflow-x: auto;
+    white-space: nowrap;
+    .f8-planner-column {
+      margin-left: 10px;
+      &:first-of-type {
+        margin-left: 0;
       }
     }
   }

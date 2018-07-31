@@ -1,44 +1,41 @@
 @import (reference) '../../../assets/stylesheets/_base';
-/// ngx-datatables css
+/// ng x-datatables css
 
-.cell-class {
-  overflow: visible !important;
-  .datatable-body-cell-label {
-    display: flex;
-    height: 100%;
-    align-items: center;
-    label {
-      margin: 0;
-    }
+.f8-planner__table-cell {
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+}
+.datatable-body-cell-label {
+  display: flex;
+  vertical-align: middle;
+  height: 100%;
+  align-items: center;
+  label {
+    margin: 0;
   }
 }
-.header-cell {
+
+.f8-planner__table-header {
   font-weight: bold !important;
   overflow: visible !important;
   color: @color-pf-black !important;
 }
+
 .datatable-row-detail {
   overflow-y: visible;
 }
+
 .datatable-header {
-  overflow: visible !important;
+  overflow: visible;
 }
-.fullscreen {
-  position: absolute !important;
-  height: auto !important;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-}
-a.quick-add-icon {
+.f8-planner__quick-add-icon {
   width: 100%;
   font-size: 16px;
   text-align: center;
   text-decoration: none;
   opacity: .4;
 }
+
 // Css for row selection
 .ngx-datatable.material.single-selection .datatable-body-row.active,
 .ngx-datatable.material.single-selection .datatable-body-row.active .datatable-row-group,
@@ -48,6 +45,7 @@ a.quick-add-icon {
 .ngx-datatable.material.single-selection .datatable-body-row.active:focus .datatable-row-group {
   background-color: @color-pf-black-200 !important;
 }
+
 // css for row hover
 .ngx-datatable.material:not(.cell-selection) .datatable-body-row:hover,
 .ngx-datatable.material:not(.cell-selection) .datatable-body-row:hover .datatable-row-group,
@@ -58,15 +56,17 @@ a.quick-add-icon {
   transition-duration: .3s;
   transition-timing-function: linear;
 }
+
 // css to show icons on hover(quickAdd, quickPreview, detailPreview, dragHandle)
-.datatable-body-row:hover,
-.datatable-body-row.active {
-  .table-dnd-container,
-  .wi-detail-icon,
-  a.quick-add-icon {
-    opacity: 1;
-  }
+.datatable-body-row:hover .table-dnd-container,
+.datatable-body-row.active .table-dnd-container,
+.datatable-body-row:hover .wi-detail-icon,
+.datatable-body-row.active .wi-detail-icon,
+.datatable-body-row:hover a.f8-planner__quick-add-icon,
+.datatable-body-row.active a.f8-planner__quick-add-icon {
+  opacity: 1;
 }
+
 .datatable-body-cell,
 .datatable-header-cell {
   border-right: 1px solid;
@@ -86,14 +86,11 @@ a.quick-add-icon {
 .datatable-body-cell {
   overflow-x: visible !important;
 }
-.tree-icon {
+
+.f8-planner__tree-icon {
   min-width: 15px;
-  &.tree-icon__disabled {
+  &.is-disabled {
     opacity: .4;
     cursor: not-allowed;
   }
-}
-.icon-loader {
-  margin-left: -4px;
-  margin-right: 6px;
 }

@@ -7,7 +7,7 @@ import { WorkItemList } from './workitem-list';
 type workItemGroup = 'Scenarios' | 'Experiences' | 'Requirements' | 'Work Items';
 
 export class SidePanel extends ui.BaseElement {
-  showHideSidePanelButton = new ui.Button(this.$('.f8-sidepanel--toggle'), 'show/hide side panel button');
+  showHideSidePanelButton = new ui.Button(this.$('.f8-sidepanel__toggle'), 'show/hide side panel button');
   scenarioButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Scenarios')), 'Side panel Scenario button');
   experienceButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Experiences')), 'Side panel Experiences button');
   requirementsButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type .dib', ' Requirements')), 'Side panel Requirements button');
