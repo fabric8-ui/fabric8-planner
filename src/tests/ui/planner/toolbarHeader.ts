@@ -19,8 +19,8 @@ export class ToolbarHeader extends BaseElement {
   );
   private clearAllFilter = new ui.Clickable(this.$('.clear-filters'), 'Clear All filters');
   showCompleted = new BaseElement(this.$('.toolbar-pf-view-selector #showCompleted'), 'Show Completed');
-  saveFilter = new ui.Clickable(this.$('.save-filters'), 'Save');
-  saveFilterDialog = new BaseElement(this.$('.save-filter-dropdown'));
+  saveFilter = new ui.Clickable(this.$('.f8-planner__filters-save a'), 'Save');
+  saveFilterDialog = new BaseElement(this.$('.f8-planner__filters-save'));
   saveFilterBtn = new ui.Button(this.saveFilterDialog.$('.save-cq-btn'), 'Save');
   closeBtn = new ui.Button(this.$('.cancel-cq-btn'), 'Cancel');
   titleTextInput = new ui.TextInput(this.saveFilterDialog.$('input.form-control'), 'Query Title');

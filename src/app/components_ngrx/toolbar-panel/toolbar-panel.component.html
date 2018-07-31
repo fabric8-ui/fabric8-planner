@@ -1,4 +1,4 @@
-<div class="toolbar-header">
+<div class="f8-planner__toolbar">
   <pfng-toolbar
     [config]="toolbarConfig"
     [actionTemplate]="actionsTemplate"
@@ -8,14 +8,14 @@
     (onFilterTypeAhead)="filterQueries($event)">
   </pfng-toolbar>
 </div>
-<div class="f8-filters">  
+<div class="f8-planner__filters">  
   <span class="dib margin-right-10"
     *ngIf="activeFilterFromSidePane !== ''">
     <strong>{{ totalCount | async }}</strong> in {{ activeFilterFromSidePanel }}
   </span>
-  <div class="f8-filters--active"
+  <div class="is-active"
     *ngIf="activeFilters.length">
-    <ul class="list-inline">
+    <ul class="f8-planner__filters-list">
       <li *ngFor="let filter of activeFilters">
         <span class="active-filter label label-info">
           {{ filter.field }}: {{ filter.displayValue }}
@@ -31,32 +31,37 @@
       (click)="removeAllFilters()">
       Clear all filters
     </a>
-    <div class="dropdown-kebab-pf dropdown save-filter-dropdown"
-      [autoClose]="false" #filterSaveDropdown
+    <div class="dropdown-kebab-pf dropdown f8-planner__filters-save"
+      [autoClose]="false" 
+      #filterSaveDropdown
       [isOpen]="isFilterSaveOpen"
       (isOpenChange)="saveFilterDropdownChange($event)"
       dropdown>
-      <a dropdownToggle class="save-filters margin-left-10"
+      <a class="margin-left-10"
+        dropdownToggle
         *ngIf="activeFilters.length > 0 && showSaveFilterButton">
           Save
       </a>
-      <div *dropdownMenu class="dropdown-menu-{{dropdownPlacement}} dropdown-menu">
-        <aside>
+      <div
+        class="dropdown-menu-{{dropdownPlacement}} dropdown-menu"
+        *dropdownMenu>
           <i class="db text-right fa fa-close btn btn-link"
-            (click)="closeFilterSave(filterSaveInp)"></i>
-        </aside>
-        <div>
+            (click)="closeFilterSave(filterSaveInp)">
+          </i>
           <input class="form-control ng-pristine ng-valid ng-touched"
-          (keyup.enter)="saveFilters(filterSaveInp)"
-          #filterSaveInp/>
-        </div>
-        <div class="save-filter-action">
-          <button class="btn btn-primary pull-right margin-left-5 save-cq-btn"
-            (click)="saveFilters(filterSaveInp)"
-            [disabled]="!filterSaveInp.value">Save</button>
-          <button class="btn pull-right margin-right-5 cancel-cq-btn" 
-            (click)="closeFilterSave(filterSaveInp)">Cancel</button>
-        </div>
+            (keyup.enter)="saveFilters(filterSaveInp)"
+            #filterSaveInp/>
+          <div class="margin-top-10">
+            <button class="btn btn-primary pull-right margin-left-5 save-cq-btn"
+              (click)="saveFilters(filterSaveInp)"
+              [disabled]="!filterSaveInp.value">
+              Save
+            </button>
+            <button class="btn pull-right margin-right-5 cancel-cq-btn" 
+              (click)="closeFilterSave(filterSaveInp)">
+                Cancel
+            </button>
+          </div>
       </div>
     </div>
   </div>
@@ -64,18 +69,22 @@
 <ng-template #actionsTemplate>
 </ng-template>
 <ng-template #addTemplate>
-  <input type="checkbox"
-    name="show completed" id="showCompleted"
+  <input id="showCompleted"
+    name="show completed"
+    type="checkbox"
     [checked]="isShowCompletedOn"
     (change)="showCompletedToggle($event)"
     [disabled]="isStateFilterSelected">
-  <label class="show-close__label checkbox-label"
-    for="showCompleted"
-    [class.inactive]="isStateFilterSelected">&nbsp;Show Completed</label>
-
-  <input type="checkbox"
+  <label for="showCompleted"
+    [class.inactive]="isStateFilterSelected">
+      &nbsp;Show Completed
+  </label>
+  <input id="showTree"
+    name="Show Tree"
+    type="checkbox"
     [checked]="isShowTreeOn"
-    (change)="showTreeToggle($event)"
-    name="Show Tree" id="showTree">
-  <label class="show-tree__label checkbox-label" for="showTree">&nbsp;Show Tree</label>
+    (change)="showTreeToggle($event)">
+  <label for="showTree">
+    &nbsp;Show Tree
+  </label>
 </ng-template>
