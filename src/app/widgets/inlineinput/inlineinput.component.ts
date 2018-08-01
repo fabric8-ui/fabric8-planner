@@ -32,6 +32,7 @@ export class InlineInputComponent implements OnInit {
   @Input() allowOnLineClickEdit: boolean = true;
 
   @Output() readonly onSave = new EventEmitter();
+  @Output() readonly onEdit = new EventEmitter();
 
   private inputValue: string = '';
   private saving: boolean = false;
@@ -55,6 +56,7 @@ export class InlineInputComponent implements OnInit {
         this.previousValue = this.inputField.nativeElement.value;
         // Set editing value as true
         this.editing = true;
+        this.onEdit.emit(this.editing);
       }
       this.inputField.nativeElement.focus();
     } else {

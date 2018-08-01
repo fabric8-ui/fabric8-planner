@@ -16,6 +16,7 @@
         [type]="fieldValue.field.type.kind"
         [value]="fieldValue.value"
         (onSave)="saveInputField($event)"
+        (onEdit)="isDynamicFieldDirty($event)"
         [placeholder]="fieldValue.field.label">
       </f8-inlineinput>
 
@@ -28,7 +29,8 @@
         [items]="dropdownMenuItems"
         [selectedItems]="dropdownSelectedItems"
         class="dynamic-enum-dropdown"
-        (onCloseSelector)="onChangeDropdown($event)">
+        (onCloseSelector)="onChangeDropdown($event)"
+        (onOpenSelector)="isDynamicFieldDirty($event)">
       </common-selector>
 
       <!-- workitemtype field type: boolean -->
@@ -40,7 +42,8 @@
         [items]="dropdownMenuItems"
         [selectedItems]="dropdownSelectedItems"
         class="dynamic-boolean-dropdown"
-        (onCloseSelector)="onChangeDropdown($event)">
+        (onCloseSelector)="onChangeDropdown($event)"
+        (onOpenSelector)="isDynamicFieldDirty($event)">
       </common-selector>
 
 
@@ -51,7 +54,8 @@
         [rawText]="fieldValue?.value?.content"
         [renderedText]="fieldValue?.value?.rendered"
         (onSaveClick)="markupUpdate($event)"
-        (showPreview)="showPreview($event)">
+        (showPreview)="showPreview($event)"
+        (onActiveEditor)="isDynamicFieldDirty($event)">
       </f8-markdown>
 
       <!-- workitemtype field type: instant (datetime) -->

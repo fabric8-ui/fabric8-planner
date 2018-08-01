@@ -50,7 +50,8 @@
               [value]="workItem.title"
               (onSave)="saveTitle($event)"
               [placeholder]="'Enter title'"
-              (clickOut)="inlineInput.closeClick()">
+              (clickOut)="inlineInput.closeClick()"
+              (onEdit)="isQuickPreviewDirty = $event">
             </f8-inlineinput>
           </div>
         </div>
@@ -137,7 +138,8 @@
                       [selectedAssignees]="workItem?.assigneesObs | async"
                       [editAllow]="workItem?.editable"
                       [loggedInUser]="loggedInUser"
-                      (onOpenSelector)="onAssigneeSelectorOpen($event)"
+                      (onOpenAssignee)="onAssigneeSelectorOpen($event); 
+                        isQuickPreviewDirty = $event"
                       (onCloseAssignee)="assignUser($event)">
                     </assignee-selector>
                 </div>
@@ -164,7 +166,8 @@
                   [selectedItems]="selectedAreas | async"
                   [itemTruncate]="-25"
                   [toggleTruncate]="1000"
-                  (onCloseSelector)="areaUpdated($event)">
+                  (onCloseSelector)="areaUpdated($event)"
+                  (onOpenSelector)="isQuickPreviewDirty = $event">
                 </common-selector>
               </div>
             </section>
@@ -190,7 +193,8 @@
                   [selectedItems]="selectedIterations | async"
                   [itemTruncate]="-25"
                   [toggleTruncate]="1000"
-                  (onCloseSelector)="iterationUpdated($event)">
+                  (onCloseSelector)="iterationUpdated($event)"
+                  (onOpenSelector)="isQuickPreviewDirty = $event">
                 </common-selector>
               </div>
             </section>
@@ -218,7 +222,8 @@
                     [allLabels]="labels"
                     [selectedLabels]="workItem?.labelsObs | async"
                     [allowUpdate]="workItem?.editable"
-                    (onCloseSelector)="updateLabels($event)">
+                    (onCloseSelector)="updateLabels($event)"
+                    (onOpenSelector)="isQuickPreviewDirty = $event">
                   </label-selector>
                 </div>
               </div>
@@ -238,7 +243,8 @@
                   [rawText]="workItem.descriptionRendered!==null ? workItem.description : workItem.description.content"
                   [renderedText]="(workItem.descriptionRendered!==null ? workItem.descriptionRendered : workItem.description.rendered) | safe: 'html'"
                   (onSaveClick)="descUpdate($event)"
-                  (showPreview)="showPreview($event)" #descMarkdown>
+                  (showPreview)="showPreview($event)" 
+                  (onActiveEditor)="isQuickPreviewDirty = $event" #descMarkdown>
                 </f8-markdown>
               </div>
             </section>
@@ -252,7 +258,8 @@
                 class="db"
                 [keyValueField]="field"
                 [editAllow]="workItem?.editable"
-                (onUpdate)="dynamicFieldUpdated($event)">
+                (onUpdate)="dynamicFieldUpdated($event)"
+                (onDynamicFieldDirty)="isQuickPreviewDirty = $event">
               </alm-dynamic-field>
             </div>
             <!-- Extra fields End -->

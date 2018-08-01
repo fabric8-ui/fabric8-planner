@@ -13,9 +13,9 @@ export class ModalService {
 
   constructor() {}
 
-  public openModal(title: string, message: string, buttonText: string, actionKey?: string): Observable<string> {
-    this.componentSource.next([ title, message, buttonText, actionKey ]);
-    console.log('Opened modal dialog for key ' + actionKey);
+  public openModal(title: string, message: string, buttonText1: string, buttonText2?: string, actionKey1?: string, actionKey2?: string): Observable<string> {
+    this.componentSource.next([ title, message, buttonText1, buttonText2, actionKey1, actionKey2 ]);
+    console.log('Opened modal dialog for keys ' + actionKey1 + 'and' + actionKey2);
     return this.clientSource$;
   }
 

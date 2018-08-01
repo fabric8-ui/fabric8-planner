@@ -9,6 +9,8 @@ import { AuthenticationService } from 'ngx-login-client';
 
 import { GroupTypeQuery, GroupTypeUI } from '../../models/group-types.model';
 import { FilterService } from '../../services/filter.service';
+import { GroupTypesService } from '../../services/group-types.service';
+import { ModalService } from '../../services/modal.service';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
@@ -47,7 +49,8 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private spaces: Spaces,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -178,9 +181,26 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
 
   //This function navigates to the desired work item group type page
   groupTypeClickHandler(e: MouseEvent, item: GroupTypeUI) {
-    if (this.isQuickPreviewOpen = true) {
-      this.quickPreview.quickPreview.closeDetail();
+    if (this.isQuickPreviewOpen) {
+      if (this.quickPreview.quickPreview.isQuickPreviewDirty == 'open' ||
+       this.quickPreview.quickPreview.isQuickPreviewDirty == true) {
+        this.modalService.openModal('Modify Work Item', 'You have made some changes to this workitem.'
+        + ' Would you like to save the changes?', 'Save', 'Cancel', 'saveWorkItem', 'cancel')
+        .first()
+        .subscribe(actionKey => {
+          if (actionKey !== 'saveWorkItem') {
+            this.groupTypeNavigation(e, item);
+          }
+        });
+      } else {
+        this.groupTypeNavigation(e, item);
+      }
+    } else {
+      this.groupTypeNavigation(e, item);
     }
+  }
+  groupTypeNavigation(e: MouseEvent, item: GroupTypeUI) {
+    this.quickPreview.quickPreview.closeDetail();
     if (!e.srcElement.classList.contains('infotip-icon')) {
       let q = this.addRemoveQueryParams(item);
       this.router.navigate([], {

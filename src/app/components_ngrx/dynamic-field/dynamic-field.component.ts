@@ -49,6 +49,9 @@ export class DynamicFieldComponent implements OnInit {
   private markupCallBack: any = null;
   private showField: boolean = true;
 
+  // private editInlineInput: boolean = false;
+  // private commonSelectorOpen: boolean = false;
+
   // this is the input for dynamic field key and value
   @Input('keyValueField') set fieldValueSetter(val) {
     this.fieldValue = cloneDeep(val);
@@ -105,6 +108,8 @@ export class DynamicFieldComponent implements OnInit {
 
   // event when value is updated, emits new value as the event.
   @Output() readonly onUpdate = new EventEmitter();
+
+  @Output() readonly onDynamicFieldDirty = new EventEmitter();
 
   // the attribute key we're dealing with.
   attributeKey: string;
@@ -290,5 +295,11 @@ export class DynamicFieldComponent implements OnInit {
     // setting the form value to the (old) data value and mark it as pristine
     // this.form.controls[this.attributeKey].patchValue(this.oldValue);
     // this.form.controls[this.attributeKey].markAsPristine();
+  }
+
+  isDynamicFieldDirty(e) {
+    if (e == 'open' || e == true) {
+      this.onDynamicFieldDirty.emit(true);
+    }
   }
 }

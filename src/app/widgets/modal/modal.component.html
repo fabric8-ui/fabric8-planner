@@ -7,16 +7,16 @@
       </div>
       <!-- Action buttons to cancel/delete -->
       <div class="text-right">
-        <button class="btn"
+        <button *ngIf="buttonText2" class="btn"
           id="modal-cancel"
           type="submit"
-          (click)="modal.close()">
-            Cancel
+          (click)="doAction(actionKey2); modal.close()">
+            {{ buttonText2 }}
         </button>
         <button class="btn btn-danger"
           id="modal-confirm"
-          (click)="doAction(); modal.close()">
-            {{ buttonText }}
+          (click)="doAction(actionKey1); modal.close()">
+            {{ buttonText1 }}
         </button>
       </div>
     </div>

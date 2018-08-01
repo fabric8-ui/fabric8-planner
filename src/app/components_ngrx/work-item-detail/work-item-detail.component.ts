@@ -103,6 +103,8 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   private dynamicFormDataArray: any;
   private dynamicKeyValueFields: {key: string; value: string | number | null; field: any}[];
 
+  isQuickPreviewDirty: string | boolean = false;
+
   constructor(
     private store: Store<AppState>,
     private route: ActivatedRoute,
