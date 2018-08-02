@@ -16,6 +16,7 @@ export class PlannerPage extends AppPage {
   iteration = new planner.Iteration($('fab-planner-iteration-modal'));
   detailPage = new planner.WorkItemDetailPage($('work-item-detail'));
   confirmModalButton = new planner.WorkItemList($('#modal-confirm'));
+  boardView = new planner.BoardView($('planner-board'));
 
   constructor(url: string) {
     super(url);

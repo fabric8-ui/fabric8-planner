@@ -47,6 +47,8 @@ export abstract class AppPage extends BasePage {
   }
 
    async clickBoardTab() {
+    await this.boardTab.untilTextIsPresent('Board');
     await this.boardTab.clickWhenReady();
+    await this.waitUntilUrlContains('boardContextId');
   }
 }
