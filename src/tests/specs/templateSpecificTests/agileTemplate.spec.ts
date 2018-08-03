@@ -99,6 +99,7 @@ describe('Agile template tests: ', () => {
   it('should create a workitem of type STORY and check for the order of child types in dropdown', async () => {
     let newWorkItem = { title: 'Story 1', type : 'Story'};
     await plannerAgile.createWorkItem(newWorkItem);
+    await plannerAgile.workItemList.overlay.untilHidden();
     expect(plannerAgile.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();
     // open the inline quick add for newly created WorkItem
     await plannerAgile.workItemList.workItem(newWorkItem.title).clickInlineQuickAdd();
