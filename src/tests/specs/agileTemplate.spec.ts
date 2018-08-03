@@ -112,7 +112,7 @@ describe('Agile template tests: ', () => {
     expect(wiTypes[2]).toBe('Impediment');
   });
 
-  it('by default Closed work item should not show in list', async () => {
+  xit('by default Closed work item should not show in list', async () => {
     let newWorkItem = { title: 'Closed work item test', type: 'Theme' };
     await plannerAgile.createWorkItem(newWorkItem);
     expect(plannerAgile.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();
