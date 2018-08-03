@@ -79,13 +79,13 @@ let conf: Config = {
     browser.getProcessedConfig().then(function(config) {
       switch (config.capabilities.name) {
           case 'browser1':
-              browser.baseUrl = browser.baseUrl = browser.baseUrl + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME + '/plan';
-              break;
+            browser.baseUrl = browser.baseUrl + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME + '/plan';
+            break;
           case 'browser2':
-              browser.baseUrl = browser.baseUrl = browser.baseUrl + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME_SCRUM + '/plan';
-          break;
+            browser.baseUrl = browser.baseUrl + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME_SCRUM + '/plan';
+            break;
           default:
-              browser.baseUrl = browser.baseUrl = browser.baseUrl + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME + '/plan';
+            browser.baseUrl = browser.baseUrl + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME + '/plan';
           break;
       }
     });
