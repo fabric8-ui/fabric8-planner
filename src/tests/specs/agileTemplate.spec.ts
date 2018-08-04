@@ -70,7 +70,7 @@ describe('Agile template tests: ', () => {
     await plannerAgile.quickPreview.close();
   });
 
-  it('should create a workitem of type THEME and check for the order of child types in dropdown', async () => {
+  xit('should create a workitem of type THEME and check for the order of child types in dropdown', async () => {
     let newWorkItem = { title: 'Theme 1', type : 'Theme'};
     await plannerAgile.createWorkItem(newWorkItem);
     expect(plannerAgile.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();
@@ -84,7 +84,7 @@ describe('Agile template tests: ', () => {
     expect(wiTypes[2]).toBe('Impediment');
   });
 
-  it('should create a workitem of type EPIC and check for the order of child types in dropdown', async () => {
+  xit('should create a workitem of type EPIC and check for the order of child types in dropdown', async () => {
     let newWorkItem = { title: 'Epic 1', type : 'Epic'};
     await plannerAgile.createWorkItem(newWorkItem);
     expect(plannerAgile.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();
