@@ -23,7 +23,6 @@ export class PlannerPage extends AppPage {
 
   async ready() {
     support.debug(' ... check if Planner page is Ready');
-    let url = await browser.getCurrentUrl();
     await super.ready();
     await this.workItemList.ready();
     await this.quickAdd.ready();
