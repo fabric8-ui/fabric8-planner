@@ -1,4 +1,4 @@
-import { $, by, ElementFinder } from 'protractor';
+import { $, browser, by, ElementFinder } from 'protractor';
 import * as support from '../../support';
 import  *  as ui from './../../ui';
 import { WorkItemList } from './workitem-list';
@@ -31,9 +31,13 @@ export class SidePanel extends ui.BaseElement {
     support.debug('... check if Side panel is Ready');
     await super.ready();
     await this.showHideSidePanelButton.ready();
-    await this.scenarioButton.ready();
-    await this.experienceButton.ready();
-    await this.requirementsButton.ready();
+    if (browser.browserName.browserSDD) {
+      await this.scenarioButton.ready();
+      await this.experienceButton.ready();
+      await this.requirementsButton.ready();
+    } if (browser.browserName.browserAGILE) {
+      await this.workItemsGroupAgile.ready();
+    }
     await this.createIterationButton.ready();
     support.debug('... check if Side panel is Ready - OK');
   }

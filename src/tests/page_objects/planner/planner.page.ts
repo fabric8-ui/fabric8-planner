@@ -27,7 +27,7 @@ export class PlannerPage extends AppPage {
     await super.ready();
     await this.workItemList.ready();
     await this.quickAdd.ready();
-    url.includes('SDD') ? (await this.sidePanel.ready()) : await this.sidePanel.workItemsGroupAgile.ready();
+    await this.sidePanel.ready();
     support.debug(' ... check if Planner page is Ready - OK');
   }
 
