@@ -12,4 +12,9 @@ export class Logging {
     let className = this.constructor.name;
     debug(`... ${className}('${this.name}'): ${context}`, ...msg);
   }
+
+  fail(action: string, ...msg: string[]) {
+    let className = this.constructor.name;
+    console.error(`${action}: ${className}('${this.name}')`, ...msg);
+  }
 }

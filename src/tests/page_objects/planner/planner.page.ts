@@ -46,8 +46,8 @@ export class PlannerPage extends AppPage {
     await this.inlineQuickAdd.addInlineWorkItem(item);
   }
 
-  async resetState() {
-    await this.sidePanel.clickScenarios();
+  async resetState(groupName: string) {
+    await this.sidePanel.clickWorkItemGroup(groupName);
     await $('body').sendKeys(Key.ESCAPE);
   }
 }
