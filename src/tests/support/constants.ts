@@ -51,6 +51,8 @@ export class Constants {
       'stateOpen': 'open',
       'stateNew': 'new',
       'stateClosed': 'closed',
+      'stateInProgress': 'in Progress',
+      'stateResolved': 'resolved',
       'updateIteration' : 'Iteration_2123',
       'updatedWorkItem' : {
         title: 'New Workitem Title',
@@ -120,7 +122,9 @@ export class Constants {
       'stateOpen': 'Open',
       'stateNew': 'New',
       'stateClosed': 'Closed',
-      'type': ' Task',
+      'stateInProgress': 'In Progress',
+      'stateResolved': 'Resolved',
+      'type': ' Defect',
       'updatedWorkItem' : {
         title: 'New Workitem Title',
         description: 'New WorkItem Description'

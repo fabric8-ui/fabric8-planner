@@ -174,7 +174,7 @@ describe('Planner Smoke Tests:', () => {
   it('Create custom query', async () => {
     await planner.sidePanel.clickWorkItemGroup(testData.group3);
     await planner.workItemList.overlay.untilHidden();
-    await planner.header.selectFilter('State', 'in progress');
+    await planner.header.selectFilter('State', testData.stateInProgress);
     await planner.workItemList.overlay.untilHidden();
     await planner.header.saveFilters('Query 1');
     await planner.workItemList.overlay.untilHidden();
@@ -185,7 +185,7 @@ describe('Planner Smoke Tests:', () => {
   it('Delete custom query', async () => {
     await planner.sidePanel.clickWorkItemGroup(testData.group3);
     await planner.workItemList.overlay.untilHidden();
-    await planner.header.selectFilter('State', 'resolved');
+    await planner.header.selectFilter('State', testData.stateResolved);
     await planner.workItemList.overlay.untilHidden();
     await planner.header.saveFilters('My filter');
     await planner.workItemList.overlay.untilHidden();
