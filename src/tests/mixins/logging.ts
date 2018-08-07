@@ -1,3 +1,4 @@
+import { browser } from 'protractor';
 import { debug, info } from '../support';
 
 export class Logging {
@@ -5,16 +6,16 @@ export class Logging {
 
   log(action: string, ...msg: string[]) {
     let className = this.constructor.name;
-    info(`${action}: ${className}('${this.name}')`, ...msg);
+    info(`${action}: ${browser.browserName} ${className}('${this.name}')`, ...msg);
   }
 
   debug(context: string, ...msg: string[]) {
     let className = this.constructor.name;
-    debug(`... ${className}('${this.name}'): ${context}`, ...msg);
+    debug(`... ${browser.browserName} ${className}('${this.name}'): ${context}`, ...msg);
   }
 
   fail(action: string, ...msg: string[]) {
     let className = this.constructor.name;
-    console.error(`${action}: ${className}('${this.name}')`, ...msg);
+    console.error(`${action}: ${browser.browserName} ${className}('${this.name}')`, ...msg);
   }
 }

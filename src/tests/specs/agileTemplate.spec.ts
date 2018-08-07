@@ -3,7 +3,7 @@ import { PlannerPage } from '../page_objects/planner';
 import * as support from '../support';
 
 
-describe('Agile template tests: ', () => {
+xdescribe('Agile template tests: ', () => {
   let plannerAgile: PlannerPage;
   let c = new support.Constants();
   let URL;
