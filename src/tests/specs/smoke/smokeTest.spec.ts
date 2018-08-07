@@ -23,7 +23,7 @@ describe('Planner Smoke Tests:', () => {
   });
 
   afterEach(async () => {
-    await planner.resetState();
+    await planner.resetState(testData.group1);
   });
 
   it('create a work item and add/remove assignee', async () => {
@@ -171,8 +171,8 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.quickPreview.getComments()).not.toContain('new comment');
   });
 
-  xit('Create custom query', async () => {
-    await planner.sidePanel.clickRequirement();
+  it('Create custom query', async () => {
+    await planner.sidePanel.clickWorkItemGroup(testData.group3);
     await planner.workItemList.overlay.untilHidden();
     await planner.header.selectFilter('State', 'in progress');
     await planner.workItemList.overlay.untilHidden();
@@ -182,8 +182,8 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.sidePanel.getMyFiltersList()).toContain('Query 1');
   });
 
-  xit('Delete custom query', async () => {
-    await planner.sidePanel.clickRequirement();
+  it('Delete custom query', async () => {
+    await planner.sidePanel.clickWorkItemGroup(testData.group3);
     await planner.workItemList.overlay.untilHidden();
     await planner.header.selectFilter('State', 'resolved');
     await planner.workItemList.overlay.untilHidden();
@@ -228,13 +228,13 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.sidePanel.infotipPopover.count()).toBe(1);
   });
 
-  xit('Add new work-item to the selected iteration', async () => {
+  it('Add new work-item to the selected iteration', async () => {
     await planner.workItemList.overlay.untilHidden();
     await planner.sidePanel.clickIteration('Iteration_1');
     await planner.workItemList.overlay.untilHidden();
     await planner.quickAdd.addWorkItem({title : 'Add new work item to iteration test'});
     expect(await planner.workItemList.hasWorkItem('Add new work item to iteration test')).toBeTruthy();
-    await planner.sidePanel.clickScenarios();
+    await planner.sidePanel.clickWorkItemGroup(testData.group1);
     await planner.workItemList.overlay.untilHidden();
     await planner.sidePanel.clickIteration('Iteration_1');
     expect(await planner.workItemList.hasWorkItem('Add new work item to iteration test')).toBeTruthy();

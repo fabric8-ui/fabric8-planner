@@ -22,7 +22,7 @@ describe('Iteration test', () => {
   });
 
   afterEach(async () => {
-    await planner.resetState();
+    await planner.resetState(testData.group1);
   });
 
   it('should create a new iteration', async () => {

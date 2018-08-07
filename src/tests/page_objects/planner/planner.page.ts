@@ -46,9 +46,9 @@ export class PlannerPage extends AppPage {
     await this.inlineQuickAdd.addInlineWorkItem(item);
   }
 
-  async resetState() {
+  async resetState(groupName: string) {
     let url = await browser.getCurrentUrl();
-    url.includes('SDD') ? (await this.sidePanel.clickScenarios()) : await this.sidePanel.workItemsGroupAgile.clickWhenReady();
+    await this.sidePanel.clickWorkItemGroup(groupName);
     await $('body').sendKeys(Key.ESCAPE);
   }
 }

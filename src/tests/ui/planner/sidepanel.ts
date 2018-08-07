@@ -8,7 +8,7 @@ export class SidePanel extends ui.BaseElement {
   scenarioButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Scenarios')), 'Side panel Scenario button');
   experienceButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Experiences')), 'Side panel Experiences button');
   requirementsButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type .dib', ' Requirements')), 'Side panel Requirements button');
-  workItemsGroupAgile = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Work Items ')), 'Side panel WorkItem button');
+  workItemsGroupAgile = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Work Items')), 'Side panel WorkItem button');
   iterationDiv = new ui.BaseElement(this.$('.f8-itr'), 'Iteration div');
   createIterationButton = new ui.Button(this.iterationDiv.$('#add-iteration-icon'), 'Side panel Add Iteration Button');
   iterationList = new ui.BaseElementArray(this.$$('.f8-itr__tree .f8-itr-name'), 'Iteration list');
@@ -42,18 +42,24 @@ export class SidePanel extends ui.BaseElement {
     support.debug('... check if Side panel is Ready - OK');
   }
 
-  async clickScenarios() {
-    await this.scenarioButton.clickWhenReady();
-    await this.workItemList.overlay.untilHidden();
-  }
-
-  async clickExperience() {
-    await this.experienceButton.clickWhenReady();
-    await this.workItemList.overlay.untilHidden();
-  }
-
-  async clickRequirement() {
-    await this.requirementsButton.clickWhenReady();
+  async clickWorkItemGroup(group: string) {
+    switch (group) {
+      case 'Scenario' :
+        await this.scenarioButton.clickWhenReady();
+        break;
+      case 'Experience' :
+        await this.experienceButton.clickWhenReady();
+        break;
+      case 'Requirement' :
+        await this.requirementsButton.clickWhenReady();
+        break;
+      case 'WorkItemGroup' :
+        await this.workItemsGroupAgile.clickWhenReady();
+        break;
+      default:
+        await this.scenarioButton.clickWhenReady();
+        break;
+    }
     await this.workItemList.overlay.untilHidden();
   }
 

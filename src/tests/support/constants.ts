@@ -17,6 +17,8 @@ export class Constants {
       'dropdownIteration_2': 'Iteration_2',
       'dropdownIteration2' : 'Iteration_1',
       'filterLabel': 'state: closed',
+      'group1': 'Scenario',
+      'group3': 'Requirement',
       'iteration1': '/' + process.env.SPACE_NAME + '/Iteration_1/Iteration1_1',
       'iteration2': '/' + process.env.SPACE_NAME + '/Iteration_2',
       'IterationTestTitle' : {
@@ -76,7 +78,7 @@ export class Constants {
       'areaTitle1': '/' + process.env.SPACE_NAME_SCRUM + '/Area_6',
       'areaTitle2': '/' + process.env.SPACE_NAME_SCRUM + '/Area_7',
       'LabelTestTitle': {
-        'title': 'test list is not updated when new label is added',
+        'title': 'test list is not updated when new label is added'
       },
       'dropdownareaTitle1': 'Area_6',
       'dropdownareaTitle2': 'Area_7',
@@ -85,6 +87,8 @@ export class Constants {
       'dropdownIteration2' : 'Iteration_1',
       'editWorkItemTitle1': 'Title Text "<0>"',
       'filterLabel': 'state: Closed',
+      'group1': 'WorkItemGroup',
+      'group3': 'WorkItemGroup',
       'iteration1': '/' + process.env.SPACE_NAME_SCRUM + '/Iteration_1/Iteration1_1',
       'iteration2': '/' + process.env.SPACE_NAME_SCRUM + '/Iteration_2',
       'iterationTestTitle' : {

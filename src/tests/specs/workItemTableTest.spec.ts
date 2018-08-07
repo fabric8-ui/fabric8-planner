@@ -23,7 +23,7 @@ describe('Work Item datatable list: ', () => {
   });
 
   afterEach(async () => {
-    await planner.resetState();
+    await planner.resetState(testData.group1);
   });
 
   it('should open settings button and hide columns', async () => {
@@ -123,15 +123,12 @@ describe('Work Item datatable list: ', () => {
     let workitemname = {'title': 'child', 'type': 'Bug'},
       workItemTitle4 = {'title': 'Workitem_Title_4'};
 
-    await planner.sidePanel.clickRequirement();
-    await planner.waitUntilUrlContains('typegroup.name:Requirements');
+    await planner.sidePanel.clickWorkItemGroup(testData.group2);
     await planner.workItemList.workItem(workItemTitle4.title).clickInlineQuickAdd();
     await planner.createInlineWorkItem(workitemname);
     expect(await planner.workItemList.hasWorkItem(workitemname.title)).toBeTruthy();
-    await planner.sidePanel.clickScenarios();
-    await planner.waitUntilUrlContains('typegroup.name:Scenarios');
-    await planner.sidePanel.clickRequirement();
-    await planner.waitUntilUrlContains('typegroup.name:Requirements');
+    await planner.sidePanel.clickWorkItemGroup(testData.group1);
+    await planner.sidePanel.clickWorkItemGroup(testData.group2);
     await planner.workItemList.overlay.untilHidden();
     expect(await planner.workItemList.hasWorkItem(workitemname.title)).toBeTruthy();
   });

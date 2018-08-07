@@ -22,7 +22,7 @@ describe('Quick preview tests: ', () => {
   });
 
   afterEach(async () => {
-    await planner.resetState();
+    await planner.resetState(testData.group1);
   });
 
   it('should open quickpreview and apply label', async () => {
