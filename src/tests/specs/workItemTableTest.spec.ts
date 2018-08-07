@@ -14,7 +14,7 @@ describe('Work Item datatable list: ', () => {
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     await planner.waitUntilUrlContains('typegroup');
-    testData = testData.browserName[browser.browserName];
+    testData = c.browserName[browser.browserName];
   });
 
   beforeEach(async () => {

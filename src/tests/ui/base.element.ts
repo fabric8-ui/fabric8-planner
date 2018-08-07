@@ -8,6 +8,7 @@ import { DEFAULT_WAIT } from '../support';
 
 
 // todo move to a different module
+
 type NumberComparerFn = (x: number) => boolean;
 type NumberComparer = number | NumberComparerFn;
 
@@ -162,8 +163,8 @@ export class BaseElementArray extends ElementArrayFinder {
     this.name = name;
   }
 
-  async untilCount(compare: NumberComparer, wait?: number, msg?: string) {
-    await browser.wait(untilCount(this, compare), wait, msg);
+  async untilCount(compare: NumberComparer, wait?: number, msg?: string, timeout?: number) {
+    await browser.wait(untilCount(this, compare), wait, msg, timeout);
   }
 
   async ready(count: number = 1) {
