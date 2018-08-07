@@ -7,12 +7,14 @@ describe('Planner Collaborator Tests:', () => {
   let planner: PlannerPage;
   let planner1: PlannerPage;
   let c = new support.Constants();
+  let testData;
 
   beforeAll(async () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     let url = await browser.getCurrentUrl();
+    testData = c.browserName[browser.browserName];
     let URL = '';
     /* Run tests against production or prod-preview */
     if (url.startsWith('https://openshift.io')) {
@@ -48,9 +50,9 @@ describe('Planner Collaborator Tests:', () => {
   });
 
   it('Non collaborator should Comment and Save', async () => {
-    await planner1.workItemList.clickWorkItem('Work Item 3');
-    await planner1.quickPreview.addCommentAndSave(c.comment);
-    expect(await planner1.quickPreview.getComments()).toContain(c.comment);
+    await planner1.workItemList.clickWorkItem(testData.workItemCommentTest);
+    await planner1.quickPreview.addCommentAndSave(testData.comment);
+    expect(await planner1.quickPreview.getComments()).toContain(testData.comment);
   });
 
   it('Non collaborator should not be able to update Area ', async () => {
