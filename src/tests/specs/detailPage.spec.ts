@@ -3,7 +3,7 @@ import { PlannerPage } from '../page_objects/planner';
 import * as support from '../support';
 
 
-describe('Detail View test: ', () => {
+fdescribe('Detail View test: ', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
   let testData;
