@@ -1,4 +1,4 @@
-<div class="f8-itr-entry"
+<div class="f8-planner-itr-entry"
   [ngClass]="calcDepth(iteration)"
   [class.is-selected]="iteration.selected"
   [attr.data-id]="iteration.id">
@@ -47,18 +47,18 @@
     </ul>
   </div>
   <a
-    class="f8-itr__header"
+    class="f8-planner-itr-entry__header"
     title="{{iteration.name}}"
     [routerLink]="getRouterLink()"
     [queryParams]="addRemoveQueryParams(iteration.id)">
-      <span class="f8-itr__name truncate">
+      <span class="f8-planner-itr__name truncate">
         {{ iteration.name | truncate : 15 }}
       </span>
       <span class="is-itr-active"
         *ngIf="iteration.isActive">
           [Active]
       </span>
-      <div class="f8-itr__status">
+      <div class="f8-planner-itr-entry__status">
         {{ iteration.startAt ? (iteration.startAt | date:longDate) : 'Set start date' }}
         -
         {{ iteration.endAt ? (iteration.endAt | date:longDate) : 'Set end date' }}

@@ -1,5 +1,5 @@
 <!-- Custom Filters -->
-<div class="f8-custom-query__header nohover">
+<div class="f8-planner-custom-query__header nohover">
   <span class="dib fa fa-filter margin-right-15
     padding-top-2 padding-bottom-3"
     tooltip="{{sidePanelOpen ? '' : 'My Filters'}}"
@@ -13,7 +13,7 @@
 <ul class="list-group"
   [class.show]="sidePanelOpen"
   [class.hide]="!sidePanelOpen">
-  <li class="f8-custom-query__list"
+  <li class="f8-planner-custom-query__list"
     id="{{'cf-list-' + counter}}"
     *ngFor="let query of customQueries"
     [class.is-selected]="query?.selected">
@@ -39,7 +39,7 @@
         </li>
       </ul>
     </div>
-    <a class="f8-custom-query__list-link"
+    <a class="f8-planner-custom-query__list-link"
       [routerLink]="getRouterLink()"
       [attr.data-id]="query.id"
       [queryParams]="addRemoveQueryParams(query.attributes.fields)">

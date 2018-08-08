@@ -1,7 +1,7 @@
 <!--Iteration Start-->
-<div class="f8-itr">
+<div class="f8-planner-itr">
   <!-- Active iteration -->
-  <div class="f8-itr__tab nohover">
+  <div class="f8-planner-itr__tab nohover">
     <div
       [class.show]="sidePanelOpen"
       [class.hide]="!sidePanelOpen">
@@ -31,13 +31,13 @@
       [class.hide]="!sidePanelOpen">
     </infotip>
   </div>
-  <ul class="f8-itr__active-itr-list"
+  <ul class="f8-planner-itr__active-itr-list"
     [class.show]="sidePanelOpen"
     [class.hide]="!sidePanelOpen">
     <li
       *ngFor="let iteration of activeIterations | async">
       <a
-        [routerLinkActive]="'f8-itr--selected'"
+        [routerLinkActive]="'f8-planner-itr--selected'"
         [routerLink]="getRouterLink()"
         [attr.data-id]="iteration.id"
         [queryParams]="addRemoveQueryParams(iteration.id)"
@@ -77,7 +77,7 @@
       </div>
     </form> -->
   <!-- Nested Iteration Display -->
-  <div class="f8-itr__list"
+  <div class="f8-planner-itr__list"
     [class.show]="sidePanelOpen"
     [class.hide]="!sidePanelOpen"
     *ngIf="treeIterations | async as iterations">

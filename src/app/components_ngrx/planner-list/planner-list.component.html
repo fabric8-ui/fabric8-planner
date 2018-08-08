@@ -1,6 +1,6 @@
-<div class="container-fluid f8-planner__container"
+<div class="container-fluid f8-planner-container"
   #containerHeight>
-  <div class="f8-planner__overlay"
+  <div class="f8-planner-overlay"
     *ngIf="uiLockedAll">
     <div class="spinner-container">
       <h2 class="spinner spinner-lg"></h2>
@@ -19,8 +19,8 @@
   </main>
 </div>
 <ng-template #sidePanel>
-  <aside class="f8-sidepanel">
-    <div class="f8-planner__overlay"
+  <aside class="f8-planner-sidepanel">
+    <div class="f8-planner-overlay"
       *ngIf="uiLockedSidebar">
       <div class="spinner-container">
         <h2 class="spinner"></h2>
@@ -28,8 +28,8 @@
         <h4>Please wait, we are loading your data.</h4>
       </div>
     </div>
-    <a class="f8-sidepanel__toggle">
-      <span class="fa f8-sidepanel__toggle-icon fa-lg"
+    <a class="f8-planner-sidepanel__toggle">
+      <span class="fa f8-planner-sidepanel__toggle-icon fa-lg"
         [class.fa-angle-double-left]="sidePanelOpen"
         [class.fa-angle-double-right]="!sidePanelOpen"
         (click)="togglePanel()" tooltip="{{sidePanelOpen ?
@@ -72,8 +72,8 @@
     </div>
   </div>
   <!-- list starts here -->
-  <div class="f8-planner__list">
-    <div class="f8-planner__list-wrap"
+  <div class="f8-planner-list">
+    <div class="f8-planner-list-wrap"
       #listContainer>
       <!-- ngx-datatable -->
       <ngx-datatable #myTable
@@ -186,7 +186,7 @@
                     (onDetailPreview)="onDetailPreview($event)"
                     (onQuickPreview)="onPreview($event)"
                     [class.f8-wi__table-config]="c.prop=='label' || c.prop=='assignees'"
-                    [class.f8-planner__list-title]="c.prop=='title'">
+                    [class.f8-planner-list-title]="c.prop=='title'">
                   </work-item-cell>
               </ng-template>
           </ngx-datatable-column>
@@ -230,7 +230,7 @@
                     [col]="c.prop"
                     (onQuickPreview)="onPreview($event)"
                     [class.f8-wi__table-config]="c.prop === 'label' || c.prop === 'assignees'"
-                    [class.f8-planner__list-title]="c.prop === 'title'">
+                    [class.f8-planner-list-title]="c.prop === 'title'">
                   </work-item-cell>
               </ng-template>
           </ngx-datatable-column>
@@ -240,7 +240,7 @@
         *ngIf="!workItems?.length && !uiLockedList"
         [config]="emptyStateConfig">
       </pfng-empty-state>
-      <div class="f8-planner__overlay"
+      <div class="f8-planner-overlay"
         *ngIf="uiLockedList">
         <div class="spinner-container">
           <h2 class="spinner"></h2>

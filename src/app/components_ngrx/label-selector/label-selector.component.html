@@ -12,7 +12,7 @@
   (onOpen)="onOpen($event)"
   (onClose)="onClose($event)">
   <ng-template #toggleButtonRef>
-    <span class="pointer f8-planner__selector-dropdown"
+    <span class="pointer f8-planner-dropdown__selector-dropdown"
       *ngIf="allowUpdate"
       (click)="closeAddLabel()">
       <i class="pficon pficon-add-circle-o padding-right-5"></i>
@@ -23,25 +23,25 @@
     let-color="color"
     let-border="border"
     let-name="name">
-    <div class="f8-label__palet"
+    <div class="f8-planner-label__palet"
       [ngStyle]="{'background-color': color, 'border-color': border}"></div>
     <span [innerHTML]="name | almSearchHighlight: searchValue"></span>
   </ng-template>
   <ng-template #dropdownFooter>
-    <div class="f8-label__create-label-text"
+    <div class="f8-planner-label__create-label-text"
       [class.hide]="activeAddLabel"
       (click)="clickOnAddLabel()">
       <span class="pficon pficon-add-circle-o"></span>
       Create new label
     </div>
-    <div class="f8-label__create-label"
+    <div class="f8-planner-label__create-label"
       [class.hide]="!activeAddLabel || colorPickerActive">
-      <div class="f8-label__palet"
+      <div class="f8-planner-label__palet"
         [ngStyle]="{'background-color': newSelectedColor.color,
         'border-color': newSelectedColor.border}"
         (click)="toggleColorPicker()">
       </div>
-      <input class="f8-label__create-label-input"
+      <input class="f8-planner-label__create-label-input"
         #labelname 
         (input)="onAddLabelInput($event.target.value)"
         (keyup.enter)="createLabel(labelname.value)"/>
@@ -55,9 +55,9 @@
         (click)="closeAddLabel()">
       </button>
     </div>
-    <div class="f8-label__color-picker"
+    <div class="f8-planner-label__color-picker"
       [class.hide]="activeAddLabel && !colorPickerActive">
-      <span class="f8-label__palet margin-4"
+      <span class="f8-planner-label__palet margin-4"
         *ngFor="let color of colors"
         [ngStyle]="{'background-color': color.color, 'border-color':color.border}"
         (click)="selectColor(color); toggleColorPicker();">

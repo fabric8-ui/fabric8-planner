@@ -1,10 +1,10 @@
-<div class="f8-dynamic-control" 
+<div class="f8-planner-dynamic-control" 
   *ngIf="showField">
   <label class="pull-left control-label"
     [attr.for]="fieldValue.key">
     {{ fieldValue.field.label | truncate:15 }}
   </label>
-  <div class="f8-dynamic-control__content">
+  <div class="f8-planner-dynamic-control__content">
     <span 
       class="spinner spinner-sm spinner-inline"
       *ngIf="loadingField">
@@ -48,7 +48,7 @@
         (showPreview)="showPreview($event)">
       </f8-markdown>
       <!-- workitemtype field type: instant (datetime) -->
-      <div class="f8-dynamic-control__datepicker"
+      <div class="f8-planner-dynamic-control__datepicker"
         *ngIf="fieldValue.field.type.kind==='instant'">
           <my-date-picker
             [options]="datePickerOptions"
@@ -96,7 +96,7 @@
         <span class="pficon pficon-close"></span>
       </button>
     </div>
-    <div class="f8-dynamic-control__message is-error"
+    <div class="f8-planner-dynamic-control__message is-error"
       *ngIf="!isValid()">
       {{ fieldValue.field.label }} is not given or not in the right format.
     </div>

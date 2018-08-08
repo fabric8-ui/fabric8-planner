@@ -1,18 +1,24 @@
-<div class="f8-custom-card" (click)="cardClick(workItem, $event);" [attr.data-id]="workItem.id">
-  <pfng-card [config]="config" [headerTemplate]="cardHeader">
+<div class="f8-planner-card"
+  (click)="cardClick(workItem, $event);"
+  [attr.data-id]="workItem.id">
+  <pfng-card [config]="config"
+    [headerTemplate]="cardHeader">
     <ng-template #cardHeader>
-      <div class="f8-custom-card-header">
+      <div class="f8-planner-card__header">
         <div class="wi-type-icon-wrapper">
           <span class="{{workItem.type?.icon}}"></span>
         </div>
-        <div class="title-wrapper" (click)="titleClick(workItem, $event);">
+        <div class="title-wrapper"
+          (click)="titleClick(workItem, $event);">
           <span>{{ workItem.number }}: </span>
-          <strong class="pointer" [innerHTML]="workItem.title"></strong>
+          <strong class="pointer"
+            [innerHTML]="workItem.title">
+          </strong>
           <span class="creator"> - created by {{ (workItem.creatorObs | async).name }}</span>
         </div>
       </div>
     </ng-template>
-    <div class="f8-custom-card-body">
+    <div class="f8-planner-card__body">
       <div class="sprint-name truncate"
         *ngIf="workItem.iterationObs | async as iteration"
         [placement]="top"
@@ -30,7 +36,7 @@
         </f8-assignee>
       </div>
     </div>
-    <div class="f8-custom-card-footer">
+    <div class="f8-planner-card__footer">
       <f8-label
         [labels]="workItem.labelsObs | async"
         [truncateAfter]='4'

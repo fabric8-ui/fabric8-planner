@@ -68,17 +68,17 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   iterationInput = new ui.TextInput(this.iterationDiv.$('.f8-select-dropdown__search-input'), 'Iteration input');
 
   labelDropdown = new ui.Dropdown(
-    this.$('#labelSelector .f8-planner__selector-dropdown'),
+    this.$('#labelSelector .f8-planner-dropdown__selector-dropdown'),
     this.$('#labelSelector ul.f8-select-dropdown__menu'),
     'Label Select dropdown');
   labelsDiv = new ui.BaseElement(this.$('.f8-detail__labels'), ' labels Div');
-  labels = new ui.BaseElement(this.labelsDiv.$('.f8-label-wrapper'), ' labels ');
-  labelListDiv = new ui.BaseElementArray(this.labelsDiv.$$('f8-label .f8-label-wrapper>div'), 'label list Div');
+  labels = new ui.BaseElement(this.labelsDiv.$('.f8-planner-label-wrapper'), ' labels ');
+  labelListDiv = new ui.BaseElementArray(this.labelsDiv.$$('f8-label .f8-planner-label-wrapper>div'), 'label list Div');
   labelDropDownDiv = new ui.BaseElement(this.$('#labelSelector .f8-select-dropdown__wrapper'), 'dropdown div');
   labelDropdownCloseButton = new ui.Clickable(this.labelDropDownDiv.$('.close-pointer'), 'label dropdown close Button');
-  createLabelButton = new ui.Clickable(this.labelDropDownDiv.$('.f8-label__create-label-text'), 'Create new label');
-  createLabelDiv = new ui.BaseElement(this.$('.f8-label__create-label'), 'create label div');
-  createLabelInput = new ui.TextInput(this.createLabelDiv.$('.f8-label__create-label-input'), 'create label input');
+  createLabelButton = new ui.Clickable(this.labelDropDownDiv.$('.f8-planner-label__create-label-text'), 'Create new label');
+  createLabelDiv = new ui.BaseElement(this.$('.f8-planner-label__create-label'), 'create label div');
+  createLabelInput = new ui.TextInput(this.createLabelDiv.$('.f8-planner-label__create-label-input'), 'create label input');
   createLabelCancel = new ui.Button(this.createLabelDiv.$('.pficon-close'), 'create label cancel');
   createLabelSaveButton = new ui.Button(this.createLabelDiv.$('.fa-check'), 'create label save button');
 
@@ -131,7 +131,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
 
   /* UI elements for the Agile template of the workitem preview */
   effortTextArea = new ui.TextInput(this.$('[placeholder="Effort"]'), 'effort textarea');
-  workItemsGroup = new ui.Clickable(this.element(by.cssContainingText('alm-dynamic-field .f8-dynamic-control', ' Work Items ')), 'Side panel WorkItem button');
+  workItemsGroup = new ui.Clickable(this.element(by.cssContainingText('alm-dynamic-field .f8-planner-dynamic-control', ' Work Items ')), 'Side panel WorkItem button');
   businessValue = new ui.TextInput(this.$('textarea[placeholder="Business Value"]'), ' Business value textarea');
   storyPoints = new ui.TextInput(this.$('textarea[placeholder="Storypoints"]'), ' Storypoints textarea');
   dynamicFieldDiv = new ui.BaseElement(this.element(by.xpath("//textarea[@placeholder='Storypoints']/ancestor::f8-inlineinput")));

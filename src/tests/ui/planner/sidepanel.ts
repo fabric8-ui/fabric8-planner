@@ -7,20 +7,20 @@ import { WorkItemList } from './workitem-list';
 type workItemGroup = 'Scenarios' | 'Experiences' | 'Requirements' | 'Work Items';
 
 export class SidePanel extends ui.BaseElement {
-  showHideSidePanelButton = new ui.Button(this.$('.f8-sidepanel__toggle'), 'show/hide side panel button');
-  scenarioButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Scenarios')), 'Side panel Scenario button');
-  experienceButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Experiences')), 'Side panel Experiences button');
-  requirementsButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type .dib', ' Requirements')), 'Side panel Requirements button');
-  workItemsGroupAgile = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Work Items')), 'Side panel WorkItem button');
-  iterationDiv = new ui.BaseElement(this.$('.f8-itr'), 'Iteration div');
+  showHideSidePanelButton = new ui.Button(this.$('.f8-planner-sidepanel__toggle'), 'show/hide side panel button');
+  scenarioButton = new ui.Clickable(this.element(by.cssContainingText('.f8-planner-group-filter__type', ' Scenarios')), 'Side panel Scenario button');
+  experienceButton = new ui.Clickable(this.element(by.cssContainingText('.f8-planner-group-filter__type', ' Experiences')), 'Side panel Experiences button');
+  requirementsButton = new ui.Clickable(this.element(by.cssContainingText('.f8-planner-group-filter__type .dib', ' Requirements')), 'Side panel Requirements button');
+  workItemsGroupAgile = new ui.Clickable(this.element(by.cssContainingText('.f8-planner-group-filter__type', ' Work Items ')), 'Side panel WorkItem button');
+  iterationDiv = new ui.BaseElement(this.$('.f8-planner-itr'), 'Iteration div');
   createIterationButton = new ui.Button(this.iterationDiv.$('#add-iteration-icon'), 'Side panel Add Iteration Button');
-  iterationList = new ui.BaseElementArray(this.$$('.f8-itr__tree .f8-itr__name'), 'Iteration list');
+  iterationList = new ui.BaseElementArray(this.$$('.f8-planner-itr__tree .f8-planner-itr__name'), 'Iteration list');
   iterationKebab = new ui.Button(this.$('.dropdown-toggle'), 'Side panel Iteration Kebab Dropdown');
-  editIteration = new ui.Clickable(this.element(by.cssContainingText('.f8-itr .dropdown.open ul>li', 'Edit')), 'Iteration Dropdown Edit Option');
-  iterationHeader = new ui.BaseElementArray(this.$$('.f8-itr__header'), 'iteration header');
+  editIteration = new ui.Clickable(this.element(by.cssContainingText('.f8-planner-itr .dropdown.open ul>li', 'Edit')), 'Iteration Dropdown Edit Option');
+  iterationHeader = new ui.BaseElementArray(this.$$('.f8-planner-itr-entry__header'), 'iteration header');
   customQuery = new ui.BaseElement(this.$('custom-query'), 'My filters');
-  customQueryList = new ui.BaseElementArray(this.$$('.f8-custom-query__list'), ' My filters list');
-  deleteCustomQuery = new ui.Clickable(this.element(by.cssContainingText('.f8-custom-query__kebab.dropdown.open ul>li', 'Delete')), 'Custom query Dropdown Delete Option');
+  customQueryList = new ui.BaseElementArray(this.$$('.f8-planner-custom-query__list'), ' My filters list');
+  deleteCustomQuery = new ui.Clickable(this.element(by.cssContainingText('.f8-palnner-custom-query__kebab.dropdown.open ul>li', 'Delete')), 'Custom query Dropdown Delete Option');
   infotipIconExperience = new ui.Clickable(this.$('.infotip-group-type-44795662-db7a-44f7-a4e7-c6d41d3eff27'));
   infotipIconRequirement = new ui.Clickable(this.$('.infotip-group-type-6d254168-6937-447f-a093-0c38404bd072'));
   infotipPopover =  new ui.BaseElementArray(this.$$('.pficon-close'));
@@ -101,7 +101,7 @@ export class SidePanel extends ui.BaseElement {
   }
 
   async selectcustomFilterKebab(queryName: string) {
-    return this.element(by.xpath("//li[contains(@class,'f8-custom-query__list')][.//span[text()='" + queryName + "']]")).$('.dropdown-toggle').click();
+    return this.element(by.xpath("//li[contains(@class,'f8-planner-custom-query__list')][.//span[text()='" + queryName + "']]")).$('.dropdown-toggle').click();
   }
 
   async clickIteration(iterationName: string) {

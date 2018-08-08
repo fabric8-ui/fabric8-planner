@@ -39,7 +39,7 @@
             [value]="selectedParentIterationName" 
             (focus)="iterationSearchFocus();" 
             [disabled]="iterationSearchDisable">
-          <ul class="f8-itr__modal-list dropdown-menu dropdown-ul"
+          <ul class="f8-planner-itr__modal-list dropdown-menu dropdown-ul"
             *ngIf="showIterationDropdown" 
             #iterationList>
             <li *ngIf="!filteredIterations.length"
@@ -71,9 +71,9 @@
         </textarea>
       </div>
     </div>
-    <div class="form-group f8-itr__datepicker"
+    <div class="form-group f8-planner-itr__datepicker"
       *ngIf="modalType=='create' || modalType=='update' || modalType=='start' || modalType=='createChild'">
-      <div class="f8-itr__datepicker-block padding-right-5 dib">
+      <div class="f8-planner-itr__datepicker-block padding-right-5 dib">
         <label>Start Date</label>
         <my-date-picker
           #startmydp="mydatepicker"
@@ -83,7 +83,7 @@
           [(ngModel)]="startDate">
         </my-date-picker>
       </div>
-      <div class="f8-itr__datepicker-block padding-left-5 dib">
+      <div class="f8-planner-itr__datepicker-block padding-left-5 dib">
         <label>End Date</label>
         <my-date-picker
           #endmydp="mydatepicker"
@@ -104,7 +104,7 @@
         [isChecked]="iteration.userActive">
       </switch>
     </div>
-    <div class="form-group f8-itr__datepicker"
+    <div class="form-group f8-planner-itr__datepicker"
       *ngIf="modalType=='close'">
         Do you really want to close this iteration?
     </div>

@@ -9,7 +9,7 @@ export class PlannerPage extends AppPage {
   workItemList = new planner.WorkItemList($('alm-work-item-list'));
   quickAdd =  new planner.WorkItemQuickAdd($('alm-work-item-quick-add'));
   inlineQuickAdd =  new planner.WorkItemInlineQuickAdd($('#workItemList_quickAdd_inline'));
-  sidePanel = new planner.SidePanel($('aside.f8-sidepanel'));
+  sidePanel = new planner.SidePanel($('aside.f8-planner-sidepanel'));
   quickPreview = new planner.WorkItemQuickPreview($('work-item-detail'));
   header = new planner.ToolbarHeader($('#header-div'));
   settings = new planner.Settings($('div.f8-table-config__settings'));

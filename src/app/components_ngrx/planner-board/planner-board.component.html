@@ -1,6 +1,6 @@
-<div class="container-fluid f8-planner__container" 
+<div class="container-fluid f8-planner-container" 
   #containerHeight>
-    <div class="f8-planner__overlay"
+    <div class="f8-planner-overlay"
       *ngIf="boardUiQuery.boardLocked | async">
       <div class="spinner-container">
         <h2 class="spinner"></h2>
@@ -20,8 +20,8 @@
     </main>
 </div>
 <ng-template #sidePanel>
-  <aside class="f8-sidepanel">
-    <div class="f8-planner__overlay"
+  <aside class="f8-planner-sidepanel">
+    <div class="f8-planner-overlay"
       *ngIf="uiLockedSidebar">
       <div class="spinner-container">
         <h2 class="spinner"></h2>
@@ -29,8 +29,8 @@
         <h4>Please wait, we are loading your data.</h4>
       </div>
     </div>
-    <a class="f8-sidepanel__toggle">
-      <span class="fa f8-sidepanel__toggle-icon fa-lg"
+    <a class="f8-planner-sidepanel__toggle">
+      <span class="fa f8-planner-sidepanel__toggle-icon fa-lg"
         [class.fa-angle-double-left]="sidePanelOpen"
         [class.fa-angle-double-right]="!sidePanelOpen"
         (click)="plannerLayout.toggleSidePanel();"
@@ -46,22 +46,23 @@
   </aside>
 </ng-template>
 <ng-template #sectionPanel>
-  <div class="f8-wi-board"
+  <div class="f8-planner-board"
     #boardContainer>
     <ng-container *ngIf="board$ | async as board">
-      <f8-planner-column class="f8-planner-column"
+      <f8-planner-column
         *ngFor="let column of board.columns"
         [columnBody]="boardColumnBody"
         [itemCount]="(column.workItems | async)?.length"
         [columnName]="column.title">
         <ng-template #boardColumnBody>
-          <div class="f8-board-column__body"
+          <div class="height-100"
             [dragula]="'board-column'"
             [attr.data-id]="column.id">
             <f8-planner-card *ngFor="let workitem of column.workItems | async"
               [class.item-not-draggable]="!workitem?.editable"
               [workItem]="workitem"
-              (onTitleClick)="openQuickPreview($event)"></f8-planner-card>
+              (onTitleClick)="openQuickPreview($event)">
+            </f8-planner-card>
           </div>
         </ng-template>
       </f8-planner-column>

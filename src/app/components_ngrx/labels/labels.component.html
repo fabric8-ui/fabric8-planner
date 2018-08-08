@@ -1,5 +1,5 @@
-<div class="f8-label-wrapper">
-  <div class="f8-label"
+<div class="f8-planner-label-wrapper">
+  <div class="f8-planner-label"
     *ngFor="let label of _labels | slice:0:truncateAfter;" 
     [ngStyle]="{
       'background-color': label.backgroundColor,
@@ -8,11 +8,11 @@
     <div *ngIf="context!='detail'">
       <a [routerLink]=[] 
         [queryParams]="constructQueryExpression(label.id)">
-        <span class="f8-label-name pointer">
+        <span class="f8-planner-label__name pointer">
           {{ label.name }}
         </span>
       </a>
-      <span class="f8-label__close padding-left-5" 
+      <span class="f8-planner-label__close padding-left-5" 
         *ngIf="allowDelete">
         <i class="pficon-close pointer" 
           (click)="removeLabel(label, $event)">
@@ -20,10 +20,10 @@
       </span>
     </div>
     <div *ngIf="context=='detail'">
-      <span class="f8-label-name">
+      <span class="f8-planner-label__name">
         {{ label.name }}
       </span>
-      <span class="f8-label__close padding-left-5" 
+      <span class="f8-planner-label__close padding-left-5" 
         *ngIf="allowDelete">
         <i class="pficon-close pointer" 
           (click)="removeLabel(label, $event)">
@@ -31,7 +31,7 @@
       </span>
     </div>
   </div>
-  <div class="f8-label dropdown" 
+  <div class="f8-planner-label dropdown" 
     dropdown 
     placement="right"
     *ngIf="truncateAfter!==undefined && _labels.length > 4">
@@ -43,7 +43,7 @@
     <ul class="dropdown-menu dropdown-menu-right"
       *dropdownMenu >
       <li *ngFor="let label of _labels | slice:truncateAfter;">
-        <div class="f8-label" 
+        <div class="f8-planner-label" 
           [ngStyle]="{
             'background-color': label.backgroundColor,
             'color': label.textColor
@@ -51,7 +51,7 @@
           <div *ngIf="context!='detail'">
             <a [routerLink]=[] 
               [queryParams]= "constructQueryExpression(label.id)">
-              <span class="f8-label-name pointer">
+              <span class="f8-planner-label__name pointer">
                 {{ label.name }}
               </span>
             </a>
@@ -63,10 +63,10 @@
             </span>
           </div>
           <div *ngIf="context=='detail'">
-            <span class="f8-label-name">
+            <span class="f8-planner-label__name">
               {{ label.name }}
             </span>
-            <span class="f8-label__close padding-left-5" 
+            <span class="f8-planner-label__close padding-left-5" 
               *ngIf="allowDelete">
               <i class="pficon-close pointer" 
                 (click)="removeLabel(label, $event)">
