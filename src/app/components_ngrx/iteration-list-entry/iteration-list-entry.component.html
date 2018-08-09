@@ -49,7 +49,7 @@
   <a
     class="f8-planner-itr-entry__header"
     title="{{iteration.name}}"
-    [routerLink]="getRouterLink()"
+    [routerLink]="[]"
     [queryParams]="addRemoveQueryParams(iteration.id)">
       <span class="f8-planner-itr__name truncate">
         {{ iteration.name | truncate : 15 }}

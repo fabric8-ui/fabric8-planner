@@ -38,7 +38,7 @@
       *ngFor="let iteration of activeIterations | async">
       <a
         [routerLinkActive]="'f8-planner-itr--selected'"
-        [routerLink]="getRouterLink()"
+        [routerLink]="[]"
         [attr.data-id]="iteration.id"
         [queryParams]="addRemoveQueryParams(iteration.id)"
         title="{{ iteration.resolvedParentPath +
