@@ -4,7 +4,7 @@ import * as support from '../support';
 import { SidePanel } from './../ui/planner/sidepanel';
 
 
-describe('Work Item list: ', () => {
+fdescribe('Work Item list: ', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
   let testData;
@@ -14,7 +14,7 @@ describe('Work Item list: ', () => {
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     await planner.waitUntilUrlContains('typegroup');
-    testData = c.browserName[browser.browserName];
+    testData = await c.browserName[browser.browserName];
   });
 
   beforeEach(async () => {

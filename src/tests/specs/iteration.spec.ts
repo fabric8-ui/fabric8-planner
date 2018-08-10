@@ -3,7 +3,7 @@ import { PlannerPage } from '../page_objects/planner';
 import * as support from '../support';
 
 
-fdescribe('Iteration test', () => {
+describe('Iteration test', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
   let testData;
@@ -13,7 +13,7 @@ fdescribe('Iteration test', () => {
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     await planner.waitUntilUrlContains('typegroup');
-    testData = c.browserName[browser.browserName];
+    testData = await c.browserName[browser.browserName];
   });
 
   beforeEach(async () => {
@@ -22,7 +22,7 @@ fdescribe('Iteration test', () => {
   });
 
   afterEach(async () => {
-    await planner.resetState(testData.group1);
+    await planner.resetState();
   });
 
   it('should create a new iteration', async () => {

@@ -14,7 +14,7 @@ describe('Work Item datatable list: ', () => {
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     await planner.waitUntilUrlContains('typegroup');
-    testData = c.browserName[browser.browserName];
+    testData = await c.browserName[browser.browserName];
   });
 
   beforeEach(async () => {
@@ -23,7 +23,7 @@ describe('Work Item datatable list: ', () => {
   });
 
   afterEach(async () => {
-    await planner.resetState(testData.group1);
+    await planner.resetState();
   });
 
   it('should open settings button and hide columns', async () => {

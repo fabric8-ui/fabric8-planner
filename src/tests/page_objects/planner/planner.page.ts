@@ -46,8 +46,15 @@ export class PlannerPage extends AppPage {
     await this.inlineQuickAdd.addInlineWorkItem(item);
   }
 
-  async resetState(groupName: string) {
-    await this.sidePanel.clickWorkItemGroup(groupName);
+  async resetState() {
+    if (await browser.browserName === 'browserSDD') {
+      await this.sidePanel.clickWorkItemGroup('Scenario');
+    } else if (await browser.browserName === 'browserAgile') {
+        await this.sidePanel.clickWorkItemGroup('WorkItemGroup');
+    } else {
+        support.debug('browser Name not defined');
+    }
+
     await $('body').sendKeys(Key.ESCAPE);
   }
 }

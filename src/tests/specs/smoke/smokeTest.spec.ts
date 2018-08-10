@@ -14,7 +14,7 @@ fdescribe('Planner Smoke Tests:', () => {
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     await planner.waitUntilUrlContains('typegroup');
-    testData = c.browserName[browser.browserName];
+    testData = await c.browserName[browser.browserName];
   });
 
   beforeEach(async () => {
@@ -23,7 +23,7 @@ fdescribe('Planner Smoke Tests:', () => {
   });
 
   afterEach(async () => {
-    await planner.resetState(testData.group1);
+    await planner.resetState();
   });
 
   it('create a work item and add/remove assignee', async () => {

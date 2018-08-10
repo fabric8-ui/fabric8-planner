@@ -3,7 +3,7 @@ import { PlannerPage } from '../page_objects/planner';
 import * as support from '../support';
 
 
-describe('Quick preview tests: ', () => {
+fdescribe('Quick preview tests: ', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
   let testData;
@@ -13,7 +13,7 @@ describe('Quick preview tests: ', () => {
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     await planner.waitUntilUrlContains('typegroup');
-    testData = c.browserName[browser.browserName];
+    testData = await c.browserName[browser.browserName];
   });
 
   beforeEach(async () => {
@@ -22,7 +22,7 @@ describe('Quick preview tests: ', () => {
   });
 
   afterEach(async () => {
-    await planner.resetState(testData.group1);
+    await planner.resetState();
   });
 
   it('should open quickpreview and apply label', async () => {

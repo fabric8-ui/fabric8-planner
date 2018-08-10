@@ -31,11 +31,11 @@ export class SidePanel extends ui.BaseElement {
     support.debug('... check if Side panel is Ready');
     await super.ready();
     await this.showHideSidePanelButton.ready();
-    if (browser.browserName.browserSDD) {
+    if ((browser.browserName) === 'browserSDD') {
       await this.scenarioButton.ready();
       await this.experienceButton.ready();
       await this.requirementsButton.ready();
-    } if (browser.browserName.browserAGILE) {
+    } else if ((browser.browserName) === 'browserAgile') {
       await this.workItemsGroupAgile.ready();
     }
     await this.createIterationButton.ready();
@@ -57,7 +57,7 @@ export class SidePanel extends ui.BaseElement {
         await this.workItemsGroupAgile.clickWhenReady();
         break;
       default:
-        await this.scenarioButton.clickWhenReady();
+        support.debug('Work Item group not defined');
         break;
     }
     await this.workItemList.overlay.untilHidden();
