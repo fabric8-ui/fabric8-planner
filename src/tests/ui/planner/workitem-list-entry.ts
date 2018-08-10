@@ -14,7 +14,7 @@ export class WorkItemListEntry extends ui.BaseElement {
   labelName =  new ui.Clickable(this.element(by.cssContainingText('.f8-planner-label__name', 'sample_label_1')), 'WorkItem Label');
   detailIcon = new ui.Clickable(this.$('.f8-planner-cell__detail-icon'), 'WorkItem detail page');
   iteration= new ui.BaseElement(this.$('#table-iteration'), 'Table Workitem Iteration Name');
-  creator = new ui.BaseElement(this.$('.f8-user-assign-avatar'), 'Creator column');
+  creator = new ui.BaseElement(this.$('.f8-planner-user-avatar'), 'Creator column');
   assignees = new ui.BaseElement(this.$('f8-assignee'), 'Assignee column');
 
   constructor(element: ElementFinder, name: string) {

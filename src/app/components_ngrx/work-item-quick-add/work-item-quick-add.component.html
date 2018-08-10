@@ -1,5 +1,5 @@
 <!-- Table Inline Quick Add -->
-<div class="f8-quickadd__wiblk"
+<div class="f8-planner-quickadd"
   #quickAddElement
   *ngIf="wilistview === 'wi-table-view' || wilistview === 'wi-table-view-top'"
   [ngClass]="{'f8-quick-add-inline' : wilistview === 'wi-table-view'}">
@@ -43,32 +43,32 @@
       </div>
     </div>
   </div>
-  <div class="f8-quickadd__wiblk-btn pull-right">
-    <button class="btn btn-primary f8-quickadd__wiblk-btn-add margin-right-5"
+  <div class="f8-planner-quickadd__btn pull-right">
+    <button class="btn btn-primary f8-planner-quickadd__btn-add margin-right-5"
       id="quickadd-save"
       [disabled]="blockAdd"
       [ngClass]="{'': validTitle,'disabled':!validTitle}"
       (click)="save($event)">
       Add
     </button>
-    <button class="btn btn-primary f8-quickadd__wiblk-btn-add"
+    <button class="btn btn-primary f8-planner-quickadd__btn-add"
       [disabled]="blockAdd"
       [ngClass]="{'': validTitle,'disabled':!validTitle}"
       (click)="save($event, true)">
       Add and Open
     </button>
   </div>
-  <div class="f8-quickadd__wiblk-story">
-    <div class="f8-quickadd__wiblk-storyinput padding-h-10">
+  <div class="f8-planner-quickadd__story">
+    <div class="f8-planner-quickadd__storyinput padding-h-10">
       <input class="form-control col-xs-12 col-sm-12
-        col-md-12 f8-quickadd-input"
+        col-md-12 f8-planner-quickadd__input"
         type="text"
         placeholder="Work Item Title"
         #quickAddTitle
         [disabled]="blockAdd"
         [(ngModel)]="workItem.attributes['system.title']"
         (keyup.enter)="save($event)"
-        (keyup)="checkTitle()"  required/>
+        (keyup)="checkTitle()" required/>
     </div>
   </div>
 </div>

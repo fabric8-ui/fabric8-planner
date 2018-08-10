@@ -1,57 +1,29 @@
 @import (reference) '../../../assets/stylesheets/_base';
 
-.f8-quickadd {
-  height: 69px; //height is given to avoid jumping between this block and addWorkItemBlk
-  text-align: left;
-  background: @color-pf-black-200;
-  border-top: 1px solid;
-  border-top-color: @color-pf-black-300;
-  cursor: pointer;
-  &__addwi {
-    padding: 21px 0;
-    color: @navbar-pf-border-color;
-    &-savebtn {
-      display: inline-block;
-      margin: 0;
-      &:hover {
-        text-decoration: none;
-      }
+.f8-planner-quickadd {
+  .dropdown {
+    position: relative;
+    button[data-toggle='dropdown'] {
+      display: inline-flex;
+      height: 26px;
     }
-    i {
-      display: inline-block;
-      color: @navbar-pf-border-color;
-      &:hover {
-        color: @navbar-pf-border-color;
+    .dropdown-menu {
+      i {
+        display: inline-block;
+        min-width: 16px;
+        text-align: left;
       }
     }
   }
-  &__wiblk {
-    padding-right: 10px;
-    padding-left: 10px;
-    .dropdown {
-      position: relative;
-      button[data-toggle='dropdown'] {
-        display: inline-flex;
-        height: 26px;
-      }
-      .dropdown-menu {
-        i {
-          display: inline-block;
-          min-width: 16px;
-          text-align: left;
-        }
-      }
-    }
-    &-story {
-      overflow: hidden;
-    }
-    &-btn {
-      &-add {
-        min-width: 30px;
-        height: 27px;
-        i {
-          font-size: 14px;
-        }
+  &__story {
+    overflow: hidden;
+  }
+  &__btn {
+    &-add {
+      min-width: 30px;
+      height: 27px;
+      i {
+        font-size: 14px;
       }
     }
   }
@@ -119,26 +91,7 @@
   }
 }*/
 @media (max-width: @grid-float-breakpoint) {
-  .f8-quickadd {
-    &__addwi {
-      padding: 10px;
-      i,
-      h4 {
-        display: block;
-      }
-      i {
-        margin-bottom: 5px;
-      }
-    }
-    &__wiblk {
-      padding: 10px;
-    }
-  }
-}
-@-moz-document url-prefix() {
-  .f8-quickadd__wiblk-story {
-    .f8-quickadd-desc {
-      max-height: 26px;
-    }
+  .f8-planner-quickadd {
+    padding: 10px;
   }
 }
