@@ -108,13 +108,18 @@ describe('Work Item datatable list: ', () => {
   });
 
   it('list should not update when new iteration is added', async () => {
-    let title = await planner.createUniqueWorkItem();
+    let title = await planner.createUniqueWorkItem(),
+      newIteration1 = 'new Iteration 1',
+      childWorkItem = {
+        'title': 'test list is not updated when new iteration is added',
+        'type': testData.childType
+      };
     expect(await planner.workItemList.hasWorkItem(title)).toBeTruthy();
     await planner.workItemList.workItem(title).clickInlineQuickAdd();
-    await planner.createInlineWorkItem(testData.iterationTestTitle);
-    expect(await planner.workItemList.hasWorkItem(testData.iterationTestTitle.title)).toBeTruthy();
+    await planner.createInlineWorkItem(childWorkItem);
+    expect(await planner.workItemList.hasWorkItem(childWorkItem.title)).toBeTruthy();
     await planner.sidePanel.createNewIteration();
-    await planner.iteration.addNewIteration(testData.newIteration1, testData.iteration3);
+    await planner.iteration.addNewIteration(newIteration1, testData.rootIteration);
     await planner.iteration.clickCreateIteration();
     expect(await planner.workItemList.hasWorkItem(testData.iterationTestTitle.title)).toBeTruthy();
   });

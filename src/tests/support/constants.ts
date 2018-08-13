@@ -7,10 +7,7 @@ export class Constants {
       'attribute4' : 'Assignees',
       'areaTitle1': '/' + process.env.SPACE_NAME + '/Area_1',
       'areaTitle2': '/' + process.env.SPACE_NAME + '/Area_2',
-      'LabelTestTitle': {
-        'title': 'test list is not updated when new label is added',
-        'type': 'Experience'
-      },
+      'childType': 'Experience',
       'dropdownareaTitle1': 'Area_1',
       'dropdownareaTitle2': 'Area_2',
       'dropdownIteration1': 'Iteration_1/Iteration1_1',
@@ -79,6 +76,7 @@ export class Constants {
       'attribute4' : 'Assignees',
       'areaTitle1': '/' + process.env.SPACE_NAME_SCRUM + '/Area_6',
       'areaTitle2': '/' + process.env.SPACE_NAME_SCRUM + '/Area_7',
+      'childType': 'Epic',
       'LabelTestTitle': {
         'title': 'test list is not updated when new label is added'
       },
@@ -93,10 +91,6 @@ export class Constants {
       'group3': 'WorkItemGroup',
       'iteration1': '/' + process.env.SPACE_NAME_SCRUM + '/Iteration_1/Iteration1_1',
       'iteration2': '/' + process.env.SPACE_NAME_SCRUM + '/Iteration_2',
-      'iterationTestTitle' : {
-        'title': 'test list is not updated when new iteration is added',
-        'type': 'Epic'
-      },
       'label': 'sample_label_1',
       'label1': 'Example Label 1',
       'label2': 'sample_label_2',
