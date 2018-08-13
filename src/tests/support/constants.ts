@@ -77,9 +77,6 @@ export class Constants {
       'areaTitle1': '/' + process.env.SPACE_NAME_SCRUM + '/Area_6',
       'areaTitle2': '/' + process.env.SPACE_NAME_SCRUM + '/Area_7',
       'childType': 'Epic',
-      'LabelTestTitle': {
-        'title': 'test list is not updated when new label is added'
-      },
       'dropdownareaTitle1': 'Area_6',
       'dropdownareaTitle2': 'Area_7',
       'dropdownIteration1': 'Iteration_1/Iteration1_1',
@@ -96,7 +93,6 @@ export class Constants {
       'label2': 'sample_label_2',
       'linkType': 'blocks',
       'newLabel': 'new label',
-      'newLabel1': 'new label 1',
       'newIteration': 'new Iteration',
       'newIteration1': 'new Iteration 1',
       'newWorkItem1' : {

@@ -96,15 +96,19 @@ describe('Work Item datatable list: ', () => {
   });
 
   it('list should not update when new label is added', async () => {
-    let title = await planner.createUniqueWorkItem();
+    let title = await planner.createUniqueWorkItem(),
+    newLabel1 = 'new label 1',
+      LabelTestTitle = {
+      'title': 'test list is not updated when new label is added'
+    };
     expect(await planner.workItemList.hasWorkItem(title)).toBeTruthy();
     await planner.workItemList.workItem(title).clickInlineQuickAdd();
-    await planner.createInlineWorkItem(testData.LabelTestTitle);
-    expect(await planner.workItemList.hasWorkItem(testData.LabelTestTitle.title)).toBeTruthy();
+    await planner.createInlineWorkItem(LabelTestTitle);
+    expect(await planner.workItemList.hasWorkItem(LabelTestTitle.title)).toBeTruthy();
     await planner.workItemList.clickWorkItem(title);
-    await planner.quickPreview.createNewLabel(testData.newLabel1);
+    await planner.quickPreview.createNewLabel(newLabel1);
     await planner.quickPreview.close();
-    expect(await planner.workItemList.hasWorkItem(testData.LabelTestTitle.title)).toBeTruthy();
+    expect(await planner.workItemList.hasWorkItem(LabelTestTitle.title)).toBeTruthy();
   });
 
   it('list should not update when new iteration is added', async () => {
@@ -121,7 +125,7 @@ describe('Work Item datatable list: ', () => {
     await planner.sidePanel.createNewIteration();
     await planner.iteration.addNewIteration(newIteration1, testData.rootIteration);
     await planner.iteration.clickCreateIteration();
-    expect(await planner.workItemList.hasWorkItem(testData.iterationTestTitle.title)).toBeTruthy();
+    expect(await planner.workItemList.hasWorkItem(childWorkItem.title)).toBeTruthy();
   });
 
   xit('matching child should be expanded initially', async () => {
