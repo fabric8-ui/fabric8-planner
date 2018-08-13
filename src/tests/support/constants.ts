@@ -15,7 +15,9 @@ export class Constants {
       'dropdownIteration2' : 'Iteration_1',
       'filterLabel': 'state: closed',
       'group1': 'Scenario',
+      'group2': 'Experience',
       'group3': 'Requirement',
+      'groupExecution': 'Requirement',
       'iteration1': '/' + process.env.SPACE_NAME + '/Iteration_1/Iteration1_1',
       'iteration2': '/' + process.env.SPACE_NAME + '/Iteration_2',
       'IterationTestTitle' : {
@@ -50,6 +52,7 @@ export class Constants {
       'stateClosed': 'closed',
       'stateInProgress': 'in progress',
       'stateResolved': 'resolved',
+      'typeIssue': 'Bug',
       'updateIteration' : 'Iteration_2123',
       'updatedWorkItem' : {
         title: 'New Workitem Title',
@@ -85,7 +88,9 @@ export class Constants {
       'editWorkItemTitle1': 'Title Text "<0>"',
       'filterLabel': 'state: Closed',
       'group1': 'WorkItemGroup',
+      'group2': 'WorkItemGroup',
       'group3': 'WorkItemGroup',
+      'groupExecution': 'Requirement',
       'iteration1': '/' + process.env.SPACE_NAME_SCRUM + '/Iteration_1/Iteration1_1',
       'iteration2': '/' + process.env.SPACE_NAME_SCRUM + '/Iteration_2',
       'label': 'sample_label_1',
@@ -115,6 +120,7 @@ export class Constants {
       'stateInProgress': 'In Progress',
       'stateResolved': 'Resolved',
       'type': ' Defect',
+      'typeIssue': 'Defect',
       'updatedWorkItem' : {
         title: 'New Workitem Title',
         description: 'New WorkItem Description'

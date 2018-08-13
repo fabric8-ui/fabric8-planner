@@ -136,6 +136,7 @@ describe('Planner Smoke Tests:', () => {
         expect(wiTypes[5]).toBe('Impediment');
          break;
       default:
+        this.debug('unexpected workitem types');
         break;
     }
   });

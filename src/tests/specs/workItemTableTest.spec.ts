@@ -129,25 +129,26 @@ describe('Work Item datatable list: ', () => {
   });
 
   xit('matching child should be expanded initially', async () => {
-    let workitemname = {'title': 'child', 'type': 'Bug'},
+    let workitemname = {'title': 'child', 'type': testData.typeIssue},
       workItemTitle4 = {'title': 'Workitem_Title_4'};
 
-    await planner.sidePanel.clickWorkItemGroup(testData.group2);
+    await planner.sidePanel.clickWorkItemGroup(testData.groupExecution);
     await planner.workItemList.workItem(workItemTitle4.title).clickInlineQuickAdd();
     await planner.createInlineWorkItem(workitemname);
     expect(await planner.workItemList.hasWorkItem(workitemname.title)).toBeTruthy();
     await planner.sidePanel.clickWorkItemGroup(testData.group1);
-    await planner.sidePanel.clickWorkItemGroup(testData.group2);
+    await planner.waitUntilUrlContains('typegroup.name:' + testData.group1);
+    await planner.sidePanel.clickWorkItemGroup(testData.groupExecution);
+    await planner.waitUntilUrlContains('typegroup.name:' + testData.groupExecution);
     await planner.workItemList.overlay.untilHidden();
     expect(await planner.workItemList.hasWorkItem(workitemname.title)).toBeTruthy();
   });
 
-  xit('clicking on label should filter the workitem list by label', async () => {
+  it('clicking on label should filter the workitem list by label', async () => {
     let labelFilter = 'label: ' + testData.label,
       workItemTitle = {'title': 'test clicking on label should filter the workitem list by label'};
 
-    await planner.sidePanel.clickRequirement();
-    await planner.waitUntilUrlContains('typegroup.name:Requirements');
+    await planner.sidePanel.clickWorkItemGroup(testData.group2);
     await planner.createWorkItem(workItemTitle);
     await planner.workItemList.clickWorkItem(workItemTitle.title);
     await planner.quickPreview.addLabel(testData.label);
