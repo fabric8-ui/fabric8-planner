@@ -51,7 +51,7 @@ export class Constants {
       'stateOpen': 'open',
       'stateNew': 'new',
       'stateClosed': 'closed',
-      'stateInProgress': 'in Progress',
+      'stateInProgress': 'in progress',
       'stateResolved': 'resolved',
       'updateIteration' : 'Iteration_2123',
       'updatedWorkItem' : {

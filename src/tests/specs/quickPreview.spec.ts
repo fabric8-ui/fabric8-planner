@@ -26,8 +26,10 @@ fdescribe('Quick preview tests: ', () => {
   });
 
   it('should open quickpreview and apply label', async () => {
-    await planner.workItemList.clickWorkItem(testData.workItemTitle2);
+    let title = await planner.createUniqueWorkItem();
+    await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.addLabel(testData.label);
+    await planner.detailPage.labelListDiv.untilCount(1);
     expect(await planner.quickPreview.getLabels()).toContain(testData.label);
   });
 
@@ -36,6 +38,7 @@ fdescribe('Quick preview tests: ', () => {
     await planner.createWorkItem(workitemname);
     await planner.workItemList.clickWorkItem(workitemname.title);
     await planner.quickPreview.createNewLabel(testData.newLabel);
+    await planner.detailPage.labelListDiv.untilCount(1);
     expect(await planner.quickPreview.getLabels()).toContain(testData.newLabel);
   });
 
@@ -78,7 +81,7 @@ fdescribe('Quick preview tests: ', () => {
   });
 
   it('should close assignee dropdown when clicked outside', async () => {
-    await planner.workItemList.clickWorkItem(testData.workItemTitle2);
+    await planner.workItemList.clickWorkItem('Workitem_Title_2');
     await planner.quickPreview.assigneeDropdown.clickWhenReady();
     expect(await planner.quickPreview.assigneeDropdownMenu.getAttribute('className')).toContain('show');
     await planner.quickPreview.titleInput.clickWhenReady();
