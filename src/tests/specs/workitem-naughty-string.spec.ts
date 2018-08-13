@@ -4,7 +4,7 @@ import * as support from '../support';
 import { SidePanel } from './../ui/planner/sidepanel';
 
 
-fdescribe('Work Item list: ', () => {
+describe('Work Item list: ', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
   let testData;
