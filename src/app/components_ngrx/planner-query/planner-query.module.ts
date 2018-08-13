@@ -3,9 +3,6 @@ import { NgModule } from '@angular/core';
 import { PlannerQueryRoutingModule } from './planner-query-routing.module';
 import { PlannerQueryComponent } from './planner-query.component';
 
-import { FeatureFlagResolver, FeatureTogglesService } from 'ngx-feature-flag';
-import { togglesApiUrlProvider } from '../../shared/toggles-api.provider';
-
 @NgModule({
   imports: [
     CommonModule,
@@ -16,9 +13,6 @@ import { togglesApiUrlProvider } from '../../shared/toggles-api.provider';
   ],
   exports: [
     PlannerQueryComponent
-  ],
-  providers: [
-    FeatureFlagResolver, FeatureTogglesService, togglesApiUrlProvider
   ]
 })
-export class PlannerQueryModule {}
+export class PlannerQueryModule { }
