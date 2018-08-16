@@ -11,7 +11,7 @@ describe('Agile template tests: ', () => {
     await support.desktopTestSetup();
     plannerAgile = new PlannerPage(browser.baseUrl);
     plannerAgile.openInBrowser();
-    await plannerAgile.waitUntilUrlContains('typegroup');
+    await plannerAgile.waitUntilUrlContains('typegroup.name:Work');
   });
 
   beforeEach(async () => {
@@ -28,6 +28,7 @@ describe('Agile template tests: ', () => {
     expect(wiTypes[3]).toBe('Task');
     expect(wiTypes[4]).toBe('Defect');
     expect(wiTypes[5]).toBe('Impediment');
+    await plannerAgile.quickAdd.workItemTypeDropdown.clickWhenReady();
   });
 
   it('should create a workitem of type defect and update Effort', async () => {
