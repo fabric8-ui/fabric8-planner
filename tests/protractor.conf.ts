@@ -53,6 +53,7 @@ let conf: Config = {
   multiCapabilities: [
     {
       'browserName': 'chrome',
+      exclude: ['specs/templateSpecificTests/agileTemplate.spec.js'],
       chromeOptions: {
         args: process.env.HEADLESS_MODE === 'true' ? ['--no-sandbox', '--headless'] : ['--no-sandbox']
       },
@@ -60,6 +61,7 @@ let conf: Config = {
       },
     {
       'browserName': 'chrome',
+      exclude: ['specs/templateSpecificTests/sddTemplate.spec.js'],
       chromeOptions: {
         args: process.env.HEADLESS_MODE === 'true' ? ['--no-sandbox', '--headless'] : ['--no-sandbox']
       },

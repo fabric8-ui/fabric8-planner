@@ -117,46 +117,6 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.quickPreview.iterationDropdown.menu.getTextWhenReady()).not.toBe('No matches found.');
   });
 
-  it('Quick Add should support Scenario, papercuts and fundamentals' , async () => {
-    let wiTypes = await planner.quickAdd.workItemTypes();
-    switch (browser.browserName) {
-      case 'browserSDD':
-        expect(wiTypes.length).toBe(3);
-        expect(wiTypes[0]).toBe('Scenario');
-        expect(wiTypes[1]).toBe('Fundamental');
-        expect(wiTypes[2]).toBe('Papercuts');
-        break;
-      case 'browserAgile':
-        expect(wiTypes.length).toBe(6);
-        expect(wiTypes[0]).toBe('Theme');
-        expect(wiTypes[1]).toBe('Epic');
-        expect(wiTypes[2]).toBe('Story');
-        expect(wiTypes[3]).toBe('Task');
-        expect(wiTypes[4]).toBe('Defect');
-        expect(wiTypes[5]).toBe('Impediment');
-         break;
-      default:
-        this.debug('unexpected workitem types');
-        break;
-    }
-  });
-
-  xit('Experiences-Quick Add should support Experience and Value proposition', async () => {
-    await planner.sidePanel.clickExperience();
-    let wiTypes = await planner.quickAdd.workItemTypes();
-    expect(wiTypes.length).toBe(2);
-    expect(wiTypes[0]).toBe('Experience');
-    expect(wiTypes[1]).toBe('Value Proposition');
-  });
-
-  xit('Requirement-Quick Add should support Feature and Bug', async () => {
-    await planner.sidePanel.clickRequirement();
-    let wiTypes = await planner.quickAdd.workItemTypes();
-    expect(wiTypes.length).toBe(2);
-    expect(wiTypes[0]).toBe('Feature');
-    expect(wiTypes[1]).toBe('Bug');
-  });
-
   it('Edit Comment and Save', async () => {
     await planner.createWorkItem(testData.newWorkItem3);
     expect(await planner.workItemList.hasWorkItem(testData.newWorkItem3.title)).toBeTruthy();
@@ -221,12 +181,6 @@ describe('Planner Smoke Tests:', () => {
     await planner.detailPage.close();
     await planner.waitUntilUrlContains('typegroup');
     expect(await planner.workItemList.hasWorkItem('new detail workItem')).toBeTruthy();
-  });
-
-  xit('Infotip opens on clicking on infotip icon and closes on outside click', async () => {
-    await planner.sidePanel.infotipIconExperience.clickWhenReady();
-    await planner.sidePanel.infotipIconRequirement.clickWhenReady();
-    expect(await planner.sidePanel.infotipPopover.count()).toBe(1);
   });
 
   it('Add new work-item to the selected iteration', async () => {
