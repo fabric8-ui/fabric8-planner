@@ -25,9 +25,9 @@ describe('Quick preview tests: ', () => {
     await planner.resetState();
   });
 
-  it('should open quickpreview and apply label', async () => {
+  fit('should open quickpreview and apply label', async () => {
     let title = await planner.createUniqueWorkItem(),
-      label = 'sample_label_1';
+      label = 'sample_label_3';
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.addLabel(label);
     await planner.detailPage.labelListDiv.untilCount(1);
