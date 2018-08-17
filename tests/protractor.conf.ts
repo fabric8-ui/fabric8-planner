@@ -81,7 +81,7 @@ let conf: Config = {
             browser.baseUrl = browser.baseUrl + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME_SCRUM + '/plan';
             break;
           default:
-            browser.baseUrl = browser.baseUrl + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME + '/plan';
+            new Error('browser.baseUrl undefined');
             break;
       }
       // required to get the name of browser running tests for SDD or Agile template
