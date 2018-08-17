@@ -30,7 +30,7 @@ describe('SDD template tests: ', () => {
   });
 
   it('Experiences-Quick Add should support Experience and Value proposition', async () => {
-    await plannerSDD.sidePanel.clickWorkItemGroup('Experience');
+    await plannerSDD.sidePanel.clickWorkItemGroup('Experiences');
     let wiTypes = await plannerSDD.quickAdd.workItemTypes();
     expect(wiTypes.length).toBe(2);
     expect(wiTypes[0]).toBe('Experience');
@@ -38,7 +38,7 @@ describe('SDD template tests: ', () => {
   });
 
   it('Requirement-Quick Add should support Feature and Bug', async () => {
-    await plannerSDD.sidePanel.clickWorkItemGroup('Requirement');
+    await plannerSDD.sidePanel.clickWorkItemGroup('Requirements');
     let wiTypes = await plannerSDD.quickAdd.workItemTypes();
     expect(wiTypes.length).toBe(2);
     expect(wiTypes[0]).toBe('Feature');
@@ -55,13 +55,13 @@ describe('SDD template tests: ', () => {
     let workitemname = {'title': 'child', 'type': 'Bug'},
       workItemTitle4 = {'title': 'Workitem_Title_4'};
 
-    await plannerSDD.sidePanel.clickWorkItemGroup('Requirement');
+    await plannerSDD.sidePanel.clickWorkItemGroup('Requirements');
     await plannerSDD.workItemList.workItem(workItemTitle4.title).clickInlineQuickAdd();
     await plannerSDD.createInlineWorkItem(workitemname);
     expect(await plannerSDD.workItemList.hasWorkItem(workitemname.title)).toBeTruthy();
-    await plannerSDD.sidePanel.clickWorkItemGroup('Scenario');
+    await plannerSDD.sidePanel.clickWorkItemGroup('Scenarios');
     await plannerSDD.waitUntilUrlContains('typegroup.name:Scenarios');
-    await plannerSDD.sidePanel.clickWorkItemGroup('Requirement');
+    await plannerSDD.sidePanel.clickWorkItemGroup('Requirements');
     await plannerSDD.waitUntilUrlContains('typegroup.name:Requirements');
     await plannerSDD.workItemList.overlay.untilHidden();
     expect(await plannerSDD.workItemList.hasWorkItem(workitemname.title)).toBeTruthy();

@@ -27,13 +27,17 @@ describe('Work Item datatable list: ', () => {
   });
 
   it('should open settings button and hide columns', async () => {
+    let attribute1 = 'Iteration',
+      attribute2 = 'Label',
+      attribute3 = 'Creator',
+      attribute4 = 'Assignees';
     expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(9);
     await planner.settings.clickSettings();
-    await planner.settings.selectAttribute(testData.attribute1);
+    await planner.settings.selectAttribute(attribute1);
     await planner.settings.moveToAvailableAttribute();
     expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(8);
     await planner.settings.clickSettings();
-    await planner.settings.selectAttribute(testData.attribute1);
+    await planner.settings.selectAttribute(attribute1);
     await planner.settings.moveToDisplayedAttribute();
     expect(await planner.workItemList.getDataTableHeaderCellCount()).toBe(9);
   });
@@ -54,7 +58,6 @@ describe('Work Item datatable list: ', () => {
 
   it('hideTree and create a work item then work item should be displayed when show tree is selected', async () => {
     let newWorkItem1 = {'title' : 'New WorkItem'};
-
     await planner.header.clickShowTree();
     await planner.workItemList.overlay.untilHidden();
     await planner.createWorkItem(newWorkItem1);
@@ -129,13 +132,14 @@ describe('Work Item datatable list: ', () => {
   });
 
   it('clicking on label should filter the workitem list by label', async () => {
-    let labelFilter = 'label: ' + testData.label,
+    let label = 'sample_label_1',
+      labelFilter = 'label: sample_label_1',
       workItemTitle = {'title': 'test clicking on label should filter the workitem list by label'};
 
     await planner.sidePanel.clickWorkItemGroup(testData.group2);
     await planner.createWorkItem(workItemTitle);
     await planner.workItemList.clickWorkItem(workItemTitle.title);
-    await planner.quickPreview.addLabel(testData.label);
+    await planner.quickPreview.addLabel(label);
     await planner.quickPreview.close();
     await planner.workItemList.clickWorkItemLabel(workItemTitle.title);
     expect(await planner.header.getFilterConditions()).toContain(labelFilter);
@@ -154,7 +158,7 @@ describe('Work Item datatable list: ', () => {
   });
 
   it('should make the title bold based on filter when adding a new workitem', async () => {
-    let workitem = {'title': 'Scenario'};
+    let workitem = {'title': 'test title bold test'};
     await planner.header.selectFilter('State', testData.stateNew);
     await planner.createWorkItem(workitem);
     expect(await planner.workItemList.hasWorkItem(workitem.title)).toBeTruthy();

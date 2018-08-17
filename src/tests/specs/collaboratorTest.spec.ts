@@ -50,9 +50,11 @@ describe('Planner Collaborator Tests:', () => {
   });
 
   it('Non collaborator should Comment and Save', async () => {
-    await planner1.workItemList.clickWorkItem(testData.workItemCommentTest);
-    await planner1.quickPreview.addCommentAndSave(testData.comment);
-    expect(await planner1.quickPreview.getComments()).toContain(testData.comment);
+    let comment = 'new comment';
+    /* to avoid workitem conflict should comment on 2 different workitem */
+    await planner1.workItemList.clickWorkItem(testData.commentCollaboratorTest);
+    await planner1.quickPreview.addCommentAndSave(comment);
+    expect(await planner1.quickPreview.getComments()).toContain(comment);
   });
 
   it('Non collaborator should not be able to update Area ', async () => {

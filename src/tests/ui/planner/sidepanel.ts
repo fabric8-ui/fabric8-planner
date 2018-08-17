@@ -3,6 +3,9 @@ import * as support from '../../support';
 import  *  as ui from './../../ui';
 import { WorkItemList } from './workitem-list';
 
+/* restricting workItemGroup values */
+type workItemGroup = 'Scenarios' | 'Experiences' | 'Requirements' | 'Work Items';
+
 export class SidePanel extends ui.BaseElement {
   showHideSidePanelButton = new ui.Button(this.$('.f8-sidepanel--toggle'), 'show/hide side panel button');
   scenarioButton = new ui.Clickable(this.element(by.cssContainingText('.f8-group-filter__type', ' Scenarios')), 'Side panel Scenario button');
@@ -42,23 +45,18 @@ export class SidePanel extends ui.BaseElement {
     support.debug('... check if Side panel is Ready - OK');
   }
 
-  async clickWorkItemGroup(group: string) {
+  async clickWorkItemGroup(group: workItemGroup) {
     switch (group) {
-      case 'Scenario':
-        await this.scenarioButton.clickWhenReady();
-        break;
-      case 'Experience':
-        await this.experienceButton.clickWhenReady();
-        break;
-      case 'Requirement':
-        await this.requirementsButton.clickWhenReady();
-        break;
-      case 'WorkItemGroup':
-        await this.workItemsGroupAgile.clickWhenReady();
-        break;
+      case 'Scenarios' :
+        await this.scenarioButton.clickWhenReady(); break;
+      case 'Experiences':
+        await this.experienceButton.clickWhenReady(); break;
+      case 'Requirements':
+        await this.requirementsButton.clickWhenReady(); break;
+      case 'Work Items':
+        await this.workItemsGroupAgile.clickWhenReady(); break;
       default:
-        support.debug('Work Item group not defined');
-        break;
+        support.debug('Work Item group not defined'); break;
     }
     await this.workItemList.overlay.untilHidden();
   }

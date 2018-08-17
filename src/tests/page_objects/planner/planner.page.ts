@@ -48,9 +48,9 @@ export class PlannerPage extends AppPage {
 
   async resetState() {
     if (await browser.browserName === 'browserSDD') {
-      await this.sidePanel.clickWorkItemGroup('Scenario');
+      await this.sidePanel.clickWorkItemGroup('Scenarios');
     } else if (await browser.browserName === 'browserAgile') {
-        await this.sidePanel.clickWorkItemGroup('WorkItemGroup');
+        await this.sidePanel.clickWorkItemGroup('Work Items');
     } else {
         support.debug('browser Name not defined');
     }
