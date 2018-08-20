@@ -24,7 +24,9 @@ describe('Quick preview tests: ', () => {
   });
 
   it('should open quickpreview and apply label', async () => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle2);
+    let workitemname = {'title': 'apply labels'};
+    await planner.createWorkItem(workitemname);
+    await planner.workItemList.clickWorkItem(workitemname.title);
     await planner.quickPreview.addLabel(c.label2);
     expect(await planner.quickPreview.getLabels()).toContain(c.label2);
   });
@@ -66,20 +68,24 @@ describe('Quick preview tests: ', () => {
   });
 
   it('description box should not be open for wis', async () => {
-    let workitemname = {'title': 'quickpreview test'};
-    await planner.createWorkItem(workitemname);
-    await planner.workItemList.clickWorkItem(workitemname.title);
+    let workitemname1 = {'title': 'quickpreview test1'};
+    let workitemname2 = {'title': 'quickpreview test2'};
+    await planner.createWorkItem(workitemname1);
+    await planner.createWorkItem(workitemname2);
+    await planner.workItemList.clickWorkItem(workitemname1.title);
     await planner.quickPreview.openDescriptionBox();
     expect(await planner.quickPreview.isSaveButtonDisplayed()).toBeTruthy();
 
     // Open another WI(Note: the description box is still in edit mode)
-    await planner.workItemList.clickWorkItem(c.workItemTitle2);
+    await planner.workItemList.clickWorkItem(workitemname2.title);
     // The description box should not be in edit mode
     expect(await planner.quickPreview.isSaveButtonDisplayed()).toBeFalsy();
   });
 
   it('should close assignee dropdown when clicked outside', async () => {
-    await planner.workItemList.clickWorkItem(c.workItemTitle2);
+    let workitemname = {'title': 'assignee dropdown test'};
+    await planner.createWorkItem(workitemname);
+    await planner.workItemList.clickWorkItem(workitemname.title);
     await planner.quickPreview.assigneeDropdown.clickWhenReady();
     expect(await planner.quickPreview.assigneeDropdownMenu.getAttribute('className')).toContain('show');
     await planner.quickPreview.titleInput.clickWhenReady();
