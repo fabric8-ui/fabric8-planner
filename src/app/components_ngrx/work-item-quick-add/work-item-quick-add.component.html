@@ -30,8 +30,8 @@
           role="menu"
           *dropdownMenu>
           <li *ngFor="let type of workItemTypes"
-              role="menuitem"
-              (click)="selectType($event, type)">
+            role="menuitem"
+            (click)="selectType($event, type)">
             <a class="dropdown-item"
               href="#">
               <i class="fa"
@@ -49,7 +49,7 @@
       [disabled]="blockAdd"
       [ngClass]="{'': validTitle,'disabled':!validTitle}"
       (click)="save($event)">
-      Add
+        Add
     </button>
     <button class="btn btn-primary f8-planner-quickadd__btn-add"
       [disabled]="blockAdd"

@@ -116,7 +116,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   workItemList = new ui.BaseElementArray(this.linkSearchDiv.$$('.select-dropdown-menu li'), 'work item list');
 
   linkButton = new ui.Button(this.linksDiv.$('#bind-link'), 'link Button');
-  linklistItem = new ui.BaseElement(this.$('#wi-link .f8-link__list-item'), 'link lst item');
+  linklistItem = new ui.BaseElement(this.$('#wi-link .f8-planner__link-list-item'), 'link lst item');
 
   commentsToggleButton = new ui.Clickable($('#wi-comment .f8-comment__toggle'), 'WorkItem Comments toggle button');
   creationTimeDiv = new ui.BaseElement(this.$('#created_at'), 'WorkItem creation time div');
@@ -239,7 +239,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   }
 
   async removeLink(workItem: string) {
-    await new ui.BaseElement(this.element(by.xpath("//li[contains(@class,'f8-link__list-item')][.//span[contains(text(), '" + workItem + "')]]")).$('.pficon-close')).clickWhenReady();
+    await new ui.BaseElement(this.element(by.xpath("//li[contains(@class,'f8-planner__link-list-item')][.//span[contains(text(), '" + workItem + "')]]")).$('.pficon-close')).clickWhenReady();
   }
 
   async createNewLabel(label: string, isPressEnter: boolean = false) {

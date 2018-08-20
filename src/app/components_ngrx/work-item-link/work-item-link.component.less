@@ -1,7 +1,7 @@
 @import (reference) '../../../assets/stylesheets/_base';
 
-.f8-link {
-  &__nav-list {
+.f8-planner__link {
+  &-nav {
     border-top: 1px solid;
     border-top-color: @color-pf-black-200;
     li {
@@ -36,14 +36,16 @@
       }
     }
   }
-  &__content {
+  &-content {
     background: @color-pf-white;
     border-bottom: 1px solid;
     border-bottom-color: @color-pf-black-200;
-    &-create-link {
+    &-create {
+      display: flex;
       padding-top: 50px;
       padding-bottom: 50px;
-      text-align: center;
+      flex-direction: column;
+      align-items: center;
       .pficon-add-circle-o {
         font-size: 50px;
         color: @color-pf-black-500;
