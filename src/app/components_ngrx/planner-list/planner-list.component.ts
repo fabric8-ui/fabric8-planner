@@ -86,13 +86,14 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private toolbarHt: number = 0;
   private quickaddHt: number = 0;
   private showCompleted: boolean = false;
+  private isOpenQuickPreview: boolean = false;
 
   @ViewChild('plannerLayout') plannerLayout: PlannerLayoutComponent;
   @ViewChild('toolbar') toolbar: ElementRef;
   @ViewChild('quickaddWrapper') quickaddWrapper: ElementRef;
   @ViewChild('listContainer') listContainer: ElementRef;
   @ViewChild('myTable') table: any;
-  @ViewChild('quickPreview') quickPreview: WorkItemPreviewPanelComponent;
+  @ViewChild('quickPreviewPanel') quickPreviewPanel: WorkItemPreviewPanelComponent;
 
   constructor(
     private renderer: Renderer2,
@@ -514,7 +515,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
 
   onPreview(id: string): void {
     const workItem = this.workItems.find(w => w.id === id);
-    this.quickPreview.open(workItem);
+    this.quickPreviewPanel.open(workItem);
   }
 
   onRowDrop(event) {
@@ -528,6 +529,12 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
       direction: 'above'
     };
     this.store.dispatch(new WorkItemActions.Reorder(payload));
+  }
+
+  onClickSidePanel() {
+    if (this.isOpenQuickPreview == true) {
+      this.quickPreviewPanel.quickPreview.closeDetail();
+    }
   }
 
   ngOnDestroy() {

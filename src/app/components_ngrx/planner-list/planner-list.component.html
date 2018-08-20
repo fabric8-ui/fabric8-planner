@@ -14,7 +14,10 @@
       [sidePanelContent]="sidePanel"
       [sectionContent]="sectionPanel">
     </alm-planner-layout>
-    <work-item-preview-panel #quickPreview >
+    <work-item-preview-panel 
+    (onOpen)="isOpenQuickPreview = true"
+    (onClose)="isOpenQuickPreview = false" 
+    #quickPreviewPanel >
     </work-item-preview-panel>
   </main>
 </div>
@@ -39,7 +42,8 @@
       </span>
     </a>
     <side-panel
-      [sidePanelOpen]="sidePanelOpen">
+      [sidePanelOpen]="sidePanelOpen"
+      (click)="onClickSidePanel()">
     </side-panel>
   </aside>
 </ng-template>
