@@ -23,7 +23,7 @@ describe('Quick preview tests: ', () => {
     await planner.resetState();
   });
 
-  it('should open quickpreview and apply label', async () => {
+  xit('should open quickpreview and apply label', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle2);
     await planner.quickPreview.addLabel(c.label2);
     expect(await planner.quickPreview.getLabels()).toContain(c.label2);
@@ -65,7 +65,7 @@ describe('Quick preview tests: ', () => {
     expect(await planner.quickPreview.titleInput.getAttribute('value')).toBe('Title Text "<0>"');
   });
 
-  it('description box should not be open for wis', async () => {
+  xit('description box should not be open for wis', async () => {
     let workitemname = {'title': 'quickpreview test'};
     await planner.createWorkItem(workitemname);
     await planner.workItemList.clickWorkItem(workitemname.title);
@@ -78,7 +78,7 @@ describe('Quick preview tests: ', () => {
     expect(await planner.quickPreview.isSaveButtonDisplayed()).toBeFalsy();
   });
 
-  it('should close assignee dropdown when clicked outside', async () => {
+  xit('should close assignee dropdown when clicked outside', async () => {
     await planner.workItemList.clickWorkItem(c.workItemTitle2);
     await planner.quickPreview.assigneeDropdown.clickWhenReady();
     expect(await planner.quickPreview.assigneeDropdownMenu.getAttribute('className')).toContain('show');
