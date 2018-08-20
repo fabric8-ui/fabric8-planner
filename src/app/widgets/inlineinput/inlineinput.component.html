@@ -16,12 +16,12 @@
   <div
     *ngIf="editing"
     (click)="saveClick()"
-    class="btn btn-primary f8-planner__action-button btn-save f8-inlineinput__btn-save"
+    class="btn btn-primary f8-inlineinput__btn-save"
     [class.disabled]="saving">
     <i class="fa fa-check"></i>
   </div>
   <div
-    class="btn btn-default f8-planner__action-button f8-inlineinput__btn-cancel"
+    class="btn btn-default f8-inlineinput__btn-cancel"
     *ngIf="editing"
     (click)="closeClick()">
     <i class="fa fa-close"></i>

@@ -1,13 +1,13 @@
 <div [class.f8-planner-container]="detailContext=='detail'">
-  <div class="f8-detail form-horizontal"
+  <div class="f8-planner__detail form-horizontal"
     id="wi-detail-form"
     *ngIf="workItem">
     <fieldset *ngIf="(workItem.typeObs | async) as type">
-      <div class="f8-detail__header"
+      <div class="f8-planner__detail-header"
         #detailHeader>
         <span
           class="pficon pficon-close 
-          pull-right pointer f8-detail__close-icon"
+          pull-right pointer f8-planner__detail-close"
           (click)="closeDetail()">
         </span>
         <div *ngIf="detailContext=='preview'">
@@ -56,11 +56,11 @@
           </div>
         </div>
       </div>
-      <div class="f8-detail__detail width-100"
+      <div class="f8-planner__detail-content width-100"
         #detailContent>
         <div
           class="col-xs-12 col-sm-12 padding-v-15"
-          [class.f8-detail__detail-wrap]="detailContext=='detail'"
+          [class.f8-planner__detail-content-wrap]="detailContext=='detail'"
           [class.col-md-7]="detailContext=='detail'"
           [class.col-lg-7]="detailContext=='detail'"
           [class.col-md-12]="detailContext=='preview'"
@@ -119,11 +119,11 @@
 
           <div class="form-group">
             <!-- assignee -->
-            <section class="f8-detail__assignee">
+            <section class="f8-planner__detail-assignee">
               <label class="pull-left padding-left-15 control-label">
                 {{ type.fields['system.assignees']?.label || 'Label' }}
               </label>
-              <div class="f8-detail__content" #assignee >
+              <div class="f8-planner__detail-context" #assignee >
                 <span *ngIf="loadingAssignees"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -147,11 +147,11 @@
           </div>
           <!-- area -->
           <div class="form-group">
-            <section class="f8-detail__area">
+            <section>
               <label class="pull-left padding-left-15 control-label">
                 {{ type.fields['system.area']?.label || 'Label' }}
               </label>
-              <div class="f8-detail__content">
+              <div class="f8-planner__detail-context">
                 <span *ngIf="loadingArea"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -173,11 +173,11 @@
 
           <!-- Iteration -->
           <div class="form-group">
-            <section class="f8-detail__area">
+            <section>
               <label class="pull-left padding-left-15 control-label">
                 {{ type.fields['system.iteration']?.label || 'Label' }}
               </label>
-              <div class="f8-detail__content">
+              <div class="f8-planner__detail-context">
                 <span *ngIf="loadingIteration"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -198,11 +198,11 @@
           </div>
           <!--Labels-->
           <div class="form-group">
-            <section class="f8-detail__labels">
+            <section class="f8-planner__detail-labels">
               <label class="pull-left padding-left-15 control-label ">
                 {{ type.fields['system.labels']?.label || 'Label' }}
               </label>
-              <div class="f8-detail__content">
+              <div class="f8-planner__detail-context">
                 <span *ngIf="loadingLabels"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -226,11 +226,11 @@
           </div>
           <!-- Description -->
           <div class="form-group">
-            <section class="f8-detail__area">
+            <section>
               <label class="pull-left padding-left-15 control-label">
                 Description
               </label>
-              <div class="f8-detail__content">
+              <div class="f8-planner__detail-context">
                 <f8-markdown
                   id="wi-desc-div"
                   [editAllow]="workItem?.editable"
@@ -257,8 +257,8 @@
           </div>
         </div>
         <div class="col-xs-12 col-sm-12 padding-0"
-          [class.f8-detail__detail-wrap-right]="detailContext=='detail'"
-          [class.f8-detail__detail-wrap]="detailContext=='detail'"
+          [class.f8-planner__detail-content-wrap--border]="detailContext=='detail'"
+          [class.f8-planner__detail-content-wrap]="detailContext=='detail'"
           [class.col-md-5]="detailContext=='detail'"
           [class.col-lg-5]="detailContext=='detail'"
           [class.col-md-12]="detailContext=='preview'"

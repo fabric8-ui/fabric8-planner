@@ -1,12 +1,12 @@
 <!-- id -->
-<span  class="margin-0"
+<span class="margin-0"
   *ngIf="col === 'id'">
     {{ row.number }}
 </span>
 <!-- Type -->
 
 <div *ngIf="col === 'type' && row.typeObs | async as type">
-  <span class="f8-planner-cell__icon-type
+  <span class="f8-planner__cell-icon-type
     {{type?.icon}}"
     title="{{type?.name}}">
   </span>
@@ -22,7 +22,7 @@
       (click)="onPreview($event, row)">
     </p>
   </div>
-  <div class="dib text-right wi-detail-icon">
+  <div class="dib text-right f8-planner__cell-detail-icon">
     <span *ngIf="context ==='query' && row.hasChildren"
       class="fa fa-angle-right bold padding-v-5 pointer"
       (click)="onExploration(row)">
@@ -73,8 +73,12 @@
   [imgPlacement]="'left'">
 </user-avatar>
 <!-- Assignee -->
+<<<<<<< HEAD
 <div class="f8-planner-cell__assignees"
   *ngIf="col === 'assignees'">
+=======
+<div *ngIf="col === 'assignees'">
+>>>>>>> style(planner): fix classnames for planner components
   <f8-assignee
     [showFullName]="false"
     [truncateAfter]="3"

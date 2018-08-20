@@ -128,7 +128,6 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
   }
 
   getRouterLink() {
-    console.log('abc');
     return this.context === 'board' ? ['..'] : [];
   }
 
