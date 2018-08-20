@@ -106,8 +106,17 @@ describe('Detail View test: ', () => {
     await planner.workItemList.openDetailPage(c.workItemTitle2);
     await planner.waitUntilUrlContains('detail');
     await planner.detailPage.titleInput.untilTextIsPresentInValue(c.workItemTitle2);
-    await planner.detailPage.changeState('open');
-    await planner.detailPage.stateToggle.untilTextIsPresent('open');
-    expect(planner.detailPage.stateToggle.getTextWhenReady()).toContain('open');
+    await planner.detailPage.changeStateTo('open');
+    expect(await planner.detailPage.getState()).toBe('open');
+  });
+
+  it('Should change the type of work item', async () => {
+    let workitemname = {'title': 'change type test'};
+    await planner.createWorkItem(workitemname);
+    await planner.workItemList.openDetailPage(workitemname.title);
+    await planner.waitUntilUrlContains('detail');
+    await planner.detailPage.titleInput.untilTextIsPresentInValue(workitemname.title);
+    await planner.detailPage.changeTypeTo('Bug');
+    expect(await planner.detailPage.getType()).toBe('Bug');
   });
 });

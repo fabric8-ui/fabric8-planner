@@ -78,7 +78,7 @@ export class WorkItemEffects {
           itemUI.createId = createID;
           return { ...itemUI, ...wid };
         })
-        .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w))
+        .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w, state.space.id))
         .mergeMap(wItem => {
           // If a child item is created
           if (parentId) {
@@ -142,7 +142,13 @@ export class WorkItemEffects {
     .switchMap(wp => {
       const payload = wp.payload;
       const state = wp.state;
-      return this.workItemService.getWorkItems2(payload.pageSize, payload.filters)
+      const spaceQuery = this.filterService.queryBuilder(
+        'space', this.filterService.equal_notation, state.space.id
+      );
+      const finalQuery = this.filterService.queryJoiner(
+        payload.filters, this.filterService.and_notation, spaceQuery
+      );
+      return this.workItemService.getWorkItems2(payload.pageSize, {expression: finalQuery})
         .map((data: any) => {
           let wis = [];
           if (payload.isShowTree) {
@@ -242,22 +248,20 @@ export class WorkItemEffects {
           );
           const staticPayload = this.workItemMapper.toServiceModel(wp.payload);
 
-          // We don't update work item type
-          // So we remove it from the payload
           payload = cleanObject({
             ...staticPayload,
             ...{ attributes: {
                  ...staticPayload.attributes,
                  ...dynamicPayload.attributes
             }}
-          }, ['baseType']);
+          });
         } else {
           payload = this.workItemMapper.toServiceModel(wp.payload);
         }
         const state = wp.state;
         return this.workItemService.update(payload)
           .map(w => this.resolveWorkItems([w], state)[0])
-          .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w))
+          .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w, state.space.id))
           .map(w => {
             const item = state.workItems.entities[w.id];
             if (item) {
@@ -375,4 +379,39 @@ export class WorkItemEffects {
           ];
         });
     });
+
+    @Effect() getWorkItemChildrenForQuery$: Observable<Action> = this.actions$
+      .ofType<WorkItemActions.GetWorkItemChildrenForQuery>(WorkItemActions.GET_WORKITEM_CHILDREN_FOR_Query)
+      .withLatestFrom(this.store.select('planner'))
+      .map(([action, state]) => {
+        return {
+          payload: action.payload,
+          state: state
+        };
+      })
+      .switchMap(wp => {
+        return this.workItemService
+          .getChildren2(wp.payload)
+          .map((data: WorkItemService[]) => {
+            return this.resolveWorkItems(data, wp.state);
+          })
+          .map((workItems: WorkItemUI[]) => {
+            return new WorkItemActions.GetSuccess(
+              workItems
+            );
+          })
+          .catch(() => {
+            try {
+              this.notifications.message({
+                message: `Problem loading children.`,
+                type: NotificationType.DANGER
+              } as Notification);
+            } catch (e) {
+              console.log('Problem loading children.');
+            }
+            return Observable.of(
+              new WorkItemActions.GetError()
+            );
+          });
+      });
 }

@@ -184,13 +184,9 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
           this.showTree = false;
           exp['$OPTS'] = {'tree-view': false};
         }
-
-        Object.assign(payload, {
-          expression: exp
-        });
         this.store.dispatch(new WorkItemActions.Get({
           pageSize: 200,
-          filters: payload,
+          filters: exp,
           isShowTree: this.showTree
         }));
       })
@@ -245,71 +241,18 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   // Start: Settings(tableConfig) dropdown
-
-  toggleCheckbox(event, col) {
-    if (event.target.checked) {
-      col.selected = true;
-    } else {
-      col.selected = false;
-    }
-  }
-
-  moveToDisplay() {
-    this.columns.filter(col => col.selected).forEach(col => {
-      if (col.display === true) { return; }
-      col.selected = false;
-      col.display = true;
-      col.showInDisplay = true;
-      col.available = false;
-    });
-    this.updateColumnIndex();
+  moveToDisplay(columns) {
+    this.columns = [...columns];
     this.cookieService.setCookie('datatableColumn', this.columns);
     setTimeout(() => {
       this.workItems = [...this.workItems];
     }, 500);
   }
 
-  moveToAvailable() {
-    this.columns.filter(col => col.selected).forEach(col => {
-      if (col.available === true) { return; }
-      col.selected = false;
-      col.display = false;
-      col.showInDisplay = false;
-      col.available = true;
-    });
-    this.updateColumnIndex();
-    this.cookieService.setCookie('datatableColumn', this.columns);
+  moveToAvailable(columns) {
+    this.cookieService.setCookie('datatableColumn', columns);
+    this.columns = [...columns];
   }
-
-  updateColumnIndex() {
-    let index = 0;
-    this.columns.forEach(col => {
-      if (col.display === true) {
-        col.index = index + 1;
-        index += 1;
-      } else {
-        col.index = undefined;
-      }
-    });
-    this.columns = sortBy(this.columns, 'index');
-  }
-
-  tableConfigChange(value: boolean) {
-    this.isTableConfigOpen = value;
-  }
-
-  tableConfigToggle(event: MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isTableConfigOpen = false;
-  }
-
-  clickOut() {
-    if (this.isTableConfigOpen) {
-      this.isTableConfigOpen = false;
-    }
-  }
-
   // End:  Setting(tableConfig) Dropdown
 
   togglePanelState(event) {
@@ -344,15 +287,13 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
               const defaultGroupName = groupType.name;
               //Query for work item type group
               const type_query = this.filterService.queryBuilder('typegroup.name', this.filterService.equal_notation, defaultGroupName);
-              //Query for space
-              const space_query = this.filterService.queryBuilder('space', this.filterService.equal_notation, spaceId);
               //Join type and space query
-              const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query);
-              const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query);
+              const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, type_query);
               //const view_query = this.filterService.queryBuilder('tree-view', this.filterService.equal_notation, 'true');
               //const third_join = this.filterService.queryJoiner(second_join);
               //second_join gives json object
-              let query = this.filterService.jsonToQuery(second_join);
+              let query = this.filterService.jsonToQuery(first_join);
+              console.log('query is ', query);
               // { queryParams : {q: query}
               this.router.navigate([], {
                 relativeTo: this.route,
@@ -454,10 +395,10 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
       // Observables from the object so that
       // it works with Redux dev-tools
       new WorkItemActions.GetChildren(
-        cleanObject({...workItem}, [
-          'areaObs', 'assigneesObs', 'creatorObs',
-          'iterationObs', 'labelsObs']
-        )
+        {
+          id: workItem.id,
+          childrenLink: workItem.childrenLink
+        } as WorkItemUI
       )
     );
   }
@@ -512,8 +453,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     });
   }
 
-  onPreview(id: string): void {
-    const workItem = this.workItems.find(w => w.id === id);
+  onPreview(workItem: WorkItemUI): void {
     this.quickPreview.open(workItem);
   }
 
