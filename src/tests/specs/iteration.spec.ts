@@ -47,25 +47,26 @@ describe('Iteration test', () => {
     expect(await planner.sidePanel.getIterationList()).toContain(newIteration);
   });
 
-  it('updating iteration should update workitem associated to iteration', async () => {
+  xit('updating iteration should update workitem associated to iteration', async () => {
     let dropdownIteration1 = 'newIteration',
       updateIteration = 'Iteration 01',
-      workItemTitle1 = 'Workitem_Title_2';
+      workItemTitle1 = {'title': 'Update Iteration'};
 
     await planner.sidePanel.createNewIteration();
     await planner.iteration.addNewIteration(dropdownIteration1);
     await planner.iteration.clickCreateIteration();
 
-    await planner.workItemList.workItem(workItemTitle1).openQuickPreview();
+    await planner.createWorkItem(workItemTitle1);
+    await planner.workItemList.clickWorkItem(workItemTitle1.title);
     await planner.quickPreview.addIteration(dropdownIteration1);
     await planner.quickPreview.close();
-    await planner.workItemList.workItem(workItemTitle1).iteration.untilTextIsPresent(dropdownIteration1);
-    expect(await planner.workItemList.iterationText(workItemTitle1)).toBe(dropdownIteration1);
+    await planner.workItemList.workItem(workItemTitle1.title).iteration.untilTextIsPresent(dropdownIteration1);
+    expect(await planner.workItemList.iterationText(workItemTitle1.title)).toBe(dropdownIteration1);
     await planner.sidePanel.selectIterationKebab(dropdownIteration1);
     await planner.sidePanel.openIterationDialogue();
     await planner.iteration.editIteration(updateIteration);
-    await planner.workItemList.workItem(workItemTitle1).iteration.untilTextIsPresent(updateIteration);
-    expect(await planner.workItemList.iterationText(workItemTitle1)).toBe(updateIteration);
+    await planner.workItemList.workItem(workItemTitle1.title).iteration.untilTextIsPresent(updateIteration);
+    expect(await planner.workItemList.iterationText(workItemTitle1.title)).toBe(updateIteration);
   });
 
   // Regression test for https://github.com/openshiftio/openshift.io/issues/3318
