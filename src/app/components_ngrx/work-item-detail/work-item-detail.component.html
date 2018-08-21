@@ -2,7 +2,7 @@
   <div class="f8-detail form-horizontal work-item-page"
     id="wi-detail-form"
     *ngIf="workItem">
-    <fieldset>
+    <fieldset *ngIf="(workItem.typeObs | async) as type">
       <div class="f8-detail__header"
         #detailHeader>
         <span
@@ -10,125 +10,36 @@
           (click)="closeDetail()">
         </span>
         <div *ngIf="detailContext=='preview'">
-          <div class="form-group width-100 pull-left mobile-bar padding-v-5 margin-0">
-            <span class="detail-created-date pull-right"
+          <div class="pull-left">
+            <b>#{{ workItem.number }}</b>
+            <span class="detail-created-date created-by"
               *ngIf="workItem.id">
-              <b>Created</b>
+              created by
+              <span id="preview_created_by"
+                *ngIf="workItem?.creatorObs | async; let creator">
+                {{ creator.name }}</span>
               <span id="preview_created_at"
                 [innerHTML]="workItem.createdAt | almMomentTime"></span>
             </span>
-            <div class="dropdown-kebab-pf detail-type-dropdown">
-              <span
-                class="margin-right-5 {{workItem.type.icon}} fa-lg"
-                id="wi-type-icon"
-                title="{{workItem.type.name}}">
-              </span>
-              {{ workItem.type.name }}
-              <strong>#{{ workItem.number }}</strong>
-            </div>
-          </div>
-          <div class="width-100 pull-left">
-            <div
-              class="card-pf-time-frame-filter pull-left dropdown"
-              dropdown *ngIf="loggedIn" [isDisabled]="!workItem?.editable">
-              <button dropdownToggle
-                class="btn btn-default width-100 dropdown-toggle padding-h-10 text-left"
-                id="wi-preview-state"
-                type="button">
-                <span class='dropdown-icon'
-                  almIcon
-                  [iconType]="workItem.state">
-                </span>
-                <span class='dropdown-text'>
-                  {{ workItem.state }}
-                </span>
-                <span class="caret pull-right margin-top-7"
-                  *ngIf="loggedIn"></span>
-              </button>
-              <ul class="dropdown-ul dropdown-menu"
-                id="wi-status-dropdown"
-                role="menu"
-                *dropdownMenu>
-                <li class="dropdown-li"
-                  (click)="onChangeState(state)"
-                  *ngFor="let state of workItemStates">
-                  <a>
-                    <span class='dropdown-icon'
-                      almIcon
-                      [iconType]="state">
-                    </span>
-                    <span class='dropdown-text'>{{ state }}</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <a class="pull-right"
+            <a class="pull-right" style="padding-left: 120px"
               [routerLink]="context === 'list' ? ['detail', workItem.number] : ['../', 'detail', workItem.number]"
               [queryParams]="queryParams">
               View full details
-                <span class="fa fa-list-alt"></span>
+              <span class="fa fa-list-alt"></span>
             </a>
           </div>
         </div>
         <div *ngIf="detailContext=='detail'">
-          <div class="pull-left margin-right-15">
-            <div class="dropdown pull-left"
-              dropdown *ngIf="loggedIn" [isDisabled]="!workItem?.editable">
-              <button class="btn btn-default dropdown-toggle padding-h-10 width-100"
-                id="wi-detail-state"
-                type="button"
-                dropdownToggle>
-                <span class="pull-left padding-top-5 margin-0"
-                  almIcon
-                  [iconType]="workItem.state">
-                </span>
-                <span class="pull-left padding-h-10">
-                  {{ workItem.state }}
-                </span>
-                <span class="caret pull-right margin-top-7"
-                  *ngIf="loggedIn"></span>
-              </button>
-              <ul class="dropdown-ul dropdown-menu"
-                role="menu"
-                *dropdownMenu>
-                <li class="dropdown-li"
-                  (click)="onChangeState(state)"
-                  *ngFor="let state of workItemStates">
-                  <a>
-                    <span class='dropdown-icon'
-                      almIcon
-                      [iconType]="state">
-                    </span>
-                    <span class='dropdown-text'>{{ state }}</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div class="pull-left margin-left-15 padding-v-3">
-              <span *ngIf="loadingTypes"
-                class="spinner spinner-sm spinner-inline">
-              </span>
-              <span
-                *ngIf="!loadingTypes"
-                class="{{workItem.type.icon}} fa-lg dib">
-              </span>
-              <span
-                *ngIf="!loadingTypes"
-                class="dib">
-                {{ workItem.type.name }}
-              </span>
-              <span class="dib">
-                <strong>#{{ workItem.number }}</strong>
-              </span>
-            </div>
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-3 padding-0 margin-v-3">
-            <strong>Created </strong>
-            <span id="created_at"
-              [innerHTML]="workItem.createdAt ?
-              (workItem.createdAt | almMomentTime) : 'Creating now!'">
-            </span>
-          </div>
+          <b>#{{ workItem.number }}</b>
+          <span class="detail-created-date created-by"
+            *ngIf="workItem.id">
+            created by
+            <span id="preview_created_by"
+              *ngIf="workItem?.creatorObs | async; let creator">
+              {{ creator.name }}</span>
+            <span id="preview_created_at"
+              [innerHTML]="workItem.createdAt | almMomentTime"></span>
+          </span>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12 margin-top-15 padding-0">
           <div class="form-horizontal">
@@ -153,11 +64,63 @@
           [class.col-lg-7]="detailContext=='detail'"
           [class.col-md-12]="detailContext=='preview'"
           [class.col-lg-12]="detailContext=='preview'">
+
+          <!-- Work item type dropdown -->
+          <div class="form-group">
+            <section class="f8-detail__area">
+              <label class="pull-left padding-left-15 control-label">
+                Type
+              </label>
+              <div class="f8-detail__content">
+                <span *ngIf="loadingTypes"
+                  class="spinner spinner-sm spinner-inline">
+                </span>
+                <common-selector
+                  *ngIf="!loadingTypes"
+                  class="type-dropdown"
+                  [allowUpdate]="workItem?.editable"
+                  [headerText]="'Update Type'"
+                  [items]="workItemTypeSource | async"
+                  [noValueLabel]="'None'"
+                  [selectedItems]="selectedWorkItemTypes | async"
+                  (onCloseSelector)="updateType($event)">
+                </common-selector>
+              </div>
+            </section>
+          </div>
+          <!-- Work item type dropdown end -->
+
+          <!-- work-item state dropdown -->
+          <div class="form-group">
+            <section class="f8-detail__area">
+              <label class="pull-left padding-left-15 control-label">
+                {{ type.fields['system.state']?.label || 'Label' }}
+              </label>
+              <div class="f8-detail__content">
+                <span *ngIf="loadingStates"
+                  class="spinner spinner-sm spinner-inline">
+                </span>
+                <common-selector
+                  *ngIf="!loadingStates"
+                  class="state-dropdown"
+                  [allowUpdate]="workItem?.editable"
+                  [headerText]="'Update State'"
+                  [items]="workItemStateSource | async"
+                  [noValueLabel]="'None'"
+                  [selectedItems]="selectedWorkItemStates | async"
+                  (onCloseSelector)="onChangeState($event)">
+                </common-selector>
+              </div>
+            </section>
+          </div>
+          <!-- work-item state dropdown end -->
+
+
           <div class="form-group">
             <!-- assignee -->
             <section class="f8-detail__assignee">
               <label class="pull-left padding-left-15 control-label">
-                {{ workItem.type.fields['system.assignees']?.label || 'Label' }}
+                {{ type.fields['system.assignees']?.label || 'Label' }}
               </label>
               <div class="f8-detail__content" #assignee >
                 <span *ngIf="loadingAssignees"
@@ -181,37 +144,11 @@
               </div>
             </section>
           </div>
-
-          <!-- Creator -->
-          <div class="form-group">
-            <section class="f8-detail__area">
-              <label class="pull-left padding-left-15 control-label ">
-                {{ workItem.type.fields['system.creator']?.label || 'Label' }}
-              </label>
-              <div class="f8-detail__content" *ngIf="workItem?.creatorObs | async; let creator">
-                <span *ngIf="!creator"
-                  class="pficon pficon-user user-creator-icon"
-                  id="user_creator_icon">
-                </span>
-                <user-avatar
-                  id="WI_details_reporter_img"
-                  *ngIf="creator"
-                  [imgSrc]="creator?.avatar | almAvatarSize: 25">
-                </user-avatar>
-                <div class="dib">
-                  <span id="WI_details_reporter_user">
-                    {{ creator.name }}
-                  </span>
-                </div>
-              </div>
-            </section>
-          </div>
-
           <!-- area -->
           <div class="form-group">
             <section class="f8-detail__area">
               <label class="pull-left padding-left-15 control-label">
-                {{ workItem.type.fields['system.area']?.label || 'Label' }}
+                {{ type.fields['system.area']?.label || 'Label' }}
               </label>
               <div class="f8-detail__content">
                 <span *ngIf="loadingArea"
@@ -230,11 +167,12 @@
               </div>
             </section>
           </div>
+
           <!-- Iteration -->
           <div class="form-group">
             <section class="f8-detail__area">
               <label class="pull-left padding-left-15 control-label">
-                {{ workItem.type.fields['system.iteration']?.label || 'Label' }}
+                {{ type.fields['system.iteration']?.label || 'Label' }}
               </label>
               <div class="f8-detail__content">
                 <span *ngIf="loadingIteration"
@@ -258,7 +196,7 @@
           <div class="form-group">
             <section class="f8-detail__labels">
               <label class="pull-left padding-left-15 control-label ">
-                {{ workItem.type.fields['system.labels']?.label || 'Label' }}
+                {{ type.fields['system.labels']?.label || 'Label' }}
               </label>
               <div class="f8-detail__content">
                 <span *ngIf="loadingLabels"
@@ -325,6 +263,7 @@
           [class.col-md-12]="detailContext=='preview'"
           [class.col-lg-12]="detailContext=='preview'">
           <work-item-link
+            [context]="context"
             [detailContext]="detailContext"
             [workItem]="workItem"
             [loggedIn]="loggedIn"

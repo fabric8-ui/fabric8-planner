@@ -19,6 +19,8 @@ export const REORDER_ERROR = '[workItem] ReorderError';
 export const UPDATE_WORKITEM_ITERATION = '[workItem] UpdateWorkitemIteration';
 export const CREATE_LINK = '[workItemLink] CreateLink';
 export const DELETE_LINK = '[workItemLink] DeleteLink';
+export const RESET_WORKITEMS = '[workItem] Reset WorkItems';
+export const GET_WORKITEM_CHILDREN_FOR_Query = '[workItem] GetWorkItemChildrenForQuery';
 
 export class Add implements Action {
   payload: {workItem: WorkItemService, createId: number, parentId: string, openDetailPage: boolean};
@@ -171,6 +173,18 @@ export class DeleteLink implements Action {
   readonly type = DELETE_LINK;
 }
 
+export class GetWorkItemChildrenForQuery implements Action {
+  payload: string;
+  constructor(payload: string) {
+    this.payload = payload;
+  }
+  readonly type = GET_WORKITEM_CHILDREN_FOR_Query;
+}
+
+export class ResetWorkItems implements Action {
+  readonly type = RESET_WORKITEMS;
+}
+
 export type All
   = Add
   | Get
@@ -187,4 +201,6 @@ export type All
   | Reorder
   | UpdateWorkitemIteration
   | CreateLink
-  | DeleteLink;
+  | DeleteLink
+  | ResetWorkItems
+  | GetWorkItemChildrenForQuery;
