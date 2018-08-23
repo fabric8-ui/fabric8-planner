@@ -116,6 +116,7 @@ describe('Detail View test: ', () => {
 
   it('Should change the type of work item', async () => {
     let workitemname = {'title': 'change type test'};
+    
     await planner.createWorkItem(workitemname);
     await planner.workItemList.openDetailPage(workitemname.title);
     await planner.waitUntilUrlContains('detail');
