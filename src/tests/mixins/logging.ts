@@ -17,6 +17,6 @@ export class Logging {
   fail(action: string, ...msg: string[]) {
     let className = this.constructor.name;
     /* to display errors in red */
-    console.error('\x1b[31m%s', `${action}: ${browser.browserName} ${className}('${this.name}')`, ...msg);
+    console.error('\x1b[31m%s', `${action}: ${browser.browserName} ${className}('${this.name}')`, ...msg, '\x1b[0m');
   }
 }

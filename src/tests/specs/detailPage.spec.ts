@@ -87,6 +87,7 @@ describe('Detail View test: ', () => {
     await planner.workItemList.openDetailPage(workItemTitle2);
     await planner.waitUntilUrlContains('detail');
     await planner.detailPage.titleInput.untilTextIsPresentInValue(workItemTitle2);
+     /* Adding link b/w workItemTitle2 and Workitem_Title_3 */
     await planner.detailPage.addLink(linkType, testData.searchWorkItem3, testData.Workitem_Title_3);
     expect(await planner.detailPage.getLinkedItems()).toContain(testData.Workitem_Title_3);
   });
@@ -116,7 +117,6 @@ describe('Detail View test: ', () => {
 
   it('Should change the type of work item', async () => {
     let workitemname = {'title': 'change type test'};
-    
     await planner.createWorkItem(workitemname);
     await planner.workItemList.openDetailPage(workitemname.title);
     await planner.waitUntilUrlContains('detail');
