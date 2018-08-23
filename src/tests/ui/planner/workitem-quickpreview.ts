@@ -72,8 +72,8 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     this.$('#labelSelector ul.f8-select-dropdown__menu'),
     'Label Select dropdown');
   labelsDiv = new ui.BaseElement(this.$('.f8-planner__detail-labels'), ' labels Div');
-  labels = new ui.BaseElement(this.labelsDiv.$('.f8-planner-label-wrapper'), ' labels ');
-  labelListDiv = new ui.BaseElementArray(this.labelsDiv.$$('f8-label .f8-planner-label-wrapper>div'), 'label list Div');
+  labels = new ui.BaseElement(this.labelsDiv.$('.f8-planner__label-wrapper'), ' labels ');
+  labelListDiv = new ui.BaseElementArray(this.labelsDiv.$$('f8-label .f8-planner__label-wrapper>div'), 'label list Div');
   labelDropDownDiv = new ui.BaseElement(this.$('#labelSelector .f8-select-dropdown__wrapper'), 'dropdown div');
   labelDropdownCloseButton = new ui.Clickable(this.labelDropDownDiv.$('.close-pointer'), 'label dropdown close Button');
   createLabelButton = new ui.Clickable(this.labelDropDownDiv.$('.f8-planner-label__create-label-text'), 'Create new label');

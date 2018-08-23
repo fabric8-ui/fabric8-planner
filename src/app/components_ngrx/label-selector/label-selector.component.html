@@ -24,7 +24,8 @@
     let-border="border"
     let-name="name">
     <div class="f8-planner-label__palet"
-      [ngStyle]="{'background-color': color, 'border-color': border}"></div>
+      [ngStyle]="{'background-color': color, 'border-color': border}">
+    </div>
     <span [innerHTML]="name | almSearchHighlight: searchValue"></span>
   </ng-template>
   <ng-template #dropdownFooter>

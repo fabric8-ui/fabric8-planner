@@ -121,8 +121,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   ngAfterViewChecked() {
     if (this.quickAddElement) {
       let quickaddWdth: number =  0;
-      if (document.getElementsByClassName('f8-wi-list__quick-add').length > 0) {
-        quickaddWdth = (document.getElementsByClassName('f8-wi-list__quick-add')[0] as HTMLElement).offsetWidth;
+      if (document.getElementsByClassName('f8-planner-list__quick-add').length > 0) {
+        quickaddWdth = (document.getElementsByClassName('f8-planner-list__quick-add')[0] as HTMLElement).offsetWidth;
       }
       let targetWidth: number = quickaddWdth + 20;
       if (this.quickAddElement.nativeElement.classList.contains('f8-quick-add-inline')) {

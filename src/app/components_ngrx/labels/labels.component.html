@@ -1,18 +1,21 @@
-<div class="f8-planner-label-wrapper">
-  <div class="f8-planner-label"
+<div class="f8-planner__label-wrapper">
+  <div class="f8-planner__label"
     *ngFor="let label of _labels | slice:0:truncateAfter;" 
     [ngStyle]="{
       'background-color': label.backgroundColor,
       'color': label.textColor
     }">
-    <div *ngIf="context!='detail'">
-      <a [routerLink]=[] 
+    <div class="dib"
+      *ngIf="context!='detail'">
+      <a 
+        class="dib"
+        [routerLink]=[] 
         [queryParams]="constructQueryExpression(label.id)">
-        <span class="f8-planner-label__name pointer">
+        <span class="f8-planner__label-name pointer">
           {{ label.name }}
         </span>
       </a>
-      <span class="f8-planner-label__close padding-left-5" 
+      <span class="f8-planner__label-close padding-left-5" 
         *ngIf="allowDelete">
         <i class="pficon-close pointer" 
           (click)="removeLabel(label, $event)">
@@ -20,10 +23,10 @@
       </span>
     </div>
     <div *ngIf="context=='detail'">
-      <span class="f8-planner-label__name">
+      <span class="f8-planner__label-name">
         {{ label.name }}
       </span>
-      <span class="f8-planner-label__close padding-left-5" 
+      <span class="f8-planner__label-close padding-left-5" 
         *ngIf="allowDelete">
         <i class="pficon-close pointer" 
           (click)="removeLabel(label, $event)">
@@ -31,7 +34,7 @@
       </span>
     </div>
   </div>
-  <div class="f8-planner-label dropdown" 
+  <div class="f8-planner__label dropdown" 
     dropdown 
     placement="right"
     *ngIf="truncateAfter!==undefined && _labels.length > 4">

@@ -15,12 +15,14 @@
 <!-- Title -->
 <div class="width-100"
   *ngIf="col === 'title'">
-  <div class="wi-detail-title">
-    <p class="truncate pointer margin-0"
-      [class.bold]="row.bold"
-      [innerHTML]="row.title"
-      (click)="onPreview($event, row)">
-    </p>
+  <div class="f8-planner__cell-title">
+    <strong>
+      <p class="truncate pointer margin-0"
+        [class.bold]="row.bold"
+        [innerHTML]="row.title"
+        (click)="onPreview($event, row)">
+      </p>
+    </strong>
   </div>
   <div class="dib text-right f8-planner__cell-detail-icon">
     <span *ngIf="context ==='query' && row.hasChildren"

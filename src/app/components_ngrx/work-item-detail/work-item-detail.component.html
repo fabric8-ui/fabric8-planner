@@ -6,14 +6,14 @@
       <div class="f8-planner__detail-header"
         #detailHeader>
         <span
-          class="pficon pficon-close 
+          class="pficon pficon-close close
           pull-right pointer f8-planner__detail-close"
           (click)="closeDetail()">
         </span>
         <div *ngIf="detailContext=='preview'">
           <div class="pull-left">
-            <b>#{{ workItem.number }}</b>
-            <span class="detail-created-date created-by"
+            <strong>#{{ workItem.number }}</strong>
+            <span class="f8-planner__detail-date"
               *ngIf="workItem.id">
               created by
               <span id="preview_created_by"
@@ -31,8 +31,8 @@
           </div>
         </div>
         <div *ngIf="detailContext=='detail'">
-          <b>#{{ workItem.number }}</b>
-          <span class="detail-created-date created-by"
+          <strong>#{{ workItem.number }}</strong>
+          <span class="f8-planner__detail-date"
             *ngIf="workItem.id">
             created by
             <span id="preview_created_by"
@@ -68,11 +68,11 @@
 
           <!-- Work item type dropdown -->
           <div class="form-group">
-            <section class="f8-detail__area">
+            <section>
               <label class="pull-left padding-left-15 control-label">
                 Type
               </label>
-              <div class="f8-detail__content">
+              <div class="f8-planner__detail-context">
                 <span *ngIf="loadingTypes"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -93,11 +93,11 @@
 
           <!-- work-item state dropdown -->
           <div class="form-group">
-            <section class="f8-detail__area">
+            <section>
               <label class="pull-left padding-left-15 control-label">
                 {{ type.fields['system.state']?.label || 'Label' }}
               </label>
-              <div class="f8-detail__content">
+              <div class="f8-planner__detail-context">
                 <span *ngIf="loadingStates"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -115,7 +115,6 @@
             </section>
           </div>
           <!-- work-item state dropdown end -->
-
 
           <div class="form-group">
             <!-- assignee -->
@@ -242,7 +241,7 @@
               </div>
             </section>
           </div>
-          <div class="dynamic-fields-wrap">
+          <div>
             <!-- Extra fields Start -->
             <div class="form-group margin-bottom-0"
               *ngFor="let field of dynamicKeyValueFields">

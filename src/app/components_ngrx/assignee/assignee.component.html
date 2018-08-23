@@ -29,12 +29,16 @@
         [imgSrc]="assignee?.avatar | almAvatarSize: 25"
         [ngClass]="{'f8-planner__avatar.is-overlapped': overlapAvatar}">
       </user-avatar>
-      <div dropdown class="dib dropdown" placement="right">
-        <span dropdownToggle class="dib dropdown-toggle pointer"
+      <div class="dib dropdown"
+        placement="right"
+        dropdown>
+        <span class="dib dropdown-toggle pointer"
+          dropdownToggle
           *ngIf="truncateAfter!==undefined && assignees.length > 3">
             {{ assignees.length - truncateAfter }}+
         </span>
-        <ul *dropdownMenu class="dropdown-menu dropdown-menu-right">
+        <ul class="dropdown-menu dropdown-menu-right"
+          *dropdownMenu>
           <li *ngFor="let assignee of assignees | slice:truncateAfter;">
             <a>
               <user-avatar

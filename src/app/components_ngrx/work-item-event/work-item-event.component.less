@@ -1,34 +1,35 @@
 @import (reference) '../../../assets/stylesheets/_base';
 
-.f8-planner__event {
-  float: left;
-  width: 100%;
-  padding: 15px;
-  border-bottom: 1px solid;
-  border-bottom-color: @color-pf-black-200;
-  &:nth-child(even) {
-    background-color: @color-pf-black-100;
+.f8-planner {
+  &__event {
+    float: left;
+    width: 100%;
+    padding: 15px;
+    border-bottom: 1px solid;
+    border-bottom-color: @color-pf-black-200;
+    background-color: transparent;
+    &-body {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    &-author {
+      max-width: 100%;
+      min-width: 0;  //fix for having full wrapper width and overflowen content
+      padding-right: 10px;
+      display: contents;
+      margin-top: 5px;
+      margin-bottom: 0;
+    }
   }
-  &-body {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  &-author {
-    max-width: 100%;
-    min-width: 0;  //fix for having full wrapper width and overflowen content
-    padding-right: 10px;
-    display: contents;
-    margin-top: 5px;
-    margin-bottom: 0;
-  }
-}
-.f8-audit-trail__label {
-  display: inherit;
-  f8-label {
-    display: inline-block;
-    .f8-planner-label-wrapper {
+  &__audit-trail {
+    display: inherit;
+    .f8-planner__label-wrapper {
       display: inline-block !important;
     }
+  }
+}
+&:host:nth-child(even) {
+  &::ng-deep .f8-planner__event {
+    background-color: @color-pf-black-100;
   }
 }
