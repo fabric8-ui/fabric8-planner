@@ -6,29 +6,37 @@
 
 <!-- Type -->
 
-<div *ngIf="col === 'type'">
+<div *ngIf="col === 'type' && row.typeObs | async as type">
   <span class="color-grey margin-right-3 type-icon
-    {{row.type?.icon}}"
-    title="{{row.type?.name}}">
-
+    {{type?.icon}}"
+    title="{{type?.name}}">
   </span>
-  <span>{{ row.type?.name }}</span>
+  <span>{{ type?.name }}</span>
 </div>
 
 <!-- Title -->
 <div class="width-100"
   *ngIf="col === 'title'">
-  <div class="wi-detail-title">
+  <div
+    [class.wi-detail-title]="context === 'list'"
+    [class.wi-detail-query-title]="context === 'query'">
     <p class="truncate pointer margin-0"
       [class.bold]="row.bold"
       [innerHTML]="row.title"
-      (click)="onPreview($event, row['id'])"></p>
+      (click)="onPreview($event, row)"></p>
   </div>
   <div class="dib text-right wi-detail-icon">
-    <a class="fa fa-list-alt padding-v-5 pointer"
+    <span *ngIf="context ==='query' && row.hasChildren"
+      class="fa fa-angle-right bold padding-v-5 pointer"
+      (click)="onExploration(row)"></span>
+      <span *ngIf="context ==='query' && !row.hasChildren"
+      class="fa fa-angle-right icon__disabled padding-v-5 pointer"
+      style="cursor: not-allowed"
+      ></span>
+    <a class="fa fa-list-alt margin-left-20 padding-v-5 pointer"
       placement="right"
       tooltip="Open Detail View"
-      [routerLink]="['detail', row.number]"></a>
+      [routerLink]="context === 'list' ? ['detail', row.number] : ['../', 'detail', row.number]"></a>
   </div>
 </div>
 <!-- Status -->
@@ -53,7 +61,7 @@
 </div>
 
 <!-- Iteration -->
-<span id="table-iteration" 
+<span id="table-iteration"
   *ngIf="col === 'iteration'"
   tooltip="{{ (row.iterationObs | async)?.parentPath === '/' ? 'NA' : (row.iterationObs | async)?.name }}"
   placement="left">
