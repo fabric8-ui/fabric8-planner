@@ -7,6 +7,7 @@ import {
   NotificationType
 } from 'ngx-base';
 import { Observable } from 'rxjs';
+import { SpaceQuery } from '../models/space';
 import * as WorkItemLinkActions from './../actions/work-item-link.actions';
 import * as WorkItemActions from './../actions/work-item.actions';
 import { WorkItemLinkMapper } from './../models/link';
@@ -23,6 +24,7 @@ export class WorkItemLinkEffects {
     private actions$: Actions,
     private workItemService: WorkItemService,
     private workItemQuery: WorkItemQuery,
+    private spaceQuery: SpaceQuery,
     private notifications: Notifications,
     private store: Store<AppState>
   ) {}
@@ -60,16 +62,21 @@ export class WorkItemLinkEffects {
   @Effect() createLink$: Observable<Action> = this.actions$
     .ofType<WorkItemLinkActions.Add>(WorkItemLinkActions.ADD)
     .withLatestFrom(this.workItemQuery.getWorkItemEntities)
-    .map(([action, workItems]) => {
+    .withLatestFrom(this.spaceQuery.getCurrentSpace)
+    .map(([[action, workItems], space]) => {
       return {
         payload: action.payload,
-        workItems: workItems
+        workItems: workItems,
+        space: space
       };
     })
     .switchMap(p => {
       let createLinkPayload = {'data': p.payload};
       return this.workItemService
-        .createLink(createLinkPayload)
+        .createLink(
+          p.space.links.self.split('space')[0],
+          createLinkPayload
+        )
         .map(([link, includes]) => {
           link.relationships.link_type.data = includes.find(i => i.id === link.relationships.link_type.data.id);
           link.relationships.source.data = includes.find(i => i.id === link.relationships.source.data.id);
@@ -123,16 +130,21 @@ export class WorkItemLinkEffects {
   @Effect() deleteLink$: Observable<Action> = this.actions$
     .ofType<WorkItemLinkActions.Delete>(WorkItemLinkActions.DELETE)
     .withLatestFrom(this.workItemQuery.getWorkItemEntities)
-    .map(([action, workItems]) => {
+    .withLatestFrom(this.spaceQuery.getCurrentSpace)
+    .map(([[action, workItems], space]) => {
       return {
         payload: action.payload,
-        workItems: workItems
+        workItems: workItems,
+        space: space
       };
     })
     .switchMap(p => {
       let wiLink = this.wilMapper.toServiceModel(p.payload.wiLink);
       return this.workItemService
-        .deleteLink(wiLink, p.payload.workItemId)
+        .deleteLink(
+          `${p.space.links.self.split('space')[0]}workitemlinks/${wiLink.id}`,
+          p.payload.workItemId
+        )
         .map(response => {
           let targetWorkItem;
           let sourceWorkItem;
