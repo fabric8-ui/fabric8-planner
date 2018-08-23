@@ -11,7 +11,7 @@ export class Logging {
 
   debug(context: string, ...msg: string[]) {
     let className = this.constructor.name;
-    debug(`... ${browser.browserName} ${className}('${this.name}'): ${context}`, ...msg);
+    debug(`   ${browser.browserName} ${className}('${this.name}'): ${context}`, ...msg);
   }
 
   fail(action: string, ...msg: string[]) {

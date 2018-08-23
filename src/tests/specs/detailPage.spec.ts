@@ -111,8 +111,7 @@ describe('Detail View test: ', () => {
     await planner.waitUntilUrlContains('detail');
     await planner.detailPage.titleInput.untilTextIsPresentInValue(workItemTitle2);
     await planner.detailPage.changeStateTo(testData.stateOpen);
-    await planner.detailPage.stateToggle.untilTextIsPresent(testData.stateOpen);
-    expect(planner.detailPage.stateToggle.getTextWhenReady()).toContain(testData.stateOpen);
+    expect(await planner.detailPage.getState()).toBe(testData.stateOpen);
   });
 
   it('Should change the type of work item', async () => {
@@ -121,7 +120,7 @@ describe('Detail View test: ', () => {
     await planner.workItemList.openDetailPage(workitemname.title);
     await planner.waitUntilUrlContains('detail');
     await planner.detailPage.titleInput.untilTextIsPresentInValue(workitemname.title);
-    await planner.detailPage.changeTypeTo('Bug');
-    expect(await planner.detailPage.getType()).toBe('Bug');
+    await planner.detailPage.changeTypeTo(testData.typeIssue);
+    expect(await planner.detailPage.getType()).toBe(testData.typeIssue);
   });
 });
