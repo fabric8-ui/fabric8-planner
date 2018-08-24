@@ -21,8 +21,8 @@ export class ToolbarHeader extends BaseElement {
   showCompleted = new BaseElement(this.$('.toolbar-pf-view-selector #showCompleted'), 'Show Completed');
   saveFilter = new ui.Clickable(this.$('.f8-planner__filters-save a'), 'Save');
   saveFilterDialog = new BaseElement(this.$('.f8-planner__filters-save'));
-  saveFilterBtn = new ui.Button(this.saveFilterDialog.$('.save-cq-btn'), 'Save');
-  closeBtn = new ui.Button(this.$('.cancel-cq-btn'), 'Cancel');
+  saveFilterBtn = new ui.Button(this.saveFilterDialog.$('#save-cq-btn'), 'Save');
+  closeBtn = new ui.Button(this.$('#cancel-cq-btn'), 'Cancel');
   titleTextInput = new ui.TextInput(this.saveFilterDialog.$('input.form-control'), 'Query Title');
   activeFiltersList = new ui.BaseElementArray(this.$$('.is-active li'), 'Active filters div');
   workItemList = new WorkItemList($('alm-work-item-list'));

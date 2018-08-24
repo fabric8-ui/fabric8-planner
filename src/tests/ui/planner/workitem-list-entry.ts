@@ -12,7 +12,7 @@ export class WorkItemListEntry extends ui.BaseElement {
   inlineCloseButton = new ui.Clickable(this.$('.pficon-close'), 'inline close');
   treeExpander = new ui.Clickable(this.$('.f8-planner__tree-icon'), 'WorkItem Expander');
   labelName =  new ui.Clickable(this.element(by.cssContainingText('.f8-planner-label__name', 'sample_label_1')), 'WorkItem Label');
-  detailIcon = new ui.Clickable(this.$('.f8-planner__cell-detail-icon'), 'WorkItem detail page');
+  detailIcon = new ui.Clickable(this.$('.f8-planner__cell-detail-icon a'), 'WorkItem detail page');
   iteration= new ui.BaseElement(this.$('#table-iteration'), 'Table Workitem Iteration Name');
   creator = new ui.BaseElement(this.$('.f8-planner-user-avatar'), 'Creator column');
   assignees = new ui.BaseElement(this.$('f8-assignee'), 'Assignee column');

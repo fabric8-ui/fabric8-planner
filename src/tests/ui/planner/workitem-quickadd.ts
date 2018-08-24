@@ -4,9 +4,9 @@ import { WorkItem } from './index';
 
 export class WorkItemQuickAdd extends ui.BaseElement {
   titleTextInput = new ui.TextInput(this.$('f8-planner-quickadd__input'), 'Work item Title');
-  buttonsDiv = this.$('f8-planner-quickadd__btn');
-  addButton = new ui.Button(this.buttonsDiv.$$('f8-planner-quickadd__btn-add').first(), 'Add Button');
-  addAndOpenButton = new ui.Button(this.buttonsDiv.$$('f8-planner-quickadd__btn-add').last(), 'Add and Open Button');
+  buttonsDiv = this.$('.f8-planner-quickadd__btn');
+  addButton = new ui.Button(this.buttonsDiv.$$('.f8-planner-quickadd__btn-add').first(), 'Add Button');
+  addAndOpenButton = new ui.Button(this.buttonsDiv.$$('.f8-planner-quickadd__btn-add').last(), 'Add and Open Button');
   workItemTypeDropdown = new ui.Dropdown(
     this.$('.f8-planner-quickadd button.dropdown-toggle'),
     this.$('.f8-planner-quickadd .dropdown-menu'),

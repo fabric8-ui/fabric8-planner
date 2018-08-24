@@ -52,12 +52,14 @@
             (keyup.enter)="saveFilters(filterSaveInp)"
             #filterSaveInp/>
           <div class="margin-top-10">
-            <button class="btn btn-primary pull-right margin-left-5 save-cq-btn"
+            <button class="btn btn-primary pull-right margin-left-5"
+              id="save-cq-btn"
               (click)="saveFilters(filterSaveInp)"
               [disabled]="!filterSaveInp.value">
               Save
             </button>
-            <button class="btn pull-right margin-right-5 cancel-cq-btn" 
+            <button class="btn pull-right margin-right-5"
+              id="cancel-cq-btn" 
               (click)="closeFilterSave(filterSaveInp)">
                 Cancel
             </button>

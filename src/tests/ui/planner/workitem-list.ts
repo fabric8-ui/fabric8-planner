@@ -11,8 +11,8 @@ export class WorkItemList extends BaseElement {
   datatableHeaderCellLabel = new ui.BaseElementArray(this.$$('datatable-header-cell-label'));
   datatableRow = new ui.BaseElementArray(this.$$('datatable-body-row'), 'datatable row');
   childWorkItemTypeDropdown = new ui.Dropdown(
-    this.$('.f8-quick-add-inline .dropdown-toggle'),
-    this.$('.f8-quick-add-inline .dropdown-menu'),
+    this.$('.f8-planner__quickadd-inline .dropdown-toggle'),
+    this.$('.f8-planner__quickadd-inline .dropdown-menu'),
     'Child WorkItem Type dropdown'
   );
 

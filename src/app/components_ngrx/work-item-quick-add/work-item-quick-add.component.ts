@@ -125,7 +125,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
         quickaddWdth = (document.getElementsByClassName('f8-planner-list__quick-add')[0] as HTMLElement).offsetWidth;
       }
       let targetWidth: number = quickaddWdth + 20;
-      if (this.quickAddElement.nativeElement.classList.contains('f8-quick-add-inline')) {
+      if (this.quickAddElement.nativeElement.classList.contains('f8-planner__quickadd-inline')) {
         this.renderer.setStyle(this.quickAddElement.nativeElement, 'max-width', targetWidth + 'px');
       }
     }
