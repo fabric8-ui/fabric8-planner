@@ -12,7 +12,7 @@ export class PlannerPage extends AppPage {
   sidePanel = new planner.SidePanel($('aside.f8-sidepanel'));
   quickPreview = new planner.WorkItemQuickPreview($('work-item-detail'));
   header = new planner.ToolbarHeader($('#header-div'));
-  settings = new planner.Settings($('div.f8-wi-list__settings'));
+  settings = new planner.Settings($('div.f8-table-config__settings'));
   iteration = new planner.Iteration($('fab-planner-iteration-modal'));
   detailPage = new planner.WorkItemDetailPage($('work-item-detail'));
   confirmModalButton = new planner.WorkItemList($('#modal-confirm'));
@@ -48,7 +48,14 @@ export class PlannerPage extends AppPage {
   }
 
   async resetState() {
-    await this.sidePanel.clickScenarios();
+    if (await browser.browserName === 'browserSDD') {
+      await this.sidePanel.clickWorkItemGroup('Scenarios');
+    } else if (await browser.browserName === 'browserAgile') {
+        await this.sidePanel.clickWorkItemGroup('Work Items');
+    } else {
+        support.debug('browser Name not defined');
+    }
+
     await $('body').sendKeys(Key.ESCAPE);
   }
 }

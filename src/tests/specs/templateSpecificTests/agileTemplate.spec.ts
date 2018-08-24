@@ -1,25 +1,22 @@
 import { browser } from 'protractor';
-import { PlannerPage } from '../page_objects/planner';
-import * as support from '../support';
+import { PlannerPage } from '../../page_objects/planner';
+import * as support from '../../support';
 
 
 describe('Agile template tests: ', () => {
   let plannerAgile: PlannerPage;
   let c = new support.Constants();
-  let URL;
 
   beforeAll(async () => {
     await support.desktopTestSetup();
-    URL = process.env.BASE_URL + '/' + process.env.USER_NAME + '/' + process.env.SPACE_NAME_SCRUM + '/plan';
-    plannerAgile = new PlannerPage(URL);
+    plannerAgile = new PlannerPage(browser.baseUrl);
     plannerAgile.openInBrowser();
-    await browser.get(URL);
-    await plannerAgile.waitUntilUrlContains('typegroup');
+    await plannerAgile.waitUntilUrlContains('typegroup.name:Work');
   });
 
   beforeEach(async () => {
+    await plannerAgile.ready();
     await plannerAgile.workItemList.overlay.untilHidden();
-    await plannerAgile.sidePanel.workItemsGroupAgile.clickWhenReady();
   });
 
   it('should have workitem types', async () => {
@@ -31,6 +28,7 @@ describe('Agile template tests: ', () => {
     expect(wiTypes[3]).toBe('Task');
     expect(wiTypes[4]).toBe('Defect');
     expect(wiTypes[5]).toBe('Impediment');
+    await plannerAgile.quickAdd.workItemTypeDropdown.clickWhenReady();
   });
 
   it('should create a workitem of type defect and update Effort', async () => {
@@ -79,8 +77,8 @@ describe('Agile template tests: ', () => {
     // get the workItem types for inline quick add
     let wiTypes = await plannerAgile.inlineQuickAdd.workItemTypes();
     expect(wiTypes.length).toBe(3);
-    expect(wiTypes[0]).toBe('Defect');
-    expect(wiTypes[1]).toBe('Epic');
+    expect(wiTypes[0]).toBe('Epic');
+    expect(wiTypes[1]).toBe('Defect');
     expect(wiTypes[2]).toBe('Impediment');
   });
 
@@ -93,8 +91,8 @@ describe('Agile template tests: ', () => {
     // get the workItem types for inline quick add
     let wiTypes = await plannerAgile.inlineQuickAdd.workItemTypes();
     expect(wiTypes.length).toBe(3);
-    expect(wiTypes[0]).toBe('Defect');
-    expect(wiTypes[1]).toBe('Story');
+    expect(wiTypes[0]).toBe('Story');
+    expect(wiTypes[1]).toBe('Defect');
     expect(wiTypes[2]).toBe('Impediment');
   });
 
@@ -110,5 +108,18 @@ describe('Agile template tests: ', () => {
     expect(wiTypes[0]).toBe('Task');
     expect(wiTypes[1]).toBe('Defect');
     expect(wiTypes[2]).toBe('Impediment');
+  });
+
+  it('by default Closed work item should not show in list', async () => {
+    let newWorkItem = { title: 'Closed work item test', type: 'Theme' };
+    await plannerAgile.createWorkItem(newWorkItem);
+    expect(plannerAgile.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();
+    await plannerAgile.workItemList.clickWorkItem(newWorkItem.title);
+    await plannerAgile.quickPreview.changeStateTo('Closed');
+    await plannerAgile.quickPreview.close();
+    await plannerAgile.header.clickShowCompleted();
+    expect(await plannerAgile.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();
+    await plannerAgile.header.clickShowCompleted();
+    expect(await plannerAgile.workItemList.hasWorkItem(newWorkItem.title, true)).toBeFalsy();
   });
 });

@@ -13,9 +13,8 @@ import { Observable } from 'rxjs/Observable';
 import { AreaUI } from './../../models/area.model';
 import { LabelQuery, LabelUI } from './../../models/label.model';
 import { UserQuery, UserUI } from './../../models/user';
-import { WorkItemTypeUI } from './../../models/work-item-type';
+import { WorkItemTypeQuery, WorkItemTypeUI } from './../../models/work-item-type';
 import { UrlService } from './../../services/url.service';
-import { WorkItemTypeControlService } from './../../services/work-item-type-control.service';
 import { InlineInputComponent } from './../../widgets/inlineinput/inlineinput.component';
 
 // ngrx stuff
@@ -48,22 +47,24 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     .select('space')
     .do(s => {if (!s) { this.store.dispatch(new SpaceActions.Get()); }})
     .filter(s => !!s);
-  private labelSource = this.labelQuery.getLables();
-  private areaSource: Observable<CommonSelectorUI[]>;
-  private iterationSource: Observable<CommonSelectorUI[]>;
+
+  public labelSource = this.labelQuery.getLables();
+  public areaSource: Observable<CommonSelectorUI[]>;
+  public iterationSource: Observable<CommonSelectorUI[]>;
+  public workItemTypeSource: Observable<CommonSelectorUI[]>;
+  private workItemStateSource: Observable<CommonSelectorUI[]>; // this goes in selector component
+
+  public selectedAreas: Observable<CommonSelectorUI[]>; // this goes in selector component
+  public selectedIterations: Observable<CommonSelectorUI[]>; // this goes in selector component
+  public selectedWorkItemTypes: Observable<CommonSelectorUI[]>; // this goes in selector component
+  public selectedWorkItemStates: Observable<CommonSelectorUI[]>; // this goes in selector component
+
   private collaboratorSource = this.userQuery.getCollaborators();
-  private workItemStateSource = this.store
-    .select('planner')
-    .select('workItemStates')
-    .filter(wis => !!wis.length);
-  private workItemTypeSource = this.store
-    .select('planner')
-    .select('workItemTypes')
-    .filter(w => !!w.length);
 
   private combinedSources = Observable.combineLatest(
-    this.labelSource, this.collaboratorSource,
-    this.workItemStateSource, this.workItemTypeSource
+    this.labelSource,
+    this.collaboratorSource,
+    this.workItemTypeQuery.getWorkItemTypes()
   );
 
   @Input() context: string;
@@ -93,14 +94,11 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
   private descCallback = null;
   private _areas: AreaUI[] = [];
   private areas: any[] = []; // this goes in selector component
-  private selectedAreas: Observable<CommonSelectorUI[]>; // this goes in selector component
-  private iterations: Observable<any[]>; // this goes in selector component
-  private selectedIterations: Observable<CommonSelectorUI[]>; // this goes in selector component
   private labels: LabelUI[] = [];
-  private wiTypes: WorkItemTypeUI[] = [];
 
   private loadingComments: boolean = true;
   private loadingTypes: boolean = false;
+  private loadingStates: boolean = false;
   private loadingIteration: boolean = false;
   private loadingArea: boolean = false;
   private loadingLabels: boolean = false;
@@ -119,11 +117,11 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     private auth: AuthenticationService,
     private renderer: Renderer2,
     private workItemService: WorkItemService,
-    private workItemTypeControlService: WorkItemTypeControlService,
     private sanitizer: DomSanitizer,
     private userQuery: UserQuery,
     private labelQuery: LabelQuery,
-    private workItemQuery: WorkItemQuery
+    private workItemQuery: WorkItemQuery,
+    private workItemTypeQuery: WorkItemTypeQuery
   ) {
 
   }
@@ -167,16 +165,20 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     this.selectedIterations = this.getSelectedItems(this.iterationSource);
     this.areaSource = this.workItemQuery.getAreasForWorkItem(wiNumber);
     this.selectedAreas = this.getSelectedItems(this.areaSource);
+    this.workItemTypeSource = this.workItemQuery.getTypesForWorkItem(wiNumber);
+    this.selectedWorkItemTypes = this.getSelectedItems(this.workItemTypeSource);
+    this.workItemStateSource = this.workItemQuery.getStatesForWorkItem(wiNumber);
+    this.selectedWorkItemStates = this.getSelectedItems(this.workItemStateSource);
+
     this.workItemSubscriber =
       this.spaceSource
       .switchMap(s => {
         return this.combinedSources;
       })
-      .switchMap(([labels, collabs, states, type]) => {
+      .switchMap(([labels, collabs, type]) => {
         this.collaborators = collabs.filter(c => !c.currentUser);
         this.loggedInUser = collabs.find(c => c.currentUser);
         this.labels = labels.sort((l1, l2) => (l1.name.toLowerCase() > l2.name.toLowerCase() ? 1 : 0));
-        this.wiTypes = type;
         this.store.dispatch(new DetailWorkItemActions.GetWorkItem({
           number: wiNumber
         }));
@@ -190,24 +192,24 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
         }
 
         this.workItem = workItem;
-        const wiType = this.wiTypes.find(t => t.id === this.workItem.type.id);
-        this.workItemStates = wiType.fields['system.state'].type.values;
         this.loadingAssignees = false;
         this.loadingArea = false;
         this.loadingIteration = false;
         this.loadingLabels = false;
+        this.loadingTypes = false;
+        this.loadingStates = false;
 
         // init dynamic form
         if (this.workItem.type) {
-          this.dynamicFormGroup = this.workItemTypeControlService.toFormGroup(this.workItem);
-          this.dynamicFormDataArray = this.workItemTypeControlService.toAttributeArray(this.workItem.type.fields);
-          this.dynamicKeyValueFields = this.workItem.type.dynamicfields.map(item => {
-            return {
-              key: item,
-              value: this.workItem.dynamicfields[item],
-              field: this.workItem.type.fields[item]
-            };
-          });
+          this.eventListeners.push(this.workItem.typeObs.subscribe((type) => {
+            this.dynamicKeyValueFields = type.dynamicfields.map(item => {
+              return {
+                key: item,
+                value: this.workItem.dynamicfields[item],
+                field: type.fields[item]
+              };
+            });
+          }));
         }
 
         // set title on update
@@ -271,20 +273,18 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
       workItem['link'] = this.workItem.link;
       workItem['id'] = this.workItem.id;
       workItem['title'] = value;
-      workItem['type'] = this.workItem.type;
       this.store.dispatch(new WorkItemActions.Update(workItem));
     }
   }
 
-  onChangeState(state) {
-    if (state !== this.workItem.state) {
+  onChangeState(event: CommonSelectorUI[]) {
+    if (event[0].value !== this.workItem.state) {
+      this.loadingStates = true;
       let workItem = {} as WorkItemUI;
       workItem['version'] = this.workItem.version;
       workItem['link'] = this.workItem.link;
       workItem['id'] = this.workItem.id;
-      workItem['type'] = this.workItem.type;
-
-      workItem['state'] = state;
+      workItem['state'] = event[0].value;
       this.store.dispatch(new WorkItemActions.Update(workItem));
     }
   }
@@ -295,7 +295,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
-    workItem['type'] = this.workItem.type;
     workItem['assignees'] = users.map(u => u.id);
     this.store.dispatch(new WorkItemActions.Update(workItem));
   }
@@ -307,7 +306,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
-    workItem['type'] = this.workItem.type;
     workItem['areaId'] = areaID;
     this.store.dispatch(new WorkItemActions.Update(workItem));
   }
@@ -319,7 +317,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
-    workItem['type'] = this.workItem.type;
 
     workItem['iterationId'] =  iterationID;
     this.store.dispatch(new WorkItemActions.Update(workItem));
@@ -331,7 +328,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
-    workItem['type'] = this.workItem.type;
 
     workItem['labels'] = labels.map(l => l.id);
     this.store.dispatch(new WorkItemActions.Update(workItem));
@@ -343,7 +339,6 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
-    workItem['type'] = this.workItem.type;
 
     workItem['labels'] = this.workItem.labels.filter(l => l != label.id);
     this.store.dispatch(new WorkItemActions.Update(workItem));
@@ -368,12 +363,23 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy, AfterViewChec
     workItem['version'] = this.workItem.version;
     workItem['link'] = this.workItem.link;
     workItem['id'] = this.workItem.id;
-    workItem['type'] = this.workItem.type;
     workItem['description'] = {
       content: rawText,
       markup: 'Markdown'
     };
     this.store.dispatch(new WorkItemActions.Update(workItem));
+  }
+
+  updateType(e: CommonSelectorUI[]) {
+    if (e[0].key !== this.workItem.type) {
+      this.loadingTypes = true;
+      let workItem = {} as WorkItemUI;
+      workItem['version'] = this.workItem.version;
+      workItem['link'] = this.workItem.link;
+      workItem['id'] = this.workItem.id;
+      workItem['type'] = e[0].key;
+      this.store.dispatch(new WorkItemActions.Update(workItem));
+    }
   }
 
   dynamicFieldUpdated(event) {
