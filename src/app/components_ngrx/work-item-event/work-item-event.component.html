@@ -53,21 +53,13 @@
     </span>
 
     <!--Labels-->
-<<<<<<< HEAD
-    <div class="f8-audit-trail__label"
-=======
     <div class="f8-planner__audit-trail"
->>>>>>> style(planner): fix class names after rebase
       *ngIf="textType === 'label'" >
       <span  class="padding-left-5"
         [innerHTML]=intermediateText>
       </span>
       <f8-label class="margin-h-5"
-<<<<<<< HEAD
         *ngIf='(event.newValueRelationshipsObs | async)?.length > 0'
-=======
-        *ngIf='(event.newValueRelationshipsObs | async).length > 0'
->>>>>>> style(planner): fix class names after rebase
         [labels]='event.newValueRelationshipsObs | async'
         [allowDelete]="false"
         [context]="'detail'">
@@ -81,11 +73,7 @@
         </f8-label>
       </ng-container>
     </div>
-<<<<<<< HEAD
-    <small class="f8-event__create-time margin-left-5"
-=======
     <small class="margin-left-5"
->>>>>>> style(planner): fix class names after rebase
       [tooltip]="event.timestamp | date:'medium'">
       | {{ event.timestamp | f8Time }}
     </small>
