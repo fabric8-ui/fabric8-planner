@@ -139,12 +139,24 @@ export class BoardQuery {
   getBoardById(id: string, iterationID: string = ''): Observable<BoardModelUI> {
     return this.boardSource.select(id)
       .filter(board => !!board)
-      .do((board) => {
+
+      .switchMap(board => Observable.combineLatest(
+        Observable.of(board),
+        this.spaceQuery.getCurrentSpace.filter(s => !!s)
+      ))
+      .do(([board, space]) => {
+        // Fetch work item here
+        const spaceQuery = this.filterService.queryBuilder(
+          'space', this.filterService.equal_notation, space.id
+        );
+        const initialQuery = this.filterService.queryJoiner(
+          {}, this.filterService.and_notation, spaceQuery
+        );
         const boardQuery = this.filterService.queryBuilder(
           'board.id', this.filterService.equal_notation, board.id
         );
         let finalQuery = this.filterService.queryJoiner(
-          {}, this.filterService.and_notation, boardQuery
+          initialQuery, this.filterService.and_notation, boardQuery
         );
         if (iterationID !== '') {
           const iterationQuery = this.filterService.queryBuilder(
@@ -156,10 +168,12 @@ export class BoardQuery {
         }
         this.store.dispatch(new WorkItemActions.Get({
           pageSize: 200,
-          filters: finalQuery,
+          filters: {expression: finalQuery},
           isShowTree: false
         }));
       })
+      .map(([board, space]) => board)
+
       .map(board => {
         return {
           ...board,
@@ -204,9 +218,7 @@ export class BoardUIQuery {
   );
   constructor(private store: Store<AppState>) {}
 
-  get boardLocked(): Observable<boolean> {
-    return this.store.select(this.boardUiSelector)
-      .select(state => state.lockBoard)
-      .filter(l => !!l);
+  get boardLocked(): Store<boolean> {
+    return this.store.select(this.boardUiSelector).select(state => state.lockBoard);
   }
 }
