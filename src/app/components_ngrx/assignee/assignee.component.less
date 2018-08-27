@@ -1,18 +1,19 @@
 @import (reference) './../../../assets/stylesheets/_base';
 
-.f8-planner-assignee__user-assign {
-  &:extend(.not-assigned-user-icon);
+.f8-planner-assignee {
+  &__user-assign {
+    &:extend(.not-assigned-user-icon);
+  }
+  &__avatar {
+    &.is-overlapped {
+      margin-right: 0;
+      margin-left: -7px;
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
 }
 .dropdown-toggle {
   color: @color-pf-blue;
-}
-
-.f8-planner__avatar {
-  &.is-overlapped {
-    margin-right: 0;
-    margin-left: -7px;
-    &:first-child {
-      margin-left: 0;
-    }
-  }
 }

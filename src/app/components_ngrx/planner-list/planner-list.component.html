@@ -90,7 +90,7 @@
         [selected]="selectedRows"
         [selectionType]="'single'"
         [rowDraggable]="true"
-        [rowDragHandle]="'.f8-planner__table-dnd-header'"
+        [rowDragHandle]="'.f8-planner-table__dnd-header'"
         (onRowDrop)="onRowDrop($event)"
         (select)="onSelect($event)"
         (scroll)="onScroll($event);"
@@ -125,13 +125,13 @@
             [width]="50"
             [resizeable]="false"
             [sortable]="false"
-            [cellClass]="'f8-planner__table-cell'"
+            [cellClass]="'f8-planner-table__cell'"
             [frozenLeft]="false">
             <ng-template let-row="row"
               let-expanded="expanded"
               ngx-datatable-cell-template>
-              <span class="f8-planner__table-dnd">
-                <span class="f8-planner__table-dnd-header"></span>
+              <span class="f8-planner-table__dnd">
+                <span class="f8-planner-table__dnd-header"></span>
               </span>
               <a class="f8-planner__quick-add-icon"
                 *ngIf="(row?.typeObs | async) as type"
@@ -157,8 +157,8 @@
             [resizeable]="false"
             [width]="c.width"
             [sortable]="c.name === 'Title'"
-            [cellClass]="'f8-planner__table-cell'"
-            [headerClass]="'f8-planner__table-header'">
+            [cellClass]="'f8-planner-table__cell'"
+            [headerClass]="'f8-planner-table__header'">
             <ng-template ngx-datatable-cell-tree-expander
               *ngIf="c.name==='Title'">
                 <i class="fa fa-angle-right f8-planner__tree-icon"></i>
@@ -198,14 +198,14 @@
             [width]="50"
             [resizeable]="false"
             [sortable]="false"
-            [cellClass]="'f8-planner__table-cell'"
+            [cellClass]="'f8-planner-table__cell'"
             [frozenLeft]="false">
             <ng-template
               let-row="row"
               let-expanded="expanded"
               ngx-datatable-cell-template>
-              <span class="f8-planner__table-dnd">
-                 <span class="f8-planner__table-dnd-header"></span>
+              <span class="f8-planner-table__dnd">
+                 <span class="f8-planner-table__dnd-header"></span>
               </span>
               <a class="f8-planner__quick-add-icon pficon-add-circle-o is-disabled"
                 placement="right"
@@ -221,8 +221,8 @@
             [resizeable]="false"
             [width]="c.width"
             [sortable]="c.name === 'Title'"
-            [cellClass]="'f8-planner__table-cell'"
-            [headerClass]="'f8-planner__table-header'">
+            [cellClass]="'f8-planner-table__cell'"
+            [headerClass]="'f8-planner-table__header'">
               <ng-template let-row="row"
                 ngx-datatable-cell-template>
                   <work-item-cell

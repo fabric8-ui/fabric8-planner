@@ -1,7 +1,7 @@
-<div class="f8-inlineinput"
+<div class="f8-planner-inlineinput"
 [class.read-only]="disabled">
   <textarea
-    class="f8-inlineinput__input-field"
+    class="f8-planner-inlineinput__input-field"
     #input
     autosize
     (click)="startEditing(true)"
@@ -16,12 +16,12 @@
   <div
     *ngIf="editing"
     (click)="saveClick()"
-    class="btn btn-primary f8-inlineinput__btn-save"
+    class="btn btn-primary f8-planner-inlineinput__btn-save"
     [class.disabled]="saving">
     <i class="fa fa-check"></i>
   </div>
   <div
-    class="btn btn-default f8-inlineinput__btn-cancel"
+    class="btn btn-default f8-planner-inlineinput__btn-cancel"
     *ngIf="editing"
     (click)="closeClick()">
     <i class="fa fa-close"></i>
@@ -45,7 +45,7 @@
     TODO: Evaluate the solution and come up with a better one if there is any
   -->
   <div (click)="startEditing(false)"
-    class="f8-inlineinput__edit-icon"
+    class="f8-planner-inlineinput__edit-icon"
     [class.hide]="editing">
     <i class="pficon pficon-edit"></i>
   </div>

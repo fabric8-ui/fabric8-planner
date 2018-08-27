@@ -1,4 +1,4 @@
-<div class="f8-planner__comment-body">
+<div class="f8-planner-comment__body">
   <user-avatar
     class="pull-left"
     id="{{'comment_avatar_' + comment.id}}"
@@ -7,11 +7,11 @@
     [imgSrc]="(comment.creator | async)?.avatar | almAvatarSize: 25">
   </user-avatar>
   <div>
-    <strong class="f8-planner__comment-author pull-left"
+    <strong class="f8-planner-comment__author pull-left"
       id="{{'comment_username_' + counter}}">
         {{ (comment.creator | async)?.name }}
     </strong>
-    <small class="f8-planner__comment--create-time pull-right"
+    <small class="f8-planner-comment__create-time pull-right"
       id="{{'comment_time_' + counter}}">
         {{ comment.createdAt | date:'medium' }}
     </small>
@@ -30,11 +30,10 @@
     </f8-markdown>
   </div>
 
-
   <!-- Add reply section -->
   <div class="width-100 pull-left reply"
-    [class.reply-div-active]="replyActive"
-    [class.reply-div]="!replyActive"
+    [class.f8-planner-comment__reply--is-active]="replyActive"
+    [class.f8-planner-comment__reply]="!replyActive"
     *ngIf="!comment.parentId">
     <!-- Add reply button-->
     <button class="btn pull-right"

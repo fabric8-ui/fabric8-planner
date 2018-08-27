@@ -1,4 +1,4 @@
-<div class="f8-planner__event">
+<div class="f8-planner-event">
   <user-avatar
     class="pull-left"
     *ngIf="(event.modifier | async)?.avatar"
@@ -53,7 +53,7 @@
     </span>
 
     <!--Labels-->
-    <div class="f8-planner__audit-trail"
+    <div class="f8-planner-audit-trail"
       *ngIf="textType === 'label'" >
       <span  class="padding-left-5"
         [innerHTML]=intermediateText>

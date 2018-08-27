@@ -5,21 +5,21 @@
     [headerTemplate]="cardHeader">
     <ng-template #cardHeader>
       <div class="f8-planner-card__header">
-        <div class="wi-type-icon-wrapper">
+        <div class="f8-planner-card__header-type-icon">
           <span class="{{workItem.type?.icon}}"></span>
         </div>
-        <div class="title-wrapper"
+        <div class="f8-planner-card__title"
           (click)="titleClick(workItem, $event);">
           <span>{{ workItem.number }}: </span>
           <strong class="pointer"
             [innerHTML]="workItem.title">
           </strong>
-          <span class="creator"> - created by {{ (workItem.creatorObs | async).name }}</span>
+          <span class="f8-planner-card__title-creator"> - created by {{ (workItem.creatorObs | async).name }}</span>
         </div>
       </div>
     </ng-template>
     <div class="f8-planner-card__body">
-      <div class="sprint-name truncate"
+      <div class="f8-planner-card__sprint truncate"
         *ngIf="workItem.iterationObs | async as iteration"
         [placement]="top"
         [tooltip]="iteration.resolvedParentPath === '/' ?
@@ -27,7 +27,7 @@
           iteration.resolvedParentPath + '/' + iteration.name">
         <span>{{ iteration.name }}</span>
       </div>
-      <div class="assignee">
+      <div class="text-right">
         <f8-assignee
           [showFullName]="false"
           [truncateAfter]="3"

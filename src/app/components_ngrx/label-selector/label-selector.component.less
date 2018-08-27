@@ -1,21 +1,21 @@
 @import (reference) '../../../assets/stylesheets/_base';
 
-.f8-planner-label__palet {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-right: 10px;
-  vertical-align: middle;
-  border: 1px solid;
-  border-color: @color-pf-black;
-  border-radius: 2px;
-  opacity: 1;
-  cursor: pointer;
-}
-
 .f8-planner-label {
+  &__palet {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 10px;
+    vertical-align: middle;
+    border: 1px solid;
+    border-color: @color-pf-black;
+    border-radius: 2px;
+    opacity: 1;
+    cursor: pointer;
+  }
   &__create-label {
-    &-text {  // This is fixed
+    &-text {
+      // This is fixed
       // Never change this
       // The footer gives you a height of 30px
       // from the component

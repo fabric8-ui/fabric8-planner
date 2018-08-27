@@ -1,9 +1,9 @@
 @import '../../../assets/stylesheets/_planner-layout';
 @import (reference) '../../../assets/stylesheets/_base';
 
-.f8-planner__detail {
+.f8-planner-detail {
   background-color: @color-pf-white;
-  &-header {
+  &__header {
     float: left;
     width: 100%;
     padding: (@grid-gutter-width/2);
@@ -23,17 +23,8 @@
       color: @color-pf-black-500;
     }
   }
-  &-edit-icon {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-  }
-<<<<<<< HEAD
-  &__detail {
-=======
-  &-content {
+  &__content {
     // height: ~"calc(e('100vh - 200px'))";
->>>>>>> style(planner): fix classnames for planner components
     label {
       padding-top: 0;
       text-align: left;
@@ -48,7 +39,7 @@
       }
     }
   }
-  &-assignee {
+  &__assignee {
     [noValueLabel='none'] {
       color: @color-pf-blue-400;
     }
@@ -59,7 +50,7 @@
       cursor: pointer;
     }
   }
-  &-context {
+  &__context {
     padding-right: 15px;
     padding-left: 140px;
   }
@@ -67,7 +58,7 @@
 
 // Sm
 @media (max-width: @screen-md-min) {
-  .f8-planner__detail-content {
+  .f8-planner-detail__content {
     overflow: auto;
     &-wrap {
       height: auto;

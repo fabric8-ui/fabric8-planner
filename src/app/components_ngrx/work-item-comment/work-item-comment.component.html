@@ -1,10 +1,10 @@
-<div class="f8-planner__comment"
+<div class="f8-planner-comment"
   id="wi-comment">
-  <ul class="f8-planner__comment-content nav nav-tabs nav-tabs-pf"
+  <ul class="f8-planner-comment__content nav nav-tabs nav-tabs-pf"
     id="wi-comment-content"
     *ngIf="true">
     <!-- Refactoring needed to toogle view -->
-    <li class="f8-planner__comment--toggle"
+    <li class="f8-planner-comment--toggle"
       (click)="isCollapsedComments = !isCollapsedComments">
       <i class="fa fa-icon"
         [ngClass]="{'fa-angle-right': isCollapsedComments,
@@ -26,7 +26,7 @@
     </li>
   </ul>
   <div [collapse]="isCollapsedComments">
-    <div class="f8-planner__comment-input"
+    <div class="f8-planner-comment__input"
       *ngIf="loggedIn">
       <f8-markdown
         [editAllow]="loggedIn"
@@ -39,7 +39,7 @@
       </f8-markdown>
     </div>
     <div>
-      <div class="f8-planner__comment-wrap"
+      <div class="f8-planner-comment__wrap"
         *ngFor='let comment of comments; let counter = index'>
         <fabric8-comment
           [comment]="comment"

@@ -1,9 +1,9 @@
 @import (reference) './../../../assets/stylesheets/_base';
 
-.f8-inlineinput {
+.f8-planner-inlineinput {
   width: 100%;
   &__input-field {
-    width: ~"calc(e('100% - 30px'))"; // lesshint-disable-line
+    width: ~'calc(e("100% - 30px"))';
     height: 27px;
     min-height: 27px;
     padding: 0 (@grid-gutter-width/3);
@@ -24,7 +24,7 @@
       transition: border-color ease-in-out 300;
     }
     &.is-active {
-      width: ~"calc(e('100% - 110px'))"; // lesshint-disable-line
+      width: ~'calc(e("100% - 110px"))';
       background-color: @color-pf-white;
       border: 1px solid;
       border-color: @color-pf-blue-400;
@@ -62,7 +62,7 @@
   }
   &.read-only {
     &:hover {
-      .f8-inlineinput__input-field {
+      .f8-planner-inlineinput__input-field {
         border: 1px solid;
         border-color: @color-pf-black-400;
       }

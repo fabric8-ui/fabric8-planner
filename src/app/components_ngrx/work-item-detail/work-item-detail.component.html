@@ -1,19 +1,19 @@
 <div [class.f8-planner-container]="detailContext=='detail'">
-  <div class="f8-planner__detail form-horizontal"
+  <div class="f8-planner-detail form-horizontal"
     id="wi-detail-form"
     *ngIf="workItem">
     <fieldset *ngIf="(workItem.typeObs | async) as type">
-      <div class="f8-planner__detail-header"
+      <div class="f8-planner-detail__header"
         #detailHeader>
         <span
           class="pficon pficon-close close
-          pull-right pointer f8-planner__detail-close"
+          pull-right pointer f8-planner-detail__close"
           (click)="closeDetail()">
         </span>
         <div *ngIf="detailContext=='preview'">
           <div class="pull-left">
             <strong>#{{ workItem.number }}</strong>
-            <span class="f8-planner__detail-date"
+            <span class="f8-planner-detail__header-date"
               *ngIf="workItem.id">
               created by
               <span id="preview_created_by"
@@ -22,17 +22,17 @@
               <span id="preview_created_at"
                 [innerHTML]="workItem.createdAt | almMomentTime"></span>
             </span>
-            <a class="pull-right" style="padding-left: 120px"
-              [routerLink]="context === 'list' ? ['detail', workItem.number] : ['../', 'detail', workItem.number]"
-              [queryParams]="queryParams">
-              View full details
-              <span class="fa fa-list-alt"></span>
-            </a>
           </div>
+          <a class="pull-right margin-right-15"
+            [routerLink]="context === 'list' ? ['detail', workItem.number] : ['../', 'detail', workItem.number]"
+            [queryParams]="queryParams">
+            View full details
+            <span class="fa fa-list-alt"></span>
+          </a>
         </div>
         <div *ngIf="detailContext=='detail'">
           <strong>#{{ workItem.number }}</strong>
-          <span class="f8-planner__detail-date"
+          <span class="f8-planner-detail__header-date"
             *ngIf="workItem.id">
             created by
             <span id="preview_created_by"
@@ -56,11 +56,11 @@
           </div>
         </div>
       </div>
-      <div class="f8-planner__detail-content width-100"
+      <div class="f8-planner-detail__content width-100"
         #detailContent>
         <div
           class="col-xs-12 col-sm-12 padding-v-15"
-          [class.f8-planner__detail-content-wrap]="detailContext=='detail'"
+          [class.f8-planner-detail__content-wrap]="detailContext=='detail'"
           [class.col-md-7]="detailContext=='detail'"
           [class.col-lg-7]="detailContext=='detail'"
           [class.col-md-12]="detailContext=='preview'"
@@ -72,7 +72,7 @@
               <label class="pull-left padding-left-15 control-label">
                 Type
               </label>
-              <div class="f8-planner__detail-context">
+              <div class="f8-planner-detail__context">
                 <span *ngIf="loadingTypes"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -97,7 +97,7 @@
               <label class="pull-left padding-left-15 control-label">
                 {{ type.fields['system.state']?.label || 'Label' }}
               </label>
-              <div class="f8-planner__detail-context">
+              <div class="f8-planner-detail__context">
                 <span *ngIf="loadingStates"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -118,11 +118,11 @@
 
           <div class="form-group">
             <!-- assignee -->
-            <section class="f8-planner__detail-assignee">
+            <section class="f8-planner-detail__assignee">
               <label class="pull-left padding-left-15 control-label">
                 {{ type.fields['system.assignees']?.label || 'Label' }}
               </label>
-              <div class="f8-planner__detail-context" #assignee >
+              <div class="f8-planner-detail__context" #assignee >
                 <span *ngIf="loadingAssignees"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -150,7 +150,7 @@
               <label class="pull-left padding-left-15 control-label">
                 {{ type.fields['system.area']?.label || 'Label' }}
               </label>
-              <div class="f8-planner__detail-context">
+              <div class="f8-planner-detail__context">
                 <span *ngIf="loadingArea"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -176,7 +176,7 @@
               <label class="pull-left padding-left-15 control-label">
                 {{ type.fields['system.iteration']?.label || 'Label' }}
               </label>
-              <div class="f8-planner__detail-context">
+              <div class="f8-planner-detail__context">
                 <span *ngIf="loadingIteration"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -197,11 +197,11 @@
           </div>
           <!--Labels-->
           <div class="form-group">
-            <section class="f8-planner__detail-labels">
+            <section class="f8-planner-detail__labels">
               <label class="pull-left padding-left-15 control-label ">
                 {{ type.fields['system.labels']?.label || 'Label' }}
               </label>
-              <div class="f8-planner__detail-context">
+              <div class="f8-planner-detail__context">
                 <span *ngIf="loadingLabels"
                   class="spinner spinner-sm spinner-inline">
                 </span>
@@ -229,7 +229,7 @@
               <label class="pull-left padding-left-15 control-label">
                 Description
               </label>
-              <div class="f8-planner__detail-context">
+              <div class="f8-planner-detail__context">
                 <f8-markdown
                   id="wi-desc-div"
                   [editAllow]="workItem?.editable"
@@ -256,8 +256,8 @@
           </div>
         </div>
         <div class="col-xs-12 col-sm-12 padding-0"
-          [class.f8-planner__detail-content-wrap--border]="detailContext=='detail'"
-          [class.f8-planner__detail-content-wrap]="detailContext=='detail'"
+          [class.f8-planner-detail__content-wrap--border]="detailContext=='detail'"
+          [class.f8-planner-detail__content-wrap]="detailContext=='detail'"
           [class.col-md-5]="detailContext=='detail'"
           [class.col-lg-5]="detailContext=='detail'"
           [class.col-md-12]="detailContext=='preview'"
