@@ -3,9 +3,14 @@
 
 .cell-class {
   overflow: visible !important;
-  padding-top: 3px !important;
-  padding-bottom: 4px !important;
-  line-height: 44px !important;
+  .datatable-body-cell-label {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    label {
+      margin: 0;
+    }
+  }
 }
 .header-cell {
   font-weight: bold !important;
