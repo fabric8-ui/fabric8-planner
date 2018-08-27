@@ -23,8 +23,8 @@ export class Event extends modelService {
 
 export class EventAttributes {
   name: string;
-  newValue?: string | null | any[];
-  oldValue?: string | null | any[];
+  newValue: string | null;
+  oldValue: string | null;
   timestamp: string;
 }
 
@@ -70,32 +70,10 @@ export class EventMapper implements Mapper<EventService, EventUI> {
     toPath: ['name']
   }, {
     fromPath: ['attributes', 'newValue'],
-    toPath: ['newValue'],
-    toFunction: (newValue) => {
-      if (newValue !== null) {
-        if (Array.isArray(newValue)) {
-          return newValue.join(', ');
-        } else {
-          return newValue;
-        }
-      } else {
-        return newValue;
-      }
-    }
+    toPath: ['newValue']
   }, {
     fromPath: ['attributes', 'oldValue'],
-    toPath: ['oldValue'],
-    toFunction: (oldValue) => {
-      if (oldValue !== null) {
-        if (Array.isArray(oldValue)) {
-          return oldValue.join(', ');
-        } else {
-          return oldValue;
-        }
-      } else {
-        return oldValue;
-      }
-    }
+    toPath: ['oldValue']
   }, {
     fromPath: ['attributes', 'timestamp'],
     toPath: ['timestamp']
@@ -118,7 +96,7 @@ export class EventMapper implements Mapper<EventService, EventUI> {
           return [];
         }
       } else {
-        return [];
+        return newValue;
       }
     }
   }, {
@@ -137,7 +115,7 @@ export class EventMapper implements Mapper<EventService, EventUI> {
           return [];
         }
       } else {
-        return [];
+        return oldValue;
       }
     }
   }, {
@@ -177,8 +155,8 @@ export class EventQuery {
     return this.eventSource
       .map(events => {
         return events.map(event => {
-          switch (event.type) {
-            case 'iterations':
+          switch (event.name) {
+            case 'system.iteration':
               return {
                 ...event,
                 modifier: this.userQuery.getUserObservableById(event.modifierId),
@@ -189,7 +167,7 @@ export class EventQuery {
                   return this.iterationQuery.getIterationObservableById(item.id);
                 })
               };
-            case 'areas':
+            case 'system.area':
               return {
                 ...event,
                 modifier: this.userQuery.getUserObservableById(event.modifierId),
@@ -200,7 +178,7 @@ export class EventQuery {
                   return this.areaQuery.getAreaObservableById(item.id);
                 })
               };
-            case 'users':
+            case 'system.assignees':
               return {
                 ...event,
                 modifier: this.userQuery.getUserObservableById(event.modifierId),
@@ -212,7 +190,7 @@ export class EventQuery {
                 })
               };
 
-            case 'labels':
+            case 'system.labels':
               return {
                 ...event,
                 modifier: this.userQuery.getUserObservableById(event.modifierId),

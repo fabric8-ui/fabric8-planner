@@ -5,7 +5,9 @@ import {
   XHRBackend
 } from '@angular/http';
 import { NgxDatatableModule } from 'rh-ngx-datatable';
-import { WorkItemCellModule } from './../work-item-cell/work-item-cell.module';
+import { AssigneesModule } from './../assignee/assignee.module';
+import { LabelsModule } from './../labels/labels.module';
+import { WorkItemCellComponent } from './../work-item-cell/work-item-cell.component';
 import { WorkItemPreviewPanelModule } from './../work-item-preview-panel/work-item-preview-panel.module';
 
 import { AuthenticationService } from 'ngx-login-client';
@@ -15,6 +17,7 @@ import { PlannerListComponent } from './planner-list.component';
 import { TruncateModule } from 'ng2-truncate';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
+import { FilterColumn } from '../../pipes/column-filter.pipe';
 import { factoryForHttpService, HttpService } from '../../services/http-service';
 import { PlannerModalModule } from '../../widgets/modal/modal.module';
 import { AreaService } from './../../services/area.service';
@@ -43,7 +46,6 @@ import { UrlService } from '../../services/url.service';
 import { ClickOutModule } from '../../widgets/clickout/clickout.module';
 
 // Data Querries
-import { WorkItemTypeQuery } from '../../models/work-item-type';
 import { AreaQuery } from './../../models/area.model';
 import { CommentQuery } from './../../models/comment';
 import { GroupTypeQuery } from './../../models/group-types.model';
@@ -53,8 +55,7 @@ import { SpaceQuery } from './../../models/space';
 import { UserQuery } from './../../models/user';
 import { WorkItemQuery } from './../../models/work-item';
 
-import { FilterColumnModule } from '../../pipes/column-filter.module';
-import { TableConfigModule } from './../table-config/table-config.module';
+import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
 
 let providers = [
     WorkItemService,
@@ -76,6 +77,7 @@ let providers = [
     WorkItemDataService,
     UrlService,
     InfotipService,
+
     CommentQuery,
     UserQuery,
     LabelQuery,
@@ -83,21 +85,20 @@ let providers = [
     WorkItemQuery,
     AreaQuery,
     SpaceQuery,
-    GroupTypeQuery,
-    WorkItemTypeQuery,
-    SpaceQuery
+    GroupTypeQuery
   ];
 
 @NgModule({
   imports: [
     AlmIconModule,
+    AssigneesModule,
     CommonModule,
     ClickOutModule,
-    FilterColumnModule,
     PlannerListRoutingModule,
     PlannerLayoutModule,
     PlannerModalModule,
     EmptyStateModule,
+    LabelsModule,
     ToolbarPanelModule,
     TooltipModule.forRoot(),
     SidepanelModule,
@@ -106,12 +107,13 @@ let providers = [
     NgxDatatableModule,
     WorkItemPreviewPanelModule,
     WidgetsModule,
-    TableConfigModule,
     TruncateModule,
-    WorkItemCellModule
+    UserAvatarModule
   ],
   declarations: [
-    PlannerListComponent
+    PlannerListComponent,
+    WorkItemCellComponent,
+    FilterColumn
   ],
   providers: providers,
   exports: [ PlannerListComponent ]

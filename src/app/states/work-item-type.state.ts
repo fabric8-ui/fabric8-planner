@@ -1,12 +1,7 @@
-import { createEntityAdapter } from '@ngrx/entity';
 import {
-  WorkItemTypeStateModel, WorkItemTypeUI
+  WorkItemTypeUI
 } from './../models/work-item-type';
 
-const workItemTypeAdapter = createEntityAdapter<WorkItemTypeUI>();
+export type WorkItemTypeState = WorkItemTypeUI[];
 
-export const initialState: WorkItemTypeStateModel = workItemTypeAdapter.getInitialState();
-
-export {
-  WorkItemTypeStateModel as WorkItemTypeState
-} from './../models/work-item-type';
+export const initialState: WorkItemTypeState = [] as WorkItemTypeState;

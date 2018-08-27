@@ -9,7 +9,7 @@ import { FilterService } from '../services/filter.service';
 import * as BoardUIActions from './../actions/board-ui.actions';
 import * as ColumnWorkItemActions from './../actions/column-workitem.action';
 import * as WorkItemActions from './../actions/work-item.actions';
-import { WorkItem, WorkItemMapper, WorkItemService, WorkItemUI } from './../models/work-item';
+import { WorkItem, WorkItemMapper, WorkItemResolver, WorkItemService, WorkItemUI } from './../models/work-item';
 import { WorkItemService as WIService } from './../services/work-item.service';
 import { AppState } from './../states/app.state';
 import * as util from './work-item-utils';
@@ -49,8 +49,11 @@ export class WorkItemEffects {
           workItemUI.childrenLoaded = true;
         }
       }
-      let wid = this.workItemMapper.toDynamicUIModel(wi, state.workItemTypes.entities[workItemUI.type].dynamicfields);
-      return { ...workItemUI, ...wid };
+      const workItemResolver = new WorkItemResolver(workItemUI);
+      workItemResolver.resolveType(state.workItemTypes);
+      let wiu = workItemResolver.getWorkItem();
+      let wid = this.workItemMapper.toDynamicUIModel(wi, wiu.type.dynamicfields);
+      return { ...wiu, ...wid };
     });
   }
 
@@ -71,14 +74,17 @@ export class WorkItemEffects {
       const parentId = payload.parentId;
       return this.workItemService.create(workItem)
         .map(item => {
-          let itemUI = this.workItemMapper.toUIModel(item);
+          const itemUI = this.workItemMapper.toUIModel(item);
+          const workItemResolver = new WorkItemResolver(itemUI);
+          workItemResolver.resolveType(state.workItemTypes);
+          const wItem = workItemResolver.getWorkItem();
           let wid = this.workItemMapper.toDynamicUIModel(
-            item, state.workItemTypes.entities[itemUI.type].dynamicfields
+            item, wItem.type.dynamicfields
           );
-          itemUI.createId = createID;
-          return { ...itemUI, ...wid };
+          wItem.createId = createID;
+          return { ...wItem, ...wid };
         })
-        .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w, state.space.id))
+        .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w))
         .mergeMap(wItem => {
           // If a child item is created
           if (parentId) {
@@ -142,13 +148,7 @@ export class WorkItemEffects {
     .switchMap(wp => {
       const payload = wp.payload;
       const state = wp.state;
-      const spaceQuery = this.filterService.queryBuilder(
-        'space', this.filterService.equal_notation, state.space.id
-      );
-      const finalQuery = this.filterService.queryJoiner(
-        payload.filters, this.filterService.and_notation, spaceQuery
-      );
-      return this.workItemService.getWorkItems2(payload.pageSize, {expression: finalQuery})
+      return this.workItemService.getWorkItems2(payload.pageSize, payload.filters)
         .map((data: any) => {
           let wis = [];
           if (payload.isShowTree) {
@@ -238,30 +238,24 @@ export class WorkItemEffects {
         };
       })
       .switchMap(wp => {
-        let payload;
-        if (wp.payload.type) {
-          // This order must be followed
-          // because baseType is needed for dynamic fields
-          const dynamicPayload = this.workItemMapper.toDyanmicServiceModel(
-            wp.payload,
-            wp.state.workItemTypes.entities[wp.payload.type].dynamicfields
-          );
-          const staticPayload = this.workItemMapper.toServiceModel(wp.payload);
+        // This order must be followed
+        // because baseType is needed for dynamic fields
+        const dynamicPayload = this.workItemMapper.toDyanmicServiceModel(wp.payload);
+        const staticPayload = this.workItemMapper.toServiceModel(wp.payload);
 
-          payload = cleanObject({
-            ...staticPayload,
-            ...{ attributes: {
-                 ...staticPayload.attributes,
-                 ...dynamicPayload.attributes
-            }}
-          });
-        } else {
-          payload = this.workItemMapper.toServiceModel(wp.payload);
-        }
+        // We don't update work item type
+        // So we remove it from the payload
+        const payload = cleanObject({
+          ...staticPayload,
+          ...{ attributes: {
+               ...staticPayload.attributes,
+               ...dynamicPayload.attributes
+          }}
+        }, ['baseType']);
         const state = wp.state;
         return this.workItemService.update(payload)
           .map(w => this.resolveWorkItems([w], state)[0])
-          .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w, state.space.id))
+          .switchMap(w => util.workitemMatchesFilter(this.route.snapshot, this.filterService, this.workItemService, w))
           .map(w => {
             const item = state.workItems.entities[w.id];
             if (item) {
@@ -379,39 +373,4 @@ export class WorkItemEffects {
           ];
         });
     });
-
-    @Effect() getWorkItemChildrenForQuery$: Observable<Action> = this.actions$
-      .ofType<WorkItemActions.GetWorkItemChildrenForQuery>(WorkItemActions.GET_WORKITEM_CHILDREN_FOR_Query)
-      .withLatestFrom(this.store.select('planner'))
-      .map(([action, state]) => {
-        return {
-          payload: action.payload,
-          state: state
-        };
-      })
-      .switchMap(wp => {
-        return this.workItemService
-          .getChildren2(wp.payload)
-          .map((data: WorkItemService[]) => {
-            return this.resolveWorkItems(data, wp.state);
-          })
-          .map((workItems: WorkItemUI[]) => {
-            return new WorkItemActions.GetSuccess(
-              workItems
-            );
-          })
-          .catch(() => {
-            try {
-              this.notifications.message({
-                message: `Problem loading children.`,
-                type: NotificationType.DANGER
-              } as Notification);
-            } catch (e) {
-              console.log('Problem loading children.');
-            }
-            return Observable.of(
-              new WorkItemActions.GetError()
-            );
-          });
-      });
 }

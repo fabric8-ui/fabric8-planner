@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 import * as DetailWorkItemActions from './../actions/detail-work-item.actions';
 import {
   WorkItem, WorkItemMapper,
-  WorkItemService,
+  WorkItemResolver, WorkItemService,
   WorkItemUI
 } from './../models/work-item';
 import { WorkItemService as WIService } from './../services/work-item.service';
@@ -47,10 +47,13 @@ export class DetailWorkItemEffects {
           workItemUI.childrenLoaded = true;
         }
       }
+      const workItemResolver = new WorkItemResolver(workItemUI);
+      workItemResolver.resolveType(state.workItemTypes);
+      const wItem = workItemResolver.getWorkItem();
       let wid = this.workItemMapper.toDynamicUIModel(
-        wi, state.workItemTypes.entities[workItemUI.type].dynamicfields
+        wi, wItem.type.dynamicfields
       );
-      return { ...workItemUI, ...wid };
+      return { ...wItem, ...wid };
     });
   }
 

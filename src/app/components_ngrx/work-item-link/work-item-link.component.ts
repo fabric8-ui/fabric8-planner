@@ -29,7 +29,6 @@ import { AppState } from './../../states/app.state';
 })
 
 export class WorkItemLinkComponent implements OnInit {
-  @Input() context: string = 'list';
   @Input() loggedIn: Boolean;
   @Input() detailContext: string; // It should be detail or preview
   @Output() readonly onLinkClick = new EventEmitter();
