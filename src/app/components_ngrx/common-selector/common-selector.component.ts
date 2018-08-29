@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -14,7 +15,8 @@ import {
 @Component({
   selector: 'common-selector',
   templateUrl: './common-selector.component.html',
-  styleUrls: ['./common-selector.component.less']
+  styleUrls: ['./common-selector.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CommonSelectorComponent {
 
@@ -41,19 +43,21 @@ export class CommonSelectorComponent {
   }
 
   @Input('allowMultiSelect') allowMultiSelect: boolean = false;
+  @Input('closeOnSelect') closeOnSelect: boolean = true;
   @Input('headerText') headerText: string = 'Default Header Text';
   @Input('noValueLabel') noValueLabel: string = 'None';
   @Input('allowUpdate') allowUpdate: boolean = true;
+  @Input('itemTruncate') itemTruncate: number = 500;
+  @Input('toggleTruncate') toggleTruncate: number = 500;
 
   @Output() readonly onSelectItem: EventEmitter<any[]> = new EventEmitter();
   @Output() readonly onOpenSelector: EventEmitter<any> = new EventEmitter();
   @Output() readonly onCloseSelector: EventEmitter<any[]> = new EventEmitter();
 
-  users: User[] = [];
-
   private backup: any[] = [];
   private searchValue: string = '';
   private menuItems: any[] = [];
+  isOpen: boolean = false;
 
   constructor() {}
 
@@ -78,6 +82,9 @@ export class CommonSelectorComponent {
     }
     this.updateSelection();
     this.onSelectItem.emit(cloneDeep(this.selectedItems));
+    if (this.closeOnSelect && !this.allowMultiSelect) {
+      this.dropdownRef.closeDropdown();
+    }
   }
 
   updateSelection() {
@@ -88,8 +95,8 @@ export class CommonSelectorComponent {
         this.menuItems[index].selected = false;
       }
     });
-    this.backup.forEach((assignee, index) => {
-      if (this.selectedItems.find(a => assignee.key === a.key)) {
+    this.backup.forEach((item, index) => {
+      if (this.selectedItems.find(a => item.key === a.key)) {
         this.backup[index].selected = true;
       } else {
         this.backup[index].selected = false;
@@ -119,9 +126,11 @@ export class CommonSelectorComponent {
   }
 
   onOpen(event) {
+    this.isOpen = true;
     this.onOpenSelector.emit('open');
   }
   onClose(event) {
+    this.isOpen = false;
     // Setting search input to empty string
     this.dropdownRef.setSearchText('');
     // Thus reset the value

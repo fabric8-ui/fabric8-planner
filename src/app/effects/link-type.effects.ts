@@ -33,20 +33,26 @@ export class LinkTypeEffects {
         .map((data) => {
           let lts: any = {};
           let linkTypes: LinkTypeUI[] = [];
-          lts['forwardLinks'] = data.json().data;
-          lts['backwardLinks'] = data.json().data;
+          lts['forwardLinks'] = data;
+          lts['backwardLinks'] = data;
           lts.forwardLinks.forEach((linkType) => {
             linkTypes.push({
               name: linkType.attributes['forward_name'],
               id: linkType.id,
-              linkType: 'forward'
+              linkType: 'forward',
+              description: linkType.attributes['forward_description'] ?
+                linkType.attributes['forward_description'] :
+                linkType.attributes['description']
             });
           });
           lts.backwardLinks.forEach((linkType) => {
             linkTypes.push({
               name: linkType.attributes['reverse_name'],
               id: linkType.id,
-              linkType: 'reverse'
+              linkType: 'reverse',
+              description: linkType.attributes['reverse_description'] ?
+                linkType.attributes['reverse_description'] :
+                linkType.attributes['description']
             });
           });
           return new LinkTypeActions.GetSuccess(linkTypes);

@@ -1,20 +1,20 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
-  HostListener,
   Input,
   OnInit,
   Output,
   TemplateRef,
-  ViewChild,
-  ViewEncapsulation
+  ViewChild
 } from '@angular/core';
 
 @Component({
   selector: 'f8-select-dropdown',
   templateUrl: './select-dropdown.component.html',
-  styleUrls: ['./select-dropdown.component.less']
+  styleUrls: ['./select-dropdown.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectDropdownComponent implements OnInit {
   @Input() headerText: string = 'This is default header';
@@ -24,6 +24,7 @@ export class SelectDropdownComponent implements OnInit {
   @Input() menuItems: any[] = [];
   @Input() showSearch: boolean = false;
   @Input() disabled: boolean = false;
+  @Input() loading: boolean = false;
 
   @Output() readonly onSelect: EventEmitter<any> = new EventEmitter();
   @Output() readonly onSearch: EventEmitter<any> = new EventEmitter();
@@ -38,15 +39,19 @@ export class SelectDropdownComponent implements OnInit {
 
   private displayDropdown: boolean = false;
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   openDropdown() {
     if (!this.disabled) {
+      this.loading = false;
       this.displayDropdown = true;
+      if (this.searchInput) {
+        setTimeout(() => this.searchInput.nativeElement.focus());
+      }
       this.onOpen.emit('open');
     }
   }
+
   closeDropdown() {
     this.displayDropdown = false;
     this.onClose.emit('close');
@@ -57,6 +62,9 @@ export class SelectDropdownComponent implements OnInit {
   }
 
   searchItem(text: string) {
+    if (!text.trim()) {
+      this.loading = false;
+    }
     this.onSearch.emit(text);
   }
 

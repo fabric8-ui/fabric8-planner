@@ -16,15 +16,17 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   stateDropdownCloseButton = new ui.Button(this.$('.state-dropdown .close-pointer'), 'State dropdown close button');
   stateDiv = new ui.BaseElement(this.$('.state-dropdown'), 'State dropdown toggle');
   stateDropdown = new ui.Dropdown(
-    this.stateDiv.$('f8-select-dropdown>div>span'),
+    this.stateDiv.$('f8-select-dropdown .dropdown-toggle'),
     this.stateDiv.$('.select-dropdown-menu'),
-    'State select dropdown'
+    'State select dropdown',
+    'li>div>.item-value'
   );
   typeDiv = new ui.BaseElement(this.$('.type-dropdown'), 'Type dropdown toggle');
   typeDropdown = new ui.Dropdown(
-    this.typeDiv.$('f8-select-dropdown>div>span'),
+    this.typeDiv.$('f8-select-dropdown .dropdown-toggle'),
     this.typeDiv.$('.select-dropdown-menu'),
-    'Type select dropdown'
+    'Type select dropdown',
+    'li>div>.item-value'
   );
   fullDetailButton = new ui.Clickable(this.$('span.dib'), 'View full details button');
   titleDiv = new ui.BaseElement(this.$('#wi-title-div'), 'Workitem title div');
@@ -48,18 +50,20 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     this.$('assignee-selector div.select-dropdown'),
     'Assignee dropdown menu');
   assigneeDiv = new ui.BaseElement(this.$('f8-assignee'), 'Assignee List Div');
-  areaDiv = new ui.BaseElement(this.$('.area-dropdown'), 'Assignee List Div');
+  areaDiv = new ui.BaseElement(this.$('.area-dropdown'), 'Area List Div');
   areaDropdown = new ui.Dropdown(
-    this.areaDiv.$('f8-select-dropdown>div>span'),
+    this.areaDiv.$('f8-select-dropdown .dropdown-toggle'),
     this.areaDiv.$('.select-dropdown-menu'),
-    'Area select dropdown'
+    'Area select dropdown',
+    'li>div>.item-value'
   );
-  iterationDiv = new ui.BaseElement(this.$('.iteration-dropdown'), 'Iteration List Div');
 
+  iterationDiv = new ui.BaseElement(this.$('.iteration-dropdown'), 'Iteration List Div');
   iterationDropdown = new ui.Dropdown(
-    this.iterationDiv.$('f8-select-dropdown>div>span'),
+    this.iterationDiv.$('f8-select-dropdown .dropdown-toggle'),
     this.iterationDiv.$('.select-dropdown-menu'),
-    'Iteration select dropdown'
+    'Iteration select dropdown',
+    'li>div>.item-value'
   );
   iterationInput = new ui.TextInput(this.iterationDiv.$('.select-dropdown-search-input'), 'Iteration input');
 
@@ -92,19 +96,25 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   /* UI elements for the bottom section of the workitem preview */
   linksDiv = new ui.BaseElement($('#wi-link'), 'WorkItem links div');
   linksToggleButton = new ui.Clickable(this.linksDiv.$('.f8-toggle-caret'), 'WorkItem Links toggle button');
-  createLinkButton = new ui.Button(this.linksDiv.$('#create-link-button'), 'Create link Button');
+  linkTypeDiv = new ui.BaseElement(this.$('#wi-link-type'), 'Link type List Div');
   linkTypeDropdown = new ui.Dropdown(
-    this.$('#wi-link-type'),
-    this.$('.typeahead-long.dropdown-menu'),
-    'select link type dropdown'
+    this.linkTypeDiv.$('f8-select-dropdown .dropdown-toggle'),
+    this.linkTypeDiv.$('.select-dropdown-menu'),
+    'Link type select dropdown',
+    'li>div>.item-value'
   );
-  workItemList = new ui.BaseElementArray(this.$$('.dropdown.open .dropdown-menu.dropdown-ul li'), 'work item list');
-  searchWorkItem = new ui.TextInput(this.linksDiv.$('#workitem-link-search'), 'Workitem search');
-  workItemDropdown = new ui.Dropdown(
-    this.searchWorkItem,
-    this.$('.dropdown.open .dropdown-menu.dropdown-ul'),
-    'select workitem'
+
+  linkSearchDiv = new ui.BaseElement(this.$('#workitem-link-search'), 'Link search List Div');
+  linkSearchDropdown = new ui.Dropdown(
+    this.linkSearchDiv.$('f8-select-dropdown .dropdown-toggle'),
+    this.linkSearchDiv.$('.select-dropdown-menu'),
+    'Link item search dropdown',
+    'li>div>.item-value'
   );
+  searchWorkItem = new ui.TextInput(this.linkSearchDiv.$('input.select-dropdown-search-input'), 'Workitem search');
+
+  workItemList = new ui.BaseElementArray(this.linkSearchDiv.$$('.select-dropdown-menu li'), 'work item list');
+
   linkButton = new ui.Button(this.linksDiv.$('#bind-link'), 'link Button');
   linklistItem = new ui.BaseElement(this.$('#wi-link .f8-link__list-item'), 'link lst item');
 
@@ -157,7 +167,6 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await browser.sleep(2000);
     await this.areaDropdown.clickWhenReady();
     await this.areaDropdown.select(areaTitle);
-    await this.areaDropdownCloseButton.clickWhenReady();
     await this.loadingAnimation.untilCount(0);
   }
 
@@ -166,7 +175,6 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await browser.sleep(2000);
     await this.iterationDropdown.clickWhenReady();
     await this.iterationDropdown.select(iterationTitle);
-    await this.iterationDropdownCloseButton.clickWhenReady();
   }
 
   async typeaHeadSearch(iterationTitle: string) {
@@ -206,26 +214,32 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     }
   }
 
-  async addLink(link: string, searchWorkItem: string, workItem: string) {
+  async addLink(linkType: string, searchWorkItem: string, workItem: string) {
     await this.linksDiv.untilTextIsPresent('Links');
+    // Open link section in detail page
     await this.linksToggleButton.clickWhenReady();
-    await this.createLinkButton.untilTextIsPresent('Create Link');
-    await this.createLinkButton.clickWhenReady();
+
+    // Open link type dropdown
     await this.linkTypeDropdown.clickWhenReady();
-    await this.linkTypeDropdown.select(link);
+    await this.linkTypeDropdown.select(linkType);
+
+    // Open search work item dropdown
+    await this.linkSearchDropdown.clickWhenReady();
     await this.searchWorkItem.enterText(searchWorkItem);
     // Needs further investigation, test throws Stale Element without sleep
     await browser.sleep(2000);
     await this.workItemList.untilCount(1);
-    await this.workItemDropdown.select(workItem);
-    await this.linkButton.untilTextIsPresent('Link');
+    await this.linkSearchDropdown.select(workItem);
+
+    // Create link
+    await this.linkButton.untilTextIsPresent('Create Link');
     await this.linkButton.clickWhenReady();
     // Needs further investigation, test throws Stale Element without sleep
     await browser.sleep(2000);
   }
 
   async removeLink(workItem: string) {
-    await new ui.BaseElement(this.element(by.xpath("//li[contains(@class,'f8-link__list-item')][.//span[text()='" + workItem + "']]")).$('.pficon-close')).clickWhenReady();
+    await new ui.BaseElement(this.element(by.xpath("//li[contains(@class,'f8-link__list-item')][.//span[contains(text(), '" + workItem + "')]]")).$('.pficon-close')).clickWhenReady();
   }
 
   async createNewLabel(label: string, isPressEnter: boolean = false) {
@@ -371,7 +385,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await browser.sleep(2000);
     await this.stateDropdown.clickWhenReady();
     await this.stateDropdown.select(state);
-    await this.stateDropdownCloseButton.clickWhenReady();
+    await this.loadingAnimation.untilCount(0);
   }
 
   async changeTypeTo(type: string) {
@@ -379,7 +393,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await browser.sleep(2000);
     await this.typeDropdown.clickWhenReady();
     await this.typeDropdown.select(type);
-    await this.typeDropdownCloseButton.clickWhenReady();
+    await this.loadingAnimation.untilCount(0);
   }
 
   /* Agile Template */
