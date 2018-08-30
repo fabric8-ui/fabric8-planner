@@ -109,12 +109,7 @@ export class GroupTypeMapper implements Mapper<GroupTypeService, GroupTypeUI> {
     }, {
       fromPath: ['attributes', 'description'],
       toPath: ['description'],
-      toFunction: function(value) {
-        if (value === null) {
-          return 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
-        }
-        return value;
-      }
+      toFunction: (value) => value || 'no info-tip'
     }];
 
   uiToServiceMapTree: MapTree = [{

@@ -29,7 +29,7 @@ describe('WorkItemTypeMapper', () => {
             }
           }
         },
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        description: 'no info-tip',
         dynamicfields: [],
         type: 'workitemtypes'
     } as WorkItemTypeUI;
