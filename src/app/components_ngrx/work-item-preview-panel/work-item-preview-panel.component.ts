@@ -11,9 +11,12 @@ import {
   HostListener,
   Input,
   OnInit,
-  Output
+  Output,
+  ViewChild
 } from '@angular/core';
 import { WorkItemUI } from './../../models/work-item';
+
+import { WorkItemDetailComponent } from '../work-item-detail/work-item-detail.component';
 
 @Component({
   selector: 'work-item-preview-panel',
@@ -41,6 +44,8 @@ export class WorkItemPreviewPanelComponent implements OnInit {
 
   @Output('onOpen') readonly onOpen: EventEmitter<any> = new EventEmitter();
   @Output('onClose') readonly onClose: EventEmitter<any> = new EventEmitter();
+
+  @ViewChild('quickPreview') quickPreview: WorkItemDetailComponent;
 
   private panelState: 'in' | 'out' = 'out';
   private workItem: WorkItemUI = null;

@@ -15,6 +15,7 @@ import { Store } from '@ngrx/store';
 import { SpaceQuery } from '../../models/space';
 import * as GroupTypeActions from './../../actions/group-type.actions';
 import { AppState } from './../../states/app.state';
+import { WorkItemPreviewPanelComponent } from './../work-item-preview-panel/work-item-preview-panel.component';
 
 @Component({
   selector: 'group-types',
@@ -25,6 +26,8 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
 
   @Input() sidePanelOpen: boolean = true;
   @Input() context: 'list' | 'board'; // 'list' or 'board'
+  @Input() quickPreview: WorkItemPreviewPanelComponent;
+  @Input() isQuickPreviewOpen: boolean;
 
   authUser: any = null;
   infotipSource = this.store
@@ -175,6 +178,9 @@ export class GroupTypesComponent implements OnInit, OnDestroy {
 
   //This function navigates to the desired work item group type page
   groupTypeClickHandler(e: MouseEvent, item: GroupTypeUI) {
+    if (this.isQuickPreviewOpen = true) {
+      this.quickPreview.quickPreview.closeDetail();
+    }
     if (!e.srcElement.classList.contains('infotip-icon')) {
       let q = this.addRemoveQueryParams(item);
       this.router.navigate([], {

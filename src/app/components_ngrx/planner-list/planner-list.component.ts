@@ -89,6 +89,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   private toolbarHt: number = 0;
   private quickaddHt: number = 0;
   private showCompleted: boolean = false;
+  private isQuickPreviewOpen: boolean = false;
 
   @ViewChild('plannerLayout') plannerLayout: PlannerLayoutComponent;
   @ViewChild('toolbar') toolbar: ElementRef;
