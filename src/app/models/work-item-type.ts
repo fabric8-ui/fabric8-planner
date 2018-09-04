@@ -1,19 +1,14 @@
 import { Injectable } from '@angular/core';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 
-// Dictionary is needed even if it's not being used in this file
-// Else you get this error
-// Exported variable 'workItemEntities' has or is using name 'Dictionary'
-// from external module "@ngrx/entity/src/models" but cannot be named.
-import { Dictionary } from '@ngrx/entity/src/models';
-
 // MemoizedSelector is needed even if it's not being used in this file
 // Else you get this error
 // Exported variable 'workItemSelector' has or is using name 'MemoizedSelector'
 // from external module "@ngrx/store/src/selector" but cannot be named.
-import { createSelector, MemoizedSelector, Store } from '@ngrx/store';
+import { createSelector, MemoizedSelector, select, Store } from '@ngrx/store';
 import { Space } from 'ngx-fabric8-wit';
 import { Observable } from 'rxjs';
+import { filter, map, startWith } from 'rxjs/operators';
 import { AppState } from '../states/app.state';
 import {
   Mapper,
@@ -210,14 +205,16 @@ export interface WorkItemTypeStateModel extends EntityState<WorkItemTypeUI> {}
 
 const workItemTypeAdapter = createEntityAdapter<WorkItemTypeUI>();
 
-export const { selectIds, selectEntities, selectAll, selectTotal } = workItemTypeAdapter.getSelectors();
+// Do not export it
+const { selectIds, selectEntities, selectAll, selectTotal } = workItemTypeAdapter.getSelectors();
 
 export const workItemTypeSelector = createSelector(
   plannerSelector,
   state => state ? state.workItemTypes : {ids: [], entities: {}}
 );
 
-export const getWorkItemTypeEntitiesSelector = createSelector(
+// Do not export it
+const getWorkItemTypeEntitiesSelector = createSelector(
   workItemTypeSelector,
   selectEntities
 );
@@ -244,28 +241,31 @@ export class WorkItemTypeQuery {
       });
     }
   );
-
-  workItemTypeSource = this.store.select(this.getAllWorkItemTypesSelector);
-  workItemTypeEntities = this.store.select(getWorkItemTypeEntitiesSelector);
+  // It always should be private
+  private workItemTypeEntities = this.store.pipe(select(getWorkItemTypeEntitiesSelector));
+  workItemTypeSource = this.store.pipe(select(this.getAllWorkItemTypesSelector));
 
   /**
    * return observable of all workItemTypes
    * without their child types
    */
   getWorkItemTypes(): Observable<WorkItemTypeUI[]> {
-    return this.workItemTypeSource.filter(w => !!w.length);
+    return this.workItemTypeSource.pipe(filter(w => !!w.length));
   }
 
   getWorkItemTypesWithChildren(): Observable<WorkItemTypeUI[]> {
-    return this.store.select(this.getWorkItemTypesWithChildrenSelector)
-      .filter(t => !!t.length);
+    return this.store.pipe(
+      select(this.getWorkItemTypesWithChildrenSelector),
+      filter(t => !!t.length));
   }
 
   getWorkItemTypeWithChildrenById(id: string): Observable<WorkItemTypeUI> {
-    return this.store.select(this.getWorkItemTypesWithChildrenSelector)
-      .map(types => {
+    return this.store.pipe(
+      select(this.getWorkItemTypesWithChildrenSelector),
+      map(types => {
         return types.filter(type => type.id === id)[0];
-      });
+      })
+    );
   }
 
   getWorkItemTypeById(id: string): Observable<WorkItemTypeUI> {

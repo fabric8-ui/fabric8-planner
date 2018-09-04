@@ -1,22 +1,18 @@
 import { Injectable } from '@angular/core';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 
-// Dictionary is needed even if it's not being used in this file
-// Else you get this error
-// Exported variable 'workItemEntities' has or is using name 'Dictionary'
-// from external module "@ngrx/entity/src/models" but cannot be named.
-import { Dictionary } from '@ngrx/entity/src/models';
-
 // MemoizedSelector is needed even if it's not being used in this file
 // Else you get this error
 // Exported variable 'workItemSelector' has or is using name 'MemoizedSelector'
 // from external module "@ngrx/store/src/selector" but cannot be named.
 import {
   createFeatureSelector, createSelector,
-  MemoizedSelector, Store
+  MemoizedSelector, select, Store
 } from '@ngrx/store';
 import { cloneDeep, orderBy } from 'lodash';
 import { Observable } from 'rxjs';
+import { combineLatest } from 'rxjs/observable/combineLatest';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { AppState, DetailPageState, PlannerState } from './../states/app.state';
 import {
   AreaModel,
@@ -44,7 +40,6 @@ import { Link } from './link';
 import { plannerSelector } from './space';
 import { UserQuery, UserService, UserUI } from './user';
 import {
-  getWorkItemTypeEntitiesSelector,
   WorkItemType,
   WorkItemTypeMapper,
   WorkItemTypeQuery,
@@ -519,7 +514,8 @@ export const workItemSelector = createSelector(
   // state => state.workItems
   state => state ? state.workItems : {entities: {}, ids: []}
 );
-export const workItemEntities = createSelector(
+// should never be exported
+const workItemEntities = createSelector(
   workItemSelector,
   selectEntities
 );
@@ -547,8 +543,9 @@ export class WorkItemQuery {
     private workItemTypeQuery: WorkItemTypeQuery
   ) {}
 
-  private workItemSource = this.store
-    .select(getAllWorkItemSelector);
+  private workItemSource = this.store.pipe(
+    select(getAllWorkItemSelector)
+  );
 
   resolveWorkItem(workItem: WorkItemUI): WorkItemUI {
     return {
@@ -563,16 +560,20 @@ export class WorkItemQuery {
   }
 
   getWorkItems(): Observable<WorkItemUI[]> {
-    return this.workItemSource.map(workItems => {
-      return workItems.map(this.resolveWorkItem.bind(this));
-    });
+    return this.workItemSource.pipe(
+      map(workItems => {
+        return workItems.map(this.resolveWorkItem.bind(this));
+      })
+    );
   }
 
   getWorkItem(number: string | number): Observable<WorkItemUI> {
-    return this.store.select(workItemInDetailSelector)
-      .filter(item => item !== null)
-      .map(this.resolveWorkItem.bind(this))
-      .switchMap(this.setWorkItemsEditable.bind(this));
+    return this.store.pipe(
+      select(workItemInDetailSelector),
+      filter(item => item !== null),
+      map(this.resolveWorkItem.bind(this)),
+      switchMap(this.setWorkItemsEditable.bind(this))
+    );
   }
 
   /**
@@ -583,22 +584,23 @@ export class WorkItemQuery {
    */
   setWorkItemsEditable(workItems: WorkItemUI | WorkItemUI[]): Observable<WorkItemUI | WorkItemUI[]> {
     let items = Array.isArray(workItems) ? workItems : [workItems];
-    return Observable.combineLatest(
+    return combineLatest(
       this.userQuery.getLoggedInUser,
       this.userQuery.getCollaboratorIds
-    )
-    .map(([loggdInuser, collabIDs]): WorkItemUI[] => {
-      return items.map((item: WorkItemUI) => {
-        const allAllowedIds = loggdInuser ? [...collabIDs, item.creator] : [];
-        return {
-          ...item,
-          editable: allAllowedIds.indexOf(loggdInuser.id) > -1
-        };
-      });
-    })
-    .map(items => {
-      return Array.isArray(workItems) ? items : items[0];
-    });
+    ).pipe(
+        map(([loggdInuser, collabIDs]): WorkItemUI[] => {
+        return items.map((item: WorkItemUI) => {
+          const allAllowedIds = loggdInuser ? [...collabIDs, item.creator] : [];
+          return {
+            ...item,
+            editable: allAllowedIds.indexOf(loggdInuser.id) > -1
+          };
+        });
+      }),
+      map(items => {
+        return Array.isArray(workItems) ? items : items[0];
+      })
+    );
   }
 
   /**
@@ -610,19 +612,23 @@ export class WorkItemQuery {
    */
   getIterationsForWorkItem(number: string | number): Observable<CommonSelectorUI[]> {
     return this.getWorkItem(number)
-      .filter(w => !!w)
-      .switchMap(workitem => {
-        return this.iterationQuery.getIterations().map(iterations => {
-          return orderBy(iterations, 'name', 'asc').map(i => {
-            return {
-              key: i.id,
-              value: (i.resolvedParentPath != '/' ? i.resolvedParentPath : '') + '/' + i.name,
-              selected: i.id === workitem.iterationId,
-              cssLabelClass: undefined
-            };
-          });
-        });
-      });
+      .pipe(
+        filter(w => !!w),
+        switchMap(workitem => {
+          return this.iterationQuery.getIterations().pipe(
+            map(iterations => {
+              return orderBy(iterations, 'name', 'asc').map(i => {
+                return {
+                  key: i.id,
+                  value: (i.resolvedParentPath != '/' ? i.resolvedParentPath : '') + '/' + i.name,
+                  selected: i.id === workitem.iterationId,
+                  cssLabelClass: undefined
+                };
+              });
+            })
+          );
+        })
+      );
   }
 
   /**
@@ -634,20 +640,23 @@ export class WorkItemQuery {
    */
   getAreasForWorkItem(number: string | number): Observable<CommonSelectorUI[]> {
     return this.getWorkItem(number)
-      .filter(w => !!w)
-      .switchMap(workItem => {
-        return this.areaQuery.getAreas()
-          .map(areas => {
-            return areas.map(area => {
-              return {
-                key: area.id,
-                value: (area.parentPathResolved != '/' ? area.parentPathResolved : '') + '/' + area.name,
-                selected: area.id === workItem.areaId,
-                cssLabelClass: undefined
-              };
-            });
-          });
-      });
+      .pipe(
+        filter(w => !!w),
+        switchMap(workItem => {
+          return this.areaQuery.getAreas().pipe(
+            map(areas => {
+              return areas.map(area => {
+                return {
+                  key: area.id,
+                  value: (area.parentPathResolved != '/' ? area.parentPathResolved : '') + '/' + area.name,
+                  selected: area.id === workItem.areaId,
+                  cssLabelClass: undefined
+                };
+              });
+            })
+          );
+        })
+      );
   }
 
   /**
@@ -659,11 +668,11 @@ export class WorkItemQuery {
    */
 
   getTypesForWorkItem(number: string | number): Observable<CommonSelectorUI[]> {
-    return this.getWorkItem(number)
-      .filter(w => !!w)
-      .switchMap(workItem => {
-        return this.workItemTypeQuery.getWorkItemTypes()
-          .map(types => {
+    return this.getWorkItem(number).pipe(
+      filter(w => !!w),
+      switchMap(workItem => {
+        return this.workItemTypeQuery.getWorkItemTypes().pipe(
+          map(types => {
             return types.map(t => {
               return {
                 key: t.id,
@@ -672,8 +681,10 @@ export class WorkItemQuery {
                 icon: t.icon ? t.icon : ''
               };
             });
-          });
-        });
+          })
+        );
+      })
+    );
   }
 
   /**
@@ -685,12 +696,12 @@ export class WorkItemQuery {
    */
 
   getStatesForWorkItem(number: string | number): Observable<CommonSelectorUI[]> {
-    return this.getWorkItem(number)
-      .filter(w => !!w)
-      .switchMap(workItem => {
-        return this.workItemTypeQuery.getWorkItemTypes()
-          .map(types => types.find(type => type.id === workItem.type))
-          .map(type => {
+    return this.getWorkItem(number).pipe(
+      filter(w => !!w),
+      switchMap(workItem => {
+        return this.workItemTypeQuery.getWorkItemTypes().pipe(
+          map(types => types.find(type => type.id === workItem.type)),
+          map(type => {
             if (!!!type) {
               return [];
             }
@@ -701,12 +712,14 @@ export class WorkItemQuery {
                 selected: s === workItem.state
               };
             });
-          });
-        });
+          })
+        );
+      })
+    );
   }
 
   get getWorkItemEntities(): Observable<{[id: string]: WorkItemUI}> {
-    return this.store.select(workItemEntities);
+    return this.store.pipe(select(workItemEntities));
   }
 
   getWorkItemsByIds(ids: string[]): Observable<WorkItemUI[]> {
@@ -720,8 +733,10 @@ export class WorkItemQuery {
           .sort((a, b) => b.order - a.order) : [];
       }
     );
-    return this.store.select(selector)
-      .switchMap(this.setWorkItemsEditable.bind(this));
+    return this.store.pipe(
+      select(selector),
+      switchMap(this.setWorkItemsEditable.bind(this))
+    );
   }
 
   getWorkItemWithId(id: string): Observable<WorkItemUI> {
@@ -729,6 +744,6 @@ export class WorkItemQuery {
       workItemEntities,
       state => this.resolveWorkItem(state[id])
     );
-    return this.store.select(selector);
+    return this.store.pipe(select(selector));
   }
 }

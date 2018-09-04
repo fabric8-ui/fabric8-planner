@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { cloneDeep } from 'lodash';
 import { User, UserService } from 'ngx-login-client';
 import { Observable } from 'rxjs/Observable';
+import { filter, map, switchMap } from 'rxjs/operators';
 
 import {
   Add as AddCommentAction,
@@ -149,9 +150,10 @@ export class CommentMapper implements Mapper<CommentService, CommentUI> {
 
 @Injectable()
 export class CommentQuery {
-  private commentSource = this.store
-    .select(state => state.detailPage)
-    .select(state => state.comments);
+  private commentSource = this.store.pipe(
+    select(state => state.detailPage),
+    select(state => state.comments)
+  );
   constructor(
     private store: Store<AppState>,
     private userQuery: UserQuery,
@@ -164,37 +166,41 @@ export class CommentQuery {
 
   getCommentsWithCreators(): Observable<CommentUI[]> {
     return this.commentSource
-      .map(comments => {
-        return comments.map(comment => {
-          return {
-            ...comment,
-            creator: this.userQuery.getUserObservableById(comment.creatorId)
-          };
-        });
-      })
-      .switchMap(comments => {
-        return this.userService.loggedInUser
-          .map(user => user ? user : {id: '0'})
-          .map(user => {
-            return comments.map(c => {
-              return {...c, allowEdit: c.creatorId === user.id};
-            });
+      .pipe(
+        map(comments => {
+          return comments.map(comment => {
+            return {
+              ...comment,
+              creator: this.userQuery.getUserObservableById(comment.creatorId)
+            };
           });
-      });
+        }),
+        switchMap(comments => {
+          return this.userService.loggedInUser
+            .map(user => user ? user : {id: '0'})
+            .map(user => {
+              return comments.map(c => {
+                return {...c, allowEdit: c.creatorId === user.id};
+              });
+            });
+        })
+      );
   }
 
   getCommentsWithChildren(): Observable<CommentUI[]> {
     return this.getCommentsWithCreators()
-      .map(comments => {
-        return comments.map(comment => {
-          return {
-            ...comment,
-            children: comments.filter(c => c.parentId === comment.id)
-          } as CommentUI;
+      .pipe(
+        map(comments => {
+          return comments.map(comment => {
+            return {
+              ...comment,
+              children: comments.filter(c => c.parentId === comment.id)
+            } as CommentUI;
+          })
+          // keep only the root comments
+          .filter(comment => !comment.parentId);
         })
-        // keep only the root comments
-        .filter(comment => !comment.parentId);
-      });
+      );
   }
 
   createComment(url: string, comment: CommentUI): void {
