@@ -69,6 +69,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.updateTitle('');
     expect(await planner.quickPreview.getTitleError()).toBe('Empty title not allowed');
+    await planner.quickPreview.titleCancelButton.clickWhenReady();
   });
 
   //creator is no more a field in the quick-preview/detail-page as per the new design
