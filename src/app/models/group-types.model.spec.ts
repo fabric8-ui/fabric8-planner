@@ -34,7 +34,7 @@ describe('Unit Test :: Group type model', () => {
         }
       },
       type: 'grouptype'
-    };
+    } as GroupTypeService;
     const output: GroupTypeUI = gtm.toUIModel(input);
     const expectedOutput: GroupTypeUI = {
       id: 'gt_01',
@@ -46,7 +46,7 @@ describe('Unit Test :: Group type model', () => {
       group: 'portfolio',
       selected: false,
       showInSideBar: true,
-      infotip: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      description: 'no info-tip',
       typeList: [{
         id: 'b9a71831-c803-4f66-8774-4193fffd1311',
         workitemtype: 'type-1'
