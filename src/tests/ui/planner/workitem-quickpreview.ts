@@ -386,6 +386,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     await this.stateDropdown.clickWhenReady();
     await this.stateDropdown.select(state);
     await this.loadingAnimation.untilCount(0);
+    await this.stateDropdown.untilTextIsPresent(state);
   }
 
   async changeTypeTo(type: string) {
