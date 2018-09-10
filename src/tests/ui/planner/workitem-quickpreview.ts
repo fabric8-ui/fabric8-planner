@@ -234,8 +234,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
     // Create link
     await this.linkButton.untilTextIsPresent('Create Link');
     await this.linkButton.clickWhenReady();
-    // Needs further investigation, test throws Stale Element without sleep
-    await browser.sleep(2000);
+    await this.linklistItem.untilTextIsPresent(workItem);
   }
 
   async removeLink(workItem: string) {
