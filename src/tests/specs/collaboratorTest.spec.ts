@@ -30,7 +30,7 @@ describe('Planner Collaborator Tests:', () => {
   });
 
   beforeEach(async () => {
-    await planner.workItemList.ready();
+    await planner.ready();
     await planner.workItemList.overlay.untilHidden();
   });
 
