@@ -44,13 +44,13 @@
   <div class="f8-quickadd__wiblk-btn pull-right">
     <button class="btn btn-primary f8-quickadd__wiblk-btn-add margin-right-5"
       id="quickadd-save"
-      [disabled]="blockAdd"
+      [disabled]="blockAdd || addDisabled"
       [ngClass]="{'': validTitle,'disabled':!validTitle}"
       (click)="save($event)">
       Add
     </button>
     <button class="btn btn-primary f8-quickadd__wiblk-btn-add"
-      [disabled]="blockAdd"
+      [disabled]="blockAdd || addDisabled"
       [ngClass]="{'': validTitle,'disabled':!validTitle}"
       (click)="save($event, true)">
       Add and Open
