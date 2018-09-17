@@ -204,6 +204,7 @@ describe('Planner Smoke Tests:', () => {
   it('Add new work-item to the selected iteration', async () => {
     await planner.workItemList.overlay.untilHidden();
     await planner.sidePanel.clickIteration('Iteration_1');
+    
     await planner.workItemList.overlay.untilHidden();
     await planner.quickAdd.addWorkItem({title : 'Add new work item to iteration test'});
     expect(await planner.workItemList.hasWorkItem('Add new work item to iteration test')).toBeTruthy();
