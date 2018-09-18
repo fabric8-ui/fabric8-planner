@@ -3,7 +3,7 @@ import * as ui from '../../ui';
 import { WorkItem } from './index';
 
 export class WorkItemQuickAdd extends ui.BaseElement {
-  titleTextInput = new ui.TextInput(this.$('.f8-planner-quickadd__input'), 'Work item Title');
+  titleTextInput = new ui.TextInput(this.$('.f8-planner-quickadd__input'), 'Work item Title - Quickadd');
   buttonsDiv = this.$('.f8-planner-quickadd__btn');
   addButton = new ui.Button(this.buttonsDiv.$$('.f8-planner-quickadd__btn-add').first(), 'Add Button');
   addAndOpenButton = new ui.Button(this.buttonsDiv.$$('.f8-planner-quickadd__btn-add').last(), 'Add and Open Button');

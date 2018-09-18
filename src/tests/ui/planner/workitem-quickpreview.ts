@@ -95,7 +95,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   creatorAvatar = new ui.BaseElement(this.$('#WI_details_reporter_img>img'), 'Creator Avatar URL');
   /* UI elements for the bottom section of the workitem preview */
   linksDiv = new ui.BaseElement($('#wi-link'), 'WorkItem links div');
-  linksToggleButton = new ui.Clickable(this.linksDiv.$('.f8-planner-comment--toggle'), 'WorkItem Links toggle button');
+  linksToggleButton = new ui.Clickable(this.linksDiv.$('.f8-planner-link--toggle'), 'WorkItem Links toggle button');
   linkTypeDiv = new ui.BaseElement(this.$('#wi-link-type'), 'Link type List Div');
   linkTypeDropdown = new ui.Dropdown(
     this.linkTypeDiv.$('f8-select-dropdown .dropdown-toggle'),

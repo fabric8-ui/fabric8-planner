@@ -4,7 +4,7 @@ import { BaseElementArray } from './../base.element';
 import { WorkItem } from './index';
 
 export class WorkItemInlineQuickAdd extends ui.BaseElement {
-  titleTextInlineInput = new ui.TextInput(this.$('f8-planner-quickadd__input'), 'Work item inline Title');
+  titleTextInlineInput = new ui.TextInput(this.$('.f8-planner-quickadd__input'), 'Work item inline Title');
   buttonsDiv = this.$('.f8-planner-quickadd__btn');
   addInlineQuickAddButton = new ui.Button(this.buttonsDiv.$('#quickadd-save'), 'Add Inline Quick Add Button');
   workItemTypeDropdown = new ui.Dropdown(
