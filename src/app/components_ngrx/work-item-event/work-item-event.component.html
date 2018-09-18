@@ -23,7 +23,7 @@
         <i> '{{ event.newValue }}'</i>
       </span>
 
-      <!--Area, Iteration, Assignee, WorkitemType -->
+      <!--Area, Iteration, Assignee -->
       <span class="margin-h-5" style="display: contents;"
         *ngIf="textType === 'relationship' || textType === 'assignee'" >
         <span [innerHTML]=intermediateText></span>
@@ -39,6 +39,16 @@
             <i class="margin-h-3"> '{{ it.name }}'</i>
           </ng-container>
         </ng-container>
+      </span>
+
+      <!-- WorkitemType -->
+      <span class="margin-h-5" style="display: contents;" *ngIf="textType === 'typeChange'">
+        <span [innerHTML]=intermediateText></span>
+        <i  class="margin-h-3"
+        *ngFor="let item of event.oldValueRelationshipsObs"> '{{ (item | async)?.name }}'</i>
+        <ng-container *ngIf="toText">{{ toText }} </ng-container>
+        <i class="margin-h-3"
+          *ngFor="let item of event.newValueRelationshipsObs"> '{{ (item | async)?.name }}' </i>
       </span>
 
       <!--Labels-->

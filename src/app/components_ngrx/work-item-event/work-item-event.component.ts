@@ -111,6 +111,6 @@ export class WorkItemEventComponent implements OnInit {
 
   workitemtypes() {
     this.intermediateText = 'changed the workitem type from';
-    this.textType = 'relationship';
+    this.textType = 'typeChange';
   }
 }
