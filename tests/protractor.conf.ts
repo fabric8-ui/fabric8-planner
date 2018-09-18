@@ -34,6 +34,7 @@ let conf: Config = {
   useAllAngular2AppRoots: true,
   getPageTimeout: 3 * 60 * 1000, // must load within 3 min
   seleniumAddress: 'http://localhost:4444/wd/hub',
+  verboseMultiSessions: true,
 
   // Ref: https://github.com/angular/protractor/tree/master/exampleTypescript/asyncAwait
   SELENIUM_PROMISE_MANAGER: false,
