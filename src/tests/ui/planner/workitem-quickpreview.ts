@@ -86,7 +86,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   descriptionEditIcon = new ui.Clickable(this.descriptionDiv.$('i'), 'WorkItem Description Edit icon');
   descriptionTextarea = new ui.TextInput(this.descriptionDiv.$('.editor-box'), 'WorkItem Description Input');
   descriptionSaveButton =  new ui.Button(
-    this.descriptionDiv.$('.f8-planner__action-button.btn-save'),
+    this.descriptionDiv.$('.f8-planner__action-button .fa-check'),
     'WorkItem Description Save Button');
   descriptionCancelButton =  new ui.Button(
     this.descriptionDiv.$$('.f8-planner__action-button.btn').first(),
@@ -124,7 +124,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   commentDiv = new ui.BaseElement(this.$('.f8-planner-comment__input'), 'comments div field');
   commentsField = new ui.Clickable(this.commentDiv.$('.editor-box.editor-preview.placeholder'), 'comments clickable field');
   commentsInputField = new ui.TextInput(this.commentDiv.$('.editor-box.editor-markdown'), 'comment input field');
-  commentSaveButton = new ui.Button(this.commentDiv.$('.f8-planner-inlineinput__btn-save'), 'Comment save button');
+  commentSaveButton = new ui.Button(this.commentDiv.$('.btn-save'), 'Comment save button');
   commentCancelButton = new ui.Button(this.commentDiv.$('.fl.btn.btn-default.pull-right.f8-planner__action-button'), 'Comment cancel button');
   commentsText = new ui.BaseElementArray(this.$$('.f8-planner-comment__body .comment .editor-box.editor-preview'), 'Comment List');
   commentsCount = new ui.BaseElement(this.$('#total_comments'), 'comment count');
@@ -136,7 +136,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   storyPoints = new ui.TextInput(this.$('textarea[placeholder="Storypoints"]'), ' Storypoints textarea');
   dynamicFieldDiv = new ui.BaseElement(this.element(by.xpath("//textarea[@placeholder='Storypoints']/ancestor::f8-planner-inlineinput")));
   dynamicFieldSaveButton =  new ui.Button(
-    this.dynamicFieldDiv.$('.f8-planner-inlineinput__btn-save'),
+    this.dynamicFieldDiv.$('.f8-planner__action-button .fa-check'),
     'Dynamic Fields Save Button');
 
   constructor(ele: ElementFinder, name: string = '') {
