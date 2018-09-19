@@ -103,22 +103,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
           } else {
           this.ifOpenshift_io = false;
           }
-        }
-      ),
-      this.userQuery.getLoggedInUser.subscribe(currentUser => this.currentUserID = currentUser.id),
-      this.userQuery.getCollaboratorIds.subscribe(collaboratorIDs => {
-        if (this.currentUserID) {
-          if (collaboratorIDs.indexOf(this.currentUserID) >= 0) {
-            this.addDisabled = false;
-          } else {
-            if (this.ifOpenshift_io) {
-              this.addDisabled = false;
-            } else {
-              this.addDisabled = true;
-            }
-          }
-        }
-      })
+        }),
+      this.userQuery.checkIfCollaborator(this.ifOpenshift_io).subscribe(val => this.addDisabled = val)
     );
   }
 
