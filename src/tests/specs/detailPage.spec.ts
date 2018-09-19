@@ -37,7 +37,7 @@ describe('Detail View test: ', () => {
     expect(await planner.detailPage.getLabels()).toContain(label);
   });
 
-  it('should update title and description', async () => {
+  xit('should update title and description', async () => {
     let workitemname = {'title': 'detail page title test'},
      updatedWorkItem = {
       title: 'detail page title updated',
@@ -81,7 +81,7 @@ describe('Detail View test: ', () => {
     expect(await planner.detailPage.getComments()).toContain(comment);
   });
 
-  it('should link a workitem', async () => {
+  xit('should link a workitem', async () => {
     let linkType = 'blocks',
       workItemTitle2 = 'Workitem_Title_2';
     await planner.workItemList.openDetailPage(workItemTitle2);
@@ -92,7 +92,7 @@ describe('Detail View test: ', () => {
     expect(await planner.detailPage.getLinkedItems()).toContain(testData.Workitem_Title_3);
   });
 
-  it('should remove link from workitem', async () => {
+  xit('should remove link from workitem', async () => {
     let workItemName1 = {'title': 'Remove_link_from_workitem_test'},
       linkType = 'blocks';
     await planner.createWorkItem(workItemName1);
@@ -106,7 +106,7 @@ describe('Detail View test: ', () => {
     expect(await planner.detailPage.linkCount.getTextWhenReady()).toBe('0');
   });
 
-  it('should change the state of workitem', async () => {
+  xit('should change the state of workitem', async () => {
     let workitemname = {'title': 'change state test'};
     await planner.createWorkItem(workitemname);
     await planner.workItemList.openDetailPage(workitemname.title);

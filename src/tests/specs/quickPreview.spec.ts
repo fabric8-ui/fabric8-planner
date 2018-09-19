@@ -53,7 +53,7 @@ describe('Quick preview tests: ', () => {
     expect(await planner.quickPreview.getLabels()).toContain(newLabel);
   });
 
-  it('should link a workitem', async () => {
+  xit('should link a workitem', async () => {
     let workitemname = {'title': 'link test'},
       linkType = 'blocks';
     await planner.createWorkItem(workitemname);
@@ -63,7 +63,7 @@ describe('Quick preview tests: ', () => {
     expect(await planner.quickPreview.getLinkedItems()).toContain(testData.Workitem_Title_4);
   });
 
-  it('should open quick preview and edit the title', async () => {
+  xit('should open quick preview and edit the title', async () => {
     let title = await planner.createUniqueWorkItem(),
       editWorkItemTitle1 = 'Title Text "<0>"';
     await planner.workItemList.clickWorkItem(title);
@@ -71,7 +71,7 @@ describe('Quick preview tests: ', () => {
     expect(await planner.quickPreview.titleInput.getAttribute('value')).toBe('Title Text "<0>"');
   });
 
-  it('description box should not be open for wis', async () => {
+  xit('description box should not be open for wis', async () => {
     let workitemname = {'title': 'quickpreview test'},
       workItemTitle2 = 'Workitem_Title_2';
     await planner.createWorkItem(workitemname);

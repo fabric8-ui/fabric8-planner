@@ -45,7 +45,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.close();
   });
 
-  it('update workitem title/description', async () => {
+  xit('update workitem title/description', async () => {
     let newWorkItem2 = { 'title': 'Workitem Title 1'},
       updatedWorkItem = {
         title: 'New Workitem Title',
@@ -64,7 +64,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.workItemList.hasWorkItem(updatedWorkItem.title)).toBeTruthy();
   });
 
-  it('update of empty workitem title is not allowed', async () => {
+  xit('update of empty workitem title is not allowed', async () => {
     let title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.updateTitle('');
@@ -108,7 +108,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.close();
   });
 
-  it('Associate/Re-associate workitem with an Iteration', async () => {
+  xit('Associate/Re-associate workitem with an Iteration', async () => {
     //add new iteration
     let title = await planner.createUniqueWorkItem(),
       randomText = 'zxz';
@@ -142,7 +142,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.quickPreview.getComments()).toContain(comment);
   });
 
-  it('Edit Comment and Cancel', async () => {
+  xit('Edit Comment and Cancel', async () => {
     let comment = 'new comment',
       title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(title);
@@ -161,7 +161,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.sidePanel.getMyFiltersList()).toContain('Query 1');
   });
 
-  it('Delete custom query', async () => {
+  xit('Delete custom query', async () => {
     await planner.sidePanel.clickWorkItemGroup(testData.group3);
     await planner.workItemList.overlay.untilHidden();
     await planner.header.selectFilter('State', testData.stateResolved);
@@ -177,7 +177,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.sidePanel.getMyFiltersList()).not.toContain('My filter');
   });
 
-  it('Update work item with a label and validate description', async () => {
+  xit('Update work item with a label and validate description', async () => {
     let title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.updateDescription('My new description');
