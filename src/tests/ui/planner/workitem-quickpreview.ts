@@ -86,10 +86,10 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   descriptionEditIcon = new ui.Clickable(this.descriptionDiv.$('i'), 'WorkItem Description Edit icon');
   descriptionTextarea = new ui.TextInput(this.descriptionDiv.$('.editor-box'), 'WorkItem Description Input');
   descriptionSaveButton =  new ui.Button(
-    this.descriptionDiv.$('.f8-planner__action-button .fa-check'),
+    this.descriptionDiv.$('.action-button.btn-save'),
     'WorkItem Description Save Button');
   descriptionCancelButton =  new ui.Button(
-    this.descriptionDiv.$$('.f8-planner__action-button.btn').first(),
+    this.descriptionDiv.$$('.action-button').first(),
     'WorkItem Description Save Button');
   creatorusername = new ui.BaseElement(this.$('#WI_details_reporter_user'), 'WorkItem creator div');
   creatorAvatar = new ui.BaseElement(this.$('#WI_details_reporter_img>img'), 'Creator Avatar URL');

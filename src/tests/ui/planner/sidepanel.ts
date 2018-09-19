@@ -105,7 +105,7 @@ export class SidePanel extends ui.BaseElement {
   }
 
   async clickIteration(iterationName: string) {
-    let iteration = new ui.BaseElement(this.element(by.xpath("//iteration-list-entry[.//span[text()='" + iterationName + "']]")));
+    let iteration = new ui.BaseElement(this.element(by.xpath("//iteration-list-entry[.//span[contains(text(),'" + iterationName + "')]]")));
     await iteration.clickWhenReady();
   }
 }
