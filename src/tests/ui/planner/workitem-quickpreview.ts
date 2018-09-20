@@ -17,14 +17,14 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   stateDiv = new ui.BaseElement(this.$('.state-dropdown'), 'State dropdown toggle');
   stateDropdown = new ui.Dropdown(
     this.stateDiv.$('f8-select-dropdown .dropdown-toggle'),
-    this.stateDiv.$('.f8-select-dropdown__menu-dynamic-item'),
+    this.stateDiv.$('.f8-select-dropdown__menu-item'),
     'State select dropdown',
     'li>div>.item-value'
   );
   typeDiv = new ui.BaseElement(this.$('.type-dropdown'), 'Type dropdown toggle');
   typeDropdown = new ui.Dropdown(
     this.typeDiv.$('f8-select-dropdown .dropdown-toggle'),
-    this.typeDiv.$('.f8-select-dropdown__menu-dynamic-item'),
+    this.typeDiv.$('.f8-select-dropdown__menu-item'),
     'Type select dropdown',
     'li>div>.item-value'
   );
@@ -86,10 +86,10 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   descriptionEditIcon = new ui.Clickable(this.descriptionDiv.$('i'), 'WorkItem Description Edit icon');
   descriptionTextarea = new ui.TextInput(this.descriptionDiv.$('.editor-box'), 'WorkItem Description Input');
   descriptionSaveButton =  new ui.Button(
-    this.descriptionDiv.$('.action-button.btn-save'),
+    this.descriptionDiv.$('.action-btn.btn-save'),
     'WorkItem Description Save Button');
   descriptionCancelButton =  new ui.Button(
-    this.descriptionDiv.$$('.action-button').first(),
+    this.descriptionDiv.$$('.action-btn.btn').first(),
     'WorkItem Description Save Button');
   creatorusername = new ui.BaseElement(this.$('#WI_details_reporter_user'), 'WorkItem creator div');
   creatorAvatar = new ui.BaseElement(this.$('#WI_details_reporter_img>img'), 'Creator Avatar URL');
