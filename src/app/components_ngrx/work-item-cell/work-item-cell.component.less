@@ -6,16 +6,21 @@
     margin-right: 3px;
     color: @color-pf-black-800;
   }
-  &-title,
-  &-query-title {
+  &-title {
     display: inline-block;
     width: ~'calc(e("100% - 20px"))';
+    &-wrapper {
+      display: flex;
+      align-items: center;
+    }
   }
   &-query-title {
+    display: inline-block;
     width: ~'calc(e("100% - 50px"))';
   }
   &-detail-icon {
     width: 20px;
+    margin-left: 5px;
     opacity: 0;
     a {
       font-size: 16px;

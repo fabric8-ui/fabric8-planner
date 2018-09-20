@@ -211,8 +211,7 @@
                   [allowDelete]="workItem?.editable"
                   [context]="detailContext">
                 </f8-label>
-                <div class="margin-top-5"
-                  *ngIf="loggedIn">
+                <div *ngIf="loggedIn">
                   <label-selector
                     [allLabels]="labels"
                     [selectedLabels]="workItem?.labelsObs | async"

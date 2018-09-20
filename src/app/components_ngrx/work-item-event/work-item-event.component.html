@@ -15,11 +15,12 @@
     </span>
 
     <!-- Single Value Change -->
-    <span *ngIf="textType === 'attribute'">
-      <span [innerHTML]=intermediateText></span>
-      <i> '{{ event.oldValue }}' </i>
-      {{ toText }}
-      <i> '{{ event.newValue }}'</i>
+    <span class="margin-h-5"
+      *ngIf="textType === 'attribute'">
+        <span [innerHTML]=intermediateText></span>
+        <i> '{{ event.oldValue }}' </i>
+        {{ toText }}
+        <i> '{{ event.newValue }}'</i>
     </span>
 
     <!--Area, Iteration, Assignee -->
@@ -73,7 +74,7 @@
         </f8-label>
       </ng-container>
     </div>
-    <small class="margin-left-5"
+    <small
       [tooltip]="event.timestamp | date:'medium'">
       | {{ event.timestamp | f8Time }}
     </small>
