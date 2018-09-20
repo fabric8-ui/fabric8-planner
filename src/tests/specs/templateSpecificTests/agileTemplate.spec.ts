@@ -55,7 +55,7 @@ describe('Agile template tests: ', () => {
     await plannerAgile.quickPreview.close();
   });
 
-  xit('Dynamic fields should not get closed on outside click', async () => {
+  it('Dynamic fields should not get closed on outside click', async () => {
     let newWorkItem = { title: 'Workitem of type Story', type : 'Story'};
     await plannerAgile.createWorkItem(newWorkItem);
     expect(plannerAgile.workItemList.hasWorkItem(newWorkItem.title)).toBeTruthy();

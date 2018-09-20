@@ -3,7 +3,6 @@ import { PlannerPage } from '../page_objects/planner';
 import * as support from '../support';
 import { SidePanel } from './../ui/planner/sidepanel';
 
-
 describe('Work Item datatable list: ', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
@@ -165,10 +164,10 @@ describe('Work Item datatable list: ', () => {
     expect(await planner.workItemList.isTitleTextBold(workitem.title)).toContain('bold');
   });
 
-  xit('should filter the workitem list by Assignee', async () => {
+  it('should filter the workitem list by Assignee', async () => {
     let labelFilter = 'assignee: Unassigned';
     await planner.workItemList.overlay.untilHidden();
-    let countUnassignedWorkItem = await planner.workItemList.getUnassignedWorkItemCount(' Unassigned ');
+    let countUnassignedWorkItem = await planner.workItemList.getUnassignedWorkItemCount(' Unassigned  ');
     await planner.header.selectFilter('Assignee', 'Unassigned');
     await browser.sleep(1000);
     expect(await planner.header.getFilterConditions()).toContain(labelFilter);

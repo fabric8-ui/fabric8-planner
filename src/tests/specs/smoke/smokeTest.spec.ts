@@ -45,7 +45,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.close();
   });
 
-  xit('update workitem title/description', async () => {
+  it('update workitem title/description', async () => {
     let newWorkItem2 = { 'title': 'Workitem Title 1'},
       updatedWorkItem = {
         title: 'New Workitem Title',
@@ -64,7 +64,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.workItemList.hasWorkItem(updatedWorkItem.title)).toBeTruthy();
   });
 
-  xit('update of empty workitem title is not allowed', async () => {
+  it('update of empty workitem title is not allowed', async () => {
     let title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.updateTitle('');
@@ -73,7 +73,7 @@ describe('Planner Smoke Tests:', () => {
 
   //creator is no more a field in the quick-preview/detail-page as per the new design
   //it might change again so not remmoving the test
-  xit('Check WorkItem creator name and image is reflected', async () => {
+  it('Check WorkItem creator name and image is reflected', async () => {
     let prodAvatar = 'https://avatars0.githubusercontent.com/u/563119?v=3&s=25',
       prodPreviewAvatar = 'https://www.gravatar.com/avatar/d77d23eebe9907842b8ad9f1d9905454.jpg&s=25',
       workItemTitle2 = 'Workitem_Title_2',
@@ -108,7 +108,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.close();
   });
 
-  xit('Associate/Re-associate workitem with an Iteration', async () => {
+  it('Associate/Re-associate workitem with an Iteration', async () => {
     //add new iteration
     let title = await planner.createUniqueWorkItem(),
       randomText = 'zxz';
@@ -142,7 +142,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.quickPreview.getComments()).toContain(comment);
   });
 
-  xit('Edit Comment and Cancel', async () => {
+  it('Edit Comment and Cancel', async () => {
     let comment = 'new comment',
       title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(title);
@@ -161,7 +161,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.sidePanel.getMyFiltersList()).toContain('Query 1');
   });
 
-  xit('Delete custom query', async () => {
+  it('Delete custom query', async () => {
     await planner.sidePanel.clickWorkItemGroup(testData.group3);
     await planner.workItemList.overlay.untilHidden();
     await planner.header.selectFilter('State', testData.stateResolved);
@@ -177,7 +177,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.sidePanel.getMyFiltersList()).not.toContain('My filter');
   });
 
-  xit('Update work item with a label and validate description', async () => {
+  it('Update work item with a label and validate description', async () => {
     let title = await planner.createUniqueWorkItem();
     await planner.workItemList.clickWorkItem(title);
     await planner.quickPreview.updateDescription('My new description');

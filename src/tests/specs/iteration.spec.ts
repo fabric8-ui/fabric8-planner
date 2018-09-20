@@ -38,7 +38,7 @@ describe('Iteration test', () => {
     expect(await planner.sidePanel.getIterationDate()).toContain(`${month} ${lastDayOfMonth}, ${year}`);
   });
 
-  xit('should create a new child iteration', async () => {
+  it('should create a new child iteration', async () => {
     let newIteration = 'new Iteration1';
     let iteration = 'Iteration_2';
     await planner.sidePanel.createNewIteration();
@@ -48,7 +48,7 @@ describe('Iteration test', () => {
     expect(await planner.sidePanel.getIterationList()).toContain(newIteration);
   });
 
-  xit('updating iteration should update workitem associated to iteration', async () => {
+  it('updating iteration should update workitem associated to iteration', async () => {
     let dropdownIteration1 = 'newIteration',
       updateIteration = 'Iteration 01',
       workItemTitle1 = 'Workitem_Title_2';
