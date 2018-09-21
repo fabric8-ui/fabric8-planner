@@ -37,8 +37,8 @@ export class WorkItemEventComponent implements OnInit {
         break;
 
       default:
+        // Do not remove this console. It outputs the unknown events
         console.log('Unknown event', event);
-        break;
     }
   }
 
