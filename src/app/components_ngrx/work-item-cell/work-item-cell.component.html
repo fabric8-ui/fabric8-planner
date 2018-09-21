@@ -42,12 +42,12 @@
 </div>
 <!-- Status -->
 
-<div class="f8-planner-cell__state"
+<div class="f8-planner__cell-state"
   *ngIf="col === 'state'">
   <span class="padding-right-5 padding-top-4"
     almIcon [iconType]="row.state">
   </span>
-  <span class="f8-planner-cell__state-text">
+  <span class="f8-planner__cell-state-text">
     {{ row.state }}
   </span>
 </div>
@@ -75,7 +75,7 @@
   [imgPlacement]="'left'">
 </user-avatar>
 <!-- Assignee -->
-<div class="f8-planner-cell__assignees"
+<div class="f8-planner__cell-assignees"
   *ngIf="col === 'assignees'">
   <f8-assignee
     [showFullName]="false"
