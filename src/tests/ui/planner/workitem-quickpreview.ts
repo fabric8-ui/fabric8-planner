@@ -24,7 +24,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   typeDiv = new ui.BaseElement(this.$('.type-dropdown'), 'Type dropdown toggle');
   typeDropdown = new ui.Dropdown(
     this.typeDiv.$('f8-select-dropdown .dropdown-toggle'),
-    this.typeDiv.$('.f8-select-dropdown__menu-item'),
+    this.typeDiv.$('.f8-select-dropdown__menu'),
     'Type select dropdown',
     'li>div>.item-value'
   );
