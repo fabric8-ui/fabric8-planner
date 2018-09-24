@@ -17,7 +17,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   stateDiv = new ui.BaseElement(this.$('.state-dropdown'), 'State dropdown toggle');
   stateDropdown = new ui.Dropdown(
     this.stateDiv.$('f8-select-dropdown .dropdown-toggle'),
-    this.stateDiv.$('.f8-select-dropdown__menu-item'),
+    this.stateDiv.$('.f8-select-dropdown__menu'),
     'State select dropdown',
     'li>div>.item-value'
   );
