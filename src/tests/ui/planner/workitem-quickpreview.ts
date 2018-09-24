@@ -11,17 +11,17 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   /* UI elements of the Top section of the workitem preview */
   closeButton = new ui.Button(this.$('.f8-planner-detail__close'), 'WorkItem Quick Preview close button');
   iterationDropdownCloseButton = new ui.Button(this.$('.f8-iteration-dropdown .close-pointer'), 'Iteration dropdown close button');
-  areaDropdownCloseButton = new ui.Button(this.$('.area-dropdown .close-pointer'), 'Area dropdown close button');
-  typeDropdownCloseButton = new ui.Button(this.$('.type-dropdown .close-pointer'), 'Type dropdown close button');
-  stateDropdownCloseButton = new ui.Button(this.$('.state-dropdown .close-pointer'), 'State dropdown close button');
-  stateDiv = new ui.BaseElement(this.$('.state-dropdown'), 'State dropdown toggle');
+  areaDropdownCloseButton = new ui.Button(this.$('.f8-area-dropdown .close-pointer'), 'Area dropdown close button');
+  typeDropdownCloseButton = new ui.Button(this.$('.f8-type-dropdown .close-pointer'), 'Type dropdown close button');
+  stateDropdownCloseButton = new ui.Button(this.$('.f8-state-dropdown .close-pointer'), 'State dropdown close button');
+  stateDiv = new ui.BaseElement(this.$('.f8-state-dropdown'), 'State dropdown toggle');
   stateDropdown = new ui.Dropdown(
     this.stateDiv.$('f8-select-dropdown .dropdown-toggle'),
     this.stateDiv.$('.f8-select-dropdown__menu'),
     'State select dropdown',
     'li>div>.item-value'
   );
-  typeDiv = new ui.BaseElement(this.$('.type-dropdown'), 'Type dropdown toggle');
+  typeDiv = new ui.BaseElement(this.$('.f8-type-dropdown'), 'Type dropdown toggle');
   typeDropdown = new ui.Dropdown(
     this.typeDiv.$('f8-select-dropdown .dropdown-toggle'),
     this.typeDiv.$('.f8-select-dropdown__menu'),

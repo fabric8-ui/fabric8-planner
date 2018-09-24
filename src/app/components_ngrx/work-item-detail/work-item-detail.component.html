@@ -78,7 +78,7 @@
                 </span>
                 <common-selector
                   *ngIf="!loadingTypes"
-                  class="type-dropdown"
+                  class="f8-type-dropdown"
                   [allowUpdate]="workItem?.editable"
                   [headerText]="'Update Type'"
                   [items]="workItemTypeSource | async"
@@ -103,7 +103,7 @@
                 </span>
                 <common-selector
                   *ngIf="!loadingStates"
-                  class="state-dropdown"
+                  class="f8-state-dropdown"
                   [allowUpdate]="workItem?.editable"
                   [headerText]="'Update State'"
                   [items]="workItemStateSource | async"
