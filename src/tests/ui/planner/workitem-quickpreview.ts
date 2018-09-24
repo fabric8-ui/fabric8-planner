@@ -125,7 +125,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   commentsField = new ui.Clickable(this.commentDiv.$('.editor-box.editor-preview.placeholder'), 'comments clickable field');
   commentsInputField = new ui.TextInput(this.commentDiv.$('.editor-box.editor-markdown'), 'comment input field');
   commentSaveButton = new ui.Button(this.commentDiv.$('.btn-save'), 'Comment save button');
-  commentCancelButton = new ui.Button(this.commentDiv.$('.fl.btn.btn-default.pull-right.f8-planner__action-button'), 'Comment cancel button');
+  commentCancelButton = new ui.Button(this.commentDiv.$('.action-btn.btn-default'), 'Comment cancel button');
   commentsText = new ui.BaseElementArray(this.$$('.f8-planner-comment__body .comment .editor-box.editor-preview'), 'Comment List');
   commentsCount = new ui.BaseElement(this.$('#total_comments'), 'comment count');
 
