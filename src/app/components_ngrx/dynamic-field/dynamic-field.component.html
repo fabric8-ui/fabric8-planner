@@ -53,8 +53,7 @@
         [renderedText]="fieldValue?.value?.rendered"
         (onSaveClick)="markupUpdate($event)"
         (showPreview)="showPreview($event)"
-        (clickOut)="markup.editorInput?.nativeElement.innerText.trim() == markup.rawText ?
-          markup.closeClick() : ''">
+        (onClickOut)="$event ? markup.closeClick() : ''">
       </f8-markdown>
 
       <!-- workitemtype field type: instant (datetime) -->

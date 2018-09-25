@@ -1,5 +1,6 @@
 <div class="inlineinput-container"
-[class.read-only]="disabled">
+[class.read-only]="disabled"
+(clickOut)="input.value == inputValue || input.value == '' ? closeClick() : ''">
   <textarea
     #input
     autosize
@@ -11,8 +12,7 @@
     [ngModel]="inputValue"
     class="input-field inlineinput-textarea"
     (keydown.enter)="submitOnEnter($event)"
-    (keydown)="onkeyDown($event)"
-    (clickOut)="input.value == inputValue ? closeClick() : ''">
+    (keydown)="onkeyDown($event)">
   </textarea>
   <div
     *ngIf="editing"

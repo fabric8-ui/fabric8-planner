@@ -238,8 +238,7 @@
                   [renderedText]="(workItem.descriptionRendered!==null ? workItem.descriptionRendered : workItem.description.rendered) | safe: 'html'"
                   (onSaveClick)="descUpdate($event)"
                   (showPreview)="showPreview($event)"
-                  (clickOut)="descMarkdown.editorInput?.nativeElement.innerText.trim() == descMarkdown.rawText ?
-                    descMarkdown.closeClick() : ''"
+                  (onClickOut)="$event ? descMarkdown.closeClick() : ''"
                   #descMarkdown>
                 </f8-markdown>
               </div>

@@ -36,8 +36,7 @@
         [allowEmptySave]="false"
         (onSaveClick)="createComment($event)"
         (showPreview)="showPreview($event)"
-        (clickOut)="commentMarkdown.editorInput?.nativeElement.innerText.trim() == '' ?
-          commentMarkdown.closeClick() : ''"
+        (onClickOut)="$event ? commentMarkdown.closeClick() : ''"
         #commentMarkdown>
       </f8-markdown>
     </div>
