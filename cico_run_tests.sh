@@ -5,7 +5,7 @@
 #   2. Create snapshot with fabric8-ui's master and fabric8-planner's current changes
 
 # Show command before executing
-set -x
+set +x
 
 # Exit on error
 set -e
