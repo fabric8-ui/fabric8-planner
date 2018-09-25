@@ -136,7 +136,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   storyPoints = new ui.TextInput(this.$('textarea[placeholder="Storypoints"]'), ' Storypoints textarea');
   dynamicFieldDiv = new ui.BaseElement(this.element(by.xpath("//textarea[@placeholder='Storypoints']/ancestor::f8-planner-inlineinput")));
   dynamicFieldSaveButton =  new ui.Button(
-    this.dynamicFieldDiv.$('.f8-planner-inlineinput__btn-save'),
+    this.dynamicFieldDiv.$('.btn-save'),
     'Dynamic Fields Save Button');
 
   constructor(ele: ElementFinder, name: string = '') {
