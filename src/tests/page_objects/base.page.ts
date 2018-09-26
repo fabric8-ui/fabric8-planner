@@ -50,11 +50,7 @@ export abstract class BasePage {
     await support.loginWithTokens();
     this.log('Opening', this.url);
     let currentUrl = await browser.getCurrentUrl();
-    this.debug('at  :', currentUrl);
-
-    this.debug(`goto: '${this.url}'`);
     await browser.get(this.url);
-
     let urlNow = await browser.getCurrentUrl();
     this.debug('now :', urlNow);
   }
