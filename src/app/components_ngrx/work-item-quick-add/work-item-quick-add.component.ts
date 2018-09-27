@@ -53,8 +53,6 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   workItem: WorkItemService;
   validTitle: boolean = false;
   linkObject: object;
-  ifOpenshift_io: boolean;
-  currentUserID: string;
   addDisabled: Observable<boolean> =
     this.permissionQuery.isAllowedToAdd();
 
