@@ -165,26 +165,4 @@ export class UserQuery {
   get getLoggedInUser(): ConnectableObservable<User> {
     return this.userService.loggedInUser;
   }
-
-  //temporary permission check
-  checkIfCollaborator(ifOpenshift_io: boolean) {
-    return this.userService.loggedInUser
-    .pipe(
-      switchMap(currentUser => {
-        return this.getCollaboratorIds.map(collaboratorIDs => {
-          if (currentUser.id) {
-            if (collaboratorIDs.indexOf(currentUser.id) >= 0) {
-              return false;
-            } else {
-              if (ifOpenshift_io) {
-                return false;
-              } else {
-                return true;
-              }
-            }
-          }
-        });
-      })
-    );
-  }
 }

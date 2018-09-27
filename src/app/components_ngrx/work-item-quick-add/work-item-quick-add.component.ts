@@ -20,12 +20,12 @@ import { filter } from 'rxjs/operators';
 import { WorkItem, WorkItemRelations, WorkItemService } from '../../models/work-item';
 import { WorkItemTypeUI } from '../../models/work-item-type';
 import { IterationUI } from './../../models/iteration.model';
-import { SpaceQuery } from './../../models/space';
-import { UserQuery } from './../../models/user';
+import { PermissionQuery } from './../../models/permission.model';
 import { WorkItemQuery } from './../../models/work-item';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import * as WorkItemActions from './../../actions/work-item.actions';
 import { AppState } from './../../states/app.state';
 
@@ -55,7 +55,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   linkObject: object;
   ifOpenshift_io: boolean;
   currentUserID: string;
-  addDisabled: boolean;
+  addDisabled: Observable<boolean> =
+    this.permissionQuery.isAllowedToAdd();
 
   // Board view specific
   initialDescHeight: number = 0;
@@ -72,13 +73,10 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
 
   constructor(
     private logger: Logger,
-    private auth: AuthenticationService,
-    private route: ActivatedRoute,
     private renderer: Renderer2,
     private store: Store<AppState>,
     private workItemQuery: WorkItemQuery,
-    private spaceQuery: SpaceQuery,
-    private userQuery: UserQuery) {}
+    private permissionQuery: PermissionQuery) {}
 
   ngOnInit(): void {
     this.createWorkItemObj();
@@ -93,18 +91,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
         .subscribe(items => {
           // const addedItem = items.find(item => item.createId === this.createId);
           this.resetQuickAdd();
-        }),
-      // This is temporary as the permissions model is not yet ready, currently the
-      // non-collaborator will only be able to add workitems in Openshift_io space
-      this.spaceQuery.getCurrentSpace
-        .subscribe(currentSpace => {
-          if (currentSpace.attributes.name == 'Openshift_io') {
-            this.ifOpenshift_io = true;
-          } else {
-          this.ifOpenshift_io = false;
-          }
-        }),
-      this.userQuery.checkIfCollaborator(this.ifOpenshift_io).subscribe(val => this.addDisabled = val)
+        })
     );
   }
 

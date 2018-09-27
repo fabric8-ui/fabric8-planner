@@ -10,7 +10,7 @@
     <div class="pull-left">
       <div class="dropdown" dropdown>
         <div class="infoArea">
-          <button class="btn btn-default dropdown-toggle padding-h-10" 
+          <button class="btn btn-default dropdown-toggle padding-h-10"
             type="button"
             dropdownToggle>
             <i class="fa dib"
@@ -44,13 +44,13 @@
   <div class="f8-quickadd__wiblk-btn pull-right">
     <button class="btn btn-primary f8-quickadd__wiblk-btn-add margin-right-5"
       id="quickadd-save"
-      [disabled]="blockAdd || addDisabled"
+      [disabled]="blockAdd || (addDisabled | async)"
       [ngClass]="{'': validTitle,'disabled':!validTitle}"
       (click)="save($event)">
       Add
     </button>
     <button class="btn btn-primary f8-quickadd__wiblk-btn-add"
-      [disabled]="blockAdd || addDisabled"
+      [disabled]="blockAdd || (addDisabled | async)"
       [ngClass]="{'': validTitle,'disabled':!validTitle}"
       (click)="save($event, true)">
       Add and Open
