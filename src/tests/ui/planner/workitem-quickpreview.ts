@@ -134,7 +134,7 @@ export class WorkItemQuickPreview extends ui.BaseElement {
   workItemsGroup = new ui.Clickable(this.element(by.cssContainingText('alm-dynamic-field .f8-planner-dynamic-control', ' Work Items ')), 'Side panel WorkItem button');
   businessValue = new ui.TextInput(this.$('textarea[placeholder="Business Value"]'), ' Business value textarea');
   storyPoints = new ui.TextInput(this.$('textarea[placeholder="Storypoints"]'), ' Storypoints textarea');
-  dynamicFieldDiv = new ui.BaseElement(this.element(by.xpath("//textarea[@placeholder='Storypoints']/ancestor::f8-planner-inlineinput")));
+  dynamicFieldDiv = new ui.BaseElement(this.element(by.xpath("//textarea[@placeholder='Storypoints']/ancestor::f8-inlineinput")));
   dynamicFieldSaveButton =  new ui.Button(
     this.dynamicFieldDiv.$('.f8-planner-inlineinput__btn-save'),
     'Dynamic Fields Save Button');
