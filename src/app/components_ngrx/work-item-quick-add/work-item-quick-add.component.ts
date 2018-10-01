@@ -23,7 +23,7 @@ import { IterationUI } from './../../models/iteration.model';
 import { WorkItemQuery } from './../../models/work-item';
 
 // ngrx stuff
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import * as WorkItemActions from './../../actions/work-item.actions';
 import { AppState } from './../../states/app.state';
 
@@ -62,8 +62,10 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   eventListeners: any[] = [];
   blockAdd: boolean = false;
   infotipSource = this.store
-  .select('planner')
-  .select('infotips');
+    .pipe(
+      select('planner'),
+      select('infotips')
+    );
 
   constructor(
     private logger: Logger,
@@ -233,7 +235,9 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
 
   getInfotipText(id: string) {
     return this.infotipSource
-      .select(s => s[id])
-      .select(i => i ? i['en'] : id);
+      .pipe(
+        select(s => s[id]),
+        select(i => i ? i['en'] : id)
+      );
   }
 }
