@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TooltipConfig, TooltipModule } from 'ngx-bootstrap';
+import { TooltipConfig, TooltipModule, PopoverModule, PopoverConfig, BsDropdownModule, BsDropdownConfig } from 'ngx-bootstrap';
 import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { NgxDatatableModule } from 'rh-ngx-datatable';
 import { SpaceQuery } from '../../models/space';
@@ -19,23 +19,28 @@ import { PlannerQueryComponent } from './planner-query.component';
 import { ErrorHandler } from '../../effects/work-item-utils';
 import { WorkItemTypeQuery } from '../../models/work-item-type';
 import { togglesApiUrlProvider } from '../../shared/toggles-api.provider';
+import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 
 @NgModule({
   imports: [
+    BsDropdownModule,
     CommonModule,
     FormsModule,
     FilterColumnModule,
     EmptyStateModule,
     InlineInputModule,
     PlannerQueryRoutingModule,
+    PopoverModule.forRoot(),
     NgxDatatableModule,
     TooltipModule,
     WorkItemCellModule,
-    WorkItemPreviewPanelModule
+    WorkItemPreviewPanelModule,
+    WorkItemQuickAddModule
   ],
   declarations: [PlannerQueryComponent],
   exports: [PlannerQueryComponent],
   providers: [
+    BsDropdownConfig,
     SpaceQuery,
     CookieService,
     WorkItemQuery,
@@ -45,7 +50,8 @@ import { togglesApiUrlProvider } from '../../shared/toggles-api.provider';
     // FeatureTogglesService,
     togglesApiUrlProvider,
     WorkItemTypeQuery,
-    ErrorHandler
+    ErrorHandler,
+    PopoverConfig
   ]
 })
 export class PlannerQueryModule { }

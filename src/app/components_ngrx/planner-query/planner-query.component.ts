@@ -8,7 +8,7 @@ import { combineLatest, Observable } from 'rxjs';
 import { filter, startWith, switchMap, tap } from 'rxjs/operators';
 import { SpaceQuery } from '../../models/space';
 import { WorkItemQuery, WorkItemUI } from '../../models/work-item';
-import { WorkItemTypeQuery } from '../../models/work-item-type';
+import { WorkItemTypeQuery, WorkItemTypeUI } from '../../models/work-item-type';
 import { CookieService } from '../../services/cookie.service';
 import { FilterService } from '../../services/filter.service';
 import { AppState } from '../../states/app.state';
@@ -61,6 +61,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
       }),
       startWith([])
     );
+  public quickAddWorkItemTypes: Observable<WorkItemTypeUI[]> = this.workItemTypeQuery.getWorkItemTypes();
   public currentQuery: string;
   public breadcrumbs: any[] = [];
   public disableInput: boolean;

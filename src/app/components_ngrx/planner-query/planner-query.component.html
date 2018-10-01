@@ -26,6 +26,26 @@
 			[(ngModel)]="searchQuery"
 				placeholder="Enter your Query...">
 		<span class="f8-query__input-hint">Press Enter to Search....</span>
+		<div
+			class="dropdown-kebab-pf dropdown f8-query__create-workitem"
+			[autoClose]="false"
+			dropdown>
+			<button
+				type="button"
+				class="btn btn-primary dropdown-toggle"
+				dropdownToggle>
+					Create WorkItem
+			</button>
+			 <div
+					*dropdownMenu class="dropdown-menu-right dropdown-menu f8-query__create-workitem-menu">
+					<alm-work-item-quick-add *ngIf="quickAddWorkItemTypes | async as quickAddWorkItemTypes"
+					[wilistview]="'wi-query-view'"
+					[workItemTypes]="quickAddWorkItemTypes"
+					[selectedType]="quickAddWorkItemTypes[0]"
+					[selectedIteration]="selectedIterationSource | async">
+					</alm-work-item-quick-add>
+			 </div>
+		</div>
 		<div>
 			<ng-container *ngFor="let breadcrumb of breadcrumbs">
 			>&nbsp;<span class="pointer breadcrumbs"
@@ -36,6 +56,16 @@
 			</ng-container>&nbsp;>&nbsp;<span class="current-query">{{ currentQuery }}</span>
 		</div>
 	</div>
+
+	<!--Quick Add Template: Start-->
+	<ng-template #quickAddPopoverTemplate>
+		<alm-work-item-quick-add *ngIf="quickAddWorkItemTypes | async as quickAddWorkItemTypes"
+		[wilistview]="'wi-query-view'"
+		[workItemTypes]="quickAddWorkItemTypes"
+		[selectedType]="quickAddWorkItemTypes[0]"
+		[selectedIteration]="selectedIterationSource | async">
+		</alm-work-item-quick-add>
+	</ng-template>
 
 	<div class="f8-wi-list">
 		<div

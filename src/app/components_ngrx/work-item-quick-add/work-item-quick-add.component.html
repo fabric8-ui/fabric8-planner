@@ -73,6 +73,63 @@
 </div>
 <!-- Table Inline Quick Add Ends -->
 
+<!--Quick Add for Query Tab-->
+
+<div class="f8-quickadd-query__wrapper" *ngIf="wilistview === 'wi-query-view'">
+  <input class=""
+    type="text"
+    placeholder=" Type your title...."
+    #quickAddTitle
+    [disabled]="blockAdd"
+    [(ngModel)]="workItem.attributes['system.title']"
+    (keyup.enter)="save($event)"
+    (keyup)="checkTitle()"  required/>
+  <div class="dropdown f8-quickadd-query__dropdown" dropdown>
+    <div class="infoArea">
+      <button class="btn btn-default dropdown-toggle padding-h-10"
+        type="button"
+        dropdownToggle>
+        <i class="fa dib"
+          [ngClass]="selectedType ?
+          selectedType.icon :
+          '' ">
+        </i>
+        <span class="padding-h-5">
+          {{ selectedType ? selectedType.name : '' }}
+        </span>
+        <span class="fa fa-angle-down"></span>
+      </button>
+      <infotip [infotipText]="selectedType.description"></infotip>
+    </div>
+    <ul class="dropdown-menu"
+      role="menu"
+      *dropdownMenu>
+      <li *ngFor="let type of workItemTypes"
+          role="menuitem"
+          (click)="selectType($event, type)">
+        <a class="dropdown-item" href="#">
+          <i class="fa"
+            [ngClass]="type.icon"></i>
+            <span class="padding-h-3">{{ type.name }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <button class="btn btn-primary f8-quickadd-query__create margin-right-5"
+    id="quickadd-save"
+    [disabled]="blockAdd"
+    [ngClass]="{'': validTitle,'disabled':!validTitle}"
+    (click)="save($event)">
+    Create
+  </button>
+  <button class="btn btn-primary f8-quickadd-query__create-open"
+    [disabled]="blockAdd"
+    [ngClass]="{'': validTitle,'disabled':!validTitle}"
+    (click)="save($event, true)">
+    Create and Open
+  </button>
+</div>
+
 <!-- Quick ADD Template for Board View -->
 <!-- <div class="f8-quickadd-card card-pf f8-quickadd-container"
   *ngIf="wilistview === 'wi-card-view'" >

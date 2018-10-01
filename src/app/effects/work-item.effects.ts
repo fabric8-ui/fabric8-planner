@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Actions, Effect } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
-import { Observable, of as ObservableOf } from 'rxjs';
+import { Notification, Notifications, NotificationType } from 'ngx-base';
+import { Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import { cleanObject } from '../models/common.model';
 import { FilterService } from '../services/filter.service';
@@ -13,6 +14,7 @@ import { WorkItemMapper, WorkItemService, WorkItemUI } from './../models/work-it
 import { WorkItemService as WIService } from './../services/work-item.service';
 import { AppState } from './../states/app.state';
 import * as util from './work-item-utils';
+
 
 export type Action = WorkItemActions.All | ColumnWorkItemActions.All | BoardUIActions.All;
 
@@ -28,7 +30,8 @@ export class WorkItemEffects {
     private router: Router,
     private route: ActivatedRoute,
     private filterService: FilterService,
-    private errHandler: util.ErrorHandler
+    private errHandler: util.ErrorHandler,
+    private notifications: Notifications
   ) {}
 
   resolveWorkItems(
@@ -116,11 +119,22 @@ export class WorkItemEffects {
               } else {
                 // for a normal (not a child) work item creation
                 // Add item success notification
+                let detailURL = document.location.pathname.indexOf('/plan/query') > -1 ? '/../detail/' : '/detail/';
+                const routeURL = document.location.pathname + detailURL + wItem.number;
                 if (payload.openDetailPage) {
-                  this.router.navigateByUrl(document.location.pathname + '/detail/' + wItem.number,
-                                            {relativeTo: this.route});
+                  this.router.navigateByUrl(routeURL,
+                      {relativeTo: this.route});
+                } else {
+                  try {
+                    this.notifications.message({
+                      message: `New Work Item #${wItem.number} created.`,
+                      type: NotificationType.SUCCESS
+                    } as Notification);
+                  } catch (e) {
+                    console.log('Work item is added.');
+                  }
                 }
-                return ObservableOf(new WorkItemActions.AddSuccess(wItem));
+                return of(new WorkItemActions.AddSuccess(wItem));
               }
             }),
             catchError(err => this.errHandler.handleError(
@@ -326,7 +340,7 @@ export class WorkItemEffects {
                     wp.state.space.links.self, workItem,
                     reorderPayload.destinationWorkitemID, reorderPayload.direction
                   ) :
-                  ObservableOf(workitem);
+                  of(workitem);
               }),
               map(w => {
                 let wi = this.resolveWorkItems([w], wp.state)[0];
