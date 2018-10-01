@@ -190,9 +190,7 @@ describe('Planner Smoke Tests:', () => {
     await planner.quickPreview.close();
   });
 
-  //Temporarily disabled
-
-  xit('Create a work item and Open detail page', async () => {
+  it('Create a work item and Open detail page', async () => {
     await planner.quickAdd.addAndOpenWorkItem(testData.workitem);
     await planner.waitUntilUrlContains('detail');
     await planner.detailPage.titleInput.untilTextIsPresentInValue('new detail workItem');
@@ -203,7 +201,7 @@ describe('Planner Smoke Tests:', () => {
     expect(await planner.workItemList.hasWorkItem('new detail workItem')).toBeTruthy();
   });
 
-  xit('Add new work-item to the selected iteration', async () => {
+  it('Add new work-item to the selected iteration', async () => {
     await planner.workItemList.overlay.untilHidden();
     await planner.sidePanel.clickIteration('Iteration_1');
     await planner.workItemList.overlay.untilHidden();

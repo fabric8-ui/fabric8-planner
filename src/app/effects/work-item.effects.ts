@@ -117,8 +117,10 @@ export class WorkItemEffects {
                   );
               } else {
                 let currentURL = document.location.pathname;
-                let detailURL = currentURL.indexOf('/plan/query') > -1 ? currentURL.split('/plan/query')[0] : currentURL;
-                const routeURL = detailURL + '/plan/detail/' + wItem.number;
+                let detailURL = currentURL.indexOf('/plan/query') > -1 ? currentURL.split('/plan/query')[0] : null;
+                const routeURL = detailURL ?
+                  detailURL + '/plan/detail/' + wItem.number :
+                  currentURL + '/detail/' + wItem.number;
                 if (payload.openDetailPage) {
                   this.router.navigateByUrl(routeURL,
                       {relativeTo: this.route});
