@@ -123,7 +123,7 @@ export class WorkItemEffects {
                 if (payload.openDetailPage) {
                   this.router.navigateByUrl(routeURL,
                       {relativeTo: this.route});
-                } else {
+                } else if (currentURL.indexOf('/plan/query') > -1) {
                   try {
                     this.notifications.message({
                       message: `New Work Item #${wItem.number} created.`,
