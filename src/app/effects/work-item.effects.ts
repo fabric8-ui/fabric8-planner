@@ -117,8 +117,6 @@ export class WorkItemEffects {
                     })
                   );
               } else {
-                // for a normal (not a child) work item creation
-                // Add item success notification
                 let currentURL = document.location.pathname;
                 let detailURL = currentURL.indexOf('/plan/query') > -1 ? currentURL.split('/plan/query')[0] : currentURL;
                 const routeURL = detailURL + '/plan/detail/' + wItem.number;

@@ -1,7 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TooltipConfig, TooltipModule, PopoverModule, PopoverConfig, BsDropdownModule, BsDropdownConfig } from 'ngx-bootstrap';
+import {
+  BsDropdownConfig,
+  BsDropdownModule,
+  TooltipConfig,
+  TooltipModule
+} from 'ngx-bootstrap';
 import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { NgxDatatableModule } from 'rh-ngx-datatable';
 import { SpaceQuery } from '../../models/space';
@@ -30,7 +35,6 @@ import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-a
     EmptyStateModule,
     InlineInputModule,
     PlannerQueryRoutingModule,
-    PopoverModule.forRoot(),
     NgxDatatableModule,
     TooltipModule,
     WorkItemCellModule,
@@ -50,8 +54,7 @@ import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-a
     // FeatureTogglesService,
     togglesApiUrlProvider,
     WorkItemTypeQuery,
-    ErrorHandler,
-    PopoverConfig
+    ErrorHandler
   ]
 })
-export class PlannerQueryModule { }
+export class PlannerQueryModule {}
