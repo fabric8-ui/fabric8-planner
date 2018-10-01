@@ -38,8 +38,8 @@
 				dropdownToggle>
 					Create WorkItem
 			</button>
-			 <div
-					*dropdownMenu class="dropdown-menu-right dropdown-menu f8-query__create-workitem-menu">
+			<div
+				*dropdownMenu class="dropdown-menu-right dropdown-menu f8-query__create-workitem-menu">
 					<aside>
 							<i class="fa fa-close btn btn-link f8-query__create-workitem-close"
 								(click)="closeCreateWorkItemDialog($event)"></i>
@@ -50,7 +50,7 @@
 						[selectedType]="quickAddWorkItemTypes[0]"
 						[selectedIteration]="selectedIterationSource | async">
 					</alm-work-item-quick-add>
-			 </div>
+			</div>
 		</div>
 		<div>
 			<ng-container *ngFor="let breadcrumb of breadcrumbs">
