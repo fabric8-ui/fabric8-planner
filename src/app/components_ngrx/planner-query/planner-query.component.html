@@ -29,6 +29,8 @@
 		<div
 			class="dropdown-kebab-pf dropdown f8-query__create-workitem"
 			[autoClose]="false"
+			[isOpen]="isCreateWorkitemDropdownOpen"
+			(isOpenChange)="createWorkItemDialogChange($event)"
 			dropdown>
 			<button
 				type="button"
@@ -38,6 +40,10 @@
 			</button>
 			 <div
 					*dropdownMenu class="dropdown-menu-right dropdown-menu f8-query__create-workitem-menu">
+					<aside>
+							<i class="fa fa-close btn btn-link f8-query__create-workitem-close"
+								(click)="closeCreateWorkItemDialog($event)"></i>
+					</aside>
 					<alm-work-item-quick-add *ngIf="quickAddWorkItemTypes | async as quickAddWorkItemTypes"
 					[wilistview]="'wi-query-view'"
 					[workItemTypes]="quickAddWorkItemTypes"
