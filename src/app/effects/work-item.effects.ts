@@ -15,7 +15,6 @@ import { WorkItemService as WIService } from './../services/work-item.service';
 import { AppState } from './../states/app.state';
 import * as util from './work-item-utils';
 
-
 export type Action = WorkItemActions.All | ColumnWorkItemActions.All | BoardUIActions.All;
 
 @Injectable()
