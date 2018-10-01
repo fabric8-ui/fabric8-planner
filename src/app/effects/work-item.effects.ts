@@ -119,8 +119,9 @@ export class WorkItemEffects {
               } else {
                 // for a normal (not a child) work item creation
                 // Add item success notification
-                let detailURL = document.location.pathname.indexOf('/plan/query') > -1 ? '/../detail/' : '/detail/';
-                const routeURL = document.location.pathname + detailURL + wItem.number;
+                let currentURL = document.location.pathname;
+                let detailURL = currentURL.indexOf('/plan/query') > -1 ? currentURL.split('/plan/query')[0] : currentURL;
+                const routeURL = detailURL + '/plan/detail/' + wItem.number;
                 if (payload.openDetailPage) {
                   this.router.navigateByUrl(routeURL,
                       {relativeTo: this.route});
