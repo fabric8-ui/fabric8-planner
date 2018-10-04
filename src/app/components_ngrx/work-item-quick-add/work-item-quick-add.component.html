@@ -62,6 +62,7 @@
         col-md-12 f8-quickadd-input"
         type="text"
         placeholder="Work Item Title"
+        title="{{(addDisabled | async) ? 'Not a Collaborator' : 'Please add work-item title'}}"
         #quickAddTitle
         [disabled]="blockAdd || (addDisabled | async)"
         [(ngModel)]="workItem.attributes['system.title']"
