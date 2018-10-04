@@ -63,7 +63,7 @@
         type="text"
         placeholder="Work Item Title"
         #quickAddTitle
-        [disabled]="blockAdd"
+        [disabled]="blockAdd || (addDisabled | async)"
         [(ngModel)]="workItem.attributes['system.title']"
         (keyup.enter)="save($event)"
         (keyup)="checkTitle()"  required/>
