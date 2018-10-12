@@ -15,10 +15,8 @@ import { WorkItemPreviewPanelModule } from '../work-item-preview-panel/work-item
 import { PlannerQueryRoutingModule } from './planner-query-routing.module';
 import { PlannerQueryComponent } from './planner-query.component';
 
-// import { FeatureFlagResolver, FeatureTogglesService } from 'ngx-feature-flag';
 import { ErrorHandler } from '../../effects/work-item-utils';
 import { WorkItemTypeQuery } from '../../models/work-item-type';
-import { togglesApiUrlProvider } from '../../shared/toggles-api.provider';
 
 @NgModule({
   imports: [
@@ -41,9 +39,6 @@ import { togglesApiUrlProvider } from '../../shared/toggles-api.provider';
     WorkItemQuery,
     FilterService,
     TooltipConfig,
-    // FeatureFlagResolver,
-    // FeatureTogglesService,
-    togglesApiUrlProvider,
     WorkItemTypeQuery,
     ErrorHandler
   ]
