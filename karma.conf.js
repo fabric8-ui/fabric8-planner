@@ -35,7 +35,7 @@ module.exports = function(config) {
                     require("karma-typescript-angular2-transform"),
                     require("karma-typescript-es6-transform")()
                 ],
-                // not excluding ngx-widgets from the bundling causes syntax errors in the final bundle(?!).
+                //not excluding ngx-widgets from the bundling causes syntax errors in the final bundle(?!).
                 // exclude: ['ngx-widgets']
             },
             compilerOptions: {

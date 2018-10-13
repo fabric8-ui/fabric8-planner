@@ -1,6 +1,6 @@
 import { HttpBackend, HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError, timer } from 'rxjs';
 import { flatMap, retryWhen } from 'rxjs/operators';
 
 @Injectable()
@@ -33,11 +33,11 @@ export class HttpClientService {
       flatMap(error => {
         if (error.status == 0) { // Server offline :: keep trying
           console.log('########### Now offline #############', error);
-          return Observable.timer(++count * 1000); // TODO ng6: use timer from rxjs 6
+          return timer(++count * 1000); // TODO ng6: use timer from rxjs 6
         } else if (error.status == 500 || error.status == 401) { // Server error :: Try 3 times then throw error
-          return ++count >= 3 ? Observable.throw(error) : Observable.timer(1000); // TODO ng6: use throwError, timer from rxjs 6
+          return ++count >= 3 ? throwError(error) : timer(1000);
         } else {
-          return Observable.throw(error); // TODO ng6: use throwError from rxjs 6
+          return throwError(error);
         }
       })
     );

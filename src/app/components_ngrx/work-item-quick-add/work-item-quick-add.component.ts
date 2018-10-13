@@ -20,10 +20,12 @@ import { filter } from 'rxjs/operators';
 import { WorkItem, WorkItemRelations, WorkItemService } from '../../models/work-item';
 import { WorkItemTypeUI } from '../../models/work-item-type';
 import { IterationUI } from './../../models/iteration.model';
+import { PermissionQuery } from './../../models/permission.model';
 import { WorkItemQuery } from './../../models/work-item';
 
 // ngrx stuff
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import * as WorkItemActions from './../../actions/work-item.actions';
 import { AppState } from './../../states/app.state';
 
@@ -51,6 +53,8 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   workItem: WorkItemService;
   validTitle: boolean = false;
   linkObject: object;
+  addDisabled: Observable<boolean> =
+    this.permissionQuery.isAllowedToAdd();
 
   // Board view specific
   initialDescHeight: number = 0;
@@ -62,16 +66,17 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   eventListeners: any[] = [];
   blockAdd: boolean = false;
   infotipSource = this.store
-  .select('planner')
-  .select('infotips');
+    .pipe(
+      select('planner'),
+      select('infotips')
+    );
 
   constructor(
     private logger: Logger,
-    private auth: AuthenticationService,
-    private route: ActivatedRoute,
     private renderer: Renderer2,
     private store: Store<AppState>,
-    private workItemQuery: WorkItemQuery) {}
+    private workItemQuery: WorkItemQuery,
+    private permissionQuery: PermissionQuery) {}
 
   ngOnInit(): void {
     this.createWorkItemObj();
@@ -233,7 +238,9 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
 
   getInfotipText(id: string) {
     return this.infotipSource
-      .select(s => s[id])
-      .select(i => i ? i['en'] : id);
+      .pipe(
+        select(s => s[id]),
+        select(i => i ? i['en'] : id)
+      );
   }
 }
