@@ -1,5 +1,5 @@
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { sortBy } from 'lodash';
 import { cloneDeep, isEqual } from 'lodash';
@@ -11,6 +11,7 @@ import { WorkItemQuery, WorkItemUI } from '../../models/work-item';
 import { WorkItemTypeQuery, WorkItemTypeUI } from '../../models/work-item-type';
 import { CookieService } from '../../services/cookie.service';
 import { FilterService } from '../../services/filter.service';
+import { UrlService } from '../../services/url.service';
 import { AppState } from '../../states/app.state';
 import { datatableColumn } from '../planner-list/datatable-config';
 import * as WorkItemActions from  './../../actions/work-item.actions';
@@ -86,7 +87,8 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
     private store: Store<AppState>,
     private filterService: FilterService,
     private renderer: Renderer2,
-    private workItemTypeQuery: WorkItemTypeQuery
+    private workItemTypeQuery: WorkItemTypeQuery,
+    private urlService: UrlService
   ) {}
 
   ngOnInit() {
@@ -95,6 +97,23 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
       title: 'No Work Items Available'
     } as EmptyStateConfig;
     this.store.dispatch(new WorkItemActions.ResetWorkItems());
+    this.eventListeners.push(
+      this.router.events
+      .pipe(filter(event => event instanceof NavigationStart))
+      .subscribe(
+      (event: any) => {
+        if (event.url.indexOf('/plan/detail/') > -1) {
+          // It's going to the detail page
+          let url = location.pathname;
+          let query = location.href.split('?');
+          if (query.length == 2) {
+            url = url + '?' + query[1];
+          }
+          this.urlService.recordLastListOrBoard(url);
+        }
+      }
+      )
+    );
   }
 
   ngOnDestroy() {
