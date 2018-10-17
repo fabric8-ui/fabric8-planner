@@ -85,7 +85,7 @@
     (keyup.enter)="save($event)"
     (keyup)="checkTitle()"  required/>
   <div class="dropdown f8-quickadd-query__dropdown" dropdown>
-    <div class="infoArea">
+    <div class="infoArea dropdown">
       <button class="btn btn-default dropdown-toggle padding-h-10"
         type="button"
         dropdownToggle>
@@ -99,7 +99,6 @@
         </span>
         <span class="fa fa-angle-down"></span>
       </button>
-      <infotip [infotipText]="selectedType.description"></infotip>
     </div>
     <ul class="dropdown-menu"
       role="menu"
@@ -107,11 +106,12 @@
       <li *ngFor="let type of workItemTypes"
           role="menuitem"
           (click)="selectType($event, type)">
-        <a class="dropdown-item" href="#">
+        <div class="dropdown-item planner-dropdown-item pointer">
           <i class="fa"
             [ngClass]="type.icon"></i>
             <span class="padding-h-3">{{ type.name }}</span>
-        </a>
+            <span class="item-desc margin-left-10">{{ type.description }}</span>
+        </div>
       </li>
     </ul>
   </div>
