@@ -204,7 +204,9 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   }
 
   closeCreateWorkItemDialog(event: MouseEvent) {
-    this.isCreateWorkitemDropdownOpen = false;
+    if (this.isCreateWorkitemDropdownOpen) {
+      this.isCreateWorkitemDropdownOpen = false;
+    }
   }
 
   createWorkItemDialogChange(value: boolean) {

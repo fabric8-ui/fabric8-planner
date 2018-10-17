@@ -24,12 +24,14 @@ import { PlannerQueryComponent } from './planner-query.component';
 import { ErrorHandler } from '../../effects/work-item-utils';
 import { WorkItemTypeQuery } from '../../models/work-item-type';
 import { togglesApiUrlProvider } from '../../shared/toggles-api.provider';
+import { ClickOutModule } from '../../widgets/clickout/clickout.module';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 
 @NgModule({
   imports: [
     BsDropdownModule,
     CommonModule,
+    ClickOutModule,
     FormsModule,
     FilterColumnModule,
     EmptyStateModule,
