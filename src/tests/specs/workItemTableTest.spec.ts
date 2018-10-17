@@ -165,7 +165,7 @@ describe('Work Item datatable list: ', () => {
     expect(await planner.workItemList.isTitleTextBold(workitem.title)).toContain('bold');
   });
 
-  it('should filter the workitem list by Assignee', async () => {
+  xit('should filter the workitem list by Assignee', async () => {
     let labelFilter = 'assignee: Unassigned';
     await planner.workItemList.overlay.untilHidden();
     let countUnassignedWorkItem = await planner.workItemList.getUnassignedWorkItemCount(' Unassigned ');
