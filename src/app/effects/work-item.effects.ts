@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Actions, Effect } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
-import { Observable, of as ObservableOf } from 'rxjs';
+import { Notification, Notifications, NotificationType } from 'ngx-base';
+import { empty, Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import { cleanObject } from '../models/common.model';
 import { FilterService } from '../services/filter.service';
@@ -28,7 +29,8 @@ export class WorkItemEffects {
     private router: Router,
     private route: ActivatedRoute,
     private filterService: FilterService,
-    private errHandler: util.ErrorHandler
+    private errHandler: util.ErrorHandler,
+    private notifications: Notifications
   ) {}
 
   resolveWorkItems(
@@ -114,13 +116,26 @@ export class WorkItemEffects {
                     })
                   );
               } else {
-                // for a normal (not a child) work item creation
-                // Add item success notification
+                let currentURL = document.location.pathname;
+                let detailURL = currentURL.indexOf('/plan/query') > -1 ? currentURL.split('/plan/query')[0] : null;
+                const routeURL = detailURL ?
+                  detailURL + '/plan/detail/' + wItem.number :
+                  currentURL + '/detail/' + wItem.number;
                 if (payload.openDetailPage) {
-                  this.router.navigateByUrl(document.location.pathname + '/detail/' + wItem.number,
-                                            {relativeTo: this.route});
+                  this.router.navigateByUrl(routeURL,
+                      {relativeTo: this.route});
+                } else if (currentURL.indexOf('/plan/query') > -1) {
+                  try {
+                    this.notifications.message({
+                      message: `New Work Item #${wItem.number} created.`,
+                      type: NotificationType.SUCCESS
+                    } as Notification);
+                  } catch (e) {
+                    console.log('Work item is added.');
+                  }
+                  return empty();
                 }
-                return ObservableOf(new WorkItemActions.AddSuccess(wItem));
+                return of(new WorkItemActions.AddSuccess(wItem));
               }
             }),
             catchError(err => this.errHandler.handleError(
@@ -152,6 +167,7 @@ export class WorkItemEffects {
           .pipe(
             map((data: any) => {
               let wis = [];
+              let nextLink = data.nextLink ? data.nextLink : '';
               if (payload.isShowTree) {
                 const ancestors = data.ancestorIDs;
                 wis = this.resolveWorkItems(data.workItems, state, payload.isShowTree, ancestors);
@@ -159,17 +175,13 @@ export class WorkItemEffects {
                   data.included, state,
                   false, ancestors
                 );
-                return [...wis, ...wiIncludes];
+                return { workItems: [...wis, ...wiIncludes], nextLink: nextLink };
               } else {
                 wis = this.resolveWorkItems(data.workItems, state, payload.isShowTree);
               }
-              return [...wis];
+              return { workItems: [...wis], nextLink: nextLink };
             }),
-            map((workItems: WorkItemUI[]) => {
-              return new WorkItemActions.GetSuccess(
-                workItems
-              );
-            }),
+            map(d => new WorkItemActions.GetSuccess(d)),
             catchError(err => this.errHandler.handleError<Action>(
               err, `Problem loading workitems.`, new WorkItemActions.GetError()
             ))
@@ -326,7 +338,7 @@ export class WorkItemEffects {
                     wp.state.space.links.self, workItem,
                     reorderPayload.destinationWorkitemID, reorderPayload.direction
                   ) :
-                  ObservableOf(workitem);
+                  of(workitem);
               }),
               map(w => {
                 let wi = this.resolveWorkItems([w], wp.state)[0];
@@ -356,31 +368,46 @@ export class WorkItemEffects {
       })
     );
 
-    @Effect() getWorkItemChildrenForQuery$: Observable<Action> = this.actions$
-      .pipe(
-        util.filterTypeWithSpace(WorkItemActions.GET_WORKITEM_CHILDREN_FOR_Query, this.store.pipe(select('planner'))),
-        map(([action, state]) => {
-          return {
-            payload: action.payload,
-            state: state
-          };
-        }),
-        switchMap(wp => {
-          return this.workItemService
-            .getChildren(wp.payload)
-            .pipe(
-              map((data: WorkItemService[]) => {
-                return this.resolveWorkItems(data, wp.state);
-              }),
-              map((workItems: WorkItemUI[]) => {
-                return new WorkItemActions.GetSuccess(
-                  workItems
+    @Effect() getMoreWorkItems$: Observable<Action> = this.actions$
+    .pipe(
+      util.filterTypeWithSpace(WorkItemActions.GET_MORE_WORKITEMS, this.store.pipe(select(state => state.planner))),
+      map(([action, state]) => {
+        return {
+          payload: action.payload,
+          state: state
+        };
+      }),
+      switchMap(wp => {
+        const payload = wp.payload;
+        const state = wp.state;
+        if (state.workItems.nextLink == '') {
+          return of(
+            new WorkItemActions.GetMoreWorkItemsSuccess({ workItems: [], nextLink: '' })
+          );
+        }
+        return this.workItemService.getMoreWorkItems(state.workItems.nextLink)
+          .pipe(
+            map((data: any) => {
+              let wis = [];
+              let nextLink = data.nextLink ? data.nextLink : '';
+              if (payload.isShowTree) {
+                const ancestors = data.ancestorIDs;
+                wis = this.resolveWorkItems(data.workItems, state, payload.isShowTree, ancestors);
+                const wiIncludes = this.resolveWorkItems(
+                  data.included, state,
+                  false, ancestors
                 );
-              }),
-              catchError(err => this.errHandler.handleError<Action>(
-                err, `Problem in loading children.`, new WorkItemActions.UpdateError()
-              ))
-            );
-        })
-      );
+                return { workItems: [...wis, ...wiIncludes], nextLink };
+              } else {
+                wis = this.resolveWorkItems(data.workItems, state, payload.isShowTree);
+              }
+              return { workItems: [...wis], nextLink };
+            }),
+            map(d => new WorkItemActions.GetMoreWorkItemsSuccess(d)),
+            catchError(err => this.errHandler.handleError<Action>(
+              err, `Problem in fetching more workitems.`, new WorkItemActions.GetError()
+            ))
+          );
+      })
+    );
 }

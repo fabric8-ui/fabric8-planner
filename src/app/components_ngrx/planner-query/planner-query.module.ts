@@ -1,7 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TooltipConfig, TooltipModule } from 'ngx-bootstrap';
+import {
+  BsDropdownConfig,
+  BsDropdownModule,
+  TooltipConfig,
+  TooltipModule
+} from 'ngx-bootstrap';
 import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { NgxDatatableModule } from 'rh-ngx-datatable';
 import { SpaceQuery } from '../../models/space';
@@ -15,12 +20,19 @@ import { WorkItemPreviewPanelModule } from '../work-item-preview-panel/work-item
 import { PlannerQueryRoutingModule } from './planner-query-routing.module';
 import { PlannerQueryComponent } from './planner-query.component';
 
+import { InfiniteScrollModule } from 'ngx-widgets';
 import { ErrorHandler } from '../../effects/work-item-utils';
 import { WorkItemTypeQuery } from '../../models/work-item-type';
+import { UrlService } from '../../services/url.service';
+import { NgLetModule } from '../../shared/ng-let';
+import { ClickOutModule } from '../../widgets/clickout/clickout.module';
+import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 
 @NgModule({
   imports: [
+    BsDropdownModule,
     CommonModule,
+    ClickOutModule,
     FormsModule,
     FilterColumnModule,
     EmptyStateModule,
@@ -29,18 +41,23 @@ import { WorkItemTypeQuery } from '../../models/work-item-type';
     NgxDatatableModule,
     TooltipModule,
     WorkItemCellModule,
-    WorkItemPreviewPanelModule
+    WorkItemPreviewPanelModule,
+    WorkItemQuickAddModule,
+    InfiniteScrollModule,
+    NgLetModule
   ],
   declarations: [PlannerQueryComponent],
   exports: [PlannerQueryComponent],
   providers: [
+    BsDropdownConfig,
     SpaceQuery,
     CookieService,
     WorkItemQuery,
     FilterService,
     TooltipConfig,
+    UrlService,
     WorkItemTypeQuery,
     ErrorHandler
   ]
 })
-export class PlannerQueryModule { }
+export class PlannerQueryModule {}
