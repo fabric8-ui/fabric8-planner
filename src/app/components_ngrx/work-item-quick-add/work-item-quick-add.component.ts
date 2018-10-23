@@ -56,7 +56,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   linkObject: object;
   addDisabled: Observable<boolean> =
     this.permissionQuery.isAllowedToAdd();
-  workItemTitle= new FormControl('');
+  workItemTitle = new FormControl('');
 
   // Board view specific
   initialDescHeight: number = 0;
@@ -199,7 +199,10 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
         parentId: this.parentWorkItemId,
         openDetailPage: openStatus
       }));
-      this.workItemTitle.setValue('');
+      if (this.wilistview === 'wi-query-view') {
+        this.workItemTitle.setValue('');
+        this.resetQuickAdd();
+      }
     } else {
       this.blockAdd = false;
       this.error = 'Title can not be empty.';
