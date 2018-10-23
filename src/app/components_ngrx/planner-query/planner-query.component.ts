@@ -11,6 +11,7 @@ import { cloneDeep, isEqual } from 'lodash';
 import { EmptyStateConfig } from 'patternfly-ng';
 import { combineLatest, Observable } from 'rxjs';
 import { filter, startWith, switchMap, tap } from 'rxjs/operators';
+import { PermissionQuery } from '../../models/permission.model';
 import { SpaceQuery } from '../../models/space';
 import { WorkItemQuery, WorkItemUI } from '../../models/work-item';
 import { WorkItemTypeQuery, WorkItemTypeUI } from '../../models/work-item-type';
@@ -74,6 +75,8 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   public _scrollTrigger: number;
   public headerHeight: number = 30;
   public targetHeight: number;
+  public addDisabled: Observable<boolean> =
+    this.permissionQuery.isAllowedToAdd();
 
   private eventListeners: any[] = [];
   private hdrHeight: number = 0;
@@ -95,7 +98,8 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
     private renderer: Renderer2,
     private workItemTypeQuery: WorkItemTypeQuery,
     private urlService: UrlService,
-    private el: ElementRef
+    private el: ElementRef,
+    private permissionQuery: PermissionQuery
   ) {}
 
   ngOnInit() {
