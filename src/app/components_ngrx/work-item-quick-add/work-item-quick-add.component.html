@@ -80,6 +80,7 @@
     type="text"
     placeholder=" Type your title...."
     #quickAddTitle
+    [formControl]="workItemTitle"
     [disabled]="blockAdd"
     [(ngModel)]="workItem.attributes['system.title']"
     (keyup.enter)="save($event)"

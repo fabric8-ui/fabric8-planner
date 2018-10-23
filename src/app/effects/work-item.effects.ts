@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Actions, Effect } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { Notification, Notifications, NotificationType } from 'ngx-base';
-import { Observable, of } from 'rxjs';
+import { empty, Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import { cleanObject } from '../models/common.model';
 import { FilterService } from '../services/filter.service';
@@ -133,6 +133,7 @@ export class WorkItemEffects {
                   } catch (e) {
                     console.log('Work item is added.');
                   }
+                  return empty();
                 }
                 return of(new WorkItemActions.AddSuccess(wItem));
               }

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { PermissionQuery } from '../../models/permission.model';
@@ -14,7 +14,8 @@ import { WorkItemQuickAddComponent } from './work-item-quick-add.component';
     CommonModule,
     CommonSelectorModule,
     FormsModule,
-    InfotipModule
+    InfotipModule,
+    ReactiveFormsModule
   ],
   declarations: [WorkItemQuickAddComponent],
   exports: [WorkItemQuickAddComponent],
