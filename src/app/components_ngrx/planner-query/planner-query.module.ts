@@ -21,6 +21,7 @@ import { PlannerQueryRoutingModule } from './planner-query-routing.module';
 import { PlannerQueryComponent } from './planner-query.component';
 
 // import { FeatureFlagResolver, FeatureTogglesService } from 'ngx-feature-flag';
+import { InfiniteScrollModule } from 'ngx-widgets';
 import { ErrorHandler } from '../../effects/work-item-utils';
 import { WorkItemTypeQuery } from '../../models/work-item-type';
 import { UrlService } from '../../services/url.service';
@@ -44,6 +45,7 @@ import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-a
     WorkItemCellModule,
     WorkItemPreviewPanelModule,
     WorkItemQuickAddModule,
+    InfiniteScrollModule,
     NgLetModule
   ],
   declarations: [PlannerQueryComponent],
