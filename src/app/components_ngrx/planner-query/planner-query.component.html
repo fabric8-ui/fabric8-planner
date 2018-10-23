@@ -55,12 +55,12 @@
 			</div>
 		</div>
 		<div>
-			<ng-container *ngFor="let breadcrumb of breadcrumbs">
-			>&nbsp;<span class="pointer breadcrumbs"
-							(click)="navigateToQuery(breadcrumb)">
-				<ng-container *ngIf="breadcrumb.q">Query</ng-container>
-				<ng-container *ngIf="breadcrumb.parentId">{{ breadcrumb.parentId }}</ng-container>
-				</span>
+			<ng-container *ngFor="let breadcrumb of breadcrumbs; let i=index;">
+			>&nbsp;
+			<span class="pointer breadcrumbs"
+				(click)="navigateToQuery(breadcrumb)">
+				{{ breadcrumbsText(i, breadcrumb) }}
+			</span>
 			</ng-container>&nbsp;>&nbsp;<span class="current-query">{{ currentQuery }}</span>
 		</div>
 	</div>
@@ -68,19 +68,25 @@
 	<div class="f8-wi-list">
 		<div
 			class="f8-wi-list-wrap"
-			*ngIf="workItemsSource | async as workitems"
+      *ngLet="workItemsSource | async as workitems"
 			#listContainer>
-				<ngx-datatable #myTable
+        <ngx-datatable #myTable
 					*ngIf="!!workitems.length"
 					class="material fullscreen"
 					[columnMode]="'force'"
 					[scrollbarH]="true"
 					[scrollbarV]="true"
+					[headerHeight]="headerHeight"
 					[rows]="workitems"
 					[rowHeight]="contentItemHeight"
 					[sorts]="[{prop: 'order', dir: 'desc'}]"
 					[selected]="selectedRows"
-					[selectionType]="'single'"
+          [selectionType]="'single'"
+
+          (scroll)="onScroll($event.offsetY, workitems.length);"
+          almInfiniteScroll
+          [eachElementHeightInPx]="contentItemHeight"
+          (initItems)="checkPageSize($event)"
 					>
 					<!-- FLAT LIST -->
 					<!-- columns number-assignees -->

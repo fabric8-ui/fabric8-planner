@@ -24,6 +24,7 @@ import { PlannerQueryComponent } from './planner-query.component';
 import { ErrorHandler } from '../../effects/work-item-utils';
 import { WorkItemTypeQuery } from '../../models/work-item-type';
 import { UrlService } from '../../services/url.service';
+import { NgLetModule } from '../../shared/ng-let';
 import { togglesApiUrlProvider } from '../../shared/toggles-api.provider';
 import { ClickOutModule } from '../../widgets/clickout/clickout.module';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
@@ -42,7 +43,8 @@ import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-a
     TooltipModule,
     WorkItemCellModule,
     WorkItemPreviewPanelModule,
-    WorkItemQuickAddModule
+    WorkItemQuickAddModule,
+    NgLetModule
   ],
   declarations: [PlannerQueryComponent],
   exports: [PlannerQueryComponent],

@@ -167,6 +167,7 @@ export class WorkItemEffects {
           .pipe(
             map((data: any) => {
               let wis = [];
+              let nextLink = data.nextLink ? data.nextLink : '';
               if (payload.isShowTree) {
                 const ancestors = data.ancestorIDs;
                 wis = this.resolveWorkItems(data.workItems, state, payload.isShowTree, ancestors);
@@ -174,17 +175,13 @@ export class WorkItemEffects {
                   data.included, state,
                   false, ancestors
                 );
-                return [...wis, ...wiIncludes];
+                return { workItems: [...wis, ...wiIncludes], nextLink: nextLink };
               } else {
                 wis = this.resolveWorkItems(data.workItems, state, payload.isShowTree);
               }
-              return [...wis];
+              return { workItems: [...wis], nextLink: nextLink };
             }),
-            map((workItems: WorkItemUI[]) => {
-              return new WorkItemActions.GetSuccess(
-                workItems
-              );
-            }),
+            map(d => new WorkItemActions.GetSuccess(d)),
             catchError(err => this.errHandler.handleError<Action>(
               err, `Problem loading workitems.`, new WorkItemActions.GetError()
             ))
@@ -371,31 +368,46 @@ export class WorkItemEffects {
       })
     );
 
-    @Effect() getWorkItemChildrenForQuery$: Observable<Action> = this.actions$
-      .pipe(
-        util.filterTypeWithSpace(WorkItemActions.GET_WORKITEM_CHILDREN_FOR_Query, this.store.pipe(select('planner'))),
-        map(([action, state]) => {
-          return {
-            payload: action.payload,
-            state: state
-          };
-        }),
-        switchMap(wp => {
-          return this.workItemService
-            .getChildren(wp.payload)
-            .pipe(
-              map((data: WorkItemService[]) => {
-                return this.resolveWorkItems(data, wp.state);
-              }),
-              map((workItems: WorkItemUI[]) => {
-                return new WorkItemActions.GetSuccess(
-                  workItems
+    @Effect() getMoreWorkItems$: Observable<Action> = this.actions$
+    .pipe(
+      util.filterTypeWithSpace(WorkItemActions.GET_MORE_WORKITEMS, this.store.pipe(select(state => state.planner))),
+      map(([action, state]) => {
+        return {
+          payload: action.payload,
+          state: state
+        };
+      }),
+      switchMap(wp => {
+        const payload = wp.payload;
+        const state = wp.state;
+        if (state.workItems.nextLink == '') {
+          return of(
+            new WorkItemActions.GetMoreWorkItemsSuccess({ workItems: [], nextLink: '' })
+          );
+        }
+        return this.workItemService.getMoreWorkItems(state.workItems.nextLink)
+          .pipe(
+            map((data: any) => {
+              let wis = [];
+              let nextLink = data.nextLink ? data.nextLink : '';
+              if (payload.isShowTree) {
+                const ancestors = data.ancestorIDs;
+                wis = this.resolveWorkItems(data.workItems, state, payload.isShowTree, ancestors);
+                const wiIncludes = this.resolveWorkItems(
+                  data.included, state,
+                  false, ancestors
                 );
-              }),
-              catchError(err => this.errHandler.handleError<Action>(
-                err, `Problem in loading children.`, new WorkItemActions.UpdateError()
-              ))
-            );
-        })
-      );
+                return { workItems: [...wis, ...wiIncludes], nextLink };
+              } else {
+                wis = this.resolveWorkItems(data.workItems, state, payload.isShowTree);
+              }
+              return { workItems: [...wis], nextLink };
+            }),
+            map(d => new WorkItemActions.GetMoreWorkItemsSuccess(d)),
+            catchError(err => this.errHandler.handleError<Action>(
+              err, `Problem in fetching more workitems.`, new WorkItemActions.GetError()
+            ))
+          );
+      })
+    );
 }
