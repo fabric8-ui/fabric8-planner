@@ -1,4 +1,4 @@
-import { $, browser, by, ExpectedConditions as until } from 'protractor';
+import { $, browser, by, element, ExpectedConditions as until } from 'protractor';
 import * as support from '../support';
 import { BaseElement, Clickable } from '../ui';
 
@@ -10,6 +10,7 @@ export abstract class AppPage extends BasePage {
   planTab = new Clickable(this.mainNavBar.element(by.xpath("//span[text()='Plan']")), 'Plan Tab');
   backLogTab = new Clickable(this.mainNavBar.element(by.xpath("//span[text()=' Backlog ']")), 'Backlog Tab');
   boardTab = new Clickable(this.mainNavBar.element(by.xpath("//span[text()=' Board ']")), 'Board Tab');
+  QueryTab = new Clickable(element(by.cssContainingText('.nav.persistent-secondary li>a', 'Query')), 'Query Tab');
 
   /**
    * Extend this class, to describe Application Page(after logging in)
@@ -50,5 +51,9 @@ export abstract class AppPage extends BasePage {
     await this.boardTab.untilTextIsPresent('Board');
     await this.boardTab.clickWhenReady();
     await this.waitUntilUrlContains('boardContextId');
+  }
+
+  async clickQueryTab() {
+    await this.QueryTab.clickWhenReady();
   }
 }

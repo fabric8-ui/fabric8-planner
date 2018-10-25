@@ -1,12 +1,17 @@
 import { Injectable } from '@angular/core';
-import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
+import { createFeatureSelector, createSelector, select, Store } from '@ngrx/store';
 import { isEmpty } from 'lodash';
 import {
   Profile, User,
   UserService as UserServiceClass
 } from 'ngx-login-client';
-import { ConnectableObservable } from 'rxjs';
-import { Observable } from 'rxjs/Observable';
+import {
+  combineLatest,
+  ConnectableObservable,
+  Observable,
+  of as ObservableOf
+} from 'rxjs';
+import { filter, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { Get as GetUserAction } from './../actions/user.actions';
 import { AppState, PlannerState } from './../states/app.state';
 import {
@@ -94,7 +99,7 @@ export class UserQuery {
     this.plannerSelector,
     (state) => state.users
   );
-  private userSource = this.store.select(this.userSelector);
+  private userSource = this.store.pipe(select(this.userSelector));
 
   private collaboratorIdsSelector = createSelector(
     this.plannerSelector,
@@ -107,41 +112,49 @@ export class UserQuery {
     (users, collabs) => isEmpty(users) ? [] : collabs.map(c => users[c])
   );
 
-  private collaboratorSource = this.store.select(this.collaboratorSelector);
+  private collaboratorSource = this.store.pipe(select(this.collaboratorSelector));
 
   getUserObservableById(id: string): Observable<UserUI> {
-    return this.userSource.select(users => users[id])
+    return this.userSource
       // If the desired user doesn't exist then fetch it
-      .do(user => {
-        if (!user) {
-          this.store.dispatch(new GetUserAction(id));
-        }
-      })
-      // filter the pipe based on availability of the user
-      .filter(user => !!user);
+      .pipe(
+        select(users => users[id]),
+        tap(user => {
+          if (!user) {
+            this.store.dispatch(new GetUserAction(id));
+          }
+        }),
+        filter(user => !!user) // filter the pipe based on availability of the user
+      );
   }
 
   getUserObservablesByIds(ids: string[] = []): Observable<UserUI[]> {
-    if (!ids.length) { return Observable.of([]); }
-    return Observable.combineLatest(ids.map(id => this.getUserObservableById(id)))
+    if (!ids.length) { return ObservableOf([]); }
+    return combineLatest(ids.map(id => this.getUserObservableById(id)))
+    .pipe(
       // When a user is not there in the collaborator list
       // it fetches that particular user from API service
       // meanwhile the combine observables returns null if async pipe is used
       // We should return empty array instead
-      .startWith([]);
+      startWith([])
+    );
   }
 
   getCollaborators(): Observable<UserUI[]> {
     return this.collaboratorSource
-      .filter(c => !!c.length)
-      .switchMap(collaborators => {
-        return this.userService.loggedInUser
-          .map(u => {
-            return collaborators.map(c => {
-              return {...c, currentUser: u ? c.id === u.id : false};
-            });
-          });
-      });
+      .pipe(
+        filter(c => !!c.length),
+        switchMap(collaborators => {
+          return this.userService.loggedInUser
+            .pipe(
+              map(u => {
+                return collaborators.map(c => {
+                  return {...c, currentUser: u ? c.id === u.id : false};
+                });
+              })
+            );
+        })
+      );
   }
 
   /**
@@ -149,7 +162,7 @@ export class UserQuery {
    * array of all the collaborators IDs and loggedIn user IDs
    */
   get getCollaboratorIds() {
-    return this.store.select(this.collaboratorIdsSelector);
+    return this.store.pipe(select(this.collaboratorIdsSelector));
   }
 
   /**

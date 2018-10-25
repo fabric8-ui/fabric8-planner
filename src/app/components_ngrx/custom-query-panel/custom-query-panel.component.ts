@@ -14,7 +14,8 @@ import { FilterService } from '../../services/filter.service';
 import { ModalService } from '../../services/modal.service';
 
 // ngrx stuff
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
+import { first } from 'rxjs/operators';
 import * as CustomQueryActions from './../../actions/custom-query.actions';
 import { AppState } from './../../states/app.state';
 
@@ -47,8 +48,10 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const customQueriesData = this.store
-      .select('planner')
-      .select('customQueries');
+      .pipe(
+        select('planner'),
+        select('customQueries')
+      );
 
     this.eventListeners.push(
       customQueriesData
@@ -137,7 +140,9 @@ export class CustomQueryComponent implements OnInit, OnDestroy {
   confirmCustomQueryDelete(event, customQuery) {
     // this.stopPropagation(event);
     this.modalService.openModal('Delete Filter', 'Are you sure you want to delete this filter?', 'Delete', 'deleteFilter')
-      .first()
+      .pipe(
+        first()
+      )
       .subscribe(actionKey => {
         if (actionKey === 'deleteFilter') {
           this.deleteCustomQuery(customQuery);

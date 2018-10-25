@@ -49,8 +49,7 @@
               [disabled]="!workItem?.editable"
               [value]="workItem.title"
               (onSave)="saveTitle($event)"
-              [placeholder]="'Enter title'"
-              (clickOut)="inlineInput.closeClick()">
+              [placeholder]="'Enter title'">
             </f8-inlineinput>
           </div>
         </div>
@@ -162,6 +161,8 @@
                   [headerText]="'Update area'"
                   [items]="areaSource | async"
                   [selectedItems]="selectedAreas | async"
+                  [itemTruncate]="-25"
+                  [toggleTruncate]="1000"
                   (onCloseSelector)="areaUpdated($event)">
                 </common-selector>
               </div>
@@ -186,6 +187,8 @@
                   [items]="iterationSource | async"
                   [noValueLabel]="'None'"
                   [selectedItems]="selectedIterations | async"
+                  [itemTruncate]="-25"
+                  [toggleTruncate]="1000"
                   (onCloseSelector)="iterationUpdated($event)">
                 </common-selector>
               </div>
@@ -234,7 +237,9 @@
                   [rawText]="workItem.descriptionRendered!==null ? workItem.description : workItem.description.content"
                   [renderedText]="(workItem.descriptionRendered!==null ? workItem.descriptionRendered : workItem.description.rendered) | safe: 'html'"
                   (onSaveClick)="descUpdate($event)"
-                  (showPreview)="showPreview($event)" #descMarkdown>
+                  (showPreview)="showPreview($event)"
+                  (onClickOut)="$event ? descMarkdown.closeClick() : ''"
+                  #descMarkdown>
                 </f8-markdown>
               </div>
             </section>

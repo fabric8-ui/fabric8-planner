@@ -8,6 +8,7 @@ export * from './toolbarHeader';
 export * from './iteration';
 export * from './workitem-detailpage';
 export * from './boardView';
+export * from './query-tab';
 
 
 export interface WorkItem {

@@ -8,23 +8,21 @@ import { NgxDatatableModule } from 'rh-ngx-datatable';
 import { WorkItemCellModule } from './../work-item-cell/work-item-cell.module';
 import { WorkItemPreviewPanelModule } from './../work-item-preview-panel/work-item-preview-panel.module';
 
-import { AuthenticationService } from 'ngx-login-client';
 
 import { PlannerListComponent } from './planner-list.component';
 
 import { TruncateModule } from 'ng2-truncate';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
-import { factoryForHttpService, HttpService } from '../../services/http-service';
 import { PlannerModalModule } from '../../widgets/modal/modal.module';
 import { AreaService } from './../../services/area.service';
 import { CollaboratorService } from './../../services/collaborator.service';
 import { CustomQueryService } from './../../services/custom-query.service';
 import { IterationService } from './../../services/iteration.service';
 import { LabelService } from './../../services/label.service';
-import { WorkItemDataService } from './../../services/work-item-data.service';
 import { WorkItemService } from './../../services/work-item.service';
 import { GlobalSettings } from './../../shared/globals';
+import { PlannerHttpClientModule } from './../../shared/http-module/http.module';
 import {
   PlannerLayoutModule
 } from './../../widgets/planner-layout/planner-layout.module';
@@ -43,8 +41,8 @@ import { UrlService } from '../../services/url.service';
 import { ClickOutModule } from '../../widgets/clickout/clickout.module';
 
 // Data Querries
+import { AreaQuery } from '../../models/area.model';
 import { WorkItemTypeQuery } from '../../models/work-item-type';
-import { AreaQuery } from './../../models/area.model';
 import { CommentQuery } from './../../models/comment';
 import { GroupTypeQuery } from './../../models/group-types.model';
 import { IterationQuery } from './../../models/iteration.model';
@@ -53,16 +51,12 @@ import { SpaceQuery } from './../../models/space';
 import { UserQuery } from './../../models/user';
 import { WorkItemQuery } from './../../models/work-item';
 
+import { ErrorHandler } from '../../effects/work-item-utils';
 import { FilterColumnModule } from '../../pipes/column-filter.module';
 import { TableConfigModule } from './../table-config/table-config.module';
 
 let providers = [
     WorkItemService,
-    {
-      provide: HttpService,
-      useFactory: factoryForHttpService,
-      deps: [XHRBackend, RequestOptions, AuthenticationService]
-    },
     CustomQueryService,
     IterationService,
     TooltipConfig,
@@ -73,7 +67,6 @@ let providers = [
     FilterService,
     BsDropdownConfig,
     CookieService,
-    WorkItemDataService,
     UrlService,
     InfotipService,
     CommentQuery,
@@ -85,7 +78,8 @@ let providers = [
     SpaceQuery,
     GroupTypeQuery,
     WorkItemTypeQuery,
-    SpaceQuery
+    SpaceQuery,
+    ErrorHandler
   ];
 
 @NgModule({
@@ -94,6 +88,7 @@ let providers = [
     CommonModule,
     ClickOutModule,
     FilterColumnModule,
+    PlannerHttpClientModule,
     PlannerListRoutingModule,
     PlannerLayoutModule,
     PlannerModalModule,

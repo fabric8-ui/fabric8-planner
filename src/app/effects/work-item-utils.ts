@@ -1,7 +1,42 @@
-import { Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { ofType } from '@ngrx/effects';
+import { Action } from '@ngrx/store';
+import { Notification, Notifications, NotificationType } from 'ngx-base';
+import { Observable, of as ObservableOf, pipe } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { withLatestFrom } from 'rxjs/operators';
 import { WorkItemUI } from '../models/work-item';
 import { FilterService } from '../services/filter.service';
 import { WorkItemService } from '../services/work-item.service';
+
+
+export const filterTypeWithSpace = (x: string, y) => pipe(
+  ofType(x),
+  withLatestFrom(y)
+);
+
+@Injectable()
+export class ErrorHandler {
+  constructor(private notifications: Notifications) {}
+
+  public handleError<T>(error: any, msg: string, nextActions: T | T[]): T[] {
+    this.notifyError(msg);
+    console.log('#################', error);
+    return Array.isArray(nextActions) ? nextActions : [nextActions];
+  }
+
+  private notifyError(msg: string): void {
+    try {
+      this.notifications.message({
+        message: msg,
+        type: NotificationType.DANGER
+      } as Notification);
+    } catch (e) {
+      console.log('Problem in fetching Areas.');
+    }
+  }
+
+}
 
 export function workitemMatchesFilter(route,
   filterService: FilterService,
@@ -14,10 +49,10 @@ export function workitemMatchesFilter(route,
         && currentRoute['q'].includes('boardContextId')) ||
         (document.location.pathname.indexOf('/query') > -1)
       ) {
-        return Observable.of(workitem);
+        return ObservableOf(workitem);
     }
     if (Object.keys(currentRoute).length === 0 && currentRoute.constructor === Object) {
-      return Observable.of(workitem);
+      return ObservableOf(workitem);
     } else {
       const wiQuery = filterService.queryBuilder(
         'number', filterService.equal_notation, workitem.number.toString()
@@ -36,12 +71,14 @@ export function workitemMatchesFilter(route,
       const searchPayload = {
         expression: finalQuery
       };
-      return workItemService.getWorkItems2(1, searchPayload)
-        .map(data => data.totalCount)
-        .map(count => {
-          workitem.bold = count > 0;
-          return workitem;
-        });
+      return workItemService.getWorkItems(1, searchPayload)
+        .pipe(
+          map(data => data.totalCount),
+          map(count => {
+            workitem.bold = count > 0;
+            return workitem;
+          })
+        );
     }
 }
 

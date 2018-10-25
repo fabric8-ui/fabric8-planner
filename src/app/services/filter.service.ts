@@ -1,14 +1,10 @@
-import { Inject, Injectable } from '@angular/core';
-import { Headers, Http } from '@angular/http';
+import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { cloneDeep } from 'lodash';
-import { Spaces, WIT_API_URL } from 'ngx-fabric8-wit';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { WorkItem } from './../models/work-item';
-import { HttpService } from './http-service';
-
+import { Observable, Subject, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { FilterModel } from '../models/filter.model';
+import { HttpClientService } from '../shared/http-module/http.service';
+import { WorkItem } from './../models/work-item';
 
 @Injectable()
 export class FilterService {
@@ -16,7 +12,6 @@ export class FilterService {
   public activeFilters = [];
   public filterChange = new Subject();
   public filterObservable: Subject<any> = new Subject();
-  private headers = new Headers({'Content-Type': 'application/json'});
 
   public and_notation = '$AND';
   public or_notation = '$OR';
@@ -56,10 +51,8 @@ export class FilterService {
   };
 
   constructor(
-    private http: HttpService,
-    private spaces: Spaces,
-    private route: ActivatedRoute,
-    @Inject(WIT_API_URL) private baseApiUrl: string
+    private httpClientService: HttpClientService,
+    private route: ActivatedRoute
   ) {}
 
   setFilterValues(id, value): void {
@@ -142,40 +135,16 @@ export class FilterService {
    * @param apiUrl - The url to get list of all filters
    * @return Observable of FilterModel[] - Array of filters
    */
-  getFilters(): Observable<FilterModel[]> {
-    return this.spaces.current.switchMap(space => {
-      if (space) {
-        let apiUrl = space.links.filters;
-        return this.http
-          .get(apiUrl)
-          .map(response => {
-            return response.json().data as FilterModel[];
-          })
-          .catch ((error: Error | any) => {
-            console.log('API returned error: ', error.message);
-            return Observable.throw('Error  - [FilterService - getFilters]' + error.message);
-          });
-      } else {
-        return Observable.of([] as FilterModel[]);
-      }
-    });
-  }
-
-  /**
-   * getFilters - Fetches all the available filters
-   * @param apiUrl - The url to get list of all filters
-   * @return Observable of FilterModel[] - Array of filters
-   */
-  getFilters2(apiUrl): Observable<FilterModel[]> {
-    return this.http
-      .get(apiUrl)
-      .map(response => {
-        return response.json().data as FilterModel[];
-      })
-      .catch ((error: Error | any) => {
-        console.log('API returned error: ', error.message);
-        return Observable.throw('Error  - [FilterService - getFilters]' + error.message);
-      });
+  getFilters(apiUrl): Observable<FilterModel[]> {
+    return this.httpClientService
+      .get<{data: FilterModel[]}>(apiUrl)
+      .pipe(
+        map(response => response.data as FilterModel[]),
+        catchError((error: Error | any) => {
+          console.log('API returned error: ', error.message);
+          return throwError('Error  - [FilterService - getFilters]' + error.message);
+        })
+      );
   }
 
   returnFilters() {
@@ -617,5 +586,24 @@ export class FilterService {
       );
     });
     return query;
+  }
+
+  /**
+   * This function takes only a query string
+   * and returns the parent number if it's only a child Query
+   * @param query
+   * @returns string
+   */
+  isOnlyChildQuery(query: string): string | null {
+    try {
+      const jsonQuery = this.queryToJson(query);
+      if (jsonQuery[this.or_notation] &&
+        jsonQuery[this.or_notation].length === 1 &&
+        jsonQuery[this.or_notation][0]['parent.number'] &&
+        jsonQuery[this.or_notation][0]['parent.number'][this.equal_notation]) {
+          return jsonQuery[this.or_notation][0]['parent.number'][this.equal_notation];
+      }
+    } catch {}
+    return null;
   }
 }

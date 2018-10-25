@@ -1,34 +1,58 @@
 import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger
+} from '@angular/animations';
+import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
   ViewChild
 } from '@angular/core';
-import { Router } from '@angular/router';
-import { Space } from 'ngx-fabric8-wit';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
+import { WorkItemLinkQuery } from '../../models/link';
 import { WorkItemLinkUI } from './../../models/link';
+import { WorkItemLinkTypeQuery } from './../../models/link-type';
 import { LinkTypeUI } from './../../models/link-type';
-import { WorkItem, WorkItemUI } from './../../models/work-item';
+import { WorkItemUI } from './../../models/work-item';
 
 import { WorkItemService } from '../../services/work-item.service';
 
 //ngrx stuff
 import { Store } from '@ngrx/store';
-import * as LinkTypeActions from './../../actions/link-type.actions';
 import * as WorkItemLinkActions from './../../actions/work-item-link.actions';
+import { SpaceQuery } from './../../models/space';
 import { AppState } from './../../states/app.state';
+import { TypeaheadDropdownItem } from './../typeahead-selector/typeahead-selector.component';
 
 @Component({
   selector: 'work-item-link',
   templateUrl: './work-item-link.component.html',
-  styleUrls: ['./work-item-link.component.less']
+  styleUrls: ['./work-item-link.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('linkState', [
+      state('inactive', style({
+        backgroundColor: '#fff'
+      })),
+      state('active',   style({
+        backgroundColor: '#39a5dc'
+      })),
+      transition('inactive => active', animate('0.2s 100ms')),
+      transition('active => inactive', animate('0.2s 100ms'))
+    ])
+  ]
 })
 
-export class WorkItemLinkComponent implements OnInit {
+export class WorkItemLinkComponent implements OnInit, OnDestroy {
   @Input() context: string = 'list';
   @Input() loggedIn: Boolean;
   @Input() detailContext: string; // It should be detail or preview
@@ -38,199 +62,99 @@ export class WorkItemLinkComponent implements OnInit {
   @ViewChild('wiSearchBox') wiSearchBox: ElementRef;
 
   @Input('workItem') set workItemSetter(workItem: WorkItemUI) {
-    this.workItem = workItem;
-    this.store.dispatch(
-      new WorkItemLinkActions.Get(this.workItem.link + '/relationships/links')
-    );
-    this.setSearchNotAllowedIds();
+    if (this.workItem === null || this.workItem.id !== workItem.id) {
+      this.workItem = workItem;
+      this.store.dispatch(
+        new WorkItemLinkActions.Get(this.workItem.link + '/relationships/links')
+      );
+      // Reset links value for the new work item first
+      this.store.dispatch(new WorkItemLinkActions.ResetLinks());
+      this.searchNotAllowedIds = [];
+      this.setSearchNotAllowedIds();
+    }
   }
 
+  // This is needed to check if workItem was changed
+  // Because even during the update input comes through
   private workItem: WorkItemUI = null;
-  private eventListeners: any[] = [];
-  private linkTypes: LinkTypeUI[] = [];
-  private workItemLinks: WorkItemLinkUI[] = [];
-  private showLinkComponent: Boolean = false;
-  private selectedTab: string | null = null;
-  private showLinkView: Boolean = false;
-  private showLinkCreator: Boolean = true;
-  private selectedLinkType: LinkTypeUI = null;
-  searchWorkItems: WorkItem[] = [];
-  searchNotAllowedIds: string[] = [];
-  selectedWorkItemId: string;
-  selectedValue: string = '';
 
-  private spaceSource = this.store
-    .select('planner')
-    .select('space')
-    .filter(s => !!s);
-  private linkTypeSource = this.store
-    .select('detailPage')
-    .select('linkType')
-    .filter(lt => !!lt.length);
-  private workItemLinkSource = this.store
-    .select('detailPage')
-    .select('workItemLink');
+  selectedWorkItem: TypeaheadDropdownItem = null;
+  selectedLinkType: LinkTypeUI = null;
+
+  // These are being used in the template
+  linkTypesSource: Observable<LinkTypeUI[]> =
+   this.linkTypeQuery.getLinkTypesForDropdown
+   .pipe(tap(types => this.selectedLinkType = types[0])); // Setting up the default link type
+  workItemLinksSource: Observable<WorkItemLinkUI[]> =
+    this.workItemLinkQuery.getWorkItemLinks
+    .pipe(
+      tap(links => {
+      // Reset the create environment
+      this.selectedWorkItem = null;
+      this.lockCreation = false;
+
+      // to remove the highlight from newly added item
+      if (links && links.findIndex(l => l.newlyAdded) > -1) {
+        setTimeout(() => {
+          this.store.dispatch(
+            new WorkItemLinkActions.TrivializeAll()
+          );
+        }, 3000);
+      }
+    })
+  );
+  workItemLinksCountSource: Observable<number> =
+    this.workItemLinkQuery.getWorkItemLinksCount;
+  showLinkComponent: Boolean = false;
+  lockCreation: boolean = false;
+
+  // This holds the work item ids not allowed to be in search result
+  searchNotAllowedIds: string[] = [];
 
   constructor(
     private store: Store<AppState>,
     private workItemService: WorkItemService,
-    private router: Router
+    private linkTypeQuery: WorkItemLinkTypeQuery,
+    private workItemLinkQuery: WorkItemLinkQuery,
+    private spaceQuery: SpaceQuery
   ) {}
 
-  ngOnInit() {
-    this.eventListeners.push(
-      this.spaceSource.take(1)
-        .subscribe((space: Space) => {
-          this.store.dispatch(new LinkTypeActions.Get());
-        })
-    );
-
-    Observable.combineLatest(
-      this.spaceSource,
-      this.linkTypeSource
-    ).take(1).subscribe(([
-      spaceSource,
-      linkTypeSource
-    ]) => {
-      this.linkTypes = [...linkTypeSource];
-      this.workItemLinkSource.subscribe(workItemLinks => {
-        this.workItemLinks = [...workItemLinks];
-        if (!this.workItemLinks.length) {
-          this.showLinkView = false;
-        }
-        this.selectedLinkType = null;
-        this.selectedWorkItemId = null;
-        if (this.linkTypeSelector && this.wiSearchBox) {
-          this.wiSearchBox.nativeElement.value = '';
-        }
-      });
-    });
+  ngOnDestroy() {
+    this.store.dispatch(new WorkItemLinkActions.ResetLinks());
   }
 
-  toggleLinkComponent(onlyOpen: Boolean = false) {
-    if (this.loggedIn) {
-      if (onlyOpen) {
-        this.showLinkComponent = true;
-      } else {
-        this.showLinkComponent = !this.showLinkComponent;
-      }
-    }
-    if (!this.showLinkComponent) {
-      this.selectedTab = null;
-    } else {
-      if (!this.selectedTab) {
-        this.selectedTab = 'all';
-      }
-    }
-  }
-
-  selectTab(linkTypeName: string | null = null) {
-    this.selectedTab = linkTypeName;
-    this.toggleLinkComponent(true);
-  }
-
-  toggleLinkView() {
-    this.showLinkView = !this.showLinkView;
-  }
-
-  toggleLinkCreator() {
-    this.showLinkCreator = !this.showLinkCreator;
-  }
-
-  onSelectRelation(relation: any): void {
-    //clear the search box and reset values related to search
-    this.wiSearchBox.nativeElement.value = '';
-    this.searchWorkItems = [];
-    this.selectedWorkItemId = null;
-    this.selectedLinkType = relation;
-  }
+  ngOnInit() {}
 
   setSearchNotAllowedIds() {
     this.searchNotAllowedIds.push(this.workItem.id);
   }
 
-  selectSearchResult(id: string, number: number, title: string) {
-    this.selectedWorkItemId = id;
-    this.selectedValue = number + ' - ' + title;
-    this.searchWorkItems = [];
+  onSelectRelation(selectedLinkTypes: LinkTypeUI[]): void {
+    this.selectedLinkType = selectedLinkTypes[0];
   }
 
-  searchWorkItem(term, event) {
-    event.stopPropagation();
-    //console.log(this.searchResultList.nativeElement.children.length);
-    if (event.keyCode == 40 || event.keyCode == 38) {
-      let lis = this.searchResultList.nativeElement.children;
-      let i = 0;
-      for (; i < lis.length; i++) {
-        if (lis[i].classList.contains('selected')) {
-          break;
-        }
-      }
-      if (i == lis.length) { // No existing selected
-        if (event.keyCode == 40) { // Down arrow
-          lis[0].classList.add('selected');
-          lis[0].scrollIntoView(false);
-        } else { // Up arrow
-          lis[lis.length - 1].classList.add('selected');
-          lis[lis.length - 1].scrollIntoView(false);
-        }
-      } else { // Existing selected
-        lis[i].classList.remove('selected');
-        if (event.keyCode == 40) { // Down arrow
-          lis[(i + 1) % lis.length].classList.add('selected');
-          lis[(i + 1) % lis.length].scrollIntoView(false);
-        } else { // Down arrow
-          // In javascript mod gives exact mod for negative value
-          // For example, -1 % 6 = -1 but I need, -1 % 6 = 5
-          // To get the round positive value I am adding the divisor
-          // with the negative dividend
-          lis[(((i - 1) % lis.length) + lis.length) % lis.length].classList.add('selected');
-          lis[(((i - 1) % lis.length) + lis.length) % lis.length].scrollIntoView(false);
-        }
-      }
-    } else if (event.keyCode == 13) { // Enter key event
-        let lis = this.searchResultList.nativeElement.children;
-        let i = 0;
-        for (; i < lis.length; i++) {
-          if (lis[i].classList.contains('selected')) {
-            break;
-          }
-        }
-        if (i < lis.length) {
-          let selectedId = lis[i].dataset.wiid;
-          let selectedNumber = lis[i].dataset.winumber;
-          let selectedTitle = lis[i].dataset.wititle;
-          this.selectSearchResult(selectedId, selectedNumber, selectedTitle);
-        }
-    } else { // Normal case - search on type
-      if (term.trim() != '') {
-      // Search on atleast 3 char or numeric
-        if (term.length >= 3 || !isNaN(term)) {
-          this.workItemService.searchLinkWorkItem(term)
-            .subscribe((searchData: WorkItem[]) => {
-              this.searchWorkItems = searchData.filter((item) => {
-                return this.searchNotAllowedIds.indexOf(item.id) == -1;
-              });
-            }, err => console.log(err));
-        }
-      } else {
-        // Reseting search data
-        this.searchWorkItems = [];
-        if (this.selectedWorkItemId) {
-          // this.resetSearchData();
-        }
-      }
+  onSelectWorkItem(event) {
+    if (Array.isArray(event) && event.length > 0) {
+      this.selectedWorkItem = event[0];
+    } else {
+      this.selectedWorkItem = null;
     }
   }
 
-  createLink(link) {
-    let linkPayload = this.createLinkObject(
-      this.workItem.id,
-      this.selectedWorkItemId,
-      this.selectedLinkType.id,
-      this.selectedLinkType.linkType
-    );
-    this.store.dispatch(new WorkItemLinkActions.Add(linkPayload));
+  createLink(event: Event) {
+    if (
+      this.selectedLinkType &&
+      this.selectedWorkItem &&
+      !this.lockCreation) {
+      this.lockCreation = true;
+      let linkPayload = this.createLinkObject(
+        this.workItem.id,
+        this.selectedWorkItem.key,
+        this.selectedLinkType.id,
+        this.selectedLinkType.linkType
+      );
+      this.store.dispatch(new WorkItemLinkActions.Add(linkPayload));
+    }
   }
 
   deleteLink(event, wiLink, workItem) {
@@ -244,6 +168,25 @@ export class WorkItemLinkComponent implements OnInit {
     this.onLinkClick.emit({
       number: wiNumber
     });
+  }
+
+  searchWorkItem(term: string): Observable<TypeaheadDropdownItem[]> {
+    return this.spaceQuery.getCurrentSpace.pipe(
+      switchMap(space => {
+        return this.workItemService.searchLinkWorkItem(term, space.id)
+        .pipe(map(items => {
+          return items
+          .filter(item => this.searchNotAllowedIds.indexOf(item.id) == -1)
+          .map(item => {
+            return {
+              key: item.id,
+              value: `${item.attributes['system.number']} - ${item.attributes['system.title']}`,
+              selected: false
+            };
+          });
+        }));
+      })
+    );
   }
 
   createLinkObject(sourceId: string, targetId: string, linkId: string, linkType: string) {

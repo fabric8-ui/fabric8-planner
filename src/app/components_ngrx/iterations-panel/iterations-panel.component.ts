@@ -1,25 +1,23 @@
 import {
   Component, Input, OnChanges,
-  OnDestroy, OnInit, TemplateRef,
+  OnDestroy, OnInit,
   ViewChild, ViewEncapsulation
 } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
 
-import { Broadcaster, Logger, Notification, Notifications, NotificationType } from 'ngx-base';
+import { Broadcaster, Logger, Notifications } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
 
 import { IterationQuery, IterationUI } from '../../models/iteration.model';
-import { WorkItem } from '../../models/work-item';
-import { GroupTypesService } from '../../services/group-types.service';
 import { IterationService } from '../../services/iteration.service';
 import { WorkItemService }   from '../../services/work-item.service';
 import { FabPlannerIterationModalComponent } from '../iterations-modal/iterations-modal.component';
 import { FilterService } from './../../services/filter.service';
 
 // ngrx stuff
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { GroupTypeUI } from '../../models/group-types.model';
 import * as IterationActions from './../../actions/iteration.actions';
 import { AppState } from './../../states/app.state';
@@ -51,12 +49,14 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   eventListeners: any[] = [];
   treeIterations: Observable<IterationUI[]> =
     this.iterationQuery.getIterationForTree()
-    .filter(i => !!i.length)
-    .do(i => {
-      if (!this.startedCheckingURL) {
-        this.checkURL();
-      }
-    });
+    .pipe(
+      filter(i => !!i.length),
+      tap(i => {
+        if (!this.startedCheckingURL) {
+          this.checkURL();
+        }
+      })
+    );
   activeIterations: Observable<IterationUI[]> =
     this.iterationQuery.getActiveIterations();
   spaceId: string = '';
@@ -82,8 +82,10 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     this.loggedIn = this.auth.isLoggedIn();
     this.editEnabled = true;
     this.spaceSubscription = this.store
-      .select('planner')
-      .select('space')
+      .pipe(
+        select('planner'),
+        select('space')
+      )
       .subscribe(space => {
         if (space) {
           console.log('[IterationComponent] New Space selected: ' + space.attributes.name);

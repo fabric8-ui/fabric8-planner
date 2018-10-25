@@ -1,108 +1,95 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect } from '@ngrx/effects';
+import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { Notification, Notifications, NotificationType } from 'ngx-base';
 import { Observable } from 'rxjs';
-import { AppState } from './../states/app.state';
 
 import * as IterationActions from '.././actions/iteration.actions';
 import { IterationService } from '.././services/iteration.service';
-import { UpdateWorkitemIteration } from '../actions/work-item.actions';
-import { IterationMapper, IterationUI } from '../models/iteration.model';
+import { IterationMapper } from '../models/iteration.model';
 
-import { normalizeArray } from '../models/common.model';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { cleanObject, normalizeArray } from '../models/common.model';
+import { SpaceQuery } from '../models/space';
+import { ErrorHandler, filterTypeWithSpace } from './work-item-utils';
 
 
 @Injectable()
 export class IterationEffects {
   constructor(private actions$: Actions,
-               private iterationService: IterationService,
-               private notifications: Notifications,
-               private store: Store<AppState>) {
-  }
+    private iterationService: IterationService,
+    private spaceQuery: SpaceQuery,
+    private errHandler: ErrorHandler
+  ) {}
 
   @Effect() getIterations$: Observable<Action> = this.actions$
-    .ofType(IterationActions.GET)
-    .withLatestFrom(this.store.select('planner').select('space'))
-    .switchMap(([action, space]) => {
-      return this.iterationService.getIterations2(
+    .pipe(
+      filterTypeWithSpace(IterationActions.GET, this.spaceQuery.getCurrentSpace),
+      switchMap(([action, space]) => {
+        return this.iterationService.getIterations(
           space.relationships.iterations.links.related
         )
-        .map(iterations => {
-           const itMapper = new IterationMapper();
-           return iterations.map(it => itMapper.toUIModel(it));
-        })
-        .map(iterations => (new IterationActions.GetSuccess(normalizeArray(iterations))))
-        .catch(() => Observable.of(new IterationActions.GetError()));
-    });
+        .pipe(
+          map(iterations => {
+            const itMapper = new IterationMapper();
+            return iterations.map(it => itMapper.toUIModel(it));
+          }),
+          map(iterations => (new IterationActions.GetSuccess(normalizeArray(iterations)))),
+          catchError(err => this.errHandler.handleError(
+            err, 'Problem in Fetching Iterations', new IterationActions.GetError()
+          ))
+        );
+      })
+    );
 
   @Effect() addIteration$: Observable<Action> = this.actions$
-    .ofType(IterationActions.ADD)
-    .switchMap((action: IterationActions.Add) => {
-      const itMapper = new IterationMapper();
-      const iteration = itMapper.toServiceModel(action.payload.iteration);
-      const parent = action.payload.parent ?
-        itMapper.toServiceModel(action.payload.parent) :
-        null;
-      return this.iterationService.createIteration(iteration, parent)
-        .map(iteration => {
-          return itMapper.toUIModel(iteration);
-        })
-        .map(iteration => {
-          let iterationName = iteration.name;
-          if (iterationName.length > 15) {
-            iterationName = iterationName.slice(0, 15) + '...';
-          }
-          return new IterationActions.AddSuccess({
-            iteration, parent: parent ? itMapper.toUIModel(parent) : null
-          });
-        })
-        .catch(() => {
-          try {
-            this.notifications.message({
-              message: `There was some problem adding the iteration.`,
-              type: NotificationType.DANGER
-            } as Notification);
-          } catch (e) {
-            console.log('There was some problem adding the iteration..');
-          }
-          return Observable.of(new IterationActions.AddError());
-        });
-    });
+    .pipe(
+      filterTypeWithSpace(IterationActions.ADD, this.spaceQuery.getCurrentSpace),
+      switchMap(([action, space]) => {
+        const itMapper = new IterationMapper();
+        const iteration = itMapper.toServiceModel(action.payload.iteration);
+        cleanObject(iteration, ['id']);
+        const url = action.payload.parent ?
+          action.payload.parent.link :
+          space.relationships.iterations.links.related;
+        return this.iterationService.createIteration(url, iteration)
+        .pipe(
+          map(iteration => {
+            return itMapper.toUIModel(iteration);
+          }),
+          map(iteration => {
+            return new IterationActions.AddSuccess({
+              iteration: iteration,
+              parent: action.payload.parent ? action.payload.parent : null
+            });
+          }),
+          catchError(err => this.errHandler.handleError(
+            err, 'Problem in adding Iterations', new IterationActions.AddError()
+          ))
+        );
+      })
+    );
 
   @Effect() updateIteration$: Observable<Action> = this.actions$
-    .ofType(IterationActions.UPDATE)
-    .switchMap((action: IterationActions.Update) => {
-      const itMapper = new IterationMapper();
-      const iteration = itMapper.toServiceModel(action.payload);
-      return this.iterationService.updateIteration(iteration)
-        .map(iteration => {
-          return itMapper.toUIModel(iteration);
-        })
-        .map(iteration => {
-          let iterationName = iteration.name;
-          if (iterationName.length > 15) {
-            iterationName = iterationName.slice(0, 15) + '...';
-          }
-          const payload = {
-            iteration: iteration
-          };
-          return [
-            new IterationActions.UpdateSuccess(iteration),
-            new UpdateWorkitemIteration(payload)
-          ];
-        })
-        .switchMap(res => res)
-        .catch(() => {
-          try {
-            this.notifications.message({
-              message: `There was some problem updating the iteration.`,
-              type: NotificationType.DANGER
-            } as Notification);
-          } catch (e) {
-            console.log('Error displaying notification.');
-          }
-          return Observable.of(new IterationActions.UpdateError());
-        });
-    });
+    .pipe(
+      ofType(IterationActions.UPDATE),
+      switchMap((action: IterationActions.Update) => {
+        const itMapper = new IterationMapper();
+        const iteration = itMapper.toServiceModel(action.payload);
+        return this.iterationService.updateIteration(iteration)
+          .pipe(
+            map(iteration => {
+              return itMapper.toUIModel(iteration);
+            }),
+            map(iteration => {
+              return [
+                new IterationActions.UpdateSuccess(iteration)
+              ];
+            }),
+            switchMap(res => res),
+            catchError(err => this.errHandler.handleError<Action>(
+              err, `There was some problem updating the iteration.`, new IterationActions.UpdateError()
+            ))
+          );
+      })
+    );
 }

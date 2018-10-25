@@ -20,7 +20,9 @@ export const UPDATE_WORKITEM_ITERATION = '[workItem] UpdateWorkitemIteration';
 export const CREATE_LINK = '[workItemLink] CreateLink';
 export const DELETE_LINK = '[workItemLink] DeleteLink';
 export const RESET_WORKITEMS = '[workItem] Reset WorkItems';
-export const GET_WORKITEM_CHILDREN_FOR_Query = '[workItem] GetWorkItemChildrenForQuery';
+export const GET_MORE_WORKITEMS = '[workItems] Get More WorkItems';
+export const GET_MORE_WORKITEMS_SUCCESS = '[workItems] Get More WorkItems Success';
+export const NEXT_LINK_SUCCESS = '[workItem] Next Link Success';
 
 export class Add implements Action {
   payload: {workItem: WorkItemService, createId: number, parentId: string, openDetailPage: boolean};
@@ -70,8 +72,8 @@ export class AddError implements Action {
 }
 
 export class GetSuccess implements Action {
-  payload: WorkItemUI[];
-  constructor(payload: any) {
+  payload: {workItems: WorkItemUI[], nextLink: string};
+  constructor(payload: {workItems: WorkItemUI[], nextLink: string}) {
     this.payload = payload;
   }
   readonly type = GET_SUCCESS;
@@ -173,16 +175,28 @@ export class DeleteLink implements Action {
   readonly type = DELETE_LINK;
 }
 
-export class GetWorkItemChildrenForQuery implements Action {
-  payload: string;
-  constructor(payload: string) {
-    this.payload = payload;
-  }
-  readonly type = GET_WORKITEM_CHILDREN_FOR_Query;
-}
-
 export class ResetWorkItems implements Action {
   readonly type = RESET_WORKITEMS;
+}
+
+export class GetMoreWorkItems implements Action {
+  payload: {
+    isShowTree: boolean;
+  };
+  constructor(payload: {
+    isShowTree: boolean;
+  }) {
+    this.payload = payload;
+  }
+  readonly type = GET_MORE_WORKITEMS;
+}
+
+export class GetMoreWorkItemsSuccess implements Action {
+  payload: {workItems: WorkItemUI[], nextLink: string};
+  constructor(payload: {workItems: WorkItemUI[], nextLink: string}) {
+    this.payload = payload;
+  }
+  readonly type = GET_MORE_WORKITEMS_SUCCESS;
 }
 
 export type All
@@ -203,4 +217,5 @@ export type All
   | CreateLink
   | DeleteLink
   | ResetWorkItems
-  | GetWorkItemChildrenForQuery;
+  | GetMoreWorkItems
+  | GetMoreWorkItemsSuccess;

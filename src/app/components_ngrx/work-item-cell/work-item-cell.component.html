@@ -24,25 +24,26 @@
       (click)="onPreview($event, row)"></p>
   </div>
   <div class="dib text-right wi-detail-icon">
-    <span *ngIf="context ==='query' && row.hasChildren"
-      class="fa fa-angle-right margin-left-10 bold padding-v-5 pointer"
+    <span *ngIf="context ==='query'"
+      class="fa fa-angle-right margin-left-10 padding-v-5"
+      [class.bold]="row.hasChildren"
+      [class.pointer]="row.hasChildren"
+      [class.click-disable]="!row.hasChildren"
       (click)="onExploration(row)"></span>
-      <span *ngIf="context ==='query' && !row.hasChildren"
-      class="fa fa-angle-right margin-left-10 icon__disabled padding-v-5 pointer"
-      style="cursor: not-allowed"
-      ></span>
-    <a class="fa fa-list-alt margin-left-15 padding-v-5 pointer"
+    <a class="fa fa-list-alt margin-left-5 padding-v-5 pointer"
       placement="right"
       tooltip="Open Detail View"
       [routerLink]="context === 'list' ? ['detail', row.number] : ['../', 'detail', row.number]"></a>
   </div>
 </div>
-<!-- Status -->
 
-<div *ngIf="col === 'state'">
-  <span class="padding-right-5 padding-top-4" almIcon [iconType]="row.state">
+<!-- Status -->
+<div class="f8-planner-cell__state"
+  *ngIf="col === 'state'">
+  <span class="padding-right-5 padding-top-4"
+    almIcon [iconType]="row.state">
   </span>
-  <span>
+  <span class="f8-planner-cell__state-text">
     {{ row.state }}
   </span>
 </div>

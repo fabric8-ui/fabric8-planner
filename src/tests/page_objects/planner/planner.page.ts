@@ -17,6 +17,7 @@ export class PlannerPage extends AppPage {
   detailPage = new planner.WorkItemDetailPage($('work-item-detail'));
   confirmModalButton = new planner.WorkItemList($('#modal-confirm'));
   boardView = new planner.BoardView($('planner-board'));
+  query = new planner.Query($('planner-query'));
 
   constructor(url: string) {
     super(url);

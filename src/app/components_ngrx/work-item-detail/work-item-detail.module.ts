@@ -39,9 +39,9 @@ import { initialState as initialCommentState } from './../../states/comment.stat
 import {
   initialState as initialDetailWIState
 } from './../../states/detail-work-item.state';
-import { EventState, initialState as initialEventState } from './../../states/event.state';
-import { initialState as initialLinkTypeState, LinkTypeState } from './../../states/link-type.state';
-import { initialState as initialWILinkState, WorkItemLinkState } from './../../states/work-item-link.state';
+import { initialState as initialEventState } from './../../states/event.state';
+import { initialState as initialLinkTypeState } from './../../states/link-type.state';
+import { initialState as initialWILinkState } from './../../states/work-item-link.state';
 
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { EventEffects } from '../../effects/event.effects';
@@ -50,11 +50,13 @@ import { EventReducer } from '../../reducers/event.reducer';
 import { UrlService } from '../../services/url.service';
 import { LabelSelectorModule } from '../label-selector/label-selector.module';
 
+import { ErrorHandler } from '../../effects/work-item-utils';
 import { AreaQuery } from '../../models/area.model';
 import { IterationQuery } from '../../models/iteration.model';
 import { WorkItemTypeQuery } from '../../models/work-item-type';
 import { CommentQuery } from './../../models/comment';
 import { LabelQuery } from './../../models/label.model';
+import { SpaceQuery } from './../../models/space';
 import { WorkItemQuery } from './../../models/work-item';
 import { ClickOutModule } from './../../widgets/clickout/clickout.module';
 import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
@@ -115,13 +117,15 @@ import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module
     UserQuery,
     UserMapper,
     UrlService,
+    SpaceQuery,
     BsDropdownConfig,
     AuthenticationService,
     TooltipConfig,
     IterationQuery,
     WorkItemQuery,
     AreaQuery,
-    WorkItemTypeQuery
+    WorkItemTypeQuery,
+    ErrorHandler
   ],
   declarations: [
     WorkItemDetailComponent,

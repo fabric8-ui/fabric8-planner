@@ -11,6 +11,8 @@ export const DELETE_SUCCESS = '[workItemLink] DeleteSuccess';
 export const ADD_ERROR = '[workItemLink] AddError';
 export const GET_ERROR = '[workItemLink] GetError';
 export const DELETE_ERROR = '[workItemLink] DeleteError';
+export const RESET_LINKS = '[workItemLink] Reset';
+export const TRIVIALIZE_ALL = '[workItemLink] TrivializeAll';
 
 export class Add implements Action {
   payload: WorkItemLinkService;
@@ -80,6 +82,14 @@ export class DeleteError implements Action {
   readonly type = DELETE_ERROR;
 }
 
+export class ResetLinks implements Action {
+  readonly type = RESET_LINKS;
+}
+
+export class TrivializeAll implements Action {
+  readonly type = TRIVIALIZE_ALL;
+}
+
 export type All
   = Add
   | AddSuccess
@@ -89,4 +99,6 @@ export type All
   | GetError
   | Delete
   | DeleteSuccess
-  | DeleteError;
+  | DeleteError
+  | ResetLinks
+  | TrivializeAll;
