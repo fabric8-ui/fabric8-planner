@@ -69,6 +69,10 @@ export class WorkItemList extends BaseElement {
     await this.workItem(title).clickLabel();
   }
 
+  async clickWorkItemDeleteIcon(title: string) {
+    await this.workItem(title).clickDeleteIcon();
+  }
+
   async isTitleTextBold(title: string) {
     return this.workItem(title).title.getAttribute('className');
   }

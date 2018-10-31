@@ -25,7 +25,7 @@ describe('Iteration test', () => {
     await planner.resetState();
   });
 
-  it('should create a new iteration', async () => {
+  xit('should create a new iteration', async () => {
     let newIteration = 'new Iteration';
     await planner.sidePanel.createNewIteration();
     await planner.iteration.addNewIteration(newIteration, null, true);
