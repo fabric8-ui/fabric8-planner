@@ -1,0 +1,6 @@
+<span *ngIf="allowDelete | async"
+  class="pficon-delete pointer"
+  placement="right"
+  tooltip="Delete work item"
+  (click)="deleteWorkItem($event)">
+</span>

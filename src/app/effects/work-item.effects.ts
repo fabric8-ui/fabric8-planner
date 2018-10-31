@@ -410,4 +410,27 @@ export class WorkItemEffects {
           );
       })
     );
+
+  @Effect() deleteWorkItem$: Observable<Action> = this.actions$
+  .pipe(
+    util.filterTypeWithSpace(WorkItemActions.DELETE, this.store.pipe(select(state => state.planner))),
+    map(([action, state]) => {
+      return {
+        payload: action.payload,
+        state: state
+      };
+    }),
+    switchMap((wp) => {
+      const workitem = this.workItemMapper.toServiceModel(wp.payload);
+      return this.workItemService.delete(workitem)
+        .pipe(
+          map(() => {
+            return new WorkItemActions.DeleteSuccess(wp.payload);
+          }),
+          catchError(err => this.errHandler.handleError<Action>(
+            err, `Problem in Deleting work item.`, new WorkItemActions.DeleteError()
+          ))
+        );
+    })
+  );
 }

@@ -18,9 +18,7 @@ import {
 import { AreaModel } from '../models/area.model';
 import { Link } from '../models/link';
 import { LinkTypeService } from '../models/link-type';
-import {
-  WorkItem
-} from '../models/work-item';
+import { WorkItem } from '../models/work-item';
 import { WorkItemType } from './../models/work-item-type';
 import { HttpBackendClient, HttpClientService } from './../shared/http-module/http.service';
 import { AreaService } from './area.service';
@@ -256,15 +254,18 @@ export class WorkItemService {
   }
 
   /**
-   * Usage: This method deletes an item
-   * removes the delted item from the big list
-   * re build the ID-Index map
-   *
-   * @param: WorkItem - workItem (Item to be delted)
+   * Usage: This method deletes an work item
+   *  @param workitem WorkItem
    */
-  delete(workItem: WorkItem): Observable<void> {
-    return this.httpClientService
-      .delete(workItem.links.self);
+  delete(workitem: WorkItem): Observable<any> {
+    let endpoint = workitem.links.self;
+    return this.httpClientService.delete(endpoint)
+      .pipe(
+        catchError((error: Error | any) => {
+          this.notifyError('Deleting workitem failed.', error);
+          return throwError(new Error(error.message));
+        })
+      );
   }
 
   /**
