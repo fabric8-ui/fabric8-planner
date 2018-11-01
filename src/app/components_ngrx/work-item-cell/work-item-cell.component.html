@@ -37,7 +37,8 @@
     <f8-delete-workitem 
       *ngIf="context === 'query'"
       class="margin-left-10 padding-v-5"
-      [workitem]="row">
+      [workitem]="row"
+      (onDelete)="onDelete.emit()">
     </f8-delete-workitem>
   </div>
 </div>

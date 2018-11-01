@@ -15,6 +15,7 @@ import {
   Comment
 } from '../models/comment';
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { AreaModel } from '../models/area.model';
 import { Link } from '../models/link';
 import { LinkTypeService } from '../models/link-type';
@@ -261,9 +262,9 @@ export class WorkItemService {
     let endpoint = workitem.links.self;
     return this.httpClientService.delete(endpoint)
       .pipe(
-        catchError((error: Error | any) => {
+        catchError((error: HttpErrorResponse) => {
           this.notifyError('Deleting workitem failed.', error);
-          return throwError(new Error(error.message));
+          return throwError(error);
         })
       );
   }

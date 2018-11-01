@@ -1,6 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Actions, Effect } from '@ngrx/effects';
+import { Actions, Effect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { Notification, Notifications, NotificationType } from 'ngx-base';
 import { empty, Observable, of } from 'rxjs';
@@ -411,26 +412,20 @@ export class WorkItemEffects {
       })
     );
 
-  @Effect() deleteWorkItem$: Observable<Action> = this.actions$
-  .pipe(
-    util.filterTypeWithSpace(WorkItemActions.DELETE, this.store.pipe(select(state => state.planner))),
-    map(([action, state]) => {
-      return {
-        payload: action.payload,
-        state: state
-      };
-    }),
-    switchMap((wp) => {
-      const workitem = this.workItemMapper.toServiceModel(wp.payload);
-      return this.workItemService.delete(workitem)
-        .pipe(
-          map(() => {
-            return new WorkItemActions.DeleteSuccess(wp.payload);
-          }),
-          catchError(err => this.errHandler.handleError<Action>(
-            err, `Problem in Deleting work item.`, new WorkItemActions.DeleteError()
-          ))
-        );
-    })
-  );
+    @Effect() deleteWorkItem$: Observable<Action> = this.actions$
+    .pipe(
+      ofType(WorkItemActions.DELETE),
+      switchMap((action: WorkItemActions.Delete) => {
+        const workitem = this.workItemMapper.toServiceModel(action.payload);
+        return this.workItemService.delete(workitem)
+          .pipe(
+            map(() => {
+              return new WorkItemActions.DeleteSuccess(action.payload);
+            }),
+            catchError((err: HttpErrorResponse) => this.errHandler.handleError<Action>(
+              err, `Problem in Deleting work item.`, new WorkItemActions.DeleteError()
+            ))
+          );
+      })
+    );
 }

@@ -10,7 +10,8 @@ import { AppState } from '../../states/app.state';
 
 @Component({
   selector: 'f8-delete-workitem',
-  templateUrl: './delete-work-item.component.html'
+  templateUrl: './delete-work-item.component.html',
+  styleUrls: ['./delete-work-item.component.less']
 })
 
 export class DeleteWorkitemComponent {
@@ -35,7 +36,7 @@ export class DeleteWorkitemComponent {
     private permissionQuery: PermissionQuery
   ) {}
 
-  deleteWorkItem(event: MouseEvent) {
+  deleteWorkItem(event: MouseEvent): void {
     let note = 'Are you sure you want to delete this work item?';
     if (this.workitem.hasChildren) {
       note = 'This work item has children. ' + note;
@@ -43,7 +44,7 @@ export class DeleteWorkitemComponent {
     this.modalService.openModal('Delete Work Item', note, 'Delete', 'deleteWorkItem')
       .pipe(
         first()
-      ).subscribe(actionKey => {
+      ).subscribe((actionKey: string) => {
           if (actionKey === 'deleteWorkItem') {
             this.onDelete.emit();
             this.store.dispatch(new Delete(this.workitem));
