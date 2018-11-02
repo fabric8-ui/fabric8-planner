@@ -14,11 +14,11 @@ import { AppState } from '../../states/app.state';
   styleUrls: ['./delete-work-item.component.less']
 })
 
-export class DeleteWorkitemComponent {
+export class DeleteWorkItemComponent {
 
-  @Input('workitem') set workitemInput(val: WorkItemUI) {
+  @Input('workItem') set workItemInput(val: WorkItemUI) {
     if (val) {
-      this.workitem = val;
+      this.workItem = val;
       this.allowDelete =
         this.permissionQuery.isAllowedToDelete(val);
     }
@@ -28,7 +28,7 @@ export class DeleteWorkitemComponent {
   @Output() readonly onDelete: EventEmitter<any> = new EventEmitter;
 
   allowDelete: Observable<boolean>;
-  workitem: WorkItemUI;
+  workItem: WorkItemUI;
 
   constructor(
     private modalService: ModalService,
@@ -38,7 +38,7 @@ export class DeleteWorkitemComponent {
 
   deleteWorkItem(event: MouseEvent): void {
     let note = 'Are you sure you want to delete this work item?';
-    if (this.workitem.hasChildren) {
+    if (this.workItem.hasChildren) {
       note = 'This work item has children. ' + note;
     }
     this.modalService.openModal('Delete Work Item', note, 'Delete', 'deleteWorkItem')
@@ -47,7 +47,7 @@ export class DeleteWorkitemComponent {
       ).subscribe((actionKey: string) => {
           if (actionKey === 'deleteWorkItem') {
             this.onDelete.emit();
-            this.store.dispatch(new Delete(this.workitem));
+            this.store.dispatch(new Delete(this.workItem));
           }
       });
   }

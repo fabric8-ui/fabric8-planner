@@ -7,7 +7,7 @@ export class ModalDialog extends BaseElement {
   content = new BaseElement(this.$('.modal-content'));
   // optional
   footer = new BaseElement(this.content.$('.modal-footer'));
-  confirm = new ui.Clickable(this.$('#modal-confirm'), 'Confirm');
+  confirm = new ui.Clickable(this.content.$('#modal-confirm'), 'Confirm');
 
   constructor(element: ElementFinder, name?: string) {
     super(element, name);
@@ -25,6 +25,8 @@ export class ModalDialog extends BaseElement {
   }
 
   async clickConfirmButton() {
+    await this.content.untilDisplayed();
+    await this.confirm.untilDisplayed();
     await this.confirm.clickWhenReady();
   }
 }

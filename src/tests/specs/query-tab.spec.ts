@@ -1,11 +1,9 @@
 import { browser } from 'protractor';
 import { PlannerPage } from '../page_objects/planner';
 import * as support from '../support';
-import { ModalDialog } from '../ui/modal_dialog';
 
 describe('Query tests', () => {
   let planner: PlannerPage;
-  let modal: ModalDialog;
   let c = new support.Constants();
   let testData;
 
@@ -44,13 +42,10 @@ describe('Query tests', () => {
     await planner.clickQueryTab();
     await planner.waitUntilUrlContains('query');
     await planner.query.createWorkItem(title);
-    await planner.quickPreview.notificationToast.untilCount(1);
-    expect(await planner.quickPreview.notificationToast.count()).toBe(1);
     await planner.query.enterQuery(searchQuery);
     expect(await planner.query.hasWorkItem(title)).toBe(true);
-    await planner.workItemList.clickWorkItemDeleteIcon(title);
-    await modal.clickConfirmButton();
-    await planner.query.enterQuery(searchQuery);
-    expect(await planner.query.hasWorkItem(title)).toBe(false);
+    await planner.query.clickWorkItemDeleteIcon(title);
+    await planner.modal.clickConfirmButton();
+    expect(await planner.query.emptyTemplateDisplayed()).toBe(true);
   });
 });

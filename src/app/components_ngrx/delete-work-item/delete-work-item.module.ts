@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { FeatureFlagModule } from 'ngx-feature-flag';
 import { ModalService } from '../../services/modal.service';
-import { DeleteWorkitemComponent } from './delete-work-item.component';
+import { DeleteWorkItemComponent } from './delete-work-item.component';
 
 @NgModule({
   imports: [
@@ -12,10 +12,10 @@ import { DeleteWorkitemComponent } from './delete-work-item.component';
     FeatureFlagModule
   ],
   declarations: [
-    DeleteWorkitemComponent
+    DeleteWorkItemComponent
   ],
   exports: [
-    DeleteWorkitemComponent
+    DeleteWorkItemComponent
   ],
   providers: [
     ModalService,
@@ -23,5 +23,5 @@ import { DeleteWorkitemComponent } from './delete-work-item.component';
   ]
 })
 
-export class DeleteWorkitemModule {}
+export class DeleteWorkItemModule {}
 

@@ -256,10 +256,10 @@ export class WorkItemService {
 
   /**
    * Usage: This method deletes an work item
-   *  @param workitem WorkItem
+   *  @param workItem WorkItem
    */
-  delete(workitem: WorkItem): Observable<any> {
-    let endpoint = workitem.links.self;
+  delete(workItem: WorkItem): Observable<any> {
+    let endpoint = workItem.links.self;
     return this.httpClientService.delete(endpoint)
       .pipe(
         catchError((error: HttpErrorResponse) => {

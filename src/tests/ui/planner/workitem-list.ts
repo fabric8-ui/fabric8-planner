@@ -14,6 +14,8 @@ export class WorkItemList extends BaseElement {
     this.$('.f8-quick-add-inline .dropdown-menu'),
     'Child WorkItem Type dropdown'
   );
+  empty_template = new BaseElement(this.$('.blank-slate-pf'), 'Empty work item template');
+  empty_workitem_list = new BaseElement(this.empty_template.$('#title'), 'No workitems available');
 
   constructor(el: ElementFinder, name = 'Work Item List') {
     super(el, name);
@@ -70,6 +72,7 @@ export class WorkItemList extends BaseElement {
   }
 
   async clickWorkItemDeleteIcon(title: string) {
+    await browser.actions().mouseMove(this.workItem(title)).perform();
     await this.workItem(title).clickDeleteIcon();
   }
 
@@ -87,5 +90,11 @@ export class WorkItemList extends BaseElement {
     let assignees: any = await this.$$('f8-assignee').getAttribute('innerText');
     let unassigned: any = assignees.filter((assignee: any) => assignee === assigneeName);
     return unassigned.length;
+  }
+
+  async emptyTemplateDisplayed() {
+    await this.empty_template.untilDisplayed();
+    await this.empty_workitem_list.untilDisplayed();
+    return this.empty_workitem_list.isDisplayed();
   }
 }

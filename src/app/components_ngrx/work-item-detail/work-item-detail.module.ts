@@ -54,7 +54,7 @@ import { ErrorHandler } from '../../effects/work-item-utils';
 import { AreaQuery } from '../../models/area.model';
 import { IterationQuery } from '../../models/iteration.model';
 import { WorkItemTypeQuery } from '../../models/work-item-type';
-import { DeleteWorkitemModule } from '../delete-work-item/delete-work-item.module';
+import { DeleteWorkItemModule } from '../delete-work-item/delete-work-item.module';
 import { CommentQuery } from './../../models/comment';
 import { LabelQuery } from './../../models/label.model';
 import { SpaceQuery } from './../../models/space';
@@ -87,7 +87,7 @@ import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module
     WorkItemLinkModule,
     ReactiveFormsModule,
     ClickOutModule,
-    DeleteWorkitemModule,
+    DeleteWorkItemModule,
     StoreModule.forFeature('detailPage', {
       comments: CommentReducer,
       workItem: DetailWorkItemReducer,

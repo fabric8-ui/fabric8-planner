@@ -110,10 +110,10 @@ export const WorkItemReducer: ActionReducer<WorkItemState> = (state = initialSta
 
     case WorkItemActions.DELETE_SUCCESS: {
       let newState = {...state};
-      let deletedWorkitem = action.payload;
+      let deletedWorkItem = action.payload;
       newState = {
         nextLink: newState.nextLink,
-        ...workItemAdapter.removeOne(deletedWorkitem.id, newState)
+        ...workItemAdapter.removeOne(deletedWorkItem.id, newState)
       };
       return {...newState};
     }

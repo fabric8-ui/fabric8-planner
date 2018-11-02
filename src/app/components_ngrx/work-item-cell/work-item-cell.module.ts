@@ -7,7 +7,7 @@ import { UserAvatarModule } from '../../widgets/user-avatar/user-avatar.module';
 
 import { RouterModule } from '@angular/router';
 import { TruncateModule } from 'ng2-truncate';
-import { DeleteWorkitemModule } from '../delete-work-item/delete-work-item.module';
+import { DeleteWorkItemModule } from '../delete-work-item/delete-work-item.module';
 import { AssigneesModule } from './../assignee/assignee.module';
 import { LabelsModule } from './../labels/labels.module';
 import { WorkItemCellComponent } from './work-item-cell.component';
@@ -23,7 +23,7 @@ import { WorkItemCellComponent } from './work-item-cell.component';
     TruncateModule,
     UserAvatarModule,
     WidgetsModule,
-    DeleteWorkitemModule
+    DeleteWorkItemModule
 ],
   declarations: [WorkItemCellComponent],
   exports: [WorkItemCellComponent],

@@ -416,8 +416,8 @@ export class WorkItemEffects {
     .pipe(
       ofType(WorkItemActions.DELETE),
       switchMap((action: WorkItemActions.Delete) => {
-        const workitem = this.workItemMapper.toServiceModel(action.payload);
-        return this.workItemService.delete(workitem)
+        const workItem = this.workItemMapper.toServiceModel(action.payload);
+        return this.workItemService.delete(workItem)
           .pipe(
             map(() => {
               return new WorkItemActions.DeleteSuccess(action.payload);

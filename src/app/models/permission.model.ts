@@ -40,13 +40,13 @@ export class PermissionQuery {
     );
   }
 
-  isAllowedToDelete(workitem): Observable<boolean> {
+  isAllowedToDelete(workItem): Observable<boolean> {
     return this.spaceQuery.getCurrentSpace
     .pipe(
       switchMap((space) => {
         return this.userService.loggedInUser.pipe(map(user => {
           let spaceOwnerId = space.relationships['owned-by'].data.id;
-          if (spaceOwnerId === user.id || workitem.creator === user.id) {
+          if (spaceOwnerId === user.id || workItem.creator === user.id) {
             return true;
           } else {
             return false;
