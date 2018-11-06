@@ -203,15 +203,15 @@ describe('Unit Test :: Filter Service', () => {
    * Tests to check constructQueryURL function
    * Test cases
    *
-   * Input - ('iteration%3Asprint%20%231%2Fsprint%20%231.1', {'parentexists': true})
-   * Output - '(iteration%3Asprint%20%231%2Fsprint%20%231.1)%20$AND%20(parentexists%3Atrue)'
+   * Input - ('iteration%3A%22sprint%20%231%2Fsprint%20%231.1%22', {'parentexists': true})
+   * Output - '(iteration%3A%22sprint%20%231%2Fsprint%20%231.1%22)%20$AND%20(parentexists%3Atrue)'
    */
 
   it('should return existing query in case of empty options', () => {
     expect(
-      filterService.constructQueryURL('iteration%3Asprint%20%231%2Fsprint%20%231.1', {})
+      filterService.constructQueryURL('iteration%3A%22sprint%20%231%2Fsprint%20%231.1%22', {})
     ).toBe(
-      'iteration:sprint #1/sprint #1.1'
+      'iteration:"sprint #1/sprint #1.1"'
     );
   });
 
@@ -227,23 +227,23 @@ describe('Unit Test :: Filter Service', () => {
     expect(
       filterService.constructQueryURL('', {'parentexists': true, 'iteration': 'Sprint #1/Sprint #1.1'})
     ).toBe(
-      '(parentexists:true $AND iteration:Sprint #1/Sprint #1.1)'
+      '(parentexists:true $AND iteration:"Sprint #1/Sprint #1.1")'
     );
   });
 
   it('should return processed options in case of empty existing query', () => {
     expect(
-      filterService.constructQueryURL('iteration%3ASprint%20%231%2FSprint%20%231.1', {'parentexists': true})
+      filterService.constructQueryURL('iteration%3A%22Sprint%20%231%2FSprint%20%231.1%22', {'parentexists': true})
     ).toBe(
-      '(iteration:Sprint #1/Sprint #1.1 $AND parentexists:true)'
+      '(iteration:"Sprint #1/Sprint #1.1" $AND parentexists:true)'
     );
   });
 
   it('should return processed options in case of empty existing query - 1', () => {
     expect(
-      filterService.constructQueryURL('iteration%3ASprint%20%231%2FSprint%20%231.1', {'somekey': 'somevalue, anothervalue'})
+      filterService.constructQueryURL('iteration%3A%22Sprint%20%231%2FSprint%20%231.1%22', {'somekey': 'somevalue, anothervalue'})
     ).toBe(
-      '(iteration:Sprint #1/Sprint #1.1 $AND somekey:somevalue $AND somekey: anothervalue)'
+      '(iteration:"Sprint #1/Sprint #1.1" $AND somekey:somevalue $AND somekey:anothervalue)'
     );
   });
 
@@ -318,8 +318,8 @@ describe('Unit Test :: Filter Service', () => {
   });
 
   it('should return correct query string - 11', () => {
-    expect(filterService.jsonToQuery({'$OR': [{'a': {'$EQ': 'b'}}, {'$AND': [{'c': {'$EQ': 'd'}}, {'d': {'$EQ': 'e'}}, {'$OR': [{'l': {'$EQ': 'm'}}, {'n': {'$EQ': 'p'}}]}, {'f': {'$EQ': 'g'}}]}]}))
-    .toBe('(a:b $OR (c:d $AND d:e $AND (l:m $OR n:p) $AND f:g))');
+    expect(filterService.jsonToQuery({'$OR': [{'a': {'$EQ': 'b'}}, {'$AND': [{'c': {'$EQ': 'd a'}}, {'d': {'$EQ': 'e'}}, {'$OR': [{'l': {'$EQ': 'm'}}, {'n': {'$EQ': 'p'}}]}, {'f': {'$NE': 'g e'}}]}]}))
+    .toBe('(a:b $OR (c:"d a" $AND d:e $AND (l:m $OR n:p) $AND f!"g e"))');
   });
 
   it('should return correct query string - 12', () => {
@@ -673,6 +673,10 @@ describe('Unit Test :: Filter Service', () => {
     expect(filterService.queryToJson('typegroup.name:Work Items $AND iteration.name:Sprint #101')).toEqual({'$AND': [{'typegroup.name': {'$EQ': 'Work Items'}}, {'iteration.name': {'$EQ': 'Sprint #101'}}]});
   });
 
+  it('should convert to json with quote in value', () => {
+    expect(filterService.queryToJson('typegroup.name:"Work Items" $AND iteration.name:"Sprint #101"')).toEqual({'$AND': [{'typegroup.name': {'$EQ': 'Work Items'}}, {'iteration.name': {'$EQ': 'Sprint #101'}}]});
+  });
+
   it('should get a condition form query', () => {
     expect(filterService.getConditionFromQuery('typegroup.name:Work Items', 'typegroup.name')).toEqual('Work Items');
   });
@@ -685,4 +689,37 @@ describe('Unit Test :: Filter Service', () => {
     expect(filterService.getConditionFromQuery('typegroup.name:Work Items $OR iteration.name:Sprint #101', 'typegroup.name')).toEqual(undefined);
   });
 
+  /**
+   * Tets for string enclouser function
+   */
+
+  it('encloseValue :: should enclose the string with space - 1', () => {
+    expect(filterService.encloseValue('The string has space')).toBe(
+      filterService.str_enclouser + 'The string has space' + filterService.str_enclouser
+    );
+  });
+
+  it('encloseValue :: should not enclose the string with space and already enclosed - 1', () => {
+    expect(filterService.encloseValue(filterService.str_enclouser + 'The string has space' + filterService.str_enclouser)).toBe(
+      filterService.str_enclouser + 'The string has space' + filterService.str_enclouser
+    );
+  });
+
+  it('encloseValue :: should not enclose the string with no space - 2', () => {
+    expect(filterService.encloseValue('Thestringhasnospace')).toBe(
+      'Thestringhasnospace'
+    );
+  });
+
+  it('clearEnclosedValue :: should clear the enclosed string with space - 1', () => {
+    expect(filterService.clearEnclosedValue(filterService.str_enclouser + 'The string has space' + filterService.str_enclouser)).toBe(
+      'The string has space'
+    );
+  });
+
+  it('clearEnclosedValue :: should clear the enclosed string with no space - 2', () => {
+    expect(filterService.clearEnclosedValue('Thestringhasnospace')).toBe(
+      'Thestringhasnospace'
+    );
+  });
 });
