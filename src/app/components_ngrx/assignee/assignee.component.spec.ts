@@ -10,7 +10,8 @@ import { AssigneesComponent } from './assignee.component';
 
 
 describe('AssigneeComponent', () => {
-  let fixture, comp;
+  let fixture: ComponentFixture<AssigneesComponent>,
+    comp: AssigneesComponent;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
