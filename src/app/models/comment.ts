@@ -18,6 +18,7 @@ import {
   modelService,
   switchModel
 } from './common.model';
+import { ATTRIBUTES, BODY, BODY_RENDERED, BODY_RENDERED_UI, CREATED_AT, CREATED_AT_UI, CREATOR, CREATOR_ID, DATA, ID, LINKS, MARKUP, PARENT_COMMENT, PARENT_ID, RELATIONSHIPS, SELF, SELFLINK_UI, TYPE } from './constant';
 import { UserMapper, UserQuery, UserUI } from './user';
 
 export class Comment extends modelService {
@@ -46,9 +47,9 @@ export class CommentLink {
 
 export class CommentAttributes {
     body: string;
-    'body.rendered': string;
-    'markup': string;
-    'created-at': string;
+    BODY_RENDERED: string;
+    MARKUP: string;
+    CREATED_AT: string;
 }
 
 export class Comments {
@@ -79,58 +80,58 @@ export class CommentMapper implements Mapper<CommentService, CommentUI> {
   constructor() {}
 
   serviceToUiMapTree: MapTree = [{
-    fromPath: ['id'],
-    toPath: ['id']
+    fromPath: [ID],
+    toPath: [ID]
   }, {
-    fromPath: ['attributes', 'body'],
-    toPath: ['body']
+    fromPath: [ATTRIBUTES, BODY],
+    toPath: [BODY]
   }, {
-    fromPath: ['attributes', 'markup'],
-    toPath: ['markup']
+    fromPath: [ATTRIBUTES, MARKUP],
+    toPath: [MARKUP]
   }, {
-    fromPath: ['attributes', 'created-at'],
-    toPath: ['createdAt']
+    fromPath: [ATTRIBUTES, CREATED_AT],
+    toPath: [CREATED_AT_UI]
   }, {
-    fromPath: ['attributes', 'body.rendered'],
-    toPath: ['bodyRendered']
+    fromPath: [ATTRIBUTES, BODY_RENDERED],
+    toPath: [BODY_RENDERED_UI]
   }, {
-    fromPath: ['relationships', 'creator', 'data', 'id'],
-    toPath: ['creatorId']
+    fromPath: [RELATIONSHIPS, CREATOR, DATA, ID],
+    toPath: [CREATOR_ID]
   }, {
-    fromPath: ['links', 'self'],
-    toPath: ['selfLink']
+    fromPath: [LINKS, SELF],
+    toPath: [SELFLINK_UI]
   }, {
-    fromPath: ['relationships', 'parent-comment', 'data', 'id'],
-    toPath: ['parentId']
+    fromPath: [RELATIONSHIPS, PARENT_COMMENT, DATA, ID],
+    toPath: [PARENT_ID]
   }];
 
   uiToServiceMapTree: MapTree = [{
-    toPath: ['id'],
-    fromPath: ['id']
+    toPath: [ID],
+    fromPath: [ID]
   }, {
-    toPath: ['attributes', 'body'],
-    fromPath: ['body']
+    toPath: [ATTRIBUTES, BODY],
+    fromPath: [BODY]
   }, {
-    toPath: ['attributes', 'markup'],
+    toPath: [ATTRIBUTES, MARKUP],
     toValue: 'Markdown'
   }, {
-    toPath: ['attributes', 'created-at'],
-    fromPath: ['createdAt']
+    toPath: [ATTRIBUTES, CREATED_AT],
+    fromPath: [CREATED_AT_UI]
   }, {
-    toPath: ['attributes', 'body.rendered'],
-    fromPath: ['bodyRendered']
+    toPath: [ATTRIBUTES, BODY_RENDERED],
+    fromPath: [BODY_RENDERED_UI]
   }, {
-    toPath: ['type'],
+    toPath: [TYPE],
     toValue: 'comments'
   }, {
-    toPath: ['links', 'self'],
-    fromPath: ['selfLink']
+    toPath: [LINKS, SELF],
+    fromPath: [SELFLINK_UI]
   }, {
-    toPath: ['relationships', 'parent-comment', 'data', 'id'],
-    fromPath: ['parentId']
+    toPath: [RELATIONSHIPS, PARENT_COMMENT, DATA, ID],
+    fromPath: [PARENT_ID]
   }, {
-    toPath: ['relationships', 'parent-comment', 'data', 'type'],
-    fromPath: ['parentId'],
+    toPath: [RELATIONSHIPS, PARENT_COMMENT, DATA, TYPE],
+    fromPath: [PARENT_ID],
     toFunction: (v) => !!v ? 'comments' : null
   }];
 

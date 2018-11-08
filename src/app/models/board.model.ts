@@ -19,6 +19,17 @@ import {
   modelService,
   switchModel
 } from './common.model';
+import {
+   ATTRIBUTES,
+   COLUMNS,
+   CONTEXT,
+   CONTEXT_TYPE,
+   DATA,
+   DESCRIPTION,
+   ID,
+   NAME,
+   RELATIONSHIPS
+  } from './constant';
 import { SpaceQuery } from './space';
 import { WorkItemQuery, WorkItemUI } from './work-item';
 
@@ -80,23 +91,23 @@ export class BoardModelUI {
 
 export class BoardMapper implements Mapper<BoardModelData, BoardModelUI> {
   serviceToUiMapTree: MapTree = [{
-    fromPath: ['id'],
-    toPath: ['id']
+    fromPath: [ID],
+    toPath: [ID]
   }, {
-    fromPath: ['attributes', 'name'],
-    toPath: ['name']
+    fromPath: [ATTRIBUTES, NAME],
+    toPath: [NAME]
   }, {
-    fromPath: ['attributes', 'description'],
-    toPath: ['description']
+    fromPath: [ATTRIBUTES, DESCRIPTION],
+    toPath: [DESCRIPTION]
   }, {
-    fromPath: ['attributes', 'contextType'],
-    toPath: ['contextType']
+    fromPath: [ATTRIBUTES, CONTEXT_TYPE],
+    toPath: [CONTEXT_TYPE]
   }, {
-    fromPath: ['attributes', 'context'],
-    toPath: ['context']
+    fromPath: [ATTRIBUTES, CONTEXT],
+    toPath: [CONTEXT]
   }, {
-    fromPath: ['relationships', 'columns', 'data'],
-    toPath: ['columns'],
+    fromPath: [RELATIONSHIPS, COLUMNS, DATA],
+    toPath: [COLUMNS],
     toFunction: (data) => {
       return Array.isArray(data) ? data.map(col => {
         return {

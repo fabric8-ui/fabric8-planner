@@ -5,22 +5,31 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AppState } from './../states/app.state';
 import { AreaModel, AreaQuery, AreaUI } from './area.model';
+import { Mapper, MapTree, modelService, switchModel } from './common.model';
 import {
-  Mapper,
-  MapTree,
-  modelService,
-  switchModel
-} from './common.model';
+  ATTRIBUTES,
+  DATA,
+  ID,
+  MODIFIER,
+  MODIFIER_ID,
+  NAME,
+  NEW_VALUE,
+  OLD_VALUE,
+  RELATIONSHIPS,
+  TIMESTAMP
+} from './constant';
 import { IterationModel, IterationQuery, IterationUI } from './iteration.model';
 import { LabelModel, LabelQuery, LabelUI } from './label.model';
 import { UserQuery, UserUI } from './user';
-import { WorkItemType, WorkItemTypeQuery, WorkItemTypeUI } from './work-item-type';
-
+import {
+  WorkItemType,
+  WorkItemTypeQuery,
+  WorkItemTypeUI
+} from './work-item-type';
 
 export class Event extends modelService {
   attributes: EventAttributes;
   relationships: EventRelationships;
-
 }
 
 export class EventAttributes {
@@ -36,15 +45,25 @@ export class EventRelationships {
       id: string;
       links: {
         related: string;
-      }
+      };
       type: string;
-    }
+    };
   };
   newValue?: {
-    data?: AreaModel[] | IterationModel[] | WorkItemType[] | UserService[] | LabelModel[];
+    data?:
+      | AreaModel[]
+      | IterationModel[]
+      | WorkItemType[]
+      | UserService[]
+      | LabelModel[];
   };
   oldValue?: {
-    data?: AreaModel[] | IterationModel[] | WorkItemType[] | UserService[] | LabelModel[];
+    data?:
+      | AreaModel[]
+      | IterationModel[]
+      | WorkItemType[]
+      | UserService[]
+      | LabelModel[];
   };
 }
 
@@ -57,117 +76,125 @@ export interface EventUI {
   modifier?: Observable<UserUI>;
   newValueRelationships: any;
   oldValueRelationships: any;
-  newValueRelationshipsObs?: Observable<IterationUI | AreaUI | WorkItemTypeUI | UserUI>[] | Observable<LabelUI[]>;
-  oldValueRelationshipsObs?: Observable<IterationUI | AreaUI | WorkItemTypeUI | UserUI>[] | Observable<LabelUI[]>;
+  newValueRelationshipsObs?:
+    | Observable<IterationUI | AreaUI | WorkItemTypeUI | UserUI>[]
+    | Observable<LabelUI[]>;
+  oldValueRelationshipsObs?:
+    | Observable<IterationUI | AreaUI | WorkItemTypeUI | UserUI>[]
+    | Observable<LabelUI[]>;
   type: string | null;
 }
 
-export interface EventService extends Event { }
+export interface EventService extends Event {}
 
 export class EventMapper implements Mapper<EventService, EventUI> {
-  constructor() { }
+  constructor() {}
 
-  serviceToUiMapTree: MapTree = [{
-    fromPath: ['attributes', 'name'],
-    toPath: ['name']
-  }, {
-    fromPath: ['attributes', 'newValue'],
-    toPath: ['newValue'],
-    toFunction: (newValue) => {
-      if (newValue !== null) {
-        if (Array.isArray(newValue)) {
-          return newValue.join(', ');
+  serviceToUiMapTree: MapTree = [
+    {
+      fromPath: [ATTRIBUTES, NAME],
+      toPath: [NAME]
+    },
+    {
+      fromPath: [ATTRIBUTES, NEW_VALUE],
+      toPath: [NEW_VALUE],
+      toFunction: newValue => {
+        if (newValue !== null) {
+          if (Array.isArray(newValue)) {
+            return newValue.join(', ');
+          } else {
+            return newValue;
+          }
         } else {
           return newValue;
         }
-      } else {
-        return newValue;
       }
-    }
-  }, {
-    fromPath: ['attributes', 'oldValue'],
-    toPath: ['oldValue'],
-    toFunction: (oldValue) => {
-      if (oldValue !== null) {
-        if (Array.isArray(oldValue)) {
-          return oldValue.join(', ');
+    },
+    {
+      fromPath: [ATTRIBUTES, OLD_VALUE],
+      toPath: [OLD_VALUE],
+      toFunction: oldValue => {
+        if (oldValue !== null) {
+          if (Array.isArray(oldValue)) {
+            return oldValue.join(', ');
+          } else {
+            return oldValue;
+          }
         } else {
           return oldValue;
         }
-      } else {
-        return oldValue;
       }
-    }
-  }, {
-    fromPath: ['attributes', 'timestamp'],
-    toPath: ['timestamp']
-  }, {
-    fromPath: ['relationships', 'modifier', 'data', 'id'],
-    toPath: ['modifierId']
-  }, {
-    fromPath: ['relationships', 'newValue'],
-    toPath: ['newValueRelationships'],
-    toFunction: (newValue) => {
-      if (newValue !== null) {
-        if (newValue.hasOwnProperty('data')) {
-          return newValue['data'].map(item => {
-            return {
-              id: item.id,
-              type: item.type
-            };
-          });
+    },
+    {
+      fromPath: [ATTRIBUTES, TIMESTAMP],
+      toPath: [TIMESTAMP]
+    },
+    {
+      fromPath: [RELATIONSHIPS, MODIFIER, DATA, ID],
+      toPath: [MODIFIER_ID]
+    },
+    {
+      fromPath: [RELATIONSHIPS, NEW_VALUE],
+      toPath: ['newValueRelationships'],
+      toFunction: newValue => {
+        if (newValue !== null) {
+          if (newValue.hasOwnProperty(DATA)) {
+            return newValue[DATA].map(item => {
+              return {
+                id: item.id,
+                type: item.type
+              };
+            });
+          } else {
+            return [];
+          }
         } else {
           return [];
         }
-      } else {
-        return [];
       }
-    }
-  }, {
-    fromPath: ['relationships', 'oldValue'],
-    toPath: ['oldValueRelationships'],
-    toFunction: (oldValue) => {
+    },
+    {
+      fromPath: [RELATIONSHIPS, OLD_VALUE],
+      toPath: ['oldValueRelationships'],
+      toFunction: oldValue => {
         if (oldValue !== null) {
-        if (oldValue.hasOwnProperty('data')) {
-          return oldValue['data'].map(item => {
-            return {
-              id: item.id,
-              type: item.type
-            };
-          });
+          if (oldValue.hasOwnProperty(DATA)) {
+            return oldValue[DATA].map(item => {
+              return {
+                id: item.id,
+                type: item.type
+              };
+            });
+          } else {
+            return [];
+          }
         } else {
           return [];
         }
-      } else {
-        return [];
       }
+    },
+    {
+      toPath: ['type'],
+      toValue: null
     }
-  }, {
-    toPath: ['type'],
-    toValue: null
-  }];
+  ];
   uiToServiceMapTree: MapTree;
 
   toUIModel(arg: EventService): EventUI {
-    return switchModel<EventService, EventUI>(
-      arg, this.serviceToUiMapTree
-    );
+    return switchModel<EventService, EventUI>(arg, this.serviceToUiMapTree);
   }
 
   toServiceModel(arg: EventUI): EventService {
-    return switchModel<EventUI, EventService>(
-      arg, this.uiToServiceMapTree
-    );
+    return switchModel<EventUI, EventService>(arg, this.uiToServiceMapTree);
   }
 }
 
 @Injectable()
 export class EventQuery {
-  private eventSource: Observable<EventUI[]> = this.store
-    .pipe(
-      select(state => state.detailPage),
-      select(state => state.events)
-    );
+  private eventSource: Observable<EventUI[]> = this.store.pipe(
+    select(state => state.detailPage),
+    select(state => state.events)
+  );
 
   constructor(
     private store: Store<AppState>,
@@ -176,82 +203,109 @@ export class EventQuery {
     private areaQuery: AreaQuery,
     private labelQuery: LabelQuery,
     private workitemTypeQuery: WorkItemTypeQuery
-  ) { }
+  ) {}
 
   getEventsWithModifier(): Observable<EventUI[]> {
-    return this.eventSource
-      .pipe(
-        map(events => {
-          return events.map(event => {
-            switch (event.type) {
-              case 'iterations':
-                return {
-                  ...event,
-                  modifier: this.userQuery.getUserObservableById(event.modifierId),
-                  newValueRelationshipsObs: event.newValueRelationships.map(item => {
-                    return this.iterationQuery.getIterationObservableById(item.id);
-                  }),
-                  oldValueRelationshipsObs: event.oldValueRelationships.map(item => {
-                    return this.iterationQuery.getIterationObservableById(item.id);
-                  })
-                };
-              case 'areas':
-                return {
-                  ...event,
-                  modifier: this.userQuery.getUserObservableById(event.modifierId),
-                  newValueRelationshipsObs: event.newValueRelationships.map(item => {
+    return this.eventSource.pipe(
+      map(events => {
+        return events.map(event => {
+          switch (event.type) {
+            case 'iterations':
+              return {
+                ...event,
+                modifier: this.userQuery.getUserObservableById(
+                  event.modifierId
+                ),
+                newValueRelationshipsObs: event.newValueRelationships.map(
+                  item => {
+                    return this.iterationQuery.getIterationObservableById(
+                      item.id
+                    );
+                  }
+                ),
+                oldValueRelationshipsObs: event.oldValueRelationships.map(
+                  item => {
+                    return this.iterationQuery.getIterationObservableById(
+                      item.id
+                    );
+                  }
+                )
+              };
+            case 'areas':
+              return {
+                ...event,
+                modifier: this.userQuery.getUserObservableById(
+                  event.modifierId
+                ),
+                newValueRelationshipsObs: event.newValueRelationships.map(
+                  item => {
                     return this.areaQuery.getAreaObservableById(item.id);
-                  }),
-                  oldValueRelationshipsObs: event.oldValueRelationships.map(item => {
+                  }
+                ),
+                oldValueRelationshipsObs: event.oldValueRelationships.map(
+                  item => {
                     return this.areaQuery.getAreaObservableById(item.id);
-                  })
-                };
-              case 'users':
-                return {
-                  ...event,
-                  modifier: this.userQuery.getUserObservableById(event.modifierId),
-                  newValueRelationshipsObs: event.newValueRelationships.map(item => {
+                  }
+                )
+              };
+            case 'users':
+              return {
+                ...event,
+                modifier: this.userQuery.getUserObservableById(
+                  event.modifierId
+                ),
+                newValueRelationshipsObs: event.newValueRelationships.map(
+                  item => {
                     return this.userQuery.getUserObservableById(item.id);
-                  }),
-                  oldValueRelationshipsObs: event.oldValueRelationships.map(item => {
+                  }
+                ),
+                oldValueRelationshipsObs: event.oldValueRelationships.map(
+                  item => {
                     return this.userQuery.getUserObservableById(item.id);
-                  })
-                };
+                  }
+                )
+              };
 
-              case 'labels':
-                return {
-                  ...event,
-                  modifier: this.userQuery.getUserObservableById(event.modifierId),
-                  newValueRelationshipsObs:
-                    this.labelQuery.getLabelObservablesByIds(
-                      event.newValueRelationships.map(i => i.id)
-                    ),
-                  oldValueRelationshipsObs:
-                    this.labelQuery.getLabelObservablesByIds(
-                      event.oldValueRelationships.map(i => i.id)
-                    )
-                };
+            case 'labels':
+              return {
+                ...event,
+                modifier: this.userQuery.getUserObservableById(
+                  event.modifierId
+                ),
+                newValueRelationshipsObs: this.labelQuery.getLabelObservablesByIds(
+                  event.newValueRelationships.map(i => i.id)
+                ),
+                oldValueRelationshipsObs: this.labelQuery.getLabelObservablesByIds(
+                  event.oldValueRelationships.map(i => i.id)
+                )
+              };
 
-              case 'workitemtypes':
-                return {
-                  ...event,
-                  modifier: this.userQuery.getUserObservableById(event.modifierId),
-                  newValueRelationshipsObs: event.newValueRelationships.map(item => {
+            case 'workitemtypes':
+              return {
+                ...event,
+                modifier: this.userQuery.getUserObservableById(
+                  event.modifierId
+                ),
+                newValueRelationshipsObs: event.newValueRelationships.map(
+                  item => {
                     return this.workitemTypeQuery.getWorkItemTypeById(item.id);
-                  }),
-                  oldValueRelationshipsObs: event.oldValueRelationships.map(item => {
+                  }
+                ),
+                oldValueRelationshipsObs: event.oldValueRelationships.map(
+                  item => {
                     return this.workitemTypeQuery.getWorkItemTypeById(item.id);
-                  })
-                };
-              default:
-                console.log('Unknown event: ', event);
-                return {
-                  ...event,
-                  modifier: this.userQuery.getUserObservableById(event.modifierId)
-                };
-            }
-          });
-        })
+                  }
+                )
+              };
+            default:
+              console.log('Unknown event: ', event);
+              return {
+                ...event,
+                modifier: this.userQuery.getUserObservableById(event.modifierId)
+              };
+          }
+        });
+      })
     );
   }
 }
