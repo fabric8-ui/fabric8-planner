@@ -2,10 +2,9 @@ import { browser, by, ElementFinder } from 'protractor';
 import * as ui from '../../ui';
 import { BaseElement } from './../base.element';
 import { WorkItemListEntry } from './workitem-list-entry';
-import { WorkItemQuickAdd } from './workitem-quickadd';
 
 export class WorkItemList extends BaseElement {
-  overlay = new BaseElement(this.$('div.lock-overlay-list'));
+  overlay = new BaseElement(this.$('div.lock-overlay-list'), 'overlay');
   datatableHeaderdiv = new ui.BaseElement(this.$('.datatable-header'), 'datatable header div');
   datatableHeaderCell = new ui.BaseElementArray(this.$$('datatable-header-cell'), 'datatable header cell');
   datatableHeaderCellLabel = new ui.BaseElementArray(this.$$('datatable-header-cell-label'));
@@ -82,7 +81,7 @@ export class WorkItemList extends BaseElement {
 
   async getUnassignedWorkItemCount(assigneeName: string) {
     let assignees: any = await this.$$('f8-assignee').getAttribute('innerText');
-    let unassigned: any = assignees.filter(assignee => assignee === assigneeName);
+    let unassigned: any = assignees.filter((assignee: any) => assignee === assigneeName);
     return unassigned.length;
   }
 }
