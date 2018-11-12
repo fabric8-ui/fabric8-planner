@@ -239,7 +239,7 @@ describe('WorkItemMapper', () => {
           'labels': {
             'data': []
           },
-          'boardColumns': {},
+          'boardcolumns': {},
           'workItemLinks': {
             'links': {
               'related': 'https://api.openshift.io/api/workitems/8bccc228-bba7-43ad-b077-15fbb9148f7f/links'
