@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+
 export const AND = '$AND';
 export const OR = '$OR';
 export const EQUAL = '$EQ';
@@ -8,3 +10,5 @@ export const SUB_STR = '$SUBSTR';
 export const ENCLOUSER = '"';
 export const P_START = '(';
 export const P_END = ')';
+export const EQUAL_QUERY = ':';
+export const NOT_EQUAL_QUERY = '!';
