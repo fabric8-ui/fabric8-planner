@@ -11,11 +11,11 @@ var del  = require('del')
   , path = require('path')
   , argv = require('yargs').argv
   , proc = require('child_process')
+  , exec = require('child_process').exec
   ;
 
 // Require gulp & its extension modules
 var gulp = require('gulp')
-  , ngc  = require('gulp-ngc')
   , less = require('gulp-less')
   , util = require('gulp-util')
 
@@ -45,7 +45,13 @@ let mach = {};
 // Serialized typescript compile and post-compile steps
 mach.transpileTS = function () {
   return (gulp.series(function () {
-    return ngc('tsconfig.json');
+    return exec('node_modules/.bin/ngc -p tsconfig.json', function (err, stdout, stderr) {
+      console.log(stdout);
+      console.log(stderr);
+      if (err !== null) {
+        process.exit(1);
+      }
+    });
   }, function () {
     // FIXME: why do we need that?
     // Replace templateURL/styleURL with require statements in js.
