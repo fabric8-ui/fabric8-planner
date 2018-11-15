@@ -17,6 +17,7 @@ import { WorkItemQuery, WorkItemUI } from '../../models/work-item';
 import { WorkItemTypeQuery, WorkItemTypeUI } from '../../models/work-item-type';
 import { CookieService } from '../../services/cookie.service';
 import { FilterService } from '../../services/filter.service';
+import { QuerySuggestionService } from '../../services/query-suggestion.service';
 import { UrlService } from '../../services/url.service';
 import { AppState } from '../../states/app.state';
 import { datatableColumn } from '../planner-list/datatable-config';
@@ -33,6 +34,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   @ViewChild('quickPreview') quickPreview: WorkItemPreviewPanelComponent;
   @ViewChild('listContainer') listContainer: ElementRef;
   @ViewChild('querySearch') querySearchRef: ElementRef;
+  @ViewChild('queryInput') searchField: any;
 
   workItemsSource: Observable<WorkItemUI[]> = combineLatest(
     this.spaceQuery.getCurrentSpace.pipe(filter(s => !!s)),
@@ -88,6 +90,9 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   private scrollCheckedFor: number = 0;
   private isQuickPreviewOpen: boolean;
 
+  private querySuggestion: Observable<string[]> =
+      this.querySuggestionService.getSuggestions();
+
   constructor(
     private cookieService: CookieService,
     private spaceQuery: SpaceQuery,
@@ -100,7 +105,8 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
     private workItemTypeQuery: WorkItemTypeQuery,
     private urlService: UrlService,
     private el: ElementRef,
-    private permissionQuery: PermissionQuery
+    private permissionQuery: PermissionQuery,
+    private querySuggestionService: QuerySuggestionService
   ) {}
 
   ngOnInit() {
@@ -167,6 +173,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   fetchWorkItemForQuery(event: KeyboardEvent, query: string) {
     let keycode = event.keyCode ? event.keyCode : event.which;
     let queryParams = cloneDeep(this.route.snapshot.queryParams);
+    // If Enter pressed
     if (keycode === 13 && query !== '') {
       if (queryParams.hasOwnProperty('prevq')) {
         this.router.navigate([], {
@@ -184,7 +191,27 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
     }
     } else if (keycode === 8 && (event.ctrlKey || event.metaKey)) {
       this.searchQuery = '';
+    } else {
+      this.querySuggestionService.queryObservable.next(
+        query
+      );
     }
+  }
+
+  private getTextTillCurrentCursor() {
+    return this.searchField.nativeElement.value.slice(
+      0, this.searchField.nativeElement.selectionStart
+    );
+  }
+
+  onClickSearchField(event) {
+    console.log(
+      'On click - ',
+      this.getTextTillCurrentCursor()
+    );
+    this.querySuggestionService.queryObservable.next(
+      this.getTextTillCurrentCursor()
+    );
   }
 
   onChildExploration(workItem: WorkItemUI) {

@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { AreaQuery } from '../models/area.model';
-import { IterationQuery } from '../models/iteration.model';
-import { LabelQuery } from '../models/label.model';
-import { UserQuery } from '../models/user';
+// import { IterationQuery } from '../models/iteration.model';
+// import { LabelQuery } from '../models/label.model';
+// import { UserQuery } from '../models/user';
 import {
   AND, ENCLOUSER, EQUAL_QUERY,
   IN, NOT_EQUAL_QUERY, NOT_IN, OR,
   P_END, P_START, SUB_STR
 } from './query-keys';
-import { values } from 'd3';
 
 const keys_before_field = [
   AND, OR, P_START
@@ -22,7 +21,7 @@ const keys_before_value = [
 
 @Injectable()
 export class QuerySuggestionService {
-  public queryObservable: BehaviorSubject<string> = new BehaviorSubject('');
+  public queryObservable: BehaviorSubject<string> = new BehaviorSubject('-');
   constructor(
     private areaQuery: AreaQuery
   ) {}
@@ -94,6 +93,7 @@ export class QuerySuggestionService {
   getSuggestions(): Observable<string[]> {
     return this.queryObservable
       .pipe(
+        distinctUntilChanged(),
         switchMap(query => {
           const fieldSuggest = this.shouldSuggestField(query);
           if (fieldSuggest.suggest) {
