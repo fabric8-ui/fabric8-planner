@@ -16,17 +16,23 @@
 
 	<div #querySearch class="f8-query__input-wrapper">
 		<span
-			*ngIf="searchQuery !== '' && !query.disabled"
+			*ngIf="searchQuery !== '' && !queryInput.disabled"
 			class="pficon-close close f8-query__clear-button"
 			tooltip="Press ctrl+backspace to clear"
 			placement="left"
 			(click)="searchQuery='';"
 			></span>
-		<input #query class="f8-query__input"
+		<input #queryInput class="f8-query__input"
 			[disabled]="disableInput"
-			(keydown)="fetchWorkItemForQuery($event, query.value)"
+			(keyup)="fetchWorkItemForQuery($event, queryInput.value)"
 			[(ngModel)]="searchQuery"
+			(click)="onClickSearchField($event)"
 				placeholder="Enter your Query...">
+		<div *ngLet="(querySuggestion | async) as suggestions" class="suggestion-box">
+			<ul *ngIf="suggestions.length">
+        <li *ngFor="let suggestion of suggestions">{{suggestion}}</li>
+			</ul>
+		</div>
 		<span class="f8-query__input-hint">Press Enter to Search....</span>
 		<div
 			*ngIf="!(addDisabled | async)"
