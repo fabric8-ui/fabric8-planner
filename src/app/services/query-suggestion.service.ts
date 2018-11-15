@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { AreaQuery } from '../models/area.model';
-// import { IterationQuery } from '../models/iteration.model';
+import { IterationQuery } from '../models/iteration.model';
 // import { LabelQuery } from '../models/label.model';
 // import { UserQuery } from '../models/user';
 import {
@@ -23,12 +23,15 @@ const keys_before_value = [
 export class QuerySuggestionService {
   public queryObservable: BehaviorSubject<string> = new BehaviorSubject('-');
   constructor(
-    private areaQuery: AreaQuery
+    private areaQuery: AreaQuery,
+    private iterationQuery: IterationQuery
   ) {}
 
   private fields = of({
     'area': this.areaQuery.getAreaIds(),
-    'area.name': this.areaQuery.getAreaNames()
+    'area.name': this.areaQuery.getAreaNames(),
+    'iteration': this.iterationQuery.getIterationIds,
+    'iteration.name': this.iterationQuery.getIterationNames
   });
 
   /**
