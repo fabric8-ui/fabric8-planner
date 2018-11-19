@@ -6,7 +6,7 @@ import * as ColumnWorkItemActions from './../actions/column-workitem.action';
 
 export type Action = WorkItemActions.All | ColumnWorkItemActions.All;
 
-export const ColumnWorkItemReducer: ActionReducer<ColumnWorkItemState> = (state = InitialColumnWorkItemState, action: Action) => {
+export function ColumnWorkItemReducer(state = InitialColumnWorkItemState, action: Action) {
   switch (action.type) {
     case WorkItemActions.GET_SUCCESS: {
       let cwState = {};
@@ -49,4 +49,4 @@ export const ColumnWorkItemReducer: ActionReducer<ColumnWorkItemState> = (state 
       return state;
     }
   }
-};
+}

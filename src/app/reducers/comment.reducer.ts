@@ -6,7 +6,7 @@ import { Comment } from './../models/comment';
 
 export type Action = CommentActions.All;
 
-export const CommentReducer: ActionReducer<CommentState> = (state = initialState, action: Action) => {
+export function CommentReducer(state = initialState, action: Action) {
   switch (action.type) {
     case CommentActions.GET_SUCCESS: {
       return [...action.payload];
@@ -46,4 +46,4 @@ export const CommentReducer: ActionReducer<CommentState> = (state = initialState
       return state;
     }
   }
-};
+}

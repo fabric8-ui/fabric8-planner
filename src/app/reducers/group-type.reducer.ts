@@ -6,8 +6,7 @@ import { GroupTypeState, initialState } from '../states/grouptype.state';
 
 export type Action = GroupTypeActions.All;
 
-export const GroupTypeReducer: ActionReducer<GroupTypeState> =
-  (state = initialState, action: Action) => {
+export function GroupTypeReducer(state = initialState, action: Action) {
   switch (action.type) {
     case GroupTypeActions.GET_SUCCESS: {
       return action.payload;
@@ -34,4 +33,4 @@ export const GroupTypeReducer: ActionReducer<GroupTypeState> =
       return state;
     }
   }
-};
+}

@@ -4,7 +4,7 @@ import { BoardUIState, initialState } from './../states/board-ui.state';
 
 export type Action = BoardUIActions.All;
 
-export const BoardUIReducer: ActionReducer<BoardUIState> = (state = initialState, action: Action) => {
+export function BoardUIReducer(state = initialState, action: Action) {
   switch (action.type) {
     case BoardUIActions.LOCK_BOARD: {
       return {...state, ...{lockBoard: true}};
@@ -16,4 +16,4 @@ export const BoardUIReducer: ActionReducer<BoardUIState> = (state = initialState
       return state;
     }
   }
-};
+}

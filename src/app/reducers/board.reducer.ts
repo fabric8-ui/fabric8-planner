@@ -4,7 +4,7 @@ import { BoardState, initialState } from '../states/board.state';
 
 export type Action = BoardActions.All;
 
-export const BoardReducer: ActionReducer<BoardState> = (state = initialState, action: Action) => {
+export function BoardReducer(state = initialState, action: Action) {
   switch (action.type) {
     case BoardActions.GET_SUCCESS: {
       return {...action.payload};
@@ -16,4 +16,4 @@ export const BoardReducer: ActionReducer<BoardState> = (state = initialState, ac
       return state;
     }
   }
-};
+}

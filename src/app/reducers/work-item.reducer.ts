@@ -8,7 +8,7 @@ import { WorkItemUI } from './../models/work-item';
 export type Action = WorkItemActions.All;
 const workItemAdapter = createEntityAdapter<WorkItemUI>();
 
-export const WorkItemReducer: ActionReducer<WorkItemState> = (state = initialState, action: Action) => {
+export function WorkItemReducer(state = initialState, action: Action) {
   switch (action.type) {
 
     case WorkItemActions.ADD_SUCCESS: {
@@ -126,4 +126,4 @@ export const WorkItemReducer: ActionReducer<WorkItemState> = (state = initialSta
       return state;
     }
   }
-};
+}

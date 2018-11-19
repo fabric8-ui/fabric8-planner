@@ -10,8 +10,7 @@ import {
 
 export type Action = IterationActions.All;
 
-export const iterationReducer: ActionReducer<IterationState> =
-  (state = initialState, action: Action) => {
+export function iterationReducer(state = initialState, action: Action) {
     switch (action.type) {
       case IterationActions.GET_SUCCESS:
         return action.payload;
@@ -70,35 +69,34 @@ export const iterationReducer: ActionReducer<IterationState> =
       default:
         return state;
     }
-  };
+  }
 
-export const iterationUiReducer: ActionReducer<IterationUIState> =
-  (s = initialUIState, action: Action) => {
-    const state = cloneDeep(s);
-    switch (action.type) {
-      case IterationActions.UPDATE_SUCCESS:
-      case IterationActions.ADD_SUCCESS:
-        state.error = '';
-        state.modalLoading = false;
-        return state;
+export function iterationUiReducer(s = initialUIState, action: Action) {
+  const state = cloneDeep(s);
+  switch (action.type) {
+    case IterationActions.UPDATE_SUCCESS:
+    case IterationActions.ADD_SUCCESS:
+      state.error = '';
+      state.modalLoading = false;
+      return state;
 
-      case IterationActions.UPDATE:
-      case IterationActions.ADD:
-        state.error = '';
-        state.modalLoading = true;
-        return state;
+    case IterationActions.UPDATE:
+    case IterationActions.ADD:
+      state.error = '';
+      state.modalLoading = true;
+      return state;
 
-      case IterationActions.ADD_ERROR:
-        state.modalLoading = false;
-        state.error = 'Some error has occured on adding iteration';
-        return state;
+    case IterationActions.ADD_ERROR:
+      state.modalLoading = false;
+      state.error = 'Some error has occured on adding iteration';
+      return state;
 
-      case IterationActions.UPDATE_ERROR:
-        state.modalLoading = false;
-        state.error = 'Some error has occured on updating iteration';
-        return state;
+    case IterationActions.UPDATE_ERROR:
+      state.modalLoading = false;
+      state.error = 'Some error has occured on updating iteration';
+      return state;
 
-      default:
-        return state;
-    }
-  };
+    default:
+      return state;
+  }
+}

@@ -8,21 +8,19 @@ import { initialState, WorkItemTypeState } from '../states/work-item-type.state'
 
 export type Action = WorkItemTypeActions.All;
 
-const workItemTypeAdapter = createEntityAdapter<WorkItemTypeUI>();
-
-export const WorkItemTypeReducer: ActionReducer<WorkItemTypeState> =
-  (state = initialState, action: Action) => {
-    switch (action.type) {
-      case WorkItemTypeActions.GET_SUCCESS: {
-        return workItemTypeAdapter.addAll(action.payload, state);
-      }
-
-      case WorkItemTypeActions.GET_ERROR: {
-        return state;
-      }
-
-      default: {
-        return state;
-      }
+export function WorkItemTypeReducer(state = initialState, action: Action) {
+  const workItemTypeAdapter = createEntityAdapter<WorkItemTypeUI>();
+  switch (action.type) {
+    case WorkItemTypeActions.GET_SUCCESS: {
+      return workItemTypeAdapter.addAll(action.payload, state);
     }
-  };
+
+    case WorkItemTypeActions.GET_ERROR: {
+      return state;
+    }
+
+    default: {
+      return state;
+    }
+  }
+}

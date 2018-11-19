@@ -8,7 +8,7 @@ import { initialState, LabelState } from './../states/label.state';
 export type Action = LabelActions.All;
 const labelAdapter = createEntityAdapter<LabelUI>();
 
-export const LabelReducer: ActionReducer<LabelState> = (state = initialState, action: Action) => {
+export function LabelReducer(state = initialState, action: Action) {
   switch (action.type) {
     case LabelActions.GET_SUCCESS: {
       return labelAdapter.addAll(action.payload, state);
@@ -26,4 +26,4 @@ export const LabelReducer: ActionReducer<LabelState> = (state = initialState, ac
       return state;
     }
   }
-};
+}

@@ -4,7 +4,7 @@ import * as EventActions from './../actions/event.action';
 
 export type Action = EventActions.All;
 
-export const EventReducer: ActionReducer<EventState> = (state = initialState, action: Action) => {
+export function EventReducer(state = initialState, action: Action) {
   switch (action.type) {
     case EventActions.GET_SUCCESS: {
       return [...action.payload];
@@ -16,4 +16,4 @@ export const EventReducer: ActionReducer<EventState> = (state = initialState, ac
       return state;
     }
   }
-};
+}
