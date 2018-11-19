@@ -27,8 +27,9 @@
 			(keyup)="fetchWorkItemForQuery($event, queryInput.value)"
 			[(ngModel)]="searchQuery"
 			(click)="onClickSearchField($event)"
+			(blur)="onBlurSearchField()"
 				placeholder="Enter your Query...">
-		<div *ngLet="(querySuggestion | async) as suggestions" class="suggestion-box">
+		<div *ngIf="(querySuggestion | async) as suggestions" class="suggestion-box">
 			<ul *ngIf="suggestions.length">
         		<li (click)="onSelectSuggestion(suggestion, queryInput.value, queryInput.selectionStart)" *ngFor="let suggestion of suggestions">{{suggestion}}</li>
 			</ul>

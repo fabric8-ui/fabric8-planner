@@ -9,7 +9,7 @@ import { Store } from '@ngrx/store';
 import { sortBy } from 'lodash';
 import { cloneDeep, isEqual } from 'lodash';
 import { EmptyStateConfig } from 'patternfly-ng';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, empty, Observable, of } from 'rxjs';
 import { filter, startWith, switchMap, tap } from 'rxjs/operators';
 import { PermissionQuery } from '../../models/permission.model';
 import { SpaceQuery } from '../../models/space';
@@ -188,7 +188,8 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
           relativeTo: this.route,
           queryParams: { q : query}
         });
-    }
+      }
+      this.searchField.nativeElement.blur();
     } else if (keycode === 8 && (event.ctrlKey || event.metaKey)) {
       this.searchQuery = '';
     } else {
@@ -217,6 +218,10 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
     this.querySuggestionService.queryObservable.next(
       this.getTextTillCurrentCursor()
     );
+  }
+
+  onBlurSearchField(event) {
+    this.querySuggestionService.queryObservable.next('-');
   }
 
   onChildExploration(workItem: WorkItemUI) {
