@@ -1,6 +1,7 @@
 import { async, getTestBed, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { AreaQuery } from '../models/area.model';
+import { IterationQuery } from '../models/iteration.model';
 import { AND, OR, P_END, P_START } from './query-keys';
 import { QuerySuggestionService } from './query-suggestion.service';
 
@@ -10,6 +11,15 @@ class FakeAreaQuery {
   }
   getAreaNames() {
     return of(['area-1', 'area-2', 'area-23']);
+  }
+}
+
+class FakeIterationQuery {
+  get getIterationIds() {
+    return of(['id-1', 'id-2', 'id-23']);
+  }
+  get getIterationNames() {
+    return of(['iteration-1', 'iteration-2', 'iteration-23']);
   }
 }
 
@@ -26,6 +36,10 @@ fdescribe(
             {
               provide: AreaQuery,
               useClass: FakeAreaQuery
+            },
+            {
+              provide: IterationQuery,
+              useClass: FakeIterationQuery
             }
           ]
         });
@@ -129,7 +143,7 @@ fdescribe(
     it ('Should suggest right field - 0', () => {
       queryService.queryObservable.next('');
       queryService.getSuggestions().subscribe((v) => {
-        expect(v).toEqual(['area', 'area.name']);
+        expect(v).toEqual(['area', 'area.name', 'iteration', 'iteration.name']);
       });
     });
 
@@ -173,6 +187,30 @@ fdescribe(
       queryService.getSuggestions().subscribe((v) => {
         expect(v).toEqual(['area-2', 'area-23']);
       });
+    });
+
+    it ('Should replace suggestion correctly - 1', () => {
+      expect(
+        queryService.replaceSuggestedValue(
+          '', '', 'area', 'area.name'
+        )
+      ).toBe('area.name');
+    });
+
+    it ('Should replace suggestion correctly - 2', () => {
+      expect(
+        queryService.replaceSuggestedValue(
+          'area.name:area', '- 1 $AND iteration:', 'area', 'area - 2'
+        )
+      ).toBe('area.name: area - 2 $AND iteration:');
+    });
+
+    it ('Should replace suggestion correctly - 3', () => {
+      expect(
+        queryService.replaceSuggestedValue(
+          'area.name:', '- 1 $AND iteration:', '', 'area - 2'
+        )
+      ).toBe('area.name: area - 2 $AND iteration:');
     });
   }
 );
