@@ -14,7 +14,7 @@ export function ColumnWorkItemReducer(state = InitialColumnWorkItemState, action
         if (item.columnIds !== null) {
           item.columnIds.forEach(col => {
             if (cwState.hasOwnProperty(col)) {
-                cwState[col] = [...cwState[col], item.id];
+              cwState[col] = [...cwState[col], item.id];
             } else {
               cwState[col] = [item.id];
             }

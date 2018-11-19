@@ -64,7 +64,7 @@ export class WorkItemQuickAddComponent implements OnInit, OnDestroy, AfterViewIn
   descHeight: any = '27px';
   descResize: any = 'none';
   showQuickAdd: boolean;
-  createId: number= 0;
+  createId: number = 0;
   eventListeners: any[] = [];
   blockAdd: boolean = false;
   infotipSource = this.store

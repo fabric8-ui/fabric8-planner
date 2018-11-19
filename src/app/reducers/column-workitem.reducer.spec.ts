@@ -58,12 +58,6 @@ describe('ColumnWorkitemReducer: ', () => {
 
   });
 
-  it('should return the state when some other action is dispatched', () => {
-    const action = new GetError();
-    const state = ColumnWorkItemReducer(InitialColumnWorkItemState, action);
-    expect(state).toEqual(InitialColumnWorkItemState);
-  });
-
   it('should update the state on [column workitem] Update Success', () => {
     const columnWorkItemState: ColumnWorkItemState = {
       '0000-000-05': ['1', '2'],

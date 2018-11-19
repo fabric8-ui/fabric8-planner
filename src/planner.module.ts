@@ -40,21 +40,6 @@ export class PlannerRoutingModule {}
       workItems: reducers.WorkItemReducer,
       workItemStates: reducers.WorkItemStateReducer,
       infotips: reducers.InfotipReducer
-    }, {
-      initialState: {
-        space: states.initialSpaceState,
-        labels: states.initialLabelState,
-        iterations: states.initialIterationState,
-        areas: states.initialAreaState,
-        collaborators: states.initialCollaboratorState,
-        users: states.inititalUserState,
-        customQueries: states.initialCustomQueryState,
-        groupTypes: states.initialGroupTypeState,
-        workItemTypes: states.initialWorkItemTypeState,
-        workItems: states.initialWorkItemState,
-        workItemStates: states.initialWIState,
-        infotips: states.initialInfotipState
-      }
     }),
     EffectsModule.forFeature([
       effects.SpaceEffects,

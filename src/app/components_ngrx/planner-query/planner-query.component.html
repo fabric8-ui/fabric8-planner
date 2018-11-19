@@ -29,7 +29,7 @@
 				placeholder="Enter your Query...">
 		<span class="f8-query__input-hint">Press Enter to Search....</span>
 		<div
-			*ngIf="!(addDisabled | async)"
+			*ngIf="(addDisabled | async) === false"
 			class="dropdown-kebab-pf dropdown f8-query__create-workitem"
 			[autoClose]="false"
 			(clickOut)="closeCreateWorkItemDialog($event)"

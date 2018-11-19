@@ -3,7 +3,7 @@ import {
   WorkItemTypeStateModel, WorkItemTypeUI
 } from './../models/work-item-type';
 
-const workItemTypeAdapter = createEntityAdapter<WorkItemTypeUI>();
+export const workItemTypeAdapter = createEntityAdapter<WorkItemTypeUI>();
 
 export const initialState: WorkItemTypeStateModel = workItemTypeAdapter.getInitialState();
 
