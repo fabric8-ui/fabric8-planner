@@ -2,7 +2,8 @@
   "angularCompilerOptions": {
     "genDir": "./ngfactory",
     "skipTemplateCodegen": true,
-    "strictMetadataEmit": true
+    "strictMetadataEmit": true,
+    "fullTemplateTypeCheck": true
   },
   "atom": { "rewriteTsconfig": false },
   "awesomeTypescriptLoaderOptions": {
