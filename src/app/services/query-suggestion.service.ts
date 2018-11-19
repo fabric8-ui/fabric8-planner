@@ -74,7 +74,9 @@ export class QuerySuggestionService {
    * @param query
    */
   suggestValue(query: string): { field: string; value: string; } {
+    // split with equal
     let splitField = query.split(EQUAL_QUERY);
+    // if no luck split with not equal
     if (splitField.length === 1) {
       splitField = query.split(NOT_EQUAL_QUERY);
     }
@@ -91,6 +93,35 @@ export class QuerySuggestionService {
       value = value.substr(0, value.length - 1);
     }
     return {field, value};
+  }
+
+  /**
+   * This function takes the query and the suggested value to be replaced
+   * the value is what is typed so far or before the cursor after the last key
+   * for example, if the query before cursor is "area.name: area - 1 $AND iteration"
+   * and after cursor is ".name: iteration - 1"
+   * the value should be "iteration" and we'll have to remove that part from
+   * query before cursor
+   * For query after cursor section, we have to detect the first occurance of any key
+   * and remove till that from initial of that part.
+   * For our example the first key is ":" and we have to remove ".name" from that section
+   * @param query_before_cursor
+   * @param query_after_cursor
+   * @param value
+   * @param suggestion
+   */
+  replaceSuggestedValue(query_before_cursor: string, query_after_cursor: string, value: string, suggestion: string): string {
+    const all_keys = [...keys_before_field, ...keys_before_value];
+    const first_part = value == '' ? query_before_cursor :
+      query_before_cursor.substr(0, query_before_cursor.length - value.length).trim();
+    let after_cursor = query_after_cursor;
+    all_keys.forEach(key => {
+      if (after_cursor !== '') {
+        after_cursor = after_cursor.split(key)[0];
+      }
+    });
+    const last_part = query_after_cursor.substr(after_cursor.length);
+    return `${first_part} ${suggestion} ${last_part}`.trim();
   }
 
   getSuggestions(): Observable<string[]> {
