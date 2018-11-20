@@ -30,7 +30,7 @@
 				placeholder="Enter your Query...">
 		<div *ngLet="(querySuggestion | async) as suggestions" class="suggestion-box">
 			<ul *ngIf="suggestions.length">
-        <li *ngFor="let suggestion of suggestions">{{suggestion}}</li>
+        		<li (click)="onSelectSuggestion(suggestion, queryInput.value, queryInput.selectionStart)" *ngFor="let suggestion of suggestions">{{suggestion}}</li>
 			</ul>
 		</div>
 		<span class="f8-query__input-hint">Press Enter to Search....</span>
