@@ -17,6 +17,7 @@
 	<div #querySearch class="f8-query__input-wrapper">
 		<div class="dropdown"
 			[isOpen]="isSuggestionDropdownOpen"
+			[autoClose]="false"
 			dropdown>
 			<span
 				*ngIf="searchQuery !== '' && !queryInput.disabled"
@@ -34,7 +35,10 @@
 					placeholder="Enter your Query...">
 			<ng-container *ngIf="(querySuggestion | async) as suggestions">
 				<ul class="suggestion-box dropdown-menu" *dropdownMenu>
-					<li (click)="onSelectSuggestion(suggestion, queryInput.value, queryInput.selectionStart)" class="dropdown-item pointer" *ngFor="let suggestion of suggestions">{{suggestion}}</li>
+					<li
+						class="dropdown-item pointer"
+						(click)="onSelectSuggestion(suggestion, queryInput.value, queryInput.selectionStart)"
+						*ngFor="let suggestion of suggestions">{{suggestion}}</li>
 				</ul>
 			</ng-container>
 		</div>
