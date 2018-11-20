@@ -33,10 +33,10 @@
 				(blur)="onBlurSearchField()"
 					placeholder="Enter your Query...">
 			<ng-container *ngIf="(querySuggestion | async) as suggestions">
-			<div class="suggestion-box dropdown-menu" *dropdownMenu>
-					<li (click)="onSelectSuggestion(suggestion, queryInput.value, queryInput.selectionStart)" *ngFor="let suggestion of suggestions">{{suggestion}}</li>
-			</div>
-		</ng-container>
+				<ul class="suggestion-box dropdown-menu" *dropdownMenu>
+					<li (click)="onSelectSuggestion(suggestion, queryInput.value, queryInput.selectionStart)" class="dropdown-item pointer" *ngFor="let suggestion of suggestions">{{suggestion}}</li>
+				</ul>
+			</ng-container>
 		</div>
 		<span class="f8-query__input-hint">Press Enter to Search....</span>
 		<div
