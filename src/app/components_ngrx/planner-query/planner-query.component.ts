@@ -79,6 +79,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   public targetHeight: number;
   public addDisabled: Observable<boolean> =
     this.permissionQuery.isAllowedToAdd();
+  public isSuggestionDropdownOpen: boolean;
 
   private eventListeners: any[] = [];
   private hdrHeight: number = 0;
@@ -91,7 +92,16 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   private isQuickPreviewOpen: boolean;
 
   private querySuggestion: Observable<string[]> =
-      this.querySuggestionService.getSuggestions();
+      this.querySuggestionService.getSuggestions().pipe(
+        filter(s => !!s),
+        tap(s => {
+          if (s.length > 0) {
+            this.isSuggestionDropdownOpen = true;
+          } else {
+            this.isSuggestionDropdownOpen = false;
+          }
+        })
+      );
 
   constructor(
     private cookieService: CookieService,
@@ -222,6 +232,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
 
   onBlurSearchField(event) {
     this.querySuggestionService.queryObservable.next('-');
+    this.isSuggestionDropdownOpen = false;
   }
 
   onChildExploration(workItem: WorkItemUI) {

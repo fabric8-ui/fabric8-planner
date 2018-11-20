@@ -15,24 +15,28 @@
 	</work-item-preview-panel>
 
 	<div #querySearch class="f8-query__input-wrapper">
-		<span
-			*ngIf="searchQuery !== '' && !queryInput.disabled"
-			class="pficon-close close f8-query__clear-button"
-			tooltip="Press ctrl+backspace to clear"
-			placement="left"
-			(click)="searchQuery='';"
-			></span>
-		<input #queryInput class="f8-query__input"
-			[disabled]="disableInput"
-			(keyup)="fetchWorkItemForQuery($event, queryInput.value)"
-			[(ngModel)]="searchQuery"
-			(click)="onClickSearchField($event)"
-			(blur)="onBlurSearchField()"
-				placeholder="Enter your Query...">
-		<div *ngIf="(querySuggestion | async) as suggestions" class="suggestion-box">
-			<ul *ngIf="suggestions.length">
-        		<li (click)="onSelectSuggestion(suggestion, queryInput.value, queryInput.selectionStart)" *ngFor="let suggestion of suggestions">{{suggestion}}</li>
-			</ul>
+		<div class="dropdown"
+			[isOpen]="isSuggestionDropdownOpen"
+			dropdown>
+			<span
+				*ngIf="searchQuery !== '' && !queryInput.disabled"
+				class="pficon-close close f8-query__clear-button"
+				tooltip="Press ctrl+backspace to clear"
+				placement="left"
+				(click)="searchQuery='';"
+				></span>
+			<input #queryInput class="f8-query__input"
+				[disabled]="disableInput"
+				(keyup)="fetchWorkItemForQuery($event, queryInput.value)"
+				[(ngModel)]="searchQuery"
+				(click)="onClickSearchField($event)"
+				(blur)="onBlurSearchField()"
+					placeholder="Enter your Query...">
+			<ng-container *ngIf="(querySuggestion | async) as suggestions">
+			<div class="suggestion-box dropdown-menu" *dropdownMenu>
+					<li (click)="onSelectSuggestion(suggestion, queryInput.value, queryInput.selectionStart)" *ngFor="let suggestion of suggestions">{{suggestion}}</li>
+			</div>
+		</ng-container>
 		</div>
 		<span class="f8-query__input-hint">Press Enter to Search....</span>
 		<div
