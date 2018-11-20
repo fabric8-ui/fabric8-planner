@@ -10,7 +10,7 @@ import { sortBy } from 'lodash';
 import { cloneDeep, isEqual } from 'lodash';
 import { EmptyStateConfig } from 'patternfly-ng';
 import { combineLatest, empty, Observable, of } from 'rxjs';
-import { filter, startWith, switchMap, tap } from 'rxjs/operators';
+import { delay, filter, startWith, switchMap, tap } from 'rxjs/operators';
 import { PermissionQuery } from '../../models/permission.model';
 import { SpaceQuery } from '../../models/space';
 import { WorkItemQuery, WorkItemUI } from '../../models/work-item';
@@ -94,6 +94,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   private querySuggestion: Observable<string[]> =
       this.querySuggestionService.getSuggestions().pipe(
         filter(s => !!s),
+        delay(500),
         tap(s => {
           if (s.length > 0) {
             this.isSuggestionDropdownOpen = true;
