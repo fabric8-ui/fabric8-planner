@@ -22,6 +22,7 @@ const keys_before_value = [
 @Injectable()
 export class QuerySuggestionService {
   public queryObservable: BehaviorSubject<string> = new BehaviorSubject('-');
+  private valueToSuggest: string = '';
   constructor(
     private areaQuery: AreaQuery,
     private iterationQuery: IterationQuery
@@ -95,6 +96,12 @@ export class QuerySuggestionService {
     return {field, value};
   }
 
+  replaceSuggestion(query_before_cursor: string, query_after_cursor: string, suggestion: string): string {
+    return this.replaceSuggestedValue(
+      query_before_cursor, query_after_cursor, this.valueToSuggest, suggestion
+    );
+  }
+
   /**
    * This function takes the query and the suggested value to be replaced
    * the value is what is typed so far or before the cursor after the last key
@@ -131,6 +138,7 @@ export class QuerySuggestionService {
         switchMap(query => {
           const fieldSuggest = this.shouldSuggestField(query);
           if (fieldSuggest.suggest) {
+            this.valueToSuggest = fieldSuggest.value;
             return this.fields.pipe(
               map(fields => Object.keys(fields)
                 .filter(f => f.indexOf(fieldSuggest.value) > -1)
@@ -138,6 +146,7 @@ export class QuerySuggestionService {
             );
           } else {
             const fieldValue = this.suggestValue(fieldSuggest.value);
+            this.valueToSuggest = fieldValue.value;
             return this.fields.pipe(
               switchMap(fields => {
                 if (fields[fieldValue.field]) {

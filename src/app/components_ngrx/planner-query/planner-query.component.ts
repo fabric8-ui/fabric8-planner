@@ -204,11 +204,16 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
     );
   }
 
-  onClickSearchField(event) {
-    console.log(
-      'On click - ',
-      this.getTextTillCurrentCursor()
+  onSelectSuggestion(suggestion: string, input: string, cursorPosition: number): void {
+    this.searchField.nativeElement.value = this.querySuggestionService.replaceSuggestion(
+      input.slice(0, cursorPosition),
+      input.slice(cursorPosition),
+      suggestion
     );
+    this.querySuggestionService.queryObservable.next('-');
+  }
+
+  onClickSearchField(event) {
     this.querySuggestionService.queryObservable.next(
       this.getTextTillCurrentCursor()
     );
