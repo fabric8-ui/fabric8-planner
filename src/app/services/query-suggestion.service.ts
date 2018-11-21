@@ -136,6 +136,7 @@ export class QuerySuggestionService {
       .pipe(
         distinctUntilChanged(),
         switchMap(query => {
+          if (query === '-') { return of([]); }
           const fieldSuggest = this.shouldSuggestField(query);
           if (fieldSuggest.suggest) {
             this.valueToSuggest = fieldSuggest.value;
