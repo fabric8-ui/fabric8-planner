@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
+import { UserService } from 'ngx-login-client';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { AreaQuery } from '../models/area.model';
 import { IterationQuery } from '../models/iteration.model';
+import { LabelQuery } from '../models/label.model';
+import { UserQuery } from '../models/user';
 // import { LabelQuery } from '../models/label.model';
 // import { UserQuery } from '../models/user';
 import {
@@ -23,17 +26,31 @@ const keys_before_value = [
 export class QuerySuggestionService {
   public queryObservable: BehaviorSubject<string> = new BehaviorSubject('-');
   private valueToSuggest: string = '';
+  private valueToSuggestObservable: BehaviorSubject<string> = new BehaviorSubject('-');
   constructor(
     private areaQuery: AreaQuery,
-    private iterationQuery: IterationQuery
+    private iterationQuery: IterationQuery,
+    private userQuery: UserQuery,
+    private userService: UserService,
+    private labelQuery: LabelQuery
   ) {}
 
   private fields = of({
-    'area': this.areaQuery.getAreaIds(),
     'area.name': this.areaQuery.getAreaNames(),
-    'iteration': this.iterationQuery.getIterationIds,
-    'iteration.name': this.iterationQuery.getIterationNames
+    'iteration.name': this.iterationQuery.getIterationNames,
+    'parent.number': of([]),
+    'title': of([]),
+    'assignee': this.fetchUsersBySearchValue(),
+    'label.name': this.labelQuery.getlabelNames
   });
+
+  fetchUsersBySearchValue() {
+    return this.valueToSuggestObservable.pipe(
+      debounceTime(500),
+      switchMap(value => this.userService.getUsersBySearchString(value)),
+      map(users => users.map(user => user.attributes.username))
+    );
+  }
 
   /**
    * Takes the entire query written so far
@@ -140,6 +157,7 @@ export class QuerySuggestionService {
           const fieldSuggest = this.shouldSuggestField(query);
           if (fieldSuggest.suggest) {
             this.valueToSuggest = fieldSuggest.value;
+            this.valueToSuggestObservable.next(fieldSuggest.value);
             return this.fields.pipe(
               map(fields => Object.keys(fields)
                 .filter(f => f.indexOf(fieldSuggest.value) > -1)
@@ -148,6 +166,7 @@ export class QuerySuggestionService {
           } else {
             const fieldValue = this.suggestValue(fieldSuggest.value);
             this.valueToSuggest = fieldValue.value;
+            this.valueToSuggestObservable.next(fieldValue.value);
             return this.fields.pipe(
               switchMap(fields => {
                 if (fields[fieldValue.field]) {

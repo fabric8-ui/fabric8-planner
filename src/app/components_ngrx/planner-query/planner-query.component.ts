@@ -36,6 +36,8 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   @ViewChild('querySearch') querySearchRef: ElementRef;
   @ViewChild('queryInput') searchField: any;
 
+  public valueLoading: boolean = false;
+
   workItemsSource: Observable<WorkItemUI[]> = combineLatest(
     this.spaceQuery.getCurrentSpace.pipe(filter(s => !!s)),
     this.route.queryParams.pipe(filter(q => !!q)),
@@ -95,6 +97,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
       this.querySuggestionService.getSuggestions().pipe(
         filter(s => !!s),
         delay(500),
+        tap(() => this.valueLoading = false),
         tap(s => {
           if (s.length > 0) {
             this.isSuggestionDropdownOpen = true;
@@ -204,8 +207,9 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
     } else if (keycode === 8 && (event.ctrlKey || event.metaKey)) {
       this.searchQuery = '';
     } else {
+      this.valueLoading = true;
       this.querySuggestionService.queryObservable.next(
-        query
+        this.getTextTillCurrentCursor()
       );
     }
   }
@@ -227,6 +231,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   }
 
   onClickSearchField(event) {
+    this.valueLoading = true;
     this.querySuggestionService.queryObservable.next(
       this.getTextTillCurrentCursor()
     );
