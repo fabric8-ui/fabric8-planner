@@ -28,6 +28,7 @@ import { QuerySuggestionService } from '../../services/query-suggestion.service'
 import { UrlService } from '../../services/url.service';
 import { NgLetModule } from '../../shared/ng-let';
 import { ClickOutModule } from '../../widgets/clickout/clickout.module';
+import { ListItemModule } from '../../widgets/list-item/list-item.module';
 import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-add.module';
 
 @NgModule({
@@ -47,7 +48,8 @@ import { WorkItemQuickAddModule } from '../work-item-quick-add/work-item-quick-a
     WorkItemQuickAddModule,
     InfiniteScrollModule,
     NgLetModule,
-    PlannerModalModule
+    PlannerModalModule,
+    ListItemModule
   ],
   declarations: [PlannerQueryComponent],
   exports: [PlannerQueryComponent],

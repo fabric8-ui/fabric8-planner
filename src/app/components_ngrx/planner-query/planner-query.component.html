@@ -30,17 +30,18 @@
 				></span>
 			<input #queryInput class="f8-query__input"
 				[disabled]="disableInput"
-				(keyup)="fetchWorkItemForQuery($event, queryInput.value)"
+				(keyup)="fetchWorkItemForQuery($event, queryInput.value, queryInput.selectionStart)"
 				[(ngModel)]="searchQuery"
 				(click)="onClickSearchField($event)"
 				(blur)="onBlurSearchField()"
 					placeholder="Enter your Query...">
 			<ng-container *ngIf="(querySuggestion | async) as suggestions">
 				<ul class="suggestion-box dropdown-menu" *dropdownMenu>
-					<li
-						class="dropdown-item pointer"
+					<list-item
+						*ngFor="let suggestion of suggestions"
+						[item]="suggestion"
 						(click)="onSelectSuggestion(suggestion, queryInput.value, queryInput.selectionStart)"
-						*ngFor="let suggestion of suggestions">{{suggestion}}</li>
+						>{{suggestion}}</list-item>
 				</ul>
 			</ng-container>
 		</div>

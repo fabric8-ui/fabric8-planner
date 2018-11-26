@@ -1,8 +1,10 @@
+import { ActiveDescendantKeyManager, FocusMonitor, FocusTrapFactory, ListKeyManager  } from '@angular/cdk/a11y';
+import { DOWN_ARROW, UP_ARROW } from '@angular/cdk/keycodes';
 import {
   AfterViewChecked, AfterViewInit,
   Component, ElementRef, HostListener,
-  OnDestroy, OnInit, Renderer2,
-  ViewChild, ViewEncapsulation
+  OnDestroy, OnInit, QueryList,
+  Renderer2, ViewChild, ViewChildren, ViewEncapsulation
 } from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -20,6 +22,7 @@ import { FilterService } from '../../services/filter.service';
 import { QuerySuggestionService } from '../../services/query-suggestion.service';
 import { UrlService } from '../../services/url.service';
 import { AppState } from '../../states/app.state';
+import { ListItemComponent } from '../../widgets/list-item/list-item.component';
 import { datatableColumn } from '../planner-list/datatable-config';
 import * as WorkItemActions from  './../../actions/work-item.actions';
 import { WorkItemPreviewPanelComponent } from './../work-item-preview-panel/work-item-preview-panel.component';
@@ -34,7 +37,8 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   @ViewChild('quickPreview') quickPreview: WorkItemPreviewPanelComponent;
   @ViewChild('listContainer') listContainer: ElementRef;
   @ViewChild('querySearch') querySearchRef: ElementRef;
-  @ViewChild('queryInput') searchField: any;
+  @ViewChild('queryInput') searchField: ElementRef;
+  @ViewChildren(ListItemComponent) dropdownOptions: QueryList<ListItemComponent>;
 
   public valueLoading: boolean = false;
 
@@ -82,6 +86,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   public addDisabled: Observable<boolean> =
     this.permissionQuery.isAllowedToAdd();
   public isSuggestionDropdownOpen: boolean;
+  public keyManager: ActiveDescendantKeyManager<ListItemComponent>;
 
   private eventListeners: any[] = [];
   private hdrHeight: number = 0;
@@ -184,33 +189,49 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
   }
 
 
-  fetchWorkItemForQuery(event: KeyboardEvent, query: string) {
+  fetchWorkItemForQuery(event: KeyboardEvent, query: string, cursorPosition: number) {
+    event.preventDefault();
     let keycode = event.keyCode ? event.keyCode : event.which;
     let queryParams = cloneDeep(this.route.snapshot.queryParams);
     // If Enter pressed
-    if (keycode === 13 && query !== '') {
-      if (queryParams.hasOwnProperty('prevq')) {
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: {
-             q : query,
-             prevq: queryParams.prevq
-            }
-        });
+    if (this.isSuggestionDropdownOpen) {
+      if (keycode === 13) {
+        this.onSelectSuggestion(
+          this.keyManager.activeItem.item, query, cursorPosition
+        );
+      } else if (keycode === UP_ARROW || keycode === DOWN_ARROW) {
+        this.keyManager.onKeydown(event);
       } else {
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: { q : query}
-        });
+        this.valueLoading = true;
+        this.querySuggestionService.queryObservable.next(
+          query
+        );
       }
-      this.searchField.nativeElement.blur();
+    } else if (!this.isSuggestionDropdownOpen) {
+      if (keycode === 13 && query !== '') {
+        if (queryParams.hasOwnProperty('prevq')) {
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {
+                q : query,
+                prevq: queryParams.prevq
+              }
+          });
+        } else {
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { q : query}
+          });
+        }
+        this.searchField.nativeElement.blur();
+      } else {
+        this.valueLoading = true;
+        this.querySuggestionService.queryObservable.next(
+          query
+        );
+      }
     } else if (keycode === 8 && (event.ctrlKey || event.metaKey)) {
       this.searchQuery = '';
-    } else {
-      this.valueLoading = true;
-      this.querySuggestionService.queryObservable.next(
-        this.getTextTillCurrentCursor()
-      );
     }
   }
 
@@ -339,6 +360,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
 
   ngAfterViewInit() {
     this.setDataTableColumns();
+    this.keyManager = new ActiveDescendantKeyManager(this.dropdownOptions).withWrap().withTypeAhead();
   }
 
   @HostListener('window:resize', ['$event'])
