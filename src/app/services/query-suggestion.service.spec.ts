@@ -1,7 +1,9 @@
 import { async, getTestBed, TestBed } from '@angular/core/testing';
+import { UserService } from 'ngx-login-client';
 import { of } from 'rxjs';
 import { AreaQuery } from '../models/area.model';
 import { IterationQuery } from '../models/iteration.model';
+import { LabelQuery } from '../models/label.model';
 import { AND, OR, P_END, P_START } from './query-keys';
 import { QuerySuggestionService } from './query-suggestion.service';
 
@@ -23,7 +25,19 @@ class FakeIterationQuery {
   }
 }
 
-fdescribe(
+class FakeUserService {
+  getUsersBySearchString(str) {
+    return of(['user-1', 'user-2', 'user-23']);
+  }
+}
+
+class FakeLabelQuery {
+  get getlabelNames() {
+    return of(['label-1', 'label-2', 'label-23']);
+  }
+}
+
+describe(
   'Unit Test :: QuerySuggestionService',
   () => {
     let queryService: QuerySuggestionService;
@@ -40,6 +54,14 @@ fdescribe(
             {
               provide: IterationQuery,
               useClass: FakeIterationQuery
+            },
+            {
+              provide: UserService,
+              useClass: FakeUserService
+            },
+            {
+              provide: LabelQuery,
+              useClass: FakeLabelQuery
             }
           ]
         });
@@ -143,14 +165,14 @@ fdescribe(
     it ('Should suggest right field - 0', () => {
       queryService.queryObservable.next('');
       queryService.getSuggestions().subscribe((v) => {
-        expect(v).toEqual(['area', 'area.name', 'iteration', 'iteration.name']);
+        expect(v).toEqual(['area.name', 'iteration.name', 'parent.number', 'title', 'assignee', 'label.name']);
       });
     });
 
     it ('Should suggest right field - 1', () => {
       queryService.queryObservable.next('are');
       queryService.getSuggestions().subscribe((v) => {
-        expect(v).toEqual(['area', 'area.name']);
+        expect(v).toEqual(['area.name', 'parent.number']);
       });
     });
 
@@ -169,16 +191,16 @@ fdescribe(
     });
 
     it ('Should suggest right field - 4', () => {
-      queryService.queryObservable.next('area:');
+      queryService.queryObservable.next('area.name:');
       queryService.getSuggestions().subscribe((v) => {
-        expect(v).toEqual(['id-1', 'id-2', 'id-23']);
+        expect(v).toEqual(['area-1', 'area-2', 'area-23']);
       });
     });
 
     it ('Should suggest right field - 5', () => {
-      queryService.queryObservable.next('area:id-2');
+      queryService.queryObservable.next('area.name:area-2');
       queryService.getSuggestions().subscribe((v) => {
-        expect(v).toEqual(['id-2', 'id-23']);
+        expect(v).toEqual(['area-2', 'area-23']);
       });
     });
 
