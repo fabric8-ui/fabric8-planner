@@ -5,7 +5,6 @@ import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operato
 import { AreaQuery } from '../models/area.model';
 import { IterationQuery } from '../models/iteration.model';
 import { LabelQuery } from '../models/label.model';
-import { UserQuery } from '../models/user';
 // import { LabelQuery } from '../models/label.model';
 // import { UserQuery } from '../models/user';
 import {
@@ -30,7 +29,6 @@ export class QuerySuggestionService {
   constructor(
     private areaQuery: AreaQuery,
     private iterationQuery: IterationQuery,
-    private userQuery: UserQuery,
     private userService: UserService,
     private labelQuery: LabelQuery
   ) {}
