@@ -1,5 +1,5 @@
-import { ActiveDescendantKeyManager, FocusMonitor, FocusTrapFactory, ListKeyManager  } from '@angular/cdk/a11y';
-import { DOWN_ARROW, UP_ARROW } from '@angular/cdk/keycodes';
+import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
+import { DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, UP_ARROW } from '@angular/cdk/keycodes';
 import {
   AfterViewChecked, AfterViewInit,
   Component, ElementRef, HostListener,
@@ -188,9 +188,14 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
     }
   }
 
+  onInputKeyPress(event: KeyboardEvent) {
+    let keycode = event.keyCode ? event.keyCode : event.which;
+    if (keycode === UP_ARROW || keycode === DOWN_ARROW) {
+      event.preventDefault();
+    }
+  }
 
   fetchWorkItemForQuery(event: KeyboardEvent, query: string, cursorPosition: number) {
-    event.preventDefault();
     let keycode = event.keyCode ? event.keyCode : event.which;
     let queryParams = cloneDeep(this.route.snapshot.queryParams);
     // If Enter pressed
@@ -200,7 +205,12 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
           this.keyManager.activeItem.item, query, cursorPosition
         );
       } else if (keycode === UP_ARROW || keycode === DOWN_ARROW) {
+        event.preventDefault();
         this.keyManager.onKeydown(event);
+      } else if (keycode === LEFT_ARROW || keycode === RIGHT_ARROW) {
+        this.querySuggestionService.queryObservable.next(
+          this.getTextTillCurrentCursor()
+        );
       } else {
         this.valueLoading = true;
         this.querySuggestionService.queryObservable.next(
@@ -224,6 +234,10 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
           });
         }
         this.searchField.nativeElement.blur();
+      } else if (keycode === LEFT_ARROW || keycode === RIGHT_ARROW) {
+        this.querySuggestionService.queryObservable.next(
+          this.getTextTillCurrentCursor()
+        );
       } else {
         this.valueLoading = true;
         this.querySuggestionService.queryObservable.next(
