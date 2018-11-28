@@ -31,6 +31,7 @@
 			<input #queryInput class="f8-query__input"
 				[disabled]="disableInput"
 				(keyup)="fetchWorkItemForQuery($event, queryInput.value, queryInput.selectionStart)"
+				(keydown)="onInputKeyPress($event)"
 				[(ngModel)]="searchQuery"
 				(click)="onClickSearchField($event)"
 				(blur)="onBlurSearchField()"
