@@ -67,7 +67,7 @@ it('should disable the create label button', async(() => {
   labelnameInput.nativeElement.input = '  ';
   fixture.detectChanges();
   // check if button is disabled
-  expect(fixture.componentInstance['createDisabled']).toBeT();
+  expect(fixture.componentInstance['createDisabled']).toBeTruthy();
   expect(labelnameInput.nativeElement.value.length).toBe(0);
 }));
 
