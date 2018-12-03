@@ -210,7 +210,7 @@ export class LabelSelectorComponent implements OnInit {
   }
 
   onAddLabelInput(val) {
-    if(val.trim().length === 0 && val.length) {
+    if (val.trim().length === 0 && val.length) {
       this.labelnameInput.nativeElement.value = '';
     }
     this.createDisabled = val.trim() === '';
