@@ -16,7 +16,7 @@ let componentInstance: LabelSelectorComponent;
 let fixture: ComponentFixture<LabelSelectorComponent>;
 let store: Store<AppState>;
 
-describe('AppComponent', () => {
+describe('LabelSelectorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -32,43 +32,40 @@ describe('AppComponent', () => {
         LabelSelectorComponent
       ],
       providers: [ LabelService, HttpClientService, Store]
-    })
-        .compileComponents()
-        .then(() => {
+    }).compileComponents()
+      .then(() => {
           let store = TestBed.get(Store);
-
           spyOn(store, 'dispatch').and.callThrough();
           fixture = TestBed.createComponent(LabelSelectorComponent);
           componentInstance = fixture.componentInstance;
           fixture.detectChanges();
+      });
+  }));
 
-        });
-}));
-
-it(`should create label selector component`, async(() => {
+  it(`should create label selector component`, async(() => {
     expect(componentInstance).toBeTruthy();
-}));
+  }));
 
-it('should recognize a label name field', async(() => {
-  fixture.detectChanges();
-  const labelnameInput = fixture.componentInstance.labelnameInput;
-  expect(labelnameInput).toBeDefined();
-}));
+  it('should recognize a label name field', async(() => {
+    fixture.detectChanges();
+    const labelnameInput = fixture.componentInstance.labelnameInput;
+    expect(labelnameInput).toBeDefined();
+  }));
 
-it('should remove the white spaces', async(() => {
-  let labelnameInput = fixture.componentInstance.labelnameInput;
-  labelnameInput.nativeElement.input = '  ';
-  fixture.detectChanges();
-  expect(labelnameInput.nativeElement.value.length).toBe(0);
-}));
+  it('should remove the white spaces', async(() => {
+    let labelnameInput = fixture.componentInstance.labelnameInput;
+    labelnameInput.nativeElement.input = '  ';
+    fixture.detectChanges();
+    expect(labelnameInput.nativeElement.value.length).toBe(0);
+  }));
 
-it('should disable the create label button', async(() => {
-  let labelnameInput = fixture.componentInstance.labelnameInput;
-  labelnameInput.nativeElement.input = '  ';
-  fixture.detectChanges();
-  // check if button is disabled
-  expect(fixture.componentInstance['createDisabled']).toBeTruthy();
-  expect(labelnameInput.nativeElement.value.length).toBe(0);
-}));
+  it('should disable the create label button', async(() => {
+    let labelnameInput = fixture.componentInstance.labelnameInput;
+    labelnameInput.nativeElement.input = '  ';
+    fixture.detectChanges();
+    // check if button is disabled
+    expect(fixture.componentInstance['createDisabled']).toBeTruthy();
+    expect(labelnameInput.nativeElement.value.length).toBe(0);
+  }));
 
 });
