@@ -48,6 +48,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
     // Wait untill workItemTypes are loaded
     this.workItemTypeQuery.getWorkItemTypes().pipe(filter(wt => !!wt.length)))
     .pipe(
+      delay(500),
       switchMap(([space, query]) => {
         if (query.hasOwnProperty('q')) {
           this.searchQuery = query.q;
@@ -233,7 +234,6 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
             queryParams: { q : query}
           });
         }
-        this.searchField.nativeElement.blur();
       } else if (keycode === LEFT_ARROW || keycode === RIGHT_ARROW) {
         this.querySuggestionService.queryObservable.next(
           this.getTextTillCurrentCursor()
@@ -270,6 +270,11 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
     this.querySuggestionService.queryObservable.next(
       this.getTextTillCurrentCursor()
     );
+  }
+
+  clearInputField() {
+    this.searchQuery = '';
+    this.searchField.nativeElement.focus();
   }
 
   onBlurSearchField(event) {

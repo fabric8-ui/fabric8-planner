@@ -26,7 +26,7 @@
 				[class.pficon-close]="!valueLoading"
 				tooltip="Press ctrl+backspace to clear"
 				placement="left"
-				(click)="searchQuery='';"
+				(click)="clearInputField()"
 				></span>
 			<input #queryInput class="f8-query__input"
 				[disabled]="disableInput"
