@@ -92,7 +92,7 @@ export class InlineInputComponent implements OnInit {
       return /^\d+$/.test(value);
     }
     if (this.type === 'float') {
-      return /^-?\d*(\.\d+)?$/.test(value) && this.isFloat(value);
+      return this.isFloat(value);
     }
     return true;
   }
