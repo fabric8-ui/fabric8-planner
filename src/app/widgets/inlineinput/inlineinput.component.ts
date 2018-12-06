@@ -83,12 +83,16 @@ export class InlineInputComponent implements OnInit {
     }
   }
 
+  isFloat(x) {
+    return isFinite(x) && x == Math.fround(x);
+  }
+
   validateValue(value) {
     if (this.type === 'integer') {
       return /^\d+$/.test(value);
     }
     if (this.type === 'float') {
-      return /^-?\d*(\.\d+)?$/.test(value);
+      return /^-?\d*(\.\d+)?$/.test(value) && this.isFloat(value);
     }
     return true;
   }
