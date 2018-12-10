@@ -167,6 +167,9 @@ export class InlineInputComponent implements OnInit {
           break;
       }
     }
+    if (this.editing && this.type == 'float' && keycode == 13) {
+      this.saveClick();
+    }
     if (this.isNotValid) {
       this.errorMessage = `This is a ${this.type} field`;
     }
