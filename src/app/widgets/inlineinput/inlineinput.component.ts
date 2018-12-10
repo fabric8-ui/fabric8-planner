@@ -72,6 +72,7 @@ export class InlineInputComponent implements OnInit {
       });
     } else {
       this.errorMessage = `Invalid value for the field type ${this.type}`;
+      this.inputField.nativeElement.focus();
     }
   }
 
@@ -83,7 +84,8 @@ export class InlineInputComponent implements OnInit {
     }
   }
 
-  isFloat(x) {
+  isFloat(val) {
+    let x = parseFloat(val);
     return typeof x === 'number' && Number.isFinite(x) && x >= -2147483648 && x <= 2147483648;
   }
 
