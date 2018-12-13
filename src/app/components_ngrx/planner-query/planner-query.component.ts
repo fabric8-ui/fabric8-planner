@@ -198,20 +198,18 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
 
   fetchWorkItemForQuery(event: KeyboardEvent, query: string, cursorPosition: number) {
     let keycode = event.keyCode ? event.keyCode : event.which;
-    let queryParams = cloneDeep(this.route.snapshot.queryParams);
     // If Enter pressed
     if (this.isSuggestionDropdownOpen) {
-      if (keycode === 13) {
+      if (keycode === 13 && this.keyManager.activeItem) {
         this.onSelectSuggestion(
           this.keyManager.activeItem.item, query, cursorPosition
         );
+        this.keyManager.setActiveItem(null);
+      } else if (keycode === 13 && !this.keyManager.activeItem) {
+        this.executeQuery(query);
       } else if (keycode === UP_ARROW || keycode === DOWN_ARROW) {
         event.preventDefault();
         this.keyManager.onKeydown(event);
-      } else if (keycode === LEFT_ARROW || keycode === RIGHT_ARROW) {
-        this.querySuggestionService.queryObservable.next(
-          this.getTextTillCurrentCursor()
-        );
       } else {
         this.valueLoading = true;
         this.querySuggestionService.queryObservable.next(
@@ -220,24 +218,7 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
       }
     } else if (!this.isSuggestionDropdownOpen) {
       if (keycode === 13 && query !== '') {
-        if (queryParams.hasOwnProperty('prevq')) {
-          this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: {
-                q : query,
-                prevq: queryParams.prevq
-              }
-          });
-        } else {
-          this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: { q : query}
-          });
-        }
-      } else if (keycode === LEFT_ARROW || keycode === RIGHT_ARROW) {
-        this.querySuggestionService.queryObservable.next(
-          this.getTextTillCurrentCursor()
-        );
+        this.executeQuery(query);
       } else {
         this.valueLoading = true;
         this.querySuggestionService.queryObservable.next(
@@ -246,6 +227,30 @@ export class PlannerQueryComponent implements OnInit, OnDestroy, AfterViewChecke
       }
     } else if (keycode === 8 && (event.ctrlKey || event.metaKey)) {
       this.searchQuery = '';
+    }
+
+    if (keycode === LEFT_ARROW || keycode === RIGHT_ARROW) {
+      this.querySuggestionService.queryObservable.next(
+        this.getTextTillCurrentCursor()
+      );
+    }
+  }
+
+  executeQuery(query) {
+    let queryParams = cloneDeep(this.route.snapshot.queryParams);
+    if (queryParams.hasOwnProperty('prevq')) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+            q : query,
+            prevq: queryParams.prevq
+          }
+      });
+    } else {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { q : query}
+      });
     }
   }
 
