@@ -1,5 +1,3 @@
-import { of } from 'rxjs';
-
 export const AND = '$AND';
 export const OR = '$OR';
 export const EQUAL = '$EQ';

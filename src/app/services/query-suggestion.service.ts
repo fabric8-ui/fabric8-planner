@@ -5,12 +5,9 @@ import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operato
 import { AreaQuery } from '../models/area.model';
 import { IterationQuery } from '../models/iteration.model';
 import { LabelQuery } from '../models/label.model';
-// import { LabelQuery } from '../models/label.model';
-// import { UserQuery } from '../models/user';
 import {
   AND, ENCLOUSER, EQUAL_QUERY,
-  IN, NOT_EQUAL_QUERY, NOT_IN, OR,
-  P_END, P_START, SUB_STR
+  NOT_EQUAL_QUERY, OR, P_START
 } from './query-keys';
 
 const keys_before_field = [

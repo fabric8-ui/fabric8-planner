@@ -219,7 +219,7 @@ export class FilterService {
     // then enclosed the string and return it
     if (
       query.split(' ').length > 1 &&
-      !(query[0] == this.str_enclouser && query[query.length - 1] == this.str_enclouser)) {
+      !(query[0] === this.str_enclouser && query[query.length - 1] === this.str_enclouser)) {
       return this.str_enclouser + query + this.str_enclouser;
     }
     return query;
@@ -230,7 +230,7 @@ export class FilterService {
    * @param query
    */
   clearEnclosedValue(query: string) {
-    if (query[0] == this.str_enclouser && query[query.length - 1] == this.str_enclouser) {
+    if (query[0] === this.str_enclouser && query[query.length - 1] === this.str_enclouser) {
       return query.substr(1, query.length - 2);
     }
     return query;
@@ -273,7 +273,7 @@ export class FilterService {
       // Check if there is any composite query in existing one
       if (decodedURL.indexOf(this.and_notation) > -1 || decodedURL.indexOf(this.or_notation) > -1) {
         // Check if existing query is a group i.e. enclosed
-        if (decodedURL[0] != P_START || decodedURL[decodedURL.length - 1] != P_END) {
+        if (decodedURL[0] !== P_START || decodedURL[decodedURL.length - 1] !== P_END) {
           // enclose it with ()
           decodedURL = P_START + decodedURL + P_END;
         }
