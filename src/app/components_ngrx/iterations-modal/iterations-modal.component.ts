@@ -1,5 +1,6 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   OnChanges,
   OnDestroy,
@@ -34,6 +35,7 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   @ViewChild('iterationList') iterationList: any;
   @ViewChild('startmydp') startmydp: MyDatePicker;
   @ViewChild('endmydp') endmydp: MyDatePicker;
+  @ViewChild('iterationname') iterationNameField: ElementRef;
 
   public iteration: IterationUI;
   private validationError = false;
@@ -81,7 +83,6 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
   private endDateSelector: IMySelector = {
     open: false
   };
-
   constructor(
     private broadcaster: Broadcaster,
     private store: Store<AppState>,
@@ -232,6 +233,12 @@ export class FabPlannerIterationModalComponent implements OnInit, OnDestroy, OnC
       this.modalTitle = 'Close Iteration';
     }
     this.createUpdateIterationDialog.open();
+    if (this.iterationNameField && this.iterationNameField.nativeElement) {
+      console.log('Iteration name field' + this.iterationNameField);
+      setTimeout(() => {
+        this.iterationNameField.nativeElement.focus();
+      }, 0);
+    }
   }
 
   actionOnOpen() {
