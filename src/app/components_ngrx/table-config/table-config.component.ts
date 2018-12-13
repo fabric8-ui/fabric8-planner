@@ -17,6 +17,7 @@ export class TableConfigComponent {
   @Input() columns;
   @Output() readonly onMovetoAvailable: EventEmitter<any[]> = new EventEmitter();
   @Output() readonly onMovetoDisplay: EventEmitter<any[]> = new EventEmitter();
+  isNoAttributeSelected: Boolean = true;
 
   private isTableConfigOpen;
 
@@ -30,6 +31,15 @@ export class TableConfigComponent {
       col.selected = true;
     } else {
       col.selected = false;
+    }
+    this.checkIfNoColumnSelected();
+  }
+
+  checkIfNoColumnSelected() {
+    if (this.columns.filter(col => col.selected).length < 1) {
+      this.isNoAttributeSelected = true;
+    } else {
+      this.isNoAttributeSelected = false;
     }
   }
 

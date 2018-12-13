@@ -27,14 +27,24 @@
           </ul>
         </aside>
         <aside>
-          <span class="db fa fa-angle-right"
-            tooltip="Move to Displayed Attributes"
-            (click)="moveToDisplay()">
-          </span>
-          <span class="db fa fa-angle-left"
-            tooltip="Move to Available Attributes"
-            (click)="moveToAvailable()">
-          </span>
+          <span *ngIf="isNoAttributeSelected; else moveAttributes">
+            <span class="db fa fa-angle-right"
+              tooltip="Please select an attribute">
+            </span>
+            <span class="db fa fa-angle-left"
+              tooltip="Please select an attribute">
+            </span>              
+          </span>          
+          <ng-template #moveAttributes>
+            <span class="db fa fa-angle-right"
+              tooltip="Move to Displayed Attributes"
+              (click)="moveToDisplay()">
+            </span>
+            <span class="db fa fa-angle-left"
+              tooltip="Move to Available Attributes"
+              (click)="moveToAvailable()">
+            </span>
+          </ng-template>
         </aside>
         <aside>
           <small>Available Attributes</small>
