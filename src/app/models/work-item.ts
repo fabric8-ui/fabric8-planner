@@ -1,11 +1,20 @@
 import { Injectable } from '@angular/core';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
-import { cloneDeep } from 'lodash';
-import { Observable } from 'rxjs';
-import { AppState, ListPage } from './../states/app.state';
+
+// MemoizedSelector is needed even if it's not being used in this file
+// Else you get this error
+// Exported variable 'workItemSelector' has or is using name 'MemoizedSelector'
+// from external module "@ngrx/store/src/selector" but cannot be named.
 import {
-  AreaMapper, AreaModel,
+  createFeatureSelector, createSelector,
+  MemoizedSelector, select, Store
+} from '@ngrx/store';
+import { cloneDeep, orderBy } from 'lodash';
+import { combineLatest, Observable } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
+import { AppState, DetailPageState, PlannerState } from './../states/app.state';
+import {
+  AreaModel,
   AreaQuery, AreaUI
 } from './area.model';
 import { Comment, CommentUI } from './comment';
@@ -18,18 +27,22 @@ import {
   switchModel
 } from './common.model';
 import {
-  IterationMapper, IterationModel,
+  IterationModel,
   IterationQuery, IterationUI
 } from './iteration.model';
 import {
-   LabelMapper, LabelModel,
+   LabelMapper,
+   LabelModel,
    LabelQuery, LabelUI
 } from './label.model';
 import { Link } from './link';
-import { UserMapper, UserQuery, UserService, UserUI } from './user';
+import { plannerSelector } from './space';
+import { UserQuery, UserService, UserUI } from './user';
 import {
   WorkItemType,
   WorkItemTypeMapper,
+  WorkItemTypeQuery,
+  workItemTypeSelector,
   WorkItemTypeUI
 } from './work-item-type';
 
@@ -149,9 +162,10 @@ export interface WorkItemUI {
   assigneesObs?: Observable<UserUI[]>;
   creator: string;
   creatorObs?: Observable<UserUI>;
-  type: WorkItemTypeUI;
+  type: string;
+  typeObs?: Observable<WorkItemTypeUI>;
   labels: string[];
-  labelsObs: Observable<LabelUI[]>;
+  labelsObs?: Observable<LabelUI[]>;
   comments?: CommentUI[];
   children?: WorkItemUI[];
   commentLink: string;
@@ -161,6 +175,7 @@ export interface WorkItemUI {
   parentID: string;
   link: string;
   WILinkUrl: string;
+  columnIds?: string[] | null;
 
   treeStatus: 'collapsed' | 'expanded' | 'disabled' | 'loading'; // collapsed
   childrenLoaded: boolean; // false
@@ -168,9 +183,12 @@ export interface WorkItemUI {
 
   createId?: number; // this is used to identify newly created item
   selected: boolean;
+  editable?: boolean; // Based on the logged in user this value will be changed. Default value is false
 }
 
-export interface WorkItemStateModel extends EntityState<WorkItemUI> {}
+export interface WorkItemStateModel extends EntityState<WorkItemUI> {
+  nextLink: string;
+}
 
 const workItemAdapter = createEntityAdapter<WorkItemUI>();
 const {
@@ -181,12 +199,8 @@ const {
 } = workItemAdapter.getSelectors();
 
 export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
-  itMapper = new IterationMapper();
   wiTypeMapper = new WorkItemTypeMapper();
-  areaMapper = new AreaMapper();
-  userMapper = new UserMapper();
   labelMapper = new LabelMapper();
-
   serviceToUiMapTree: MapTree = [{
       fromPath: ['id'],
       toPath: ['id']
@@ -236,9 +250,8 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
       fromPath: ['relationships', 'iteration', 'data', 'id'],
       toPath: ['iterationId']
     }, {
-      fromPath: ['relationships', 'baseType', 'data'],
-      toPath: ['type'],
-      toFunction: this.wiTypeMapper.toUIModel.bind(this.wiTypeMapper)
+      fromPath: ['relationships', 'baseType', 'data', 'id'],
+      toPath: ['type']
     }, {
       fromPath: ['relationships', 'comments', 'links', 'related'],
       toPath: ['commentLink']
@@ -287,7 +300,17 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
     }, {
       toPath: ['bold'],
       toValue: false
+    }, {
+      toPath: ['editable'],
+      toValue: false
+    }, {
+      fromPath: ['relationships', 'boardcolumns', 'data'],
+      toPath: ['columnIds'],
+      toFunction: (data) => {
+        return Array.isArray(data) ? data.map(col => col.id) : null;
+      }
     }
+
   ];
 
   uiToServiceMapTree: MapTree = [{
@@ -356,8 +379,10 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
       }
     }, {
       fromPath: ['type'],
-      toPath: ['relationships', 'baseType', 'data'],
-      toFunction: this.wiTypeMapper.toServiceModel.bind(this.wiTypeMapper)
+      toPath: ['relationships', 'baseType', 'data', 'id']
+    }, {
+      toPath: ['relationships', 'baseType', 'data', 'type'],
+      toValue: 'workitemtypes'
     }, {
       fromPath: ['commentLink'],
       toPath: ['relationships', 'comments', 'links', 'related']
@@ -389,6 +414,18 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
         );
       }.bind(this)
     }, {
+      toPath: ['relationships', 'boardcolumns', 'data'],
+      fromPath: ['columnIds'],
+      toFunction: (data) => {
+        if (!data) {return null; }
+        return data.map((id) => {
+          return {
+          id: id,
+          type: 'boardcolumns'
+          };
+        });
+      }
+    }, {
       fromPath: ['hasChildren'],
       toPath: ['relationships', 'children', 'meta', 'hasChildren']
     }, {
@@ -416,12 +453,12 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
     );
   }
 
-  toDyanmicServiceModel(arg: WorkItemUI) {
+  toDyanmicServiceModel(arg: WorkItemUI, dynamicFields) {
     let dynamicUiToServiceMapTree: MapTree = [];
-    for (let i = 0; i < arg.type.dynamicfields.length; i++) {
+    for (let i = 0; i < dynamicFields.length; i++) {
       dynamicUiToServiceMapTree.push({
-        toPath: ['attributes', arg.type.dynamicfields[i]],
-        fromPath: ['dynamicfields', arg.type.dynamicfields[i]]
+        toPath: ['attributes', dynamicFields[i]],
+        fromPath: ['dynamicfields', dynamicFields[i]]
       });
     }
     const serviceModel = switchModel<WorkItemUI, any>(
@@ -470,20 +507,31 @@ export class WorkItemMapper implements Mapper<WorkItemService, WorkItemUI> {
   }
 }
 
-export class WorkItemResolver {
-  constructor(private workItem: WorkItemUI) {}
+export const workItemSelector = createSelector(
+  plannerSelector,
+  // TODO
+  // This is a HACK till fabric8-ui removes the unnecessary planner imports
+  // it should just be
+  // state => state.workItems
+  state => state ? state.workItems : {entities: {}, ids: []}
+);
+// should never be exported
+const workItemEntities = createSelector(
+  workItemSelector,
+  selectEntities
+);
+export const getAllWorkItemSelector = createSelector(
+  workItemSelector,
+  selectAll
+);
 
-  resolveType(types: WorkItemTypeUI[]) {
-    const type = types.find(t => t.id === this.workItem.type.id);
-    if (type) {
-      this.workItem.type = cloneDeep(type);
-    }
-  }
+export const workItemDetailSelector =
+  createFeatureSelector<DetailPageState>('detailPage');
 
-  getWorkItem() {
-    return this.workItem;
-  }
-}
+export const workItemInDetailSelector = createSelector(
+  workItemDetailSelector,
+  state => state.workItem
+);
 
 @Injectable()
 export class WorkItemQuery {
@@ -492,57 +540,68 @@ export class WorkItemQuery {
     private userQuery: UserQuery,
     private iterationQuery: IterationQuery,
     private areaQuery: AreaQuery,
-    private labelQuery: LabelQuery
+    private labelQuery: LabelQuery,
+    private workItemTypeQuery: WorkItemTypeQuery
   ) {}
 
-  private listPageSelector = createFeatureSelector<ListPage>('listPage');
-  private workItemSelector = createSelector(
-    this.listPageSelector,
-    state => state.workItems
+  private workItemSource = this.store.pipe(
+    select(getAllWorkItemSelector)
   );
-  private workItemEntities = createSelector(
-    this.workItemSelector,
-    selectEntities
-  );
-  private getAllWorkItemSelector = createSelector(
-    this.workItemSelector,
-    selectAll
-  );
-  private workItemSource = this.store
-    .select(this.getAllWorkItemSelector);
 
-  private workItemDetailSource = this.store
-    .select(state => state.detailPage)
-    .select(state => state.workItem);
+  resolveWorkItem(workItem: WorkItemUI): WorkItemUI {
+    return {
+      ...workItem,
+      typeObs: this.workItemTypeQuery.getWorkItemTypeWithChildrenById(workItem.type),
+      creatorObs: this.userQuery.getUserObservableById(workItem.creator),
+      assigneesObs: this.userQuery.getUserObservablesByIds(workItem.assignees),
+      iterationObs: this.iterationQuery.getIterationObservableById(workItem.iterationId),
+      areaObs: this.areaQuery.getAreaObservableById(workItem.areaId),
+      labelsObs: this.labelQuery.getLabelObservablesByIds(workItem.labels)
+    };
+  }
 
   getWorkItems(): Observable<WorkItemUI[]> {
-    return this.workItemSource.map(workItems => {
-      return workItems.map(workItem => {
-        return {
-          ...workItem,
-          creatorObs: this.userQuery.getUserObservableById(workItem.creator),
-          assigneesObs: this.userQuery.getUserObservablesByIds(workItem.assignees),
-          iterationObs: this.iterationQuery.getIterationObservableById(workItem.iterationId),
-          areaObs: this.areaQuery.getAreaObservableById(workItem.areaId),
-          labelsObs: this.labelQuery.getLabelObservablesByIds(workItem.labels)
-        };
-      });
-    });
+    return this.workItemSource.pipe(
+      map(workItems => {
+        return workItems.map(this.resolveWorkItem.bind(this));
+      })
+    );
   }
 
   getWorkItem(number: string | number): Observable<WorkItemUI> {
-    return this.workItemDetailSource
-    .filter(item => item !== null)
-    .map(workItem => {
-      return {
-        ...workItem,
-        creatorObs: this.userQuery.getUserObservableById(workItem.creator),
-        assigneesObs: this.userQuery.getUserObservablesByIds(workItem.assignees),
-        iterationObs: this.store.select('listPage').select('iterations').select(workItem.iterationId),
-        areaObs: this.store.select('listPage').select('areas').select(state => state[workItem.areaId]),
-        labelsObs: this.labelQuery.getLabelObservablesByIds(workItem.labels)
-      };
-    });
+    return this.store.pipe(
+      select(workItemInDetailSelector),
+      filter(item => item !== null),
+      map(this.resolveWorkItem.bind(this)),
+      switchMap(this.setWorkItemsEditable.bind(this))
+    );
+  }
+
+  /**
+   * @description set property workItem.editable: true
+   * IF loggedInUser is a Collaborator or creator of WorkItem
+   * @param WorkItemUI || @param WorkItemUI[]
+   * @return Observable<WorkItemUI> || @return Observable<WorkItemUI[]>
+   */
+  setWorkItemsEditable(workItems: WorkItemUI | WorkItemUI[]): Observable<WorkItemUI | WorkItemUI[]> {
+    let items = Array.isArray(workItems) ? workItems : [workItems];
+    return combineLatest(
+      this.userQuery.getLoggedInUser,
+      this.userQuery.getCollaboratorIds
+    ).pipe(
+        map(([loggdInuser, collabIDs]): WorkItemUI[] => {
+        return items.map((item: WorkItemUI) => {
+          const allAllowedIds = loggdInuser ? [...collabIDs, item.creator] : [];
+          return {
+            ...item,
+            editable: allAllowedIds.indexOf(loggdInuser.id) > -1
+          };
+        });
+      }),
+      map(items => {
+        return Array.isArray(workItems) ? items : items[0];
+      })
+    );
   }
 
   /**
@@ -554,19 +613,23 @@ export class WorkItemQuery {
    */
   getIterationsForWorkItem(number: string | number): Observable<CommonSelectorUI[]> {
     return this.getWorkItem(number)
-      .filter(w => !!w)
-      .switchMap(workitem => {
-        return this.iterationQuery.getIterations().map(iterations => {
-          return iterations.map(i => {
-            return {
-              key: i.id,
-              value: (i.resolvedParentPath != '/' ? i.resolvedParentPath : '') + '/' + i.name,
-              selected: i.id === workitem.iterationId,
-              cssLabelClass: undefined
-            };
-          });
-        });
-      });
+      .pipe(
+        filter(w => !!w),
+        switchMap(workitem => {
+          return this.iterationQuery.getIterations().pipe(
+            map(iterations => {
+              return orderBy(iterations, 'name', 'asc').map(i => {
+                return {
+                  key: i.id,
+                  value: (i.resolvedParentPath != '/' ? i.resolvedParentPath : '') + '/' + i.name,
+                  selected: i.id === workitem.iterationId,
+                  cssLabelClass: undefined
+                };
+              });
+            })
+          );
+        })
+      );
   }
 
   /**
@@ -578,19 +641,110 @@ export class WorkItemQuery {
    */
   getAreasForWorkItem(number: string | number): Observable<CommonSelectorUI[]> {
     return this.getWorkItem(number)
-      .filter(w => !!w)
-      .switchMap(workItem => {
-        return this.areaQuery.getAreas()
-          .map(areas => {
-            return areas.map(area => {
+      .pipe(
+        filter(w => !!w),
+        switchMap(workItem => {
+          return this.areaQuery.getAreas().pipe(
+            map(areas => {
+              return areas.map(area => {
+                return {
+                  key: area.id,
+                  value: (area.parentPathResolved != '/' ? area.parentPathResolved : '') + '/' + area.name,
+                  selected: area.id === workItem.areaId,
+                  cssLabelClass: undefined
+                };
+              });
+            })
+          );
+        })
+      );
+  }
+
+  /**
+   * This function returns an observable for the the selector component
+   * with work item type data and the selected iteration flagged
+   * This data can be used in work item detail page for the
+   * work item type selector dropdown.
+   * @param number
+   */
+
+  getTypesForWorkItem(number: string | number): Observable<CommonSelectorUI[]> {
+    return this.getWorkItem(number).pipe(
+      filter(w => !!w),
+      switchMap(workItem => {
+        return this.workItemTypeQuery.getWorkItemTypes().pipe(
+          map(types => {
+            return types.map(t => {
               return {
-                key: area.id,
-                value: (area.parentPathResolved != '/' ? area.parentPathResolved : '') + '/' + area.name,
-                selected: area.id === workItem.areaId,
-                cssLabelClass: undefined
+                key: t.id,
+                value: t.name,
+                selected: t.id === workItem.type,
+                icon: t.icon ? t.icon : ''
               };
             });
-          });
-      });
+          })
+        );
+      })
+    );
+  }
+
+  /**
+   * This function returns an observable for the the selector component
+   * with work item state data and the selected iteration flagged
+   * This data can be used in work item detail page for the
+   * work item states selector dropdown.
+   * @param number
+   */
+
+  getStatesForWorkItem(number: string | number): Observable<CommonSelectorUI[]> {
+    return this.getWorkItem(number).pipe(
+      filter(w => !!w),
+      switchMap(workItem => {
+        return this.workItemTypeQuery.getWorkItemTypes().pipe(
+          map(types => types.find(type => type.id === workItem.type)),
+          map(type => {
+            if (!!!type) {
+              return [];
+            }
+            return type.fields['system.state'].type.values.map(s => {
+              return {
+                key: s,
+                value: s,
+                selected: s === workItem.state
+              };
+            });
+          })
+        );
+      })
+    );
+  }
+
+  get getWorkItemEntities(): Observable<{[id: string]: WorkItemUI}> {
+    return this.store.pipe(select(workItemEntities));
+  }
+
+  getWorkItemsByIds(ids: string[]): Observable<WorkItemUI[]> {
+    const selector = createSelector(
+      workItemEntities,
+      state => {
+        return ids.length > 0 ? ids.map(i => state[i])
+          // Sometime
+          .filter(item => !!item)
+          .map(item => this.resolveWorkItem(item))
+          .sort((a, b) => b.order - a.order) : [];
+      }
+    );
+    return this.store.pipe(
+      select(selector),
+      switchMap(this.setWorkItemsEditable.bind(this))
+    );
+  }
+
+  getWorkItemWithId(id: string): Observable<WorkItemUI> {
+    const selector = createSelector(
+      workItemEntities,
+      state => this.resolveWorkItem(state[id])
+    );
+    return this.store.pipe(select(selector));
   }
 }

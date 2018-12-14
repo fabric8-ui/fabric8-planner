@@ -10,16 +10,14 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
-import { cloneDeep, isEqual, sortBy } from 'lodash';
-import { Space } from 'ngx-fabric8-wit';
+import { cloneDeep, sortBy } from 'lodash';
 import {
-  AuthenticationService,
-  User,
-  UserService
+  AuthenticationService
 } from 'ngx-login-client';
 import { EmptyStateConfig } from 'patternfly-ng/empty-state';
-import { Observable } from 'rxjs/Observable';
-import { WorkItemTypeUI } from '../../models/work-item-type';
+import { combineLatest, Observable } from 'rxjs';
+import { filter, switchMap, take, tap } from 'rxjs/operators';
+import { WorkItemTypeQuery, WorkItemTypeUI } from '../../models/work-item-type';
 import { IterationQuery, IterationUI } from './../../models/iteration.model';
 import { CookieService } from './../../services/cookie.service';
 import { FilterService } from './../../services/filter.service';
@@ -31,21 +29,18 @@ import { datatableColumn } from './datatable-config';
 
 // ngrx stuff
 import { Store } from '@ngrx/store';
-import { AreaQuery } from '../../models/area.model';
-import { UserQuery } from '../../models/user';
-import { WorkItemQuery, WorkItemUI } from '../../models/work-item';
-import { WorkItemPreviewPanelComponent } from '../work-item-preview-panel/work-item-preview-panel.component';
+import { SpaceQuery } from '../../models/space';
 import * as AreaActions from './../../actions/area.actions';
 import * as CollaboratorActions from './../../actions/collaborator.actions';
-import * as GroupTypeActions from './../../actions/group-type.actions';
-// import * as actions from './../../actions/index.actions';
-import * as IterationActions from './../../actions/iteration.actions';
-import * as LabelActions from './../../actions/label.actions';
-import * as SpaceActions from './../../actions/space.actions';
-import * as WorkItemTypeActions from './../../actions/work-item-type.actions';
 import * as WorkItemActions from './../../actions/work-item.actions';
+import { AreaQuery } from './../../models/area.model';
+import { GroupTypeQuery } from './../../models/group-types.model';
 import { LabelQuery } from './../../models/label.model';
+import { UserQuery } from './../../models/user';
+import { WorkItemQuery, WorkItemUI } from './../../models/work-item';
 import { AppState } from './../../states/app.state';
+import { WorkItemPreviewPanelComponent } from './../work-item-preview-panel/work-item-preview-panel.component';
+
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -55,48 +50,40 @@ import { AppState } from './../../states/app.state';
 })
 
 export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked {
-  private uiLockedAll: boolean = false;
-  private sidePanelOpen: boolean = true;
-  private groupTypeSource = this.store
-    .select('listPage')
-    .select('groupTypes')
-    .filter(g => !!g.length);
-  private workItemTypeSource = this.store
-    .select('listPage')
-    .select('workItemTypes')
-    .filter(w => !!w.length);
-  private spaceSource = this.store
-    .select('listPage')
-    .select('space')
-    .do(s => {if (!s) { this.store.dispatch(new SpaceActions.Get()); }})
-    .filter(s => !!s);
-  private areaSource = this.areaQuery.getAreas()
-    .filter(a => !!a.length);
+  public uiLockedAll: boolean = false;
+  public sidePanelOpen: boolean = true;
+  public quickAddWorkItemTypes: WorkItemTypeUI[] = [];
+  public loggedIn: boolean = true;
+  public columns: any[] = [];
+  public workItems: WorkItemUI[] = [];
+  public contentItemHeight: number = 50;
+  public selectedRows: any = [];
+  public showTreeUI: boolean = false;
+  public emptyStateConfig: any = {};
+  public uiLockedList: boolean = false;
+  public uiLockedSidebar: boolean = false;
+  public selectedIterationSource: Observable<IterationUI> =
+    this.iterationQuery.getSelectedIteration().pipe(
+      filter(i => i !== null)
+    );
+
+  private workItemTypeSource = this.workItemTypeQuery.getWorkItemTypesWithChildren();
+  private spaceSource = this.spaceQuery.getCurrentSpace.pipe(filter(s => !!s));
+  private areaSource = this.areaQuery.getAreas().pipe(
+    filter(a => !!a.length)
+  );
   private labelSource = this.labelQuery.getLables();
-  private iterationSource = this.iterationQuery.getIterations()
-    .filter(i => !!i.length);
-  private selectedIterationSource = this.iterationQuery.getSelectedIteration()
-    .filter(i => i !== null);
+  private iterationSource = this.iterationQuery.getIterations().pipe(
+    filter(i => !!i.length)
+  );
   private collaboratorSource = this.userQuery.getCollaborators();
   private workItemSource = this.workItemQuery.getWorkItems();
-  private routeSource = this.route.queryParams
-    .filter(p => p.hasOwnProperty('q'));
-  private quickAddWorkItemTypes: WorkItemTypeUI[] = [];
-  private allWorkItemTypes: WorkItemTypeUI[] = [];
-  private selectedIteration: IterationUI = null;
-  private loggedIn: boolean = true;
+  private routeSource = this.route.queryParams.pipe(
+    filter(p => p.hasOwnProperty('q'))
+  );
   private eventListeners: any[] = [];
-  private columns: any[] = [];
-  private isTableConfigOpen: boolean = false;
-  private workItems: WorkItemUI[] = [];
-  private contentItemHeight: number = 50;
-  private selectedRows: any = [];
   private detailExpandedRows: any = [];
   private showTree: boolean = false;
-  private showTreeUI: boolean = false;
-  private emptyStateConfig: any = {};
-  private uiLockedList: boolean = false;
-  private uiLockedSidebar: boolean = false;
   private hdrHeight: number = 0;
   private toolbarHt: number = 0;
   private quickaddHt: number = 0;
@@ -122,7 +109,10 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     private userQuery: UserQuery,
     private labelQuery: LabelQuery,
     private workItemQuery: WorkItemQuery,
-    private areaQuery: AreaQuery
+    private areaQuery: AreaQuery,
+    private groupTypeQuery: GroupTypeQuery,
+    private workItemTypeQuery: WorkItemTypeQuery,
+    private spaceQuery: SpaceQuery
   ) {}
 
   ngOnInit() {
@@ -135,22 +125,24 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
 
     this.eventListeners.push(
       this.spaceSource
-      .do(() => {
-        this.store.dispatch(new CollaboratorActions.Get());
-        this.store.dispatch(new AreaActions.Get());
-        this.uiLockedSidebar = true;
-        this.uiLockedList = true;
-      })
-      .switchMap(s => {
-        return Observable.combineLatest(
-          this.workItemTypeSource,
-          this.areaSource,
-          this.iterationSource.take(1),
-          this.labelSource.take(1),
-          this.collaboratorSource,
-          this.routeSource
-        );
-      })
+      .pipe(
+        tap(() => {
+          this.store.dispatch(new CollaboratorActions.Get());
+          this.store.dispatch(new AreaActions.Get());
+          this.uiLockedSidebar = true;
+          this.uiLockedList = true;
+        }),
+        switchMap(s => {
+          return combineLatest(
+            this.workItemTypeSource,
+            this.areaSource,
+            this.iterationSource.pipe(take(1)),
+            this.labelSource.pipe(take(1)),
+            this.collaboratorSource.pipe(take(1)),
+            this.routeSource
+          );
+        })
+      )
       .subscribe(([
         workItemTypeSource,
         areaSource,
@@ -162,14 +154,15 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         this.uiLockedSidebar = false;
         this.uiLockedList = true;
         let exp = this.filterService.queryToJson(queryParams.q);
-
-        if (!queryParams.hasOwnProperty('showCompleted') && !queryParams.showCompleted) {
+        let fields = this.filterService.queryToFlat(queryParams.q);
+        let stateFilter = fields.findIndex(f => f.field === 'state');
+        if (!queryParams.hasOwnProperty('showCompleted') && !queryParams.showCompleted && stateFilter === -1) {
           this.showCompleted = false;
           // not closed state
           // TODO remove hard coded states and
           // use meta-states when available
           let stateQuery = {};
-          ['closed', 'Done', 'Removed'].forEach(state => {
+          ['closed', 'Done', 'Removed', 'Closed'].forEach(state => {
             stateQuery = this.filterService.queryJoiner(
               stateQuery,
               this.filterService.and_notation,
@@ -195,13 +188,9 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
           this.showTree = false;
           exp['$OPTS'] = {'tree-view': false};
         }
-
-        Object.assign(payload, {
-          expression: exp
-        });
         this.store.dispatch(new WorkItemActions.Get({
           pageSize: 200,
-          filters: payload,
+          filters: exp,
           isShowTree: this.showTree
         }));
       })
@@ -221,11 +210,13 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     // Listen for the url change
     this.eventListeners.push(
       this.router.events
-        .filter(event => event instanceof NavigationStart)
+        .pipe(filter(event => event instanceof NavigationStart))
         .subscribe(
         (event: any) => {
           if (event.url.indexOf('?q') === -1 &&
             event.url.indexOf('/plan/detail/') === -1 &&
+            event.url.indexOf('/plan/board') === -1 &&
+            event.url.indexOf('/plan/query') === -1 &&
             event.url.indexOf('/plan') > -1) {
             this.setDefaultUrl();
           }
@@ -254,71 +245,18 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   // Start: Settings(tableConfig) dropdown
-
-  toggleCheckbox(event, col) {
-    if (event.target.checked) {
-      col.selected = true;
-    } else {
-      col.selected = false;
-    }
-  }
-
-  moveToDisplay() {
-    this.columns.filter(col => col.selected).forEach(col => {
-      if (col.display === true) { return; }
-      col.selected = false;
-      col.display = true;
-      col.showInDisplay = true;
-      col.available = false;
-    });
-    this.updateColumnIndex();
+  moveToDisplay(columns) {
+    this.columns = [...columns];
     this.cookieService.setCookie('datatableColumn', this.columns);
     setTimeout(() => {
       this.workItems = [...this.workItems];
     }, 500);
   }
 
-  moveToAvailable() {
-    this.columns.filter(col => col.selected).forEach(col => {
-      if (col.available === true) { return; }
-      col.selected = false;
-      col.display = false;
-      col.showInDisplay = false;
-      col.available = true;
-    });
-    this.updateColumnIndex();
-    this.cookieService.setCookie('datatableColumn', this.columns);
+  moveToAvailable(columns) {
+    this.cookieService.setCookie('datatableColumn', columns);
+    this.columns = [...columns];
   }
-
-  updateColumnIndex() {
-    let index = 0;
-    this.columns.forEach(col => {
-      if (col.display === true) {
-        col.index = index + 1;
-        index += 1;
-      } else {
-        col.index = undefined;
-      }
-    });
-    this.columns = sortBy(this.columns, 'index');
-  }
-
-  tableConfigChange(value: boolean) {
-    this.isTableConfigOpen = value;
-  }
-
-  tableConfigToggle(event: MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isTableConfigOpen = false;
-  }
-
-  clickOut() {
-    if (this.isTableConfigOpen) {
-      this.isTableConfigOpen = false;
-    }
-  }
-
   // End:  Setting(tableConfig) Dropdown
 
   togglePanelState(event) {
@@ -342,26 +280,23 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     //redirect to default type group
     //get space id
     this.spaceSource
-      .take(1)
+      .pipe(take(1))
       .subscribe(space => {
         if (space) {
           const spaceId = space.id;
           //get groupsgroups
-          this.groupTypeSource
-            .take(1)
-            .subscribe(groupTypes => {
-              const defaultGroupName = groupTypes[0].name;
+          this.groupTypeQuery.getFirstGroupType
+            .pipe(take(1))
+              .subscribe(groupType => {
+              const defaultGroupName = groupType.name;
               //Query for work item type group
               const type_query = this.filterService.queryBuilder('typegroup.name', this.filterService.equal_notation, defaultGroupName);
-              //Query for space
-              const space_query = this.filterService.queryBuilder('space', this.filterService.equal_notation, spaceId);
               //Join type and space query
-              const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query);
-              const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query);
+              const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, type_query);
               //const view_query = this.filterService.queryBuilder('tree-view', this.filterService.equal_notation, 'true');
               //const third_join = this.filterService.queryJoiner(second_join);
               //second_join gives json object
-              let query = this.filterService.jsonToQuery(second_join);
+              let query = this.filterService.jsonToQuery(first_join);
               console.log('query is ', query);
               // { queryParams : {q: query}
               this.router.navigate([], {
@@ -375,11 +310,10 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
 
   setWorkItemTypes() {
     this.eventListeners.push(
-      Observable.combineLatest(
+      combineLatest(
         this.workItemTypeSource,
-        this.groupTypeSource
+        this.groupTypeQuery.getGroupTypes
       ).subscribe(([workItemTypes, groupTypes]) => {
-        this.allWorkItemTypes = workItemTypes;
         const selectedGroupType = groupTypes.find(gt => gt.selected);
         if (selectedGroupType) {
           this.quickAddWorkItemTypes = selectedGroupType.typeList.map(type => {
@@ -450,17 +384,27 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
         this.loadChildren(this.workItems[index]);
       } else {
         this.workItems[index].treeStatus = 'expanded';
+        this.store.dispatch(new WorkItemActions.UpdateSuccess(this.workItems[index]));
         this.workItems = [...this.workItems];
       }
     } else {
       this.workItems[index].treeStatus = 'collapsed';
+      this.store.dispatch(new WorkItemActions.UpdateSuccess(this.workItems[index]));
       this.workItems = [...this.workItems];
     }
   }
 
   loadChildren(workItem: WorkItemUI) {
     this.store.dispatch(
-      new WorkItemActions.GetChildren(workItem)
+      // Clean object is used to remove
+      // Observables from the object so that
+      // it works with Redux dev-tools
+      new WorkItemActions.GetChildren(
+        {
+          id: workItem.id,
+          childrenLink: workItem.childrenLink
+        } as WorkItemUI
+      )
     );
   }
 
@@ -514,13 +458,11 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
     });
   }
 
-  onPreview(id: string): void {
-    const workItem = this.workItems.find(w => w.id === id);
+  onPreview(workItem: WorkItemUI): void {
     this.quickPreview.open(workItem);
   }
 
   onRowDrop(event) {
-    console.log(event);
     if (event.source.id === event.target.id) {
       return;
     }
@@ -530,7 +472,7 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
       destinationWorkitemID: event.target.id,
       direction: 'above'
     };
-    this.store.dispatch(new WorkItemActions.Reoder(payload));
+    this.store.dispatch(new WorkItemActions.Reorder(payload));
   }
 
   ngOnDestroy() {
@@ -552,8 +494,8 @@ export class PlannerListComponent implements OnInit, OnDestroy, AfterViewChecked
       this.renderer.setStyle(this.listContainer.nativeElement, 'height', targetHeight + 'px');
     }
     // This hack is applied to get the titles in the list in order
-    if (document.getElementsByClassName('planner-hack-title-truncate').length) {
-      let arr = document.getElementsByClassName('planner-hack-title-truncate');
+    if (document.getElementsByClassName('f8-planner-list-title').length) {
+      let arr = document.getElementsByClassName('f8-planner-list-title');
       for (let i = 0; i < arr.length; i++) {
         arr[i].parentElement.style.display = 'flex';
       }

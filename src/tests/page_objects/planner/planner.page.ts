@@ -1,8 +1,8 @@
 import { $, browser, Key } from 'protractor';
 import { v4 as uuid } from 'uuid';
 import { AppPage } from '../app.page';
-import * as planner from './../../ui/planner';
 import * as support from './../../support';
+import * as planner from './../../ui/planner';
 
 // this is what you see when you click on the Plan Tab button
 export class PlannerPage extends AppPage {
@@ -12,12 +12,14 @@ export class PlannerPage extends AppPage {
   sidePanel = new planner.SidePanel($('aside.f8-sidepanel'));
   quickPreview = new planner.WorkItemQuickPreview($('work-item-detail'));
   header = new planner.ToolbarHeader($('#header-div'));
-  settings = new planner.Settings($('div.f8-wi-list__settings'));
+  settings = new planner.Settings($('div.f8-table-config__settings'));
   iteration = new planner.Iteration($('fab-planner-iteration-modal'));
   detailPage = new planner.WorkItemDetailPage($('work-item-detail'));
   confirmModalButton = new planner.WorkItemList($('#modal-confirm'));
+  query = new planner.Query($('planner-query'));
+  modal = new planner.ModalDialog($('modal'));
 
-  constructor(url: string){
+  constructor(url: string) {
     super(url);
   }
 
@@ -37,17 +39,17 @@ export class PlannerPage extends AppPage {
 
   async createUniqueWorkItem(): Promise<string> {
     let workItemTitle = uuid();
-    await this.createWorkItem({"title" : workItemTitle});
+    await this.createWorkItem({'title' : workItemTitle});
     return workItemTitle;
   }
+
   async createInlineWorkItem(item: planner.WorkItem) {
     this.debug('create inline item', JSON.stringify(item));
     await this.inlineQuickAdd.addInlineWorkItem(item);
   }
 
   async resetState() {
-    await this.sidePanel.clickScenarios();
+    await this.sidePanel.clickWorkItemGroup();
     await $('body').sendKeys(Key.ESCAPE);
-    await this.quickPreview.notificationToast.untilHidden();
   }
 }

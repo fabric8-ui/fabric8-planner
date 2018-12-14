@@ -1,4 +1,3 @@
-import { AsyncPipe } from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -12,40 +11,37 @@ import {
 } from '@angular/core';
 import {
   ActivatedRoute,
-  NavigationExtras,
   Router
 } from '@angular/router';
 import { cloneDeep } from 'lodash';
 import { Broadcaster } from 'ngx-base';
 import { FilterConfig, FilterEvent } from 'patternfly-ng/filter';
 import { ToolbarConfig } from 'patternfly-ng/toolbar';
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
+import { combineLatest, Observable, Subscription } from 'rxjs';
+import { delay, filter, map } from 'rxjs/operators';
 
-import { Spaces } from 'ngx-fabric8-wit';
 import { Space } from 'ngx-fabric8-wit';
 import {
   AuthenticationService,
-  User,
-  UserService
+  User
 } from 'ngx-login-client';
 
 import { AreaQuery, AreaUI } from '../../models/area.model';
 import { FilterModel } from '../../models/filter.model';
 import { WorkItem, WorkItemQuery } from '../../models/work-item';
-import { WorkItemTypeUI } from '../../models/work-item-type';
+import { WorkItemTypeQuery, WorkItemTypeUI } from '../../models/work-item-type';
 import { FilterService } from '../../services/filter.service';
-import { GroupTypeUI } from './../../models/group-types.model';
+import { GroupTypeQuery, GroupTypeUI } from './../../models/group-types.model';
 import { IterationQuery, IterationUI } from './../../models/iteration.model';
 import { LabelQuery, LabelUI } from './../../models/label.model';
 import { UserQuery, UserUI } from './../../models/user';
 
 // ngrx stuff
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import * as CustomQueryActions from './../../actions/custom-query.actions';
-import * as FilterActions from './../../actions/filter.actions';
-import * as SpaceActions from './../../actions/space.actions';
-import { AppState } from './../../states/app.state';
+import { SpaceQuery } from './../../models/space';
+import { AppState, PlannerState } from './../../states/app.state';
+import * as states from './../../states/index.state';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -130,7 +126,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private isStateFilterSelected: boolean = false;
 
   private routeSource = this.route.queryParams
-    .filter(p => p.hasOwnProperty('q'));
+    .pipe(filter(p => p.hasOwnProperty('q')));
   private queryExp;
 
   constructor(
@@ -139,26 +135,22 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     private broadcaster: Broadcaster,
     private filterService: FilterService,
     private auth: AuthenticationService,
-    private userService: UserService,
     private store: Store<AppState>,
     private cdr: ChangeDetectorRef,
     private userQuery: UserQuery,
     private labelQuery: LabelQuery,
+    private groupTypeQuery: GroupTypeQuery,
     private iterationQuery: IterationQuery,
     private areaQuery: AreaQuery,
-    private workItemQuery: WorkItemQuery) {
+    private workItemQuery: WorkItemQuery,
+    private workItemTypeQuery: WorkItemTypeQuery,
+    private spaceQuery: SpaceQuery) {
   }
 
   ngOnInit() {
     console.log('[ToolbarPanelComponent] Running in context: ' + this.context);
     this.loggedIn = this.auth.isLoggedIn();
     this.initiateDataSources();
-    // we want to get notified on space changes.
-    this.spaceSubscription = this.spaceData
-      .subscribe((space: Space) => {
-        console.log('[ToolbarPanelComponent] New Space selected: ' + space.attributes.name);
-        this.store.dispatch(new FilterActions.Get());
-      });
     //on the board view - do not show state filter as the lanes are based on state
     this.allowedFilterKeys = [
       'assignee', 'creator', 'area', 'label',
@@ -170,17 +162,21 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     this.routeSource.subscribe(queryParam => this.queryExp = queryParam.q);
 
     const customQueriesData = this.store
-      .select('listPage')
-      .select('customQueries')
-      .filter(customQueries => !!customQueries.length);
+      .pipe(
+        select('planner'),
+        select('customQueries'),
+        filter(customQueries => !!customQueries.length)
+      );
     this.totalCount = this.workItemQuery.getWorkItems()
-      .map(items => {
-        if (this.isShowTreeOn) {
-          return items.filter(item => item.bold === true).length;
-        } else {
-          return items.length;
-        }
-      });
+      .pipe(
+        map(items => {
+          if (this.isShowTreeOn) {
+            return items.filter(item => item.bold === true).length;
+          } else {
+            return items.length;
+          }
+        })
+      );
 
     this.eventListeners.push(
       customQueriesData.subscribe(queries => {
@@ -208,11 +204,12 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.eventListeners.push(
       this.filterData
+        .pipe(delay(1000))
         .subscribe((filters) => this.setFilterTypes(filters))
     );
 
     this.eventListeners.push(
-      Observable.combineLatest(
+      combineLatest(
         this.areaQuery.getAreas(),
         this.userQuery.getCollaborators(),
         this.workItemTypeData,
@@ -294,10 +291,6 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectFilterType(event: FilterEvent) {
-    this.isStateFilterSelected = false;
-    if (event.field.id === 'state') {
-      this.isStateFilterSelected = true;
-    }
     const filterMap = this.getFilterMap();
     if (Object.keys(filterMap).indexOf(event.field.id) > -1) {
       const index = this.filterConfig.fields.findIndex(i => i.id === event.field.id);
@@ -356,25 +349,28 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   initiateDataSources() {
-    this.workItemTypeData = this.store
-      .select('listPage').select('workItemTypes')
-      .filter(a => !!a.length);
+    this.workItemTypeData = this.workItemTypeQuery.getWorkItemTypes()
+      .pipe(filter(a => !!a.length));
     this.stateData = this.store
-      .select('listPage').select('workItemStates')
-      .filter(a => !!a.length);
+      .pipe(
+        select('planner'),
+        select('workItemStates'),
+        filter(a => !!a.length)
+      );
     this.labelData = this.labelQuery.getLables()
-      .filter(l => l !== null);
-    this.spaceData = this.store
-      .select('listPage').select('space')
-      .filter(space => space !== null);
+      .pipe(filter(l => l !== null));
+    this.spaceData = this.spaceQuery.getCurrentSpace
+      .pipe(filter(space => space !== null));
     this.filterData = this.store
-      .select('toolbar').select('filters')
-      .filter(filters => !!filters.length);
+      .pipe(
+        select('toolbar'),
+        select('filters'),
+        filter(filters => !!filters.length)
+      );
     this.iterationData = this.iterationQuery.getIterations()
-      .filter(i => !!i.length);
-    this.groupTypeData = this.store
-      .select('listPage').select('groupTypes')
-      .filter(i => !!i.length);
+      .pipe(filter(i => !!i.length));
+    this.groupTypeData = this.groupTypeQuery.getGroupTypes
+      .pipe(filter(i => !!i.length));
   }
 
   getFilterMap() {
@@ -398,7 +394,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           return {
             queries: users.filter(u => !u.currentUser).map((user: UserUI) => {return {id: user.id, value: user.username, imageUrl: user.avatar}; }),
             primaryQueries: authUser ?
-              [{id: authUser.id, value: authUser.username + ' (me1)', imageUrl: authUser.avatar}, {id: null, value: 'Unassigned'}] :
+              [{id: authUser.id, value: authUser.username + ' (me)', imageUrl: authUser.avatar}, {id: null, value: 'Unassigned'}] :
               [{id: null, value: 'Unassigned'}]
           };
         },
@@ -445,7 +441,8 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         datasource: this.labelData,
         datamap: (labels: LabelUI[]) => {
           return {
-            queries: labels.map(label => {
+            queries: labels.sort((l1, l2) => (l1.name.toLowerCase() > l2.name.toLowerCase() ? 1 : 0))
+            .map(label => {
               return {
                 id: label.id,
                 value: label.name
@@ -471,6 +468,11 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           const fields = this.filterService.queryToFlat(
             this.currentQuery
           );
+          let stateFilter = fields.findIndex(f => f.field === 'state');
+          this.isStateFilterSelected = false;
+          if (stateFilter > -1) {
+            this.isStateFilterSelected = true;
+          }
           this.handleShowTreeCheckBox();
           this.formatFilterFIelds(fields);
         } else {
@@ -483,26 +485,28 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   checkFilterFromSidePanle() {
     this.eventListeners.push(
-      Observable.combineLatest(
+      combineLatest(
         this.groupTypeData,
         this.iterationData
       )
-      .map(([gt, it]) => {
-        const selectedIt: IterationUI = it.find(i => i.selected);
-        const selectedGt: GroupTypeUI = gt.find(i => i.selected);
-        return [selectedIt, selectedGt];
-      })
-      .filter(([gt, it]) => {
-        return !!gt || !!it;
-      })
-      .map(([gt, it]) => {
-        if (!!gt) {
-          return gt.name;
-        }
-        if (!!it) {
-          return it.name;
-        }
-      })
+      .pipe(
+        map(([gt, it]) => {
+          const selectedIt: IterationUI = it.find(i => i.selected);
+          const selectedGt: GroupTypeUI = gt.find(i => i.selected);
+          return [selectedIt, selectedGt];
+        }),
+        filter(([gt, it]) => {
+          return !!gt || !!it;
+        }),
+        map(([gt, it]) => {
+          if (!!gt) {
+            return gt.name;
+          }
+          if (!!it) {
+            return it.name;
+          }
+        })
+      )
       .subscribe(selected => {
         this.activeFilterFromSidePanel = selected;
         this.cdr.markForCheck();
@@ -511,7 +515,7 @@ export class ToolbarPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   formatFilterFIelds(fields) {
-    Observable.combineLatest(
+    combineLatest(
       this.areaQuery.getAreas(),
       this.userQuery.getCollaborators(),
       this.workItemTypeData,

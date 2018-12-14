@@ -5,18 +5,27 @@ import {
   BsDropdownConfig,
   BsDropdownModule
 } from 'ngx-bootstrap/dropdown';
+import { WorkItemLinkQuery } from '../../models/link';
+import { WorkItemLinkTypeQuery } from './../../models/link-type';
+import { SpaceQuery } from './../../models/space';
 import {
   GroupWorkItemLinks,
   WorkItemLinkFilterByTypeName,
   WorkItemLinkTypeFilterByTypeName
-} from '../../pipes/work-item-link-filters.pipe';
+} from './../../pipes/work-item-link-filters.pipe';
+import { NgLetModule } from './../../shared/ng-let';
+import { CommonSelectorModule } from './../common-selector/common-selector.module';
+import { TypeaheadSelectorModule } from './../typeahead-selector/typeahead-selector.module';
 import { WorkItemLinkComponent } from './work-item-link.component';
 
 @NgModule({
   imports: [
     CommonModule,
     BsDropdownModule,
-    RouterModule
+    RouterModule,
+    CommonSelectorModule,
+    TypeaheadSelectorModule,
+    NgLetModule
   ],
   declarations: [
     WorkItemLinkComponent,
@@ -25,6 +34,11 @@ import { WorkItemLinkComponent } from './work-item-link.component';
     GroupWorkItemLinks
    ],
   exports: [ WorkItemLinkComponent ],
-  providers: [BsDropdownConfig]
+  providers: [
+    BsDropdownConfig,
+    WorkItemLinkTypeQuery,
+    WorkItemLinkQuery,
+    SpaceQuery
+  ]
 })
 export class WorkItemLinkModule {}

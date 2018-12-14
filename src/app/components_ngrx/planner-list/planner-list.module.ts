@@ -5,29 +5,24 @@ import {
   XHRBackend
 } from '@angular/http';
 import { NgxDatatableModule } from 'rh-ngx-datatable';
-import { AssigneesModule } from './../assignee/assignee.module';
-import { LabelsModule } from './../labels/labels.module';
-import { WorkItemCellComponent } from './../work-item-cell/work-item-cell.component';
+import { WorkItemCellModule } from './../work-item-cell/work-item-cell.module';
 import { WorkItemPreviewPanelModule } from './../work-item-preview-panel/work-item-preview-panel.module';
 
-import { AuthenticationService } from 'ngx-login-client';
 
 import { PlannerListComponent } from './planner-list.component';
 
 import { TruncateModule } from 'ng2-truncate';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TooltipConfig, TooltipModule } from 'ngx-bootstrap/tooltip';
-import { FilterColumn } from '../../pipes/column-filter.pipe';
-import { factoryForHttpService, HttpService } from '../../services/http-service';
 import { PlannerModalModule } from '../../widgets/modal/modal.module';
 import { AreaService } from './../../services/area.service';
 import { CollaboratorService } from './../../services/collaborator.service';
 import { CustomQueryService } from './../../services/custom-query.service';
 import { IterationService } from './../../services/iteration.service';
 import { LabelService } from './../../services/label.service';
-import { WorkItemDataService } from './../../services/work-item-data.service';
 import { WorkItemService } from './../../services/work-item.service';
 import { GlobalSettings } from './../../shared/globals';
+import { PlannerHttpClientModule } from './../../shared/http-module/http.module';
 import {
   PlannerLayoutModule
 } from './../../widgets/planner-layout/planner-layout.module';
@@ -39,14 +34,6 @@ import { WorkItemQuickAddModule } from './../work-item-quick-add/work-item-quick
 import { CookieService } from './../../services/cookie.service';
 import { FilterService } from './../../services/filter.service';
 
-// ngrx stuff
-import { EffectsModule } from '@ngrx/effects';
-import { StoreModule } from '@ngrx/store';
-import * as effects from './../../effects/index.effects';
-import * as reducers from './../../reducers/index.reducer';
-import { WorkItemReducer } from './../../reducers/work-item.reducer';
-import * as states from './../../states/index.state';
-
 import { AlmIconModule, WidgetsModule } from 'ngx-widgets';
 import { EmptyStateModule } from 'patternfly-ng/empty-state';
 import { InfotipService } from '../../services/infotip.service';
@@ -55,20 +42,21 @@ import { ClickOutModule } from '../../widgets/clickout/clickout.module';
 
 // Data Querries
 import { AreaQuery } from '../../models/area.model';
-import { IterationQuery } from '../../models/iteration.model';
-import { LabelQuery } from '../../models/label.model';
+import { WorkItemTypeQuery } from '../../models/work-item-type';
 import { CommentQuery } from './../../models/comment';
+import { GroupTypeQuery } from './../../models/group-types.model';
+import { IterationQuery } from './../../models/iteration.model';
+import { LabelQuery } from './../../models/label.model';
+import { SpaceQuery } from './../../models/space';
 import { UserQuery } from './../../models/user';
 import { WorkItemQuery } from './../../models/work-item';
-import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
+
+import { ErrorHandler } from '../../effects/work-item-utils';
+import { FilterColumnModule } from '../../pipes/column-filter.module';
+import { TableConfigModule } from './../table-config/table-config.module';
 
 let providers = [
     WorkItemService,
-    {
-      provide: HttpService,
-      useFactory: factoryForHttpService,
-      deps: [XHRBackend, RequestOptions, AuthenticationService]
-    },
     CustomQueryService,
     IterationService,
     TooltipConfig,
@@ -79,29 +67,32 @@ let providers = [
     FilterService,
     BsDropdownConfig,
     CookieService,
-    WorkItemDataService,
     UrlService,
     InfotipService,
-
     CommentQuery,
     UserQuery,
     LabelQuery,
     IterationQuery,
     WorkItemQuery,
-    AreaQuery
+    AreaQuery,
+    SpaceQuery,
+    GroupTypeQuery,
+    WorkItemTypeQuery,
+    SpaceQuery,
+    ErrorHandler
   ];
 
 @NgModule({
   imports: [
     AlmIconModule,
-    AssigneesModule,
     CommonModule,
     ClickOutModule,
+    FilterColumnModule,
+    PlannerHttpClientModule,
     PlannerListRoutingModule,
     PlannerLayoutModule,
     PlannerModalModule,
     EmptyStateModule,
-    LabelsModule,
     ToolbarPanelModule,
     TooltipModule.forRoot(),
     SidepanelModule,
@@ -110,55 +101,12 @@ let providers = [
     NgxDatatableModule,
     WorkItemPreviewPanelModule,
     WidgetsModule,
+    TableConfigModule,
     TruncateModule,
-    StoreModule.forFeature('listPage', {
-        iterations: reducers.iterationReducer,
-        labels: reducers.LabelReducer,
-        areas: reducers.AreaReducer,
-        collaborators: reducers.CollaboratorReducer,
-        customQueries: reducers.CustomQueryReducer,
-        groupTypes: reducers.GroupTypeReducer,
-        space: reducers.SpaceReducer,
-        workItemTypes: reducers.WorkItemTypeReducer,
-        workItems: reducers.WorkItemReducer,
-        workItemStates: reducers.WorkItemStateReducer,
-        infotips: reducers.InfotipReducer,
-        users: reducers.UserReducer
-      }, {
-      initialState: {
-        iterations: states.initialIterationState,
-        labels: states.initialLabelState,
-        areas: states.initialAreaState,
-        collaborators: states.initialCollaboratorState,
-        customQueries: states.initialCustomQueryState,
-        groupTypes: states.initialGroupTypeState,
-        space: states.initialSpaceState,
-        workItemTypes: states.initialWorkItemTypeState,
-        workItems: states.initialWorkItemState,
-        workItemStates: states.initialWIState,
-        infotips: states.initialInfotipState,
-        users: states.inititalUserState
-      }
-    }),
-    EffectsModule.forFeature([
-      effects.IterationEffects,
-      effects.LabelEffects,
-      effects.AreaEffects,
-      effects.CollaboratorEffects,
-      effects.CustomQueryEffects,
-      effects.GroupTypeEffects,
-      effects.SpaceEffects,
-      effects.WorkItemTypeEffects,
-      effects.WorkItemEffects,
-      effects.InfotipEffects,
-      effects.UserEffects
-    ]),
-    UserAvatarModule
+    WorkItemCellModule
   ],
   declarations: [
-    PlannerListComponent,
-    WorkItemCellComponent,
-    FilterColumn
+    PlannerListComponent
   ],
   providers: providers,
   exports: [ PlannerListComponent ]

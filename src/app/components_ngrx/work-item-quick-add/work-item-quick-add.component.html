@@ -1,16 +1,16 @@
 <!-- Table Inline Quick Add -->
-<div class="col-xs-12 col-sm-12 col-md-12 f8-quickadd__wiblk" #quickAddElement
+<div class="f8-quickadd__wiblk" #quickAddElement
   *ngIf="wilistview === 'wi-table-view' || wilistview === 'wi-table-view-top'"
   [ngClass]="{'f8-quick-add-inline' : wilistview === 'wi-table-view'}">
   <div class="pull-left">
-    <b class="pull-left padding-right-15">
+    <strong class="pull-left padding-right-10 padding-v-3">
       {{ wilistview === 'wi-table-view' ? 'Add Child Work Item' : 'Add Work Item' }}
-    </b>
+    </strong>
     <!-- type dropdown -->
     <div class="pull-left">
       <div class="dropdown" dropdown>
         <div class="infoArea">
-          <button class="btn btn-default dropdown-toggle padding-h-10" 
+          <button class="btn btn-default dropdown-toggle padding-h-10"
             type="button"
             dropdownToggle>
             <i class="fa dib"
@@ -23,7 +23,7 @@
             </span>
             <span class="fa fa-angle-down"></span>
           </button>
-          <infotip [infotipText]="getInfotipText(selectedType.id) | async"></infotip>
+          <infotip [infotipText]="selectedType.description"></infotip>
         </div>
         <ul class="dropdown-menu"
           role="menu"
@@ -42,31 +42,29 @@
     </div>
   </div>
   <div class="f8-quickadd__wiblk-btn pull-right">
-    <button class="btn btn-primary f8-quickadd__wiblk-btn-add margin-right-15"
+    <button class="btn btn-primary f8-quickadd__wiblk-btn-add margin-right-5"
       id="quickadd-save"
-      [disabled]="blockAdd"
+      [disabled]="blockAdd || (addDisabled | async)"
       [ngClass]="{'': validTitle,'disabled':!validTitle}"
       (click)="save($event)">
       Add
     </button>
-    <button class="btn btn-primary f8-quickadd__wiblk-btn-add margin-right-15"
-      [disabled]="blockAdd"
+    <button class="btn btn-primary f8-quickadd__wiblk-btn-add"
+      [disabled]="blockAdd || (addDisabled | async)"
       [ngClass]="{'': validTitle,'disabled':!validTitle}"
       (click)="save($event, true)">
       Add and Open
     </button>
   </div>
   <div class="f8-quickadd__wiblk-story">
-    <div [ngClass]="wilistview === 'wi-table-view' ?
-      'col-xs-12 col-sm-12 col-md-12'
-      : 'col-xs-12 col-sm-12 col-md-12'"
-      class="f8-quickadd__wiblk-storyinput">
+    <div class="f8-quickadd__wiblk-storyinput padding-h-10">
       <input class="form-control col-xs-12 col-sm-12
         col-md-12 f8-quickadd-input"
         type="text"
         placeholder="Work Item Title"
+        title="{{(addDisabled | async) ? 'Not a Collaborator' : 'Please add work-item title'}}"
         #quickAddTitle
-        [disabled]="blockAdd"
+        [disabled]="blockAdd || (addDisabled | async)"
         [(ngModel)]="workItem.attributes['system.title']"
         (keyup.enter)="save($event)"
         (keyup)="checkTitle()"  required/>
@@ -74,6 +72,64 @@
   </div>
 </div>
 <!-- Table Inline Quick Add Ends -->
+
+<!--Quick Add for Query Tab-->
+
+<div class="f8-quickadd-query__wrapper" *ngIf="wilistview === 'wi-query-view'">
+  <input
+    type="text"
+    placeholder=" Type your title...."
+    #quickAddTitle
+    [formControl]="workItemTitle"
+    [disabled]="blockAdd"
+    [(ngModel)]="workItem.attributes['system.title']"
+    (keyup.enter)="save($event)"
+    (keyup)="checkTitle()"  required/>
+  <div class="dropdown f8-quickadd-query__dropdown" dropdown>
+    <div class="infoArea dropdown">
+      <button class="btn btn-default dropdown-toggle padding-h-10"
+        type="button"
+        dropdownToggle>
+        <i class="fa dib"
+          [ngClass]="selectedType ?
+          selectedType.icon :
+          '' ">
+        </i>
+        <span class="padding-h-5">
+          {{ selectedType ? selectedType.name : '' }}
+        </span>
+        <span class="fa fa-angle-down"></span>
+      </button>
+    </div>
+    <ul class="dropdown-menu"
+      role="menu"
+      *dropdownMenu>
+      <li *ngFor="let type of workItemTypes"
+          role="menuitem"
+          (click)="selectType($event, type)">
+        <div class="dropdown-item planner-dropdown-item pointer">
+          <i class="fa"
+            [ngClass]="type.icon"></i>
+            <span class="padding-h-3">{{ type.name }}</span>
+            <span class="item-desc margin-left-10">{{ type.description }}</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <button class="btn btn-primary f8-quickadd-query__create margin-right-5"
+    id="quickadd-save"
+    [disabled]="blockAdd"
+    [ngClass]="{'': validTitle,'disabled':!validTitle}"
+    (click)="save($event)">
+    Create
+  </button>
+  <button class="btn btn-primary f8-quickadd-query__create-open"
+    [disabled]="blockAdd"
+    [ngClass]="{'': validTitle,'disabled':!validTitle}"
+    (click)="save($event, true)">
+    Create and Open
+  </button>
+</div>
 
 <!-- Quick ADD Template for Board View -->
 <!-- <div class="f8-quickadd-card card-pf f8-quickadd-container"

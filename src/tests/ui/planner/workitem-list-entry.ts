@@ -1,5 +1,4 @@
-import { $, $$, by, ElementFinder } from 'protractor';
-import { WorkItemQuickPreview } from './workitem-quickpreview';
+import {  $$, by, ElementFinder } from 'protractor';
 import * as ui from '../../ui';
 
 export class WorkItemListEntry extends ui.BaseElement {
@@ -9,23 +8,21 @@ export class WorkItemListEntry extends ui.BaseElement {
   type = new ui.BaseElement(this.$('datatable-body-cell:nth-child(3) work-item-cell > div'), 'WorkItem Type');
   title = new ui.Clickable(this.$('.wi-detail-title p'), 'WorkItem Title');
   labels = new ui.BaseElement(this.$('f8-label'), 'WorkItem Labels');
-  inlineCloseButton = new ui.Clickable(this.$('.pficon-close'),'inline close');
+  inlineCloseButton = new ui.Clickable(this.$('.pficon-close'), 'inline close');
   treeExpander = new ui.Clickable(this.$('.tree-icon'), 'WorkItem Expander');
-  labelName =  new ui.Clickable(this.element(by.cssContainingText('.label-name', 'sample_label_1')), 'WorkItem Label' );
-  detailIcon = new ui.Clickable(this.$('.wi-detail-icon'), 'WorkItem detail page')
-
-  // TODO
-  status: ui.BaseElement;
-  iteration= new ui.BaseElement(this.$('#table-iteration'), 'Table Workitem Iteration Name');
-  creator: ui.BaseElement;
-  assignees: ui.BaseElement;
+  labelName =  new ui.Clickable(this.element(by.cssContainingText('.label-name', 'sample_label_1')), 'WorkItem Label');
+  detailIcon = new ui.Clickable(this.$('.wi-detail-icon a'), 'WorkItem detail page');
+  iteration = new ui.BaseElement(this.$('#table-iteration'), 'Table Workitem Iteration Name');
+  creator = new ui.BaseElement(this.$('.user-assign-avatar'), 'Creator column');
+  assignees = new ui.BaseElement(this.$('f8-assignee'), 'Assignee column');
+  deleteIcon = new ui.Clickable(this.$('#wi-delete-icon'), 'Delete work item');
 
   constructor(element: ElementFinder, name: string) {
     super(element, name);
   }
 
   async openQuickPreview() {
-    await this.title.run("Click WorkItem Title: " + this.name, async () => this.title.clickWhenReady());
+    await this.title.run('Click WorkItem Title: ' + this.name, async () => this.title.clickWhenReady());
   }
 
   async clickInlineQuickAdd() {
@@ -37,21 +34,26 @@ export class WorkItemListEntry extends ui.BaseElement {
   }
 
   async getInlineQuickAddClass() {
-    return await this.inlineQuickAdd.getAttribute('className');
+    return this.inlineQuickAdd.getAttribute('className');
   }
 
   async clickExpandWorkItem() {
-    return await this.treeExpander.clickWhenReady();
+    return this.treeExpander.clickWhenReady();
   }
+
   async getIterationText() {
-    return await this.iteration.getTextWhenReady();
+    return this.iteration.getTextWhenReady();
   }
-  
+
   async clickLabel() {
     await this.labelName.clickWhenReady();
   }
 
   async clickDetailIcon() {
     await this.detailIcon.clickWhenReady();
+  }
+
+  async clickDeleteIcon() {
+    await this.deleteIcon.clickWhenReady();
   }
 }

@@ -9,7 +9,6 @@ import { ToolbarModule } from 'patternfly-ng/toolbar';
 import { CollaboratorService } from '../../services/collaborator.service';
 import { FilterService } from '../../services/filter.service';
 import { WorkItemService } from '../../services/work-item.service';
-import { EventService } from './../../services/event.service';
 import { ToolbarPanelComponent } from './toolbar-panel.component';
 
 import {
@@ -23,7 +22,10 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { AreaQuery } from '../../models/area.model';
 import { IterationQuery } from '../../models/iteration.model';
+import { WorkItemTypeQuery } from '../../models/work-item-type';
 import { FilterEffects } from './../../effects/filter.effects';
+import { GroupTypeQuery } from './../../models/group-types.model';
+import { SpaceQuery } from './../../models/space';
 import { FilterReducer } from './../../reducers/filter.reducer';
 import {
   initialState as initialFilterState
@@ -56,9 +58,11 @@ import {
     FilterService,
     TooltipConfig,
     WorkItemService,
-    EventService,
     IterationQuery,
-    AreaQuery
+    AreaQuery,
+    WorkItemTypeQuery,
+    GroupTypeQuery,
+    SpaceQuery
   ],
   exports: [ToolbarPanelComponent]
 })

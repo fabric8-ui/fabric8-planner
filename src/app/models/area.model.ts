@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
+import { createFeatureSelector, createSelector, select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { AppState, ListPage } from '../states/app.state';
+import { map } from 'rxjs/operators';
+import { AppState, PlannerState } from '../states/app.state';
 import {
   Mapper,
   MapTree,
@@ -99,22 +100,25 @@ export class AreaMapper implements Mapper<AreaService, AreaUI> {
 
 @Injectable()
 export class AreaQuery {
-  private listPageSelector = createFeatureSelector<ListPage>('listPage');
+  private plannerSelector = createFeatureSelector<PlannerState>('planner');
   private areaSelector = createSelector(
-    this.listPageSelector,
+    this.plannerSelector,
     (state) => state.areas
   );
-  private areaSource = this.store.select(this.areaSelector);
+  private areaSource = this.store.pipe(select(this.areaSelector));
 
   constructor(private store: Store<AppState>) {}
 
   getAreas(): Observable<AreaUI[]> {
-    return this.areaSource.map(areas => {
-      return Object.keys(areas).map(id => areas[id]);
-    });
+    return this.areaSource
+    .pipe(
+      map(areas => {
+        return Object.keys(areas).map(id => areas[id]);
+      })
+    );
   }
 
   getAreaObservableById(id: string): Observable<AreaUI> {
-    return this.areaSource.select(areas => areas[id]);
+    return this.areaSource.pipe(select(areas => areas[id]));
   }
 }

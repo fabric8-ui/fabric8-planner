@@ -1,12 +1,23 @@
-@import '../../../assets/stylesheets/_base';
+@import (reference) '../../../assets/stylesheets/_base';
 
-.clickable {
-  cursor: pointer;
-}
-.add-label {
-  font-weight: 600;
+.active {
   color: @color-pf-blue-300;
 }
-.bold {
+.disable {
+  color: @color-pf-black-300;
+  cursor: not-allowed;
+}
+.toggle {
+  cursor: pointer;
   font-weight: 600;
+  &:hover {
+    color: @color-pf-blue-300;
+  }
+}
+.item-desc {
+  display: block;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 17px;
+  color: @color-pf-black-400;
 }

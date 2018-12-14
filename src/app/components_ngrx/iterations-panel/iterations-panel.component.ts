@@ -1,28 +1,26 @@
 import {
   Component, Input, OnChanges,
-  OnDestroy, OnInit, TemplateRef,
+  OnDestroy, OnInit,
   ViewChild, ViewEncapsulation
 } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
 
-import { Broadcaster, Logger, Notification, Notifications, NotificationType } from 'ngx-base';
+import { Broadcaster, Logger, Notifications } from 'ngx-base';
 import { AuthenticationService } from 'ngx-login-client';
 
 import { IterationQuery, IterationUI } from '../../models/iteration.model';
-import { WorkItem } from '../../models/work-item';
-import { GroupTypesService } from '../../services/group-types.service';
 import { IterationService } from '../../services/iteration.service';
 import { WorkItemService }   from '../../services/work-item.service';
 import { FabPlannerIterationModalComponent } from '../iterations-modal/iterations-modal.component';
 import { FilterService } from './../../services/filter.service';
 
 // ngrx stuff
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
+import { GroupTypeUI } from '../../models/group-types.model';
 import * as IterationActions from './../../actions/iteration.actions';
 import { AppState } from './../../states/app.state';
-import { IterationState, IterationUIState } from './../../states/iteration.state';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -36,10 +34,11 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   @Input() iterations: IterationUI[] = [];
   @Input() collection = [];
   @Input() sidePanelOpen: boolean = true;
-  @Input() witGroup: string = '';
+  @Input() witGroup: GroupTypeUI;
   @Input() showTree: string = '';
   @Input() showCompleted: string = '';
   @Input() infotipText: string = '';
+  @Input() context: 'list' | 'board'; // 'list' or 'board'
 
   @ViewChild('modal') modal: FabPlannerIterationModalComponent;
 
@@ -50,12 +49,14 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
   eventListeners: any[] = [];
   treeIterations: Observable<IterationUI[]> =
     this.iterationQuery.getIterationForTree()
-    .filter(i => !!i.length)
-    .do(i => {
-      if (!this.startedCheckingURL) {
-        this.checkURL();
-      }
-    });
+    .pipe(
+      filter(i => !!i.length),
+      tap(i => {
+        if (!this.startedCheckingURL) {
+          this.checkURL();
+        }
+      })
+    );
   activeIterations: Observable<IterationUI[]> =
     this.iterationQuery.getActiveIterations();
   spaceId: string = '';
@@ -81,8 +82,10 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
     this.loggedIn = this.auth.isLoggedIn();
     this.editEnabled = true;
     this.spaceSubscription = this.store
-      .select('listPage')
-      .select('space')
+      .pipe(
+        select('planner'),
+        select('space')
+      )
       .subscribe(space => {
         if (space) {
           console.log('[IterationComponent] New Space selected: ' + space.attributes.name);
@@ -107,21 +110,34 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
 
   constructURL(iterationId: string) {
     //Query for work item type group
-    const type_query = this.filterService.queryBuilder('typegroup.name', this.filterService.equal_notation, this.witGroup);
-    //Query for space
-    const space_query = this.filterService.queryBuilder('space', this.filterService.equal_notation, this.spaceId);
+    const type_query = this.filterService.queryBuilder('typegroup.name', this.filterService.equal_notation, this.witGroup.name);
     //Query for iteration
     const iteration_query = this.filterService.queryBuilder('iteration', this.filterService.equal_notation, iterationId);
     //Join type and space query
-    const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, space_query);
-    const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, type_query);
-    const third_join = this.filterService.queryJoiner(second_join, this.filterService.and_notation, iteration_query);
+    const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, type_query);
+    const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, iteration_query);
     //this.setGroupType(witGroup);
     //second_join gives json object
-    return this.filterService.jsonToQuery(third_join);
+    return this.filterService.jsonToQuery(second_join);
+  }
+
+  constructURLforBoard(iterationId: string) {
+    //Query for work item type group
+    const type_query = this.filterService.queryBuilder('boardContextId', this.filterService.equal_notation, this.witGroup.id);
+    //Query for iteration
+    const iteration_query = this.filterService.queryBuilder('iteration', this.filterService.equal_notation, iterationId);
+    // join type and iteration query
+    const first_join = this.filterService.queryJoiner({}, this.filterService.and_notation, type_query);
+    const second_join = this.filterService.queryJoiner(first_join, this.filterService.and_notation, iteration_query);
+    return this.filterService.jsonToQuery(second_join);
   }
 
   addRemoveQueryParams(iterationId: string) {
+    if (this.context === 'board') {
+      return {
+        q: this.constructURLforBoard(iterationId)
+      };
+    }
     if (this.showCompleted && this.showTree) {
       return {
         q: this.constructURL(iterationId),
@@ -144,7 +160,6 @@ export class IterationComponent implements OnInit, OnDestroy, OnChanges {
       };
     }
   }
-
 
   kebabMenuClick(event: Event) {
     event.stopPropagation();

@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { cloneDeep } from 'lodash';
 import { LabelModel, LabelUI } from './../../models/label.model';
-import { EventService } from './../../services/event.service';
 import { LabelService } from './../../services/label.service';
 import {
   SelectDropdownComponent
@@ -82,7 +81,6 @@ export class LabelSelectorComponent implements OnInit {
 
   constructor(
     private labelService: LabelService,
-    private eventService: EventService,
     private store: Store<AppState>
   ) {}
 
@@ -212,6 +210,11 @@ export class LabelSelectorComponent implements OnInit {
   }
 
   onAddLabelInput(val) {
-    this.createDisabled = val === '';
+    if (val.trim().length === 0 && val.length) {
+      this.labelnameInput.nativeElement.value = '';
+      this.createDisabled = true;
+    } else {
+      this.createDisabled = false;
+    }
   }
 }

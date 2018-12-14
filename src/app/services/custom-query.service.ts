@@ -1,19 +1,14 @@
-import { Inject, Injectable } from '@angular/core';
-import { Headers, Http } from '@angular/http';
-import { ActivatedRoute } from '@angular/router';
-import { cloneDeep } from 'lodash';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { CustomQueryModel, CustomQueryService as CQService } from '../models/custom-query.model';
-import { HttpService } from './http-service';
+import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { CustomQueryModel } from '../models/custom-query.model';
+import { HttpClientService } from '../shared/http-module/http.service';
 
 @Injectable()
 export class CustomQueryService {
-  private customQueries: CustomQueryModel[] = [];
 
   constructor(
-    private http: HttpService,
-    private route: ActivatedRoute
+    private http: HttpClientService
   ) {}
 
   /**
@@ -23,25 +18,11 @@ export class CustomQueryService {
    */
   getCustomQueries(apiUrl): Observable<CustomQueryModel[]> {
     return this.http
-      .get(apiUrl)
-      .map (response => {
-        if (/^[5, 4][0-9]/.test(response.status.toString())) {
-          throw new Error('API error occured');
-        }
-        return response.json().data as CustomQueryModel[];
-      })
-      .map((data) => {
-        this.customQueries = data;
-        return this.customQueries;
-      })
-      .catch ((error: Error | any) => {
-        if (error.status === 401) {
-          console.log('You have been logged out.', error);
-        } else {
-          console.log('Fetch iteration API returned some error - ', error.message);
-        }
-        return Observable.throw(new Error(error.message));
-      });
+      .get<{data: CustomQueryModel[]}>(apiUrl)
+      .pipe(
+        map(r => r.data as CustomQueryModel[]),
+        catchError(e => this.handleError(e, 'Fetch iteration API returned some error - '))
+      );
   }
 
   /**
@@ -56,26 +37,36 @@ export class CustomQueryService {
         apiUrl: string): Observable<CustomQueryModel> {
       let payload = JSON.stringify({data: customQuery});
       return this.http
-        .post(apiUrl, payload)
-        .map(response => {
-          return response.json().data as CustomQueryModel;
-        }).catch((error: Error | any) => {
-          console.log('Creating custom query failed.', error);
-          return Observable.throw(new Error(error.message));
-        });
+        .post<{data: CustomQueryModel}>(apiUrl, payload)
+        .pipe(
+          map(r => r.data as CustomQueryModel),
+          catchError(e => this.handleError(e, 'Creating custom query failed.'))
+        );
     }
 
-    delete(customQuery: CustomQueryModel,
-      apiUrl: string): Observable<void> {
+    /**
+     * Usage: This method deletes a custom query
+     * @param apiUrl ulr to the custom query
+     */
+    delete(apiUrl: string) {
       return this.http
         .delete(apiUrl)
-        .map(response => {
+        .pipe(
+          catchError(e => this.handleError(e, 'Delete custom query failed'))
+        );
+    }
 
-        })
-        .catch((error: Error | any) => {
-          console.log('Delete custom query failed', error);
-          return Observable.throw(new Error(error.message));
-        });
+    /**
+     * Error handling
+     */
+
+    private handleError(error: Error | any, str) {
+      if (error.status === 401) {
+        console.log('You have been logged out.', error);
+      } else {
+        console.log(str, error.message);
       }
+      return throwError(new Error(error.message));
+    }
 
 }

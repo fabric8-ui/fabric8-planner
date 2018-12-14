@@ -5,7 +5,7 @@
 function load_jenkins_vars() {
     if [ -e "jenkins-env" ]; then
         cat jenkins-env \
-        | grep -E "^(JENKINS_URL|DEVSHIFT_USERNAME|DEVSHIFT_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId|DEVSHIFT_TAG_LEN|GIT_COMMIT|NPM_TOKEN|GH_TOKEN|REFRESH_TOKEN)=" \
+        | grep -E "^(JENKINS_URL|QUAY_USERNAME|QUAY_PASSWORD|GIT_BRANCH|GIT_COMMIT|BUILD_NUMBER|ghprbSourceBranch|ghprbActualCommit|BUILD_URL|ghprbPullId|DEVSHIFT_TAG_LEN|GIT_COMMIT|NPM_TOKEN|GH_TOKEN|REFRESH_TOKEN)=" \
         | sed 's/^/export /g' \
         > /tmp/jenkins-env
         source /tmp/jenkins-env
@@ -59,7 +59,11 @@ function run_functional_tests() {
 function build_fabric8_ui() {
     # Build and integrate planner with fabric8-ui
     docker exec $CID git clone https://github.com/fabric8-ui/fabric8-ui.git
-    docker exec $CID bash -c 'cd fabric8-ui; npm install'
+    # Do not remove the --unsafe-perm flag.
+    # fabric8-ui contains `postinstall.sh` script and the since it will be
+    # executed in a docker container with root privileges we need the
+    # --unsafe-perm flag.
+    docker exec $CID bash -c 'cd fabric8-ui; npm install --unsafe-perm'
     docker exec $CID bash -c 'cd fabric8-ui && npm install ../*0.0.0-development.tgz'
     docker exec $CID bash -c '''
         export FABRIC8_WIT_API_URL="https://api.prod-preview.openshift.io/api/"
@@ -67,11 +71,11 @@ function build_fabric8_ui() {
         export FABRIC8_FORGE_API_URL="https://forge.api.prod-preview.openshift.io"
         export FABRIC8_SSO_API_URL="https://sso.prod-preview.openshift.io/"
         export FABRIC8_AUTH_API_URL="https://auth.prod-preview.openshift.io/api/"
-        
+
         export OPENSHIFT_CONSOLE_URL="https://console.free-stg.openshift.com/console/"
         export WS_K8S_API_SERVER="f8osoproxy-test-dsaas-preview.b6ff.rh-idev.openshiftapps.com:443"
         export FABRIC8_FEATURE_TOGGLES_API_URL="f8osoproxy-test-dsaas-preview.b6ff.rh-idev.openshiftapps.com:443" 
-        
+
         export PROXIED_K8S_API_SERVER="${WS_K8S_API_SERVER}"
         export OAUTH_ISSUER="https://${WS_K8S_API_SERVER}"
         export PROXY_PASS_URL="https://${WS_K8S_API_SERVER}"
@@ -86,9 +90,9 @@ function build_fabric8_ui() {
 }
 
 function build_test_and_push_image() {
-    REGISTRY="push.registry.devshift.net"
+    REGISTRY="quay.io"
     TAG="SNAPSHOT-PR-${ghprbPullId}"
-    IMAGE_REPO="fabric8-ui/fabric8-planner"
+    IMAGE_REPO="openshiftio/fabric8-ui-fabric8-planner"
 
     current_directory=$(pwd)
     cd fabric8-ui-dist
@@ -105,8 +109,8 @@ function build_test_and_push_image() {
 
 function push_image() {
     # login first
-    if [ -n "${DEVSHIFT_USERNAME}" -a -n "${DEVSHIFT_PASSWORD}" ]; then
-        docker login -u ${DEVSHIFT_USERNAME} -p ${DEVSHIFT_PASSWORD} ${REGISTRY}
+    if [ -n "${QUAY_USERNAME}" -a -n "${QUAY_PASSWORD}" ]; then
+        docker login -u ${QUAY_USERNAME} -p ${QUAY_PASSWORD} ${REGISTRY}
     else
         echo "Could not login, missing credentials for the registry"
         exit 1
@@ -116,7 +120,7 @@ function push_image() {
 }
 
 function show_docker_command() {
-    PULL_REGISTRY="registry.devshift.net"
+    PULL_REGISTRY="quay.io"
     image_name="${PULL_REGISTRY}/${IMAGE_REPO}:${TAG}"
     # turn off showing command before executing
     set +x

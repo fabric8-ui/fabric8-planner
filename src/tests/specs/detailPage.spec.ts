@@ -6,39 +6,39 @@ import * as support from '../support';
 describe('Detail View test: ', () => {
   let planner: PlannerPage;
   let c = new support.Constants();
-  
-  beforeAll( async () => {
+
+  beforeAll(async () => {
     await support.desktopTestSetup();
     planner = new PlannerPage(browser.baseUrl);
     await planner.openInBrowser();
     await planner.waitUntilUrlContains('typegroup');
-    await planner.ready();
   });
 
-  beforeEach( async () => {
+  beforeEach(async () => {
     await planner.waitUntilUrlContains('typegroup');
     await planner.ready();
+    await planner.workItemList.overlay.untilHidden();
   });
 
-  afterEach( async () => {
-    await browser.executeScript("document.getElementsByClassName('f8-detail--close')[0].click()");
-    await planner.quickPreview.notificationToast.untilHidden();
+  afterEach(async () => {
+    await planner.quickPreview.close();
   });
 
   it('should open detail view and apply label', async () => {
-    let workitemname = {"title": "detail page test"};
+    let workitemname = {'title': 'detail page test'},
+      label = 'sample_label_1';
     await planner.createWorkItem(workitemname);
     await planner.workItemList.openDetailPage(workitemname.title);
     await planner.waitUntilUrlContains('detail');
     await planner.detailPage.titleInput.untilTextIsPresentInValue(workitemname.title);
-    await planner.detailPage.addLabel(c.label);
-    expect(await planner.detailPage.getLabels()).toContain(c.label);
+    await planner.detailPage.addLabel(label);
+    expect(await planner.detailPage.getLabels()).toContain(label);
   });
 
   it('should update title and description', async () => {
-    let workitemname = {"title": "detail page title test"},
+    let workitemname = {'title': 'detail page title test'},
      updatedWorkItem = {
-      title: "detail page title updated",
+      title: 'detail page title updated',
       description: 'New WorkItem Description'
     };
     await planner.createWorkItem(workitemname);
@@ -52,46 +52,75 @@ describe('Detail View test: ', () => {
   });
 
   it('should associate workitem with an Area', async () => {
-    await planner.workItemList.openDetailPage(c.workItemTitle2);
+    let workItemTitle2 = 'Workitem_Title_2';
+    await planner.workItemList.openDetailPage(workItemTitle2);
     await planner.waitUntilUrlContains('detail');
-    await planner.detailPage.titleInput.untilTextIsPresentInValue(c.workItemTitle2);
+    await planner.detailPage.titleInput.untilTextIsPresentInValue(workItemTitle2);
     await planner.detailPage.addArea(c.dropdownareaTitle1);
     expect(await planner.detailPage.getArea()).toBe(c.areaTitle1);
   });
 
   it('should associate workitem with an Iteration', async () => {
-    await planner.workItemList.openDetailPage(c.workItemTitle2);
+    let workItemTitle2 = 'Workitem_Title_2';
+    await planner.workItemList.openDetailPage(workItemTitle2);
     await planner.waitUntilUrlContains('detail');
-    await planner.detailPage.titleInput.untilTextIsPresentInValue(c.workItemTitle2);
+    await planner.detailPage.titleInput.untilTextIsPresentInValue(workItemTitle2);
     await planner.detailPage.addIteration(c.dropdownIteration1);
     expect(await planner.detailPage.getIteration()).toBe(c.iteration1);
   });
 
   it('should add comment', async () => {
-    await planner.workItemList.openDetailPage(c.workItemTitle2);
+    let workItemTitle2 = 'Workitem_Title_2',
+      comment = 'new comment';
+    await planner.workItemList.openDetailPage(workItemTitle2);
     await planner.waitUntilUrlContains('detail');
-    await planner.detailPage.titleInput.untilTextIsPresentInValue(c.workItemTitle2);
-    await planner.detailPage.addCommentAndSave(c.comment);
-    expect(await planner.detailPage.getComments()).toContain(c.comment);
+    await planner.detailPage.titleInput.untilTextIsPresentInValue(workItemTitle2);
+    await planner.detailPage.addCommentAndSave(comment);
+    expect(await planner.detailPage.getComments()).toContain(comment);
   });
 
   it('should link a workitem', async () => {
     let linkType = 'blocks',
-      searchWorkItem = '2-Workitem_Title_3',
-      Workitem_Title_3 = 'Workitem_Title_3';
-    await planner.workItemList.openDetailPage(c.workItemTitle2);
+      workItemTitle2 = 'Workitem_Title_2';
+    await planner.workItemList.openDetailPage(workItemTitle2);
     await planner.waitUntilUrlContains('detail');
-    await planner.detailPage.titleInput.untilTextIsPresentInValue(c.workItemTitle2);
-    await planner.detailPage.addLink(linkType, searchWorkItem, Workitem_Title_3);
-    expect(await planner.detailPage.getLinkedItems()).toContain(Workitem_Title_3);
+    await planner.detailPage.titleInput.untilTextIsPresentInValue(workItemTitle2);
+     /* Adding link b/w workItemTitle2 and Workitem_Title_3 */
+    await planner.detailPage.addLink(linkType, c.Workitem_Title_3);
+    expect(await planner.detailPage.getLinkedItems()).toContain(c.Workitem_Title_3);
+  });
+
+  it('should remove link from workitem', async () => {
+    let workItemName1 = {'title': 'Remove_link_from_workitem_test'},
+      linkType = 'blocks';
+    await planner.createWorkItem(workItemName1);
+    await planner.workItemList.openDetailPage(workItemName1.title);
+    await planner.waitUntilUrlContains('detail');
+    await planner.detailPage.titleInput.untilTextIsPresentInValue(workItemName1.title);
+    await planner.detailPage.addLink(linkType, c.Workitem_Title_4);
+    expect(await planner.detailPage.getLinkedItems()).toContain(c.Workitem_Title_4);
+    await planner.detailPage.removeLink(c.Workitem_Title_4);
+    await planner.detailPage.linkCount.untilTextIsPresent('0');
+    expect(await planner.detailPage.linkCount.getTextWhenReady()).toBe('0');
   });
 
   it('should change the state of workitem', async () => {
-    await planner.workItemList.openDetailPage(c.workItemTitle2);
+    let workitemname = {'title': 'change state test'};
+    await planner.createWorkItem(workitemname);
+    await planner.workItemList.openDetailPage(workitemname.title);
     await planner.waitUntilUrlContains('detail');
-    await planner.detailPage.titleInput.untilTextIsPresentInValue(c.workItemTitle2);
-    await planner.detailPage.changeState('open');
-    await planner.detailPage.stateToggle.untilTextIsPresent('open');
-    expect(planner.detailPage.stateToggle.getTextWhenReady()).toContain('open');
+    await planner.detailPage.titleInput.untilTextIsPresentInValue(workitemname.title);
+    await planner.detailPage.changeStateTo(c.stateOpen);
+    expect(await planner.detailPage.getState()).toBe(c.stateOpen);
+  });
+
+  it('Should change the type of work item', async () => {
+    let workitemname = {'title': 'change type test'};
+    await planner.createWorkItem(workitemname);
+    await planner.workItemList.openDetailPage(workitemname.title);
+    await planner.waitUntilUrlContains('detail');
+    await planner.detailPage.titleInput.untilTextIsPresentInValue(workitemname.title);
+    await planner.detailPage.changeTypeTo(c.typeIssue);
+    expect(await planner.detailPage.getType()).toBe(c.typeIssue);
   });
 });

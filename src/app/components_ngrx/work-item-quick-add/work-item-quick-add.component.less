@@ -13,16 +13,21 @@
     &-savebtn {
       display: inline-block;
       margin: 0;
-      &:hover { text-decoration: none; }
+      &:hover {
+        text-decoration: none;
+      }
     }
     i {
       display: inline-block;
       color: @navbar-pf-border-color;
-      &:hover { color: @navbar-pf-border-color; }
+      &:hover {
+        color: @navbar-pf-border-color;
+      }
     }
   }
   &__wiblk {
-    padding-right: 0;
+    padding-right: 10px;
+    padding-left: 10px;
     .dropdown {
       position: relative;
       button[data-toggle='dropdown'] {
@@ -39,17 +44,14 @@
     }
     &-story {
       overflow: hidden;
-      .f8-quickadd-desc {
-        max-height: 100px;
-        height: 26px;
-        padding-top: 0;
-      }
     }
     &-btn {
       &-add {
         min-width: 30px;
         height: 27px;
-        i { font-size: 14px; }
+        i {
+          font-size: 14px;
+        }
       }
     }
   }
@@ -118,16 +120,72 @@
 }
 @media (max-width: @grid-float-breakpoint) {
   .f8-quickadd {
-    &__addwi { padding: 10px;
+    &__addwi {
+      padding: 10px;
       i,
-      h4 { display: block; }
-      i { margin-bottom: 5px; }
+      h4 {
+        display: block;
+      }
+      i {
+        margin-bottom: 5px;
+      }
     }
-    &__wiblk { padding: 10px; }
+    &__wiblk {
+      padding: 10px;
+    }
   }
 }
 @-moz-document url-prefix() {
   .f8-quickadd__wiblk-story {
-    .f8-quickadd-desc { max-height: 26px; }
+    .f8-quickadd-desc {
+      max-height: 26px;
+    }
   }
 }
+
+.f8-quickadd-query {
+  &__wrapper {
+    margin-right: 30px;
+    margin-left: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    input {
+      min-width: 360px;
+    }
+  }
+
+  &__dropdown {
+    margin-top: 15px;
+  }
+
+  &__create {
+    position: absolute;
+    top: 110px;
+    right: 160px;
+  }
+
+  &__create-open {
+    position: absolute;
+    top: 110px;
+    right: 30px;
+  }
+}
+
+.item-desc {
+  display: block;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 17px;
+  color: @color-pf-black-500;
+}
+
+.planner-dropdown-item {
+  padding: 1px 10px;
+  &:hover {
+    background-color: @color-pf-blue-50;
+    border-color: @color-pf-blue-100;
+  }
+}
+
+

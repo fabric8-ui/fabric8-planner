@@ -1,6 +1,6 @@
 import {
-  browser, ExpectedConditions as EC,
-  ElementFinder, ElementArrayFinder
+  browser, ElementArrayFinder,
+  ElementFinder, ExpectedConditions as EC
 } from 'protractor';
 
 import * as mixins from '../mixins';
@@ -10,10 +10,10 @@ import { DEFAULT_WAIT } from '../support';
 // todo move to a different module
 
 type NumberComparerFn = (x: number) => boolean;
-type NumberComparer = number|NumberComparerFn;
+type NumberComparer = number | NumberComparerFn;
 
 function makeNumberComparer(compare: NumberComparer): NumberComparerFn {
-  if (typeof(compare) == "number") {
+  if (typeof(compare) == 'number') {
     return (n: number) =>  n >= compare;
   }
   return compare;
@@ -42,8 +42,9 @@ export class BaseElement extends ElementFinder implements BaseElementInterface {
 
   // add logging mixin
   name: string = '';
-  log: (action: string, ...msg: string[]) => void;
-  debug: (context: string, ...msg: string[]) => void;
+  log!: (action: string, ...msg: string[]) => void;
+  debug!: (context: string, ...msg: string[]) => void;
+  fail!: (action: string, ...msg: string[]) => void;
 
   /**
    * Extend this class, to describe single custom fragment on your page
@@ -58,32 +59,52 @@ export class BaseElement extends ElementFinder implements BaseElementInterface {
   }
 
   async untilClickable(timeout?: number) {
-    await this.waitFor('clickable', EC.elementToBeClickable(this), timeout);
+    try {
+      await this.waitFor('clickable', EC.elementToBeClickable(this), timeout);
+    } catch (e) {
+      this.fail('ERROR Element: ', this.name, 'is not clickable');
+    }
   }
 
   async untilPresent(timeout?: number) {
-    await this.waitFor('present', EC.presenceOf(this), timeout);
+    try {
+      await this.waitFor('present', EC.presenceOf(this), timeout);
+    } catch (e) {
+      this.fail('ERROR Element: ', this.name, 'is not present');
+    }
   }
 
   async untilDisplayed(timeout?: number) {
-    await this.waitFor('visible', EC.visibilityOf(this), timeout);
+    try {
+      await this.waitFor('visible', EC.visibilityOf(this), timeout);
+    } catch (e) {
+      this.fail('ERROR Element: ', this.name, 'is not displayed');
+    }
   }
 
   async untilTextIsPresent(text: string, timeout?: number) {
-    let condition = EC.textToBePresentInElement(this, text);
-    await this.waitFor(`text ${text}`, condition, timeout);
+    try {
+      let condition = EC.textToBePresentInElement(this, text);
+      await this.waitFor(`text ${text}`, condition, timeout);
+    } catch (e) {
+      this.fail('ERROR Element: ', this.name, 'text is not present');
+    }
   }
 
   async untilTextIsPresentInValue(text: string, timeout?: number) {
-    let condition = EC.textToBePresentInElementValue(this, text);
-    await this.waitFor(`text ${text}`, condition, timeout);
+    try {
+      let condition = EC.textToBePresentInElementValue(this, text);
+      await this.waitFor(`text ${text}`, condition, timeout);
+    } catch (e) {
+      this.fail('ERROR Element: ', this.name, 'text is not present in value');
+    }
   }
 
   async untilHidden(timeout?: number) {
     try {
       await this.waitFor('hidden', EC.invisibilityOf(this), timeout);
-    } catch(e) {
-      this.debug("Element: ", this.name, " no longer exists.");
+    } catch (e) {
+      this.debug('Element: ', this.name, ' no longer exists.');
     }
   }
 
@@ -96,7 +117,7 @@ export class BaseElement extends ElementFinder implements BaseElementInterface {
       await this.untilDisplayed(timeout);
       await this.untilClickable(timeout);
       await this.click();
-    })
+    });
   }
 
   async ready() {
@@ -120,7 +141,7 @@ export class BaseElement extends ElementFinder implements BaseElementInterface {
 
   async getTextWhenReady(timeout?: number): Promise<string> {
     await this.untilDisplayed(timeout);
-    return await this.getText();
+    return this.getText();
   }
 
   async scrollIntoView() {
@@ -131,8 +152,8 @@ export class BaseElement extends ElementFinder implements BaseElementInterface {
 export class BaseElementArray extends ElementArrayFinder {
 
   // Loggin Mixin
-  log: (action: string, ...msg: string[]) => void;
-  debug: (context: string, ...msg: string[]) => void;
+  log!: (action: string, ...msg: string[]) => void;
+  debug!: (context: string, ...msg: string[]) => void;
 
   constructor(wrapped: ElementArrayFinder, name: string = 'unnamed') {
     // see: clone https://github.com/angular/protractor/blob/5.2.0/lib/element.ts#L106
@@ -156,7 +177,7 @@ export class BaseElementArray extends ElementArrayFinder {
 
   async getTextWhenReady(): Promise<String> {
     await this.ready();
-    return await this.getText();
+    return this.getText();
   }
 
   async untilHidden() {
@@ -164,8 +185,8 @@ export class BaseElementArray extends ElementArrayFinder {
       let tempItem = new BaseElement(item, this.name + ' - ' + index);
       try {
         await tempItem.untilHidden();
-      } catch(e) {
-        this.debug("Element: ", tempItem.name, " no longer exists.");
+      } catch (e) {
+        this.debug('Element: ', tempItem.name, ' no longer exists.');
       }
     });
   }
@@ -177,7 +198,7 @@ export class Clickable extends BaseElement {
     await this.run('ready', async () => {
       await super.ready();
       await this.untilClickable();
-    })
+    });
   }
 }
 

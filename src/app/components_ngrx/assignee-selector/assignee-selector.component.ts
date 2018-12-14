@@ -1,21 +1,16 @@
 import {
   Component,
-  ElementRef,
   EventEmitter,
   Input,
-  OnChanges,
   Output,
-  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import { cloneDeep } from 'lodash';
 import {
   AuthenticationService,
-  User,
-  UserService
+  User
 } from 'ngx-login-client';
-import { Observable } from 'rxjs/Observable';
-import { WorkItem, WorkItemRelations } from '../../models/work-item';
+import { WorkItem } from '../../models/work-item';
 import { WorkItemService } from '../../services/work-item.service';
 import { UserUI } from './../../models/user';
 import {
@@ -32,6 +27,7 @@ export class AssigneeSelectorComponent {
   @ViewChild('dropdown') dropdownRef: SelectDropdownComponent;
 
   @Input() loggedInUser: UserUI;
+  @Input() editAllow: boolean = false;
 
   allUsers: UserUI[] = [];
   @Input('allUsers') set allUsersSetter(val: UserUI[]) {
@@ -138,9 +134,7 @@ export class AssigneeSelectorComponent {
       this.assignees = cloneDeep(this.backup);
     }
   }
-  updateOnList() {
-    this.workItemService.emitEditWI(this.workItem);
-  }
+
   cancelAssignment(): void {
     this.searchAssignee = false;
   }

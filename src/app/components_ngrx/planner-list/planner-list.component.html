@@ -56,7 +56,11 @@
 
   <!-- tableConfig Dropdown -->
   <div class="width-100 pull-left padding-10 posRel" #quickaddWrapper>
-    <div class="f8-wi-list__quick-add padding-right-15 margin-right-15"
+    <table-config
+      [columns]="columns"
+      (onMovetoDisplay)="moveToDisplay($event)"
+      (onMovetoAvailable)="moveToAvailable($event)"></table-config>
+    <div class="f8-wi-list__quick-add padding-right-10 margin-right-10"
       id="workItemList_up_quickAdd"
       *ngIf="loggedIn && !!quickAddWorkItemTypes.length">
       <alm-work-item-quick-add
@@ -65,61 +69,6 @@
         [selectedType]="quickAddWorkItemTypes[0]"
         [selectedIteration]="selectedIterationSource | async">
       </alm-work-item-quick-add>
-    </div>
-    <div class="f8-wi-list__settings f8-wi__table-config">
-      <div (clickOut)="clickOut()" class="dropdown-kebab-pf pull-right dropdown margin-left-10"
-        dropdown
-        [autoClose]="false"
-        [isOpen]="isTableConfigOpen"
-        (isOpenChange)="tableConfigChange($event)">
-        <button class="btn btn-link dropdown-toggle"
-          type="button" dropdownToggle>
-          <span class="fa fa-cog"
-            placement="bottom"
-            tooltip="Open Config"></span>
-        </button>
-        <div class="dropdown-menu-right dropdown-menu f8-wi-list__settings-dropdown" *dropdownMenu>
-          <aside>
-            <i class="db text-right fa fa-close btn btn-link" (click)="tableConfigToggle($event)"></i>
-          </aside>
-          <aside>
-            <small>Displayed Attributes</small>
-            <ul class="f8-wi-list__settings-column">
-              <li *ngFor='let col of (columns | filterColumn: "showInDisplay")'>
-                <input
-                  type='checkbox'
-                  [id]="col.name"
-                  (change)='toggleCheckbox($event, col)'/>
-                <label [attr.for]="col.name">{{ col.name }}</label>
-              </li>
-            </ul>
-          </aside>
-          <aside>
-            <span class="db fa fa-angle-right"
-              tooltip="Move to Displayed Attributes"
-              (click)="moveToDisplay()">
-            </span>
-            <span class="db fa fa-angle-left"
-              tooltip="Move to Available Attributes"
-              (click)="moveToAvailable()">
-            </span>
-          </aside>
-          <aside>
-            <small>Available Attributes</small>
-            <ul class="f8-wi-list__settings-column">
-              <li *ngFor='let col of (columns | filterColumn: "available")'>
-                <input
-                  type='checkbox'
-                  [id]="col.name"
-                  (change)='toggleCheckbox($event, col)'/>
-                <label [attr.for]="col.name">
-                  {{ col.name }}
-                </label>
-              </li>
-            </ul>
-          </aside>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -146,7 +95,7 @@
         [rowDragHandle]="'.table-dnd-header'"
         (onRowDrop)="onRowDrop($event)"
         (select)="onSelect($event)"
-        (scroll)="onScroll($event)"
+        (scroll)="onScroll($event);"
         (reorder)="handleReorder($event)"
         (treeAction)="onTreeAction($event)">
         <!-- First Column - quick Add - row detail -->
@@ -155,10 +104,10 @@
             <div class="f8-wi-list__quick-add-table width-100 pull-left"
               id="workItemList_quickAdd_inline"
               #quickaddHeight>
-              <alm-work-item-quick-add
+              <alm-work-item-quick-add *ngIf="(row?.typeObs | async) as type"
                 [wilistview]="'wi-table-view'"
-                [workItemTypes]="row?.type?.childTypes"
-                [selectedType]="row?.type?.childTypes?.length ? row.type.childTypes[0] : null"
+                [workItemTypes]="type?.childTypes"
+                [selectedType]="type?.childTypes?.length ? type.childTypes[0] : null"
                 [selectedIteration]="selectedIterationSource | async"
                 [parentWorkItemId]="row.id"
                 (onStartCreateWI)="onCreateStart($event)">
@@ -180,16 +129,16 @@
               <span class="table-dnd-container">
                 <span class="table-dnd-header"></span>
               </span>
-              <a class="quick-add-icon"
+              <a class="quick-add-icon" *ngIf="(row?.typeObs | async) as type"
                 placement="right"
                 tooltip="Add Child Work Item"
                 href="javascript:void(0)"
                 [class.pficon-add-circle-o]="!expanded"
                 [class.pficon-close]="expanded"
-                [class.disabled]="!!!row?.type?.childTypes || !loggedIn"
+                [class.disabled]="!!!type?.childTypes || !loggedIn"
                 (click)="toggleExpandRow(
                   row,
-                  !!row?.type?.childTypes?.length
+                  !!type?.childTypes?.length
                 )">
               </a>
             </ng-template>
@@ -198,6 +147,7 @@
           <ngx-datatable-column
             *ngFor="let c of (columns | filterColumn:'display')"
             [isTreeColumn]="c.name==='Title'"
+            [indentTree]="c.name==='Title' ? 20 : 0"
             [name]="c.name"
             [resizeable]="false"
             [width]="c.width"
@@ -217,7 +167,7 @@
             </ng-template>
 
             <ng-template ngx-datatable-cell-tree-loader *ngIf="c.name==='Title'">
-              <div class="spinner spinner-xs icon-loader margin-top-15"></div>
+              <div class="spinner spinner-xs icon-loader"></div>
             </ng-template>
               <ng-template let-row="row"
                 ngx-datatable-cell-template>
@@ -227,7 +177,7 @@
                     (onDetailPreview)="onDetailPreview($event)"
                     (onQuickPreview)="onPreview($event)"
                     [class.f8-wi__table-config]="c.prop=='label' || c.prop=='assignees'"
-                    [class.planner-hack-title-truncate]="c.prop=='title'">
+                    [class.f8-planner-list-title]="c.prop=='title'">
                   </work-item-cell>
               </ng-template>
           </ngx-datatable-column>
@@ -242,9 +192,10 @@
           [sortable]="false"
           [cellClass]="'cell-class'"
           [frozenLeft]="false">
-            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+            <ng-template let-row="row" let-expanded="expanded"
+              ngx-datatable-cell-template>
               <span class="table-dnd-container">
-                 <span class="table-dnd-header"></span>
+                <span class="table-dnd-header"></span>
               </span>
               <a class="quick-add-icon pficon-add-circle-o disabled"
                 placement="right"
@@ -267,10 +218,9 @@
                   <work-item-cell
                     [row]="row"
                     [col]="c.prop"
-                    (onDetailPreview)="onDetailPreview($event)"
                     (onQuickPreview)="onPreview($event)"
                     [class.f8-wi__table-config]="c.prop === 'label' || c.prop === 'assignees'"
-                    [class.planner-hack-title-truncate]="c.prop === 'title'">
+                    [class.f8-planner-list-title]="c.prop === 'title'">
                   </work-item-cell>
               </ng-template>
           </ngx-datatable-column>

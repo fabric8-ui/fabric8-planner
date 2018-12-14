@@ -16,3 +16,6 @@ export { WorkItemLinkReducer } from './work-item-link.reducer';
 export { InfotipReducer } from './infotip.reducer';
 export { UserReducer } from './user.reducer';
 export { EventReducer } from './event.reducer';
+export { BoardReducer } from './board.reducer';
+export { BoardUIReducer } from './board-ui.reducer';
+export { ColumnWorkItemReducer } from './column-workitem.reducer';

@@ -19,9 +19,7 @@ var gulp = require('gulp')
   , less = require('gulp-less')
   , util = require('gulp-util')
 
-  , changed   = require('gulp-changed')
   , lesshint  = require('gulp-lesshint')
-  , concat    = require('gulp-concat-css')
   , srcmaps   = require('gulp-sourcemaps')
   , replace   = require('gulp-string-replace')
   , tslint    = require('gulp-tslint')
@@ -77,29 +75,24 @@ mach.tslint = function(src) {
   return gulp.src(src)
     .pipe(tslint({
       formatter: 'verbose',
-      configuration: 'tslint.json' 
+      configuration: 'tslint.json'
     }))
     .pipe(tslint.report())
 };
 
 // Transpile given LESS source(s) to CSS, storing results to distPath.
 mach.transpileLESS = function (src, debug) {
-  var opts = {
-    // THIS IS NEEDED FOR REFERENCE
-    // paths: [ path.join(__dirname, 'less', 'includes') ]
-  }
   return gulp.src(src)
-    .pipe(less({
-      plugins: [autoprefix]
-    }))
     .pipe(lesshint({
       configPath: './.lesshintrc' // Options
+    }))
+    .pipe(less({
+      plugins: [autoprefix]
     }))
     .pipe(lesshint.reporter()) // Leave empty to use the default, "stylish"
     .pipe(lesshint.failOnError()) // Use this to fail the task on lint errors
     .pipe(srcmaps.init())
-    .pipe(less(opts))
-    //.pipe(concat('styles.css'))
+    .pipe(less())
     .pipe(srcmaps.write())
     .pipe(gulp.dest(function (file) {
       return distPath + file.base.slice(__dirname.length + 'src/'.length);
@@ -112,7 +105,6 @@ mach.transpileLESS = function (src, debug) {
 
 // Build
 gulp.task('build', function (done) {
-
   // app (default)
   mach.tslint(appSrc + '/app/**/*.ts'); // Report all the linter errors
   mach.transpileTS(); // Transpile *.ts to *.js; _then_ post-process require statements to load templates
@@ -128,7 +120,10 @@ gulp.task('build', function (done) {
 
   // watch
   if (argv.watch) {
-    gulp.watch([appSrc + '/app/**/*.ts', '!' + appSrc + '/app/**/*.spec.ts']).on('change', function (e) {
+    gulp.watch([
+      appSrc + '/app/**/*.ts', '!' + appSrc + '/app/**/*.spec.ts',
+      appSrc + '/planner.module.ts'
+    ]).on('change', function (e) {
       util.log(util.colors.cyan(e) + ' has been changed. Compiling TypeScript.');
       mach.transpileTS();
     });
@@ -146,7 +141,6 @@ gulp.task('build', function (done) {
     util.log('');
     util.log('in the npm module you want to link this one to');
   }
-
   done();
 
 });

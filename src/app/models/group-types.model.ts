@@ -1,4 +1,13 @@
-import { CommonModule } from '@angular/common';
+import { Injectable } from '@angular/core';
+// MemoizedSelector is needed even if it's not being used in this file
+// Else you get this error
+// Exported variable 'groupTypeSelector' has or is using name 'MemoizedSelector'
+// from external module "@ngrx/store/src/selector" but cannot be named.
+import { createSelector, MemoizedSelector, select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+
+import { AppState } from './../states/app.state';
 import {
   Mapper,
   MapTree,
@@ -6,6 +15,7 @@ import {
   modelUI,
   switchModel
 } from './common.model';
+import { plannerSelector } from './space';
 
 export class GroupTypesModel extends modelService {
   attributes: WITGroupAttributes;
@@ -23,6 +33,7 @@ export class WITGroupAttributes {
   group: string;
   name: string;
   ['show-in-sidebar']: boolean;
+  description: string;
 }
 
 export class WorkItemRelations {
@@ -40,9 +51,6 @@ export class WorkItemRelations {
   };
   typeList?: {
     data?: TypeListData[]
-  };
-  infoTip?: {
-    data?: string;
   };
 }
 
@@ -64,7 +72,7 @@ export interface GroupTypeUI extends modelUI {
   selected: boolean;
   showInSideBar: boolean; // attributes / show-in-sidebar
   typeList: TypeListData[]; // relationships / typeList / data
-  infotip: string;
+  description: string; // attributes / description
 }
 
 export class GroupTypeMapper implements Mapper<GroupTypeService, GroupTypeUI> {
@@ -100,14 +108,9 @@ export class GroupTypeMapper implements Mapper<GroupTypeService, GroupTypeUI> {
       fromPath: ['relationships', 'typeList', 'data'],
       toPath: ['typeList']
     }, {
-      fromPath: ['relationships', 'infoTip', 'data'],
-      toPath: ['infotip'],
-      toFunction: function(value) {
-        if (value === null) {
-          return 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
-        }
-        return value;
-      }
+      fromPath: ['attributes', 'description'],
+      toPath: ['description'],
+      toFunction: (value) => value || 'no info-tip'
     }];
 
   uiToServiceMapTree: MapTree = [{
@@ -153,5 +156,23 @@ export class GroupTypeMapper implements Mapper<GroupTypeService, GroupTypeUI> {
     return switchModel<GroupTypeUI, GroupTypeService>(
       arg, this.uiToServiceMapTree
     );
+  }
+}
+
+export const groupTypeSelector = createSelector(
+  plannerSelector,
+  state => state.groupTypes
+);
+@Injectable()
+export class GroupTypeQuery {
+  constructor(private store: Store<AppState>) {}
+  get getGroupTypes(): Observable<GroupTypeUI[]> {
+    return this.store.pipe(
+      select(groupTypeSelector),
+      filter(g => g.length > 0)
+    );
+  }
+  get getFirstGroupType(): Observable<GroupTypeUI> {
+    return this.getGroupTypes.pipe(map(g => g[0]));
   }
 }

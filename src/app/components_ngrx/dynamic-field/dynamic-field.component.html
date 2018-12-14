@@ -22,7 +22,6 @@
       <!-- workitemtype field type: dropdown -->
       <common-selector
         *ngIf="fieldValue.field.type.kind==='enum'"
-        [noValueLabel]="'None'"
         [allowUpdate]="editAllow"
         [headerText]="fieldValue.field.label + ' dropdown'"
         [items]="dropdownMenuItems"
@@ -46,12 +45,14 @@
 
       <!-- workitemtype field type: markup -->
       <f8-markdown
+        #markup
         *ngIf="fieldValue.field.type.kind==='markup'"
         [editAllow]="editAllow"
         [rawText]="fieldValue?.value?.content"
         [renderedText]="fieldValue?.value?.rendered"
         (onSaveClick)="markupUpdate($event)"
-        (showPreview)="showPreview($event)">
+        (showPreview)="showPreview($event)"
+        (onClickOut)="$event ? markup.closeClick() : ''">
       </f8-markdown>
 
       <!-- workitemtype field type: instant (datetime) -->

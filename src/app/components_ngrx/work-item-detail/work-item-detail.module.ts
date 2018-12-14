@@ -11,7 +11,6 @@ import { PlannerModalModule } from '../../widgets/modal/modal.module';
 import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component';
 import { UserMapper, UserQuery } from './../../models/user';
 import { AlmUserNameModule } from './../../pipes/alm-user-name.module';
-import { WorkItemTypeControlService } from './../../services/work-item-type-control.service';
 import { InlineInputModule } from './../../widgets/inlineinput/inlineinput.module';
 import { AssigneeSelectorModule } from './../assignee-selector/assignee-selector.module';
 import { AssigneesModule } from './../assignee/assignee.module';
@@ -36,14 +35,13 @@ import { CommentReducer } from './../../reducers/comment.reducer';
 import { DetailWorkItemReducer } from './../../reducers/detail-work-item.reducer';
 import { LinkTypeReducer } from './../../reducers/link-type.reducer';
 import { WorkItemLinkReducer } from './../../reducers/work-item-link.reducer';
-import { CommentState, initialState as initialCommentState } from './../../states/comment.state';
+import { initialState as initialCommentState } from './../../states/comment.state';
 import {
-  DetailWorkItemState,
   initialState as initialDetailWIState
 } from './../../states/detail-work-item.state';
-import { EventState, initialState as initialEventState } from './../../states/event.state';
-import { initialState as initialLinkTypeState, LinkTypeState } from './../../states/link-type.state';
-import { initialState as initialWILinkState, WorkItemLinkState } from './../../states/work-item-link.state';
+import { initialState as initialEventState } from './../../states/event.state';
+import { initialState as initialLinkTypeState } from './../../states/link-type.state';
+import { initialState as initialWILinkState } from './../../states/work-item-link.state';
 
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { EventEffects } from '../../effects/event.effects';
@@ -52,11 +50,16 @@ import { EventReducer } from '../../reducers/event.reducer';
 import { UrlService } from '../../services/url.service';
 import { LabelSelectorModule } from '../label-selector/label-selector.module';
 
+import { ErrorHandler } from '../../effects/work-item-utils';
 import { AreaQuery } from '../../models/area.model';
 import { IterationQuery } from '../../models/iteration.model';
+import { WorkItemTypeQuery } from '../../models/work-item-type';
+import { DeleteWorkItemModule } from '../delete-work-item/delete-work-item.module';
 import { CommentQuery } from './../../models/comment';
 import { LabelQuery } from './../../models/label.model';
+import { SpaceQuery } from './../../models/space';
 import { WorkItemQuery } from './../../models/work-item';
+import { ClickOutModule } from './../../widgets/clickout/clickout.module';
 import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module';
 
 
@@ -83,6 +86,8 @@ import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module
     TruncateModule,
     WorkItemLinkModule,
     ReactiveFormsModule,
+    ClickOutModule,
+    DeleteWorkItemModule,
     StoreModule.forFeature('detailPage', {
       comments: CommentReducer,
       workItem: DetailWorkItemReducer,
@@ -114,13 +119,15 @@ import { UserAvatarModule } from './../../widgets/user-avatar/user-avatar.module
     UserQuery,
     UserMapper,
     UrlService,
+    SpaceQuery,
     BsDropdownConfig,
     AuthenticationService,
     TooltipConfig,
-    WorkItemTypeControlService,
     IterationQuery,
     WorkItemQuery,
-    AreaQuery
+    AreaQuery,
+    WorkItemTypeQuery,
+    ErrorHandler
   ],
   declarations: [
     WorkItemDetailComponent,

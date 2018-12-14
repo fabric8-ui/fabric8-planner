@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { createEntityAdapter } from '@ngrx/entity';
-import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
+import { createFeatureSelector, createSelector, select, Store } from '@ngrx/store';
+import { combineLatest, Observable, of as ObservableOf } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { LabelService as LabelDataService } from './../services/label.service';
-import { AppState, ListPage } from './../states/app.state';
+import { AppState, PlannerState } from './../states/app.state';
 import {
   Mapper,
   MapTree,
@@ -126,13 +127,12 @@ export class LabelMapper implements Mapper<LabelService, LabelUI> {
 @Injectable()
 export class LabelQuery {
   constructor(
-    private store: Store<AppState>,
-    private labelService: LabelDataService
+    private store: Store<AppState>
   ) {}
 
-  private listPageSelector = createFeatureSelector<ListPage>('listPage');
+  private plannerSelector = createFeatureSelector<PlannerState>('planner');
   private labelSelector = createSelector(
-    this.listPageSelector,
+    this.plannerSelector,
     state => state.labels
   );
   private getAllLabelsSelector = createSelector(
@@ -144,26 +144,28 @@ export class LabelQuery {
     selectEntities
   );
 
-  getLables(): Store<LabelUI[]> {
-    return this.store.select(this.getAllLabelsSelector);
+  getLables(): Observable<LabelUI[]> {
+    return this.store.pipe(select(this.getAllLabelsSelector));
   }
 
-  getLabelObservableById(number: string): Store<LabelUI> {
+  getLabelObservableById(number: string): Observable<LabelUI> {
     const labelSelector = createSelector(
       this.getLabelEntities,
       state => state[number]
     );
-    return this.store.select(labelSelector);
+    return this.store.pipe(select(labelSelector));
   }
 
   getLabelObservablesByIds(ids: string[]): Observable<LabelUI[]> {
-    if (!ids.length) { return Observable.of([]); }
-    return Observable.combineLatest(ids.map(id => this.getLabelObservableById(id)))
-      // If the label is not available in the state
-      // it comes as undefined so we filter them out
-      .map(labels => labels.filter(l => !!l))
-      // In case the combine operation is stuck for any single
-      // observable inside, we start the stream with an empty array
-      .startWith([]);
+    if (!ids.length) { return ObservableOf([]); }
+    return combineLatest(ids.map(id => this.getLabelObservableById(id))) // TODO RxJS 6 combineLatest should come from rxjs/operators
+      .pipe(
+        // If the label is not available in the state
+        // it comes as undefined so we filter them out
+        map((labels: LabelUI[]) => labels.filter(l => !!l)),
+        // In case the combine operation is stuck for any single
+        // observable inside, we start the stream with an empty array
+        startWith([])
+      );
   }
 }
