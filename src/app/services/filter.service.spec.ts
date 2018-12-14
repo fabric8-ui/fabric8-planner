@@ -13,6 +13,7 @@ import { FilterModel } from '../models/filter.model';
 import { WorkItem } from './../models/work-item';
 import { HttpClientService } from './../shared/http-module/http.service';
 import { FilterService } from './filter.service';
+import { AND, ENCLOSURE, EQUAL, IN } from './query-keys';
 
 describe('Unit Test :: Filter Service', () => {
   let filterService: FilterService;
@@ -419,7 +420,7 @@ describe('Unit Test :: Filter Service', () => {
     expect(
       filterService.queryBuilder(
         'some_key',
-        filterService.equal_notation,
+        EQUAL,
         'some_value'
       )
     )
@@ -432,7 +433,7 @@ describe('Unit Test :: Filter Service', () => {
     expect(
       filterService.queryBuilder(
         'some_key',
-        filterService.equal_notation,
+        EQUAL,
         ['some_value', 'some_value1', 'some_value2', 'some_value3']
       )
     )
@@ -624,7 +625,7 @@ describe('Unit Test :: Filter Service', () => {
     // Build type query
 
     const wi_key = 'workitemtype';
-    const wi_compare = filterService.in_notation;
+    const wi_compare = IN;
     const wi_value = ['type_id_1', 'type_id_2'];
 
     const type_query = filterService.queryBuilder(wi_key, wi_compare, wi_value);
@@ -639,7 +640,7 @@ describe('Unit Test :: Filter Service', () => {
     // Build space query
 
     const s_key = 'space';
-    const s_compare = filterService.equal_notation;
+    const s_compare = EQUAL;
     const s_value = 'space_id_1';
 
     const space_query = filterService.queryBuilder(s_key, s_compare, s_value);
@@ -695,13 +696,13 @@ describe('Unit Test :: Filter Service', () => {
 
   it('encloseValue :: should enclose the string with space - 1', () => {
     expect(filterService.encloseValue('The string has space')).toBe(
-      filterService.str_enclouser + 'The string has space' + filterService.str_enclouser
+      ENCLOSURE + 'The string has space' + ENCLOSURE
     );
   });
 
   it('encloseValue :: should not enclose the string with space and already enclosed - 1', () => {
-    expect(filterService.encloseValue(filterService.str_enclouser + 'The string has space' + filterService.str_enclouser)).toBe(
-      filterService.str_enclouser + 'The string has space' + filterService.str_enclouser
+    expect(filterService.encloseValue(ENCLOSURE + 'The string has space' + ENCLOSURE)).toBe(
+      ENCLOSURE + 'The string has space' + ENCLOSURE
     );
   });
 
@@ -712,7 +713,7 @@ describe('Unit Test :: Filter Service', () => {
   });
 
   it('clearEnclosedValue :: should clear the enclosed string with space - 1', () => {
-    expect(filterService.clearEnclosedValue(filterService.str_enclouser + 'The string has space' + filterService.str_enclouser)).toBe(
+    expect(filterService.clearEnclosedValue(ENCLOSURE + 'The string has space' + ENCLOSURE)).toBe(
       'The string has space'
     );
   });

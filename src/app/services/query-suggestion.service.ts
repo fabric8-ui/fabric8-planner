@@ -6,7 +6,7 @@ import { AreaQuery } from '../models/area.model';
 import { IterationQuery } from '../models/iteration.model';
 import { LabelQuery } from '../models/label.model';
 import {
-  AND, ENCLOUSER, EQUAL_QUERY,
+  AND, ENCLOSURE, EQUAL_QUERY,
   NOT_EQUAL_QUERY, OR, P_START
 } from './query-keys';
 
@@ -99,10 +99,10 @@ export class QuerySuggestionService {
     // take the last one from the array
     let value = splittedvalues[splittedvalues.length - 1].trim();
     // trim the value if it has enclouser
-    if (value[0] == ENCLOUSER) {
+    if (value[0] == ENCLOSURE) {
       value = value.substr(1);
     }
-    if (value[value.length - 1] == ENCLOUSER) {
+    if (value[value.length - 1] == ENCLOSURE) {
       value = value.substr(0, value.length - 1);
     }
     return {field, value};
